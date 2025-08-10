@@ -1,8 +1,7 @@
 docker run -it \
   --name examtopics-downloader \
-  ghcr.io/thatonecodes/examtopics-downloader:latest \
-  -p amazon -s aws-certified-solutions-architect-professional-sap-c02 \
+  ghcr.io/finbertmds/examtopics-downloader:latest \
+  -p amazon -s aws-certified-machine-learning-engineer-associate-mla-c01 \
   -save-links -o output.md
-docker cp examtopics-downloader:/app/output.md .
-docker cp examtopics-downloader:/app/saved-links.txt .
+docker cp examtopics-downloader:/app/output.md ./md/aws_mla_c01.md
 docker rm examtopics-downloader
