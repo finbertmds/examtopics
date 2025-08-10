@@ -1,0 +1,165 @@
+.App {
+  text-align: left;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.dark ::-webkit-scrollbar-track {
+  background: #374151;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #6b7280;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
+}
+
+/* Exam page specific styles */
+.exam-layout {
+  height: calc(100vh - 200px);
+  min-height: 600px;
+  position: relative;
+  background-color: #f3f4f6; /* bg-gray-100 */
+}
+
+.dark .exam-layout {
+  background-color: #111827; /* bg-gray-900 */
+}
+
+@media (max-width: 1023px) {
+  .exam-layout {
+    height: auto;
+    min-height: auto;
+  }
+}
+
+/* Ensure proper stacking context */
+.exam-layout > * {
+  position: relative;
+  z-index: 1;
+}
+
+.scrollable-content {
+  scrollbar-width: thin;
+  scrollbar-color: #c1c1c1 #f1f1f1;
+  /* Custom scrollbar for webkit browsers */
+  scrollbar-gutter: stable;
+  background-color: #f3f4f6; /* bg-gray-100 */
+}
+
+.dark .scrollable-content {
+  scrollbar-color: #6b7280 #374151;
+  background-color: #111827; /* bg-gray-900 */
+}
+
+.scrollable-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollable-content::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.scrollable-content::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.scrollable-content::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* Ensure sticky elements work properly */
+.sticky-sidebar {
+  position: sticky;
+  top: 1rem;
+  height: fit-content;
+}
+
+/* Fixed sidebar container */
+.sidebar-container {
+  position: sticky;
+  top: 1rem;
+  height: fit-content;
+  max-height: calc(100vh - 2rem);
+  overflow-y: auto;
+}
+
+.dark .sidebar-container {
+  background-color: #1f2937; /* bg-gray-800 */
+}
+
+/* Ensure sidebar content doesn't overflow */
+.sidebar-container .space-y-6 > * {
+  flex-shrink: 0;
+}
+
+.sticky-filter {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: #f3f4f6;
+  padding-bottom: 1rem;
+}
+
+.dark .sticky-filter {
+  background: #111827;
+}
+
+/* Smooth scrolling for question navigation */
+.smooth-scroll {
+  scroll-behavior: smooth;
+}
+
+/* Question text styling */
+.question-text {
+  line-height: 1.6;
+  word-wrap: break-word;
+  hyphens: auto;
+}
+
+.question-text-container {
+  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+  border-left: 4px solid #3b82f6;
+  border-radius: 0 8px 8px 0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.dark .question-text-container {
+  background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+  border-left: 4px solid #60a5fa;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+/* Collapsible animation */
+.collapsible-content {
+  transition: max-height 0.3s ease-in-out;
+  overflow: hidden;
+}
+
+.collapsible-content.expanded {
+  max-height: none;
+}
+
+.collapsible-content.collapsed {
+  max-height: 80px;
+}
