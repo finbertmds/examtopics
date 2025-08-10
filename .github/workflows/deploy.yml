@@ -3,10 +3,10 @@ name: Build and Deploy to Render
 on:
   push:
     branches:
-      - main
+      - master
     paths:
       - 'examtopics-practice/**'
-
+  workflow_dispatch:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
