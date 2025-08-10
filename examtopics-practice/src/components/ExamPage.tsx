@@ -80,12 +80,12 @@ const ExamPage: React.FC = () => {
 
   // Auto-scroll to next unanswered question
   useEffect(() => {
-    if (!loading && questions.length > 0) {
-      const nextUnanswered = questions.find(q => !progress.answers[q.question_number]);
-      if (nextUnanswered && nextUnanswered.question_number !== progress.currentQuestion) {
-        updateProgress({ currentQuestion: nextUnanswered.question_number });
-      }
-    }
+    // if (!loading && questions.length > 0) {
+    //   const nextUnanswered = questions.find(q => !progress.answers[q.question_number]);
+    //   if (nextUnanswered && nextUnanswered.question_number !== progress.currentQuestion) {
+    //     updateProgress({ currentQuestion: nextUnanswered.question_number });
+    //   }
+    // }
   }, [loading, questions, progress.answers, progress.currentQuestion, updateProgress]);
 
   const handleAnswer = (questionNumber: number, selectedAnswers: string[]) => {
@@ -97,12 +97,16 @@ const ExamPage: React.FC = () => {
     const isCorrect = JSON.stringify(correctAnswers) === JSON.stringify(userAnswersSorted);
 
     saveAnswer(questionNumber, selectedAnswers, isCorrect);
+    const nextUnanswered = questions.find(q => !progress.answers[questionNumber]);
+    if (nextUnanswered && nextUnanswered.question_number !== progress.currentQuestion) {
+      updateProgress({ currentQuestion: nextUnanswered.question_number });
+    }
   };
 
   const handleRandomize = () => {
     const shuffled = [...questions].sort(() => Math.random() - 0.5);
     setQuestions(shuffled);
-    updateProgress({ 
+    updateProgress({
       isRandomized: true,
       currentQuestion: 1
     });
@@ -125,7 +129,7 @@ const ExamPage: React.FC = () => {
 
   const handleBackToHome = () => {
     // if (window.confirm('Bạn có chắc chắn muốn quay về trang chủ? Tiến độ hiện tại sẽ được lưu.')) {
-      navigate('/');
+    navigate('/');
     // }
   };
 
@@ -171,11 +175,10 @@ const ExamPage: React.FC = () => {
               <div>
                 <p className="text-gray-600 dark:text-gray-300 text-sm transition-colors">{exam?.description}</p>
                 <div className="flex gap-2 mt-2">
-                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                    exam?.difficulty === 'Advanced' ? 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200' :
-                    exam?.difficulty === 'Intermediate' ? 'bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200' :
-                    'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200'
-                  } transition-colors`}>
+                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${exam?.difficulty === 'Advanced' ? 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200' :
+                      exam?.difficulty === 'Intermediate' ? 'bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200' :
+                        'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200'
+                    } transition-colors`}>
                     {exam?.difficulty}
                   </span>
                   <span className="px-2 py-1 rounded-full text-xs font-medium bg-orange-100 dark:bg-orange-900 text-orange-800 dark:text-orange-200 transition-colors">
@@ -197,11 +200,11 @@ const ExamPage: React.FC = () => {
           <div className="hidden lg:flex lg:col-span-1">
             <div className="w-full sidebar-container bg-gray-100 dark:bg-gray-800 rounded-lg p-4 transition-colors">
               <div className="space-y-6">
-                <ProgressBar 
-                  progress={progress} 
-                  totalQuestions={questions.length} 
+                <ProgressBar
+                  progress={progress}
+                  totalQuestions={questions.length + 1}
                 />
-                
+
                 <TrainingList
                   questions={questions}
                   userAnswers={progress.answers}
@@ -222,7 +225,7 @@ const ExamPage: React.FC = () => {
                 onFilterChange={setFilterState}
                 onRandomize={handleRandomize}
                 onReset={handleReset}
-                totalQuestions={questions.length}
+                totalQuestions={questions.length + 1}
                 answeredCount={answeredCount}
               />
             </div>
@@ -249,9 +252,9 @@ const ExamPage: React.FC = () => {
               📊 Tiến độ & Luyện tập
             </summary>
             <div className="p-4 space-y-4">
-              <ProgressBar 
-                progress={progress} 
-                totalQuestions={questions.length} 
+              <ProgressBar
+                progress={progress}
+                totalQuestions={questions.length + 1}
               />
               <TrainingList
                 questions={questions}
@@ -268,9 +271,9 @@ const ExamPage: React.FC = () => {
         <footer className="mt-12 text-center text-gray-500 dark:text-gray-400 text-sm transition-colors">
           <p>© 2025 Exam Practice Platform</p>
           <p className="mt-1">
-            {exam?.name} | 
-            Tổng số câu hỏi: {questions.length} | 
-            Đã làm: {answeredCount} | 
+            {exam?.name} |
+            Tổng số câu hỏi: {questions.length + 1} |
+            Đã làm: {answeredCount} |
             Tỷ lệ hoàn thành: {Math.round((answeredCount / questions.length) * 100)}%
           </p>
         </footer>

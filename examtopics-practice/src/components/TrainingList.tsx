@@ -28,7 +28,7 @@ export const TrainingList: React.FC<TrainingListProps> = ({
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6">
+    <div className="bg-white rounded-lg shadow-md p-6 training-list">
       <h3 className="text-lg font-semibold text-gray-800 mb-4">
         📚 Danh sách luyện tập ({trainingQuestions.length})
       </h3>
@@ -52,10 +52,10 @@ export const TrainingList: React.FC<TrainingListProps> = ({
                   Câu {question.question_number}
                 </span>
                 {isAnswered && (
-                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                  <span className={`flex items-center justify-center px-2 py-1 rounded-full text-xs font-medium ${
                     isCorrect ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
                   }`}>
-                    {isCorrect ? '✓ Đúng' : '✗ Sai'}
+                    {isCorrect ? '✓' : '✗'}
                   </span>
                 )}
                 {!isAnswered && (

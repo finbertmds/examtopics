@@ -68,7 +68,7 @@ export const QuestionItem: React.FC<QuestionItemProps> = ({
         <div className="flex gap-2">
           <button
             onClick={() => onToggleTraining(question.question_number)}
-            className={`p-2 rounded-full transition-colors ${
+            className={`px-2 rounded-full transition-colors ${
               isMarkedForTraining 
                 ? 'bg-blue-100 text-blue-600' 
                 : 'bg-gray-100 text-gray-600 hover:bg-blue-100 hover:text-blue-600'
@@ -78,10 +78,10 @@ export const QuestionItem: React.FC<QuestionItemProps> = ({
             📚
           </button>
           {isAnswered && (
-            <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+            <span className={`flex items-center justify-center px-2 py-1 rounded-full text-xs font-medium ${
               isCorrect ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
             }`}>
-              {isCorrect ? '✓ Đúng' : '✗ Sai'}
+              {isCorrect ? '✓' : '✗'}
             </span>
           )}
         </div>

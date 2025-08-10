@@ -65,6 +65,10 @@
   background-color: #f3f4f6; /* bg-gray-100 */
 }
 
+.training-list .scrollable-content{
+  background-color: unset !important;
+}
+
 .dark .scrollable-content {
   scrollbar-color: #6b7280 #374151;
   background-color: #111827; /* bg-gray-900 */
