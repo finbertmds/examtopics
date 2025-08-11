@@ -3,6 +3,7 @@ package utils
 import (
 	"examtopics-downloader/internal/models"
 	"fmt"
+	"html"
 	"math/rand"
 	"net/http"
 	"os"
@@ -30,6 +31,46 @@ func CleanText(raw string) string {
 	cleaned = strings.ReplaceAll(cleaned, "Forgot my password", "")
 
 	return cleaned
+}
+
+func CleanHTML(raw string) string {
+	// Remove excessive whitespace (newlines, tabs, etc.)
+	raw = strings.TrimSpace(raw)
+	raw = strings.ReplaceAll(raw, "\n", " ")
+	raw = strings.ReplaceAll(raw, "\t", " ")
+
+	reImg := regexp.MustCompile(`(?i)<img[^>]*>`)
+	cleaned := reImg.ReplaceAllString(raw, "//IMG//")
+
+	// Add newline before "Suggested Answer"
+	cleaned = strings.Replace(cleaned, "Suggested Answer", "<br>Suggested Answer", 1)
+	cleaned = strings.ReplaceAll(cleaned, "Forgot my password", "")
+
+	return cleaned
+}
+
+func ReplaceBrWithNewline(raw string) string {
+	decoded := html.UnescapeString(raw)
+	reBr := regexp.MustCompile(`(?i)<br\s*/?>`)
+	return reBr.ReplaceAllString(decoded, "\n")
+}
+
+func RemoveIMGPlaceholder(raw string) string {
+	return strings.ReplaceAll(raw, "//IMG//", "")
+}
+
+func ExtractImageLinks(html string) []string {
+	// Regex tìm src trong thẻ <img>
+	re := regexp.MustCompile(`(?i)<img[^>]+src="([^"]+)"`)
+	matches := re.FindAllStringSubmatch(html, -1)
+
+	var links []string
+	for _, m := range matches {
+		if len(m) > 1 {
+			links = append(links, AddToBaseUrl(m[1]))
+		}
+	}
+	return links
 }
 
 type AutoCloseFile struct {
@@ -65,43 +106,6 @@ func DeduplicateLinks(links []string) []string {
 		}
 	}
 	return unique
-}
-
-func SortLinksByQuestionNumber(links []string) []string {
-	extractQuestionNum := func(url string) int {
-		parts := strings.Split(url, "question-")
-		if len(parts) < 2 {
-			return 0
-		}
-		numStr := strings.TrimSuffix(parts[1], "/")
-		numStr = strings.TrimSuffix(numStr, "-discussion")
-		num, _ := strconv.Atoi(numStr)
-		return num
-	}
-
-	extractTopicNum := func(url string) int {
-		parts := strings.Split(url, "topic-")
-		if len(parts) < 2 {
-			return 0
-		}
-		subParts := strings.Split(parts[1], "-")
-		if len(subParts) < 1 {
-			return 0
-		}
-		num, _ := strconv.Atoi(subParts[0])
-		return num
-	}
-
-	sort.Slice(links, func(i, j int) bool {
-		topicI := extractTopicNum(links[i])
-		topicJ := extractTopicNum(links[j])
-
-		if topicI != topicJ {
-			return topicI < topicJ
-		}
-		return extractQuestionNum(links[i]) < extractQuestionNum(links[j])
-	})
-	return links
 }
 
 func normalize(s string) string {
@@ -246,4 +250,76 @@ func TimeSince(startTime time.Time) string {
 		return fmt.Sprintf("%dm%ds", minutes, seconds)
 	}
 	return fmt.Sprintf("%ds", seconds)
+}
+
+func ExtractQuestionNumber(text string) int {
+	var questionRegex = regexp.MustCompile(`question\s+(\d+)\s+discussion`)
+	matches := questionRegex.FindStringSubmatch(text)
+	if len(matches) > 1 {
+		num, _ := strconv.Atoi(matches[1])
+		return num
+	}
+	return 0
+}
+
+func ExtractTopicNumber(text string) int {
+	var topicRegex = regexp.MustCompile(`topic\s+(\d+)\s+question`)
+	matches := topicRegex.FindStringSubmatch(text)
+	if len(matches) > 1 {
+		num, _ := strconv.Atoi(matches[1])
+		return num
+	}
+	return 0
+}
+
+func ConvertQuestionsToMap(options []string) map[string]string {
+	result := make(map[string]string)
+	for _, opt := range options {
+		opt = strings.TrimSpace(opt)
+		if len(opt) < 3 {
+			continue
+		}
+		parts := strings.SplitN(opt, ".", 2)
+		if len(parts) == 2 {
+			key := strings.TrimSpace(parts[0])
+			value := strings.TrimSpace(parts[1])
+			result[key] = value
+		}
+	}
+	return result
+}
+
+/*
+*
+ParseChoicesFromQuestionText parse and get map Choices from question_text
+*/
+func ParseChoicesFromQuestionText(questionText string) map[string]string {
+	choices := make(map[string]string)
+
+	text := strings.ReplaceAll(questionText, "\r\n", "\n")
+	reSplit := regexp.MustCompile(`(?m)^\s*([A-Z])\.\s*$`)
+	locs := reSplit.FindAllStringSubmatchIndex(text, -1)
+
+	if len(locs) == 0 {
+		return choices
+	}
+
+	for i := 0; i < len(locs); i++ {
+		key := text[locs[i][2]:locs[i][3]]
+
+		start := locs[i][1]
+
+		var end int
+		if i+1 < len(locs) {
+			end = locs[i+1][0]
+		} else {
+			end = len(text)
+		}
+
+		content := strings.TrimSpace(text[start:end])
+
+		choices[key] = content
+	}
+
+	return choices
 }

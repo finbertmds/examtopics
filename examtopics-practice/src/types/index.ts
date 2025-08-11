@@ -1,11 +1,15 @@
 export interface Question {
-  question_text: string;
+  title: string;
+  topic_number: number;
   question_number: number;
   answers: Record<string, string>;
   suggested_answer: string;
   answer: string;
-  view_link: string;
+  link: string;
   multiple_choice: boolean;
+  question_text: string;
+  question_images: string[];
+  answer_images: string[];
 }
 
 export interface Exam {

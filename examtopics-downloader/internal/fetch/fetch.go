@@ -133,38 +133,51 @@ func getLinksFromPage(url string, grepStr string) []string {
 
 func FetchCachedLinks(providerName string, grepStr string, token string) []string {
 	parsedProviderName := utils.CapitalizeFirstLetter(strings.ToLower(providerName))
-	baseURL := fmt.Sprintf("https://api.github.com/repos/finbertmds/examtopics-data/contents/%s", parsedProviderName)
+	repoOwner := "finbertmds"
+	repoName := "examtopics-data"
+	branch := "main"
+	baseURL := fmt.Sprintf("https://api.github.com/repos/%s/%s/git/trees/%s?recursive=1", repoOwner, repoName, branch)
 	if token != "" {
 		client = utils.NewGitHubClient(token)
 	}
 	resp := FetchURL(baseURL, *client)
 
-	var content []models.FileInfo
+	var treeResp models.TreeResp
 
 	if resp == nil {
 		log.Printf("the response body was nil, %v", resp)
 		return nil
 	}
 
-	err := json.Unmarshal(resp, &content)
+	err := json.Unmarshal(resp, &treeResp)
 	if err != nil {
 		log.Fatalf("error unmarshaling response: %v", err)
 	}
 
 	var linksWithNumbers []models.FileInfo
-	for _, item := range content {
-		link := item.URL
-		number := utils.ExtractNumberFromPath(item.Name)
-		if utils.GrepStringFromCache(link, grepStr) {
-			linksWithNumbers = append(linksWithNumbers, models.FileInfo{
-				URL:    link,
-				Name:   item.Name,
-				Number: number,
-			})
+	prefix := parsedProviderName + "/"
+	for _, item := range treeResp.Tree {
+		if item.Type == "blob" && strings.HasPrefix(item.Path, prefix) {
+			link := fmt.Sprintf(
+				"https://api.github.com/repos/%s/%s/contents/%s?ref=%s",
+				repoOwner, repoName, item.Path, branch,
+			)
+
+			name := strings.TrimPrefix(item.Path, prefix)
+			number := utils.ExtractNumberFromPath(name)
+			if utils.GrepStringFromCache(link, grepStr) {
+				linksWithNumbers = append(linksWithNumbers, models.FileInfo{
+					URL:    link,
+					Name:   name,
+					Number: number,
+				})
+			}
 		}
+
 	}
 
-	return utils.SortCachedLinks(linksWithNumbers)
+	result := utils.SortCachedLinks(linksWithNumbers)
+	return result
 }
 
 func GetCachedPages(providerName string, grepStr string, token string) []models.QuestionData {

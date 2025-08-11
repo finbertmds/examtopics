@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"sort"
-	"strconv"
 	"strings"
 	"sync"
 
@@ -24,30 +23,58 @@ func getDataFromLink(link string) *models.QuestionData {
 		return nil
 	}
 
+	title := utils.CleanText(doc.Find("h1").Text())
+
+	answerText := strings.TrimSpace(doc.Find(".correct-answer").Text())
+	answerImages := utils.ExtractImageLinks(answerText)
+
+	content, err2 := doc.Find("p.card-text").Html()
+	if err2 != nil {
+		log.Printf("Failed parsing HTML data from link content: %v", err2)
+		return nil
+	}
+	questionImages := utils.ExtractImageLinks(content)
+	content = utils.CleanHTML(content)
+
 	var allQuestions []string
 	doc.Find("li.multi-choice-item").Each(func(i int, s *goquery.Selection) {
 		allQuestions = append(allQuestions, utils.CleanText(s.Text()))
 	})
 
-	answerText := strings.TrimSpace(doc.Find(".correct-answer").Text())
-	answer := ""
-	if len(answerText) > 0 {
-		answer = string(strings.ReplaceAll(strings.ReplaceAll(answerText, " ", ""), "\n", "")[0])
+	var rawData models.QuestionJSON
+	if len(allQuestions) == 0 {
+		contentText := utils.ReplaceBrWithNewline(content)
+		choices := utils.ParseChoicesFromQuestionText(contentText)
+		rawData.Choices = choices
+
+		content = utils.RemoveIMGPlaceholder(content)
 	}
 
 	return &models.QuestionData{
-		Title:        utils.CleanText(doc.Find("h1").Text()),
-		Header:       strings.ReplaceAll(strings.TrimSpace(doc.Find(".question-discussion-header").Text()), "\t", ""),
-		Content:      utils.CleanText(doc.Find(".card-text").Text()),
-		Questions:    allQuestions,
-		Answer:       answer,
-		Timestamp:    utils.CleanText(doc.Find(".discussion-meta-data > i").Text()),
-		QuestionLink: link,
-		Comments:     utils.CleanText(doc.Find(".discussion-container").Text()),
+		Title:          title,
+		Header:         strings.ReplaceAll(strings.TrimSpace(doc.Find(".question-discussion-header").Text()), "\t", ""),
+		Content:        content,
+		Questions:      allQuestions,
+		Answer:         answerText,
+		Timestamp:      utils.CleanText(doc.Find(".discussion-meta-data > i").Text()),
+		QuestionLink:   link,
+		Comments:       utils.CleanText(doc.Find(".discussion-container").Text()),
+		QuestionImages: questionImages,
+		AnswerImages:   answerImages,
+		RawData:        rawData,
 	}
 }
 
-var counter int = 0 //start counter at 1
+func getTitleFromLink(link string) string {
+	doc, err := ParseHTML(link, *client)
+	if err != nil {
+		log.Printf("Failed parsing HTML data from link: %v", err)
+		return ""
+	}
+
+	return utils.CleanText(doc.Find("h1").Text())
+}
+
 func getJSONFromLink(link string) []*models.QuestionData {
 	initialResp := FetchURL(link, *client)
 
@@ -69,7 +96,7 @@ func getJSONFromLink(link string) []*models.QuestionData {
 	var content models.JSONResponse
 	err = json.Unmarshal(jsonResp, &content)
 	if err != nil {
-		log.Printf("error unmarshalling the questions data: %v", err)
+		log.Printf("error unmarshalling the questions data: %v, %v", err, downloadURL)
 		return nil
 	}
 
@@ -98,18 +125,20 @@ func getJSONFromLink(link string) []*models.QuestionData {
 			choicesHeader += fmt.Sprintf("**%s:** %s\n\n", key, q.Choices[key])
 		}
 
-		name := utils.GetNameFromLink(link)
-		counter++
+		title := getTitleFromLink(q.URL)
 
 		questions = append(questions, &models.QuestionData{
-			Title:        "Examtopics " + strings.ReplaceAll(name, ".json?ref=main", "") + " question #" + strconv.Itoa(counter),
-			Header:       q.QuestionText,
-			Content:      strings.Join(q.QuestionImages, "\n"),
-			Questions:    []string{choicesHeader},
-			Answer:       q.Answer,
-			Timestamp:    q.Timestamp,
-			QuestionLink: q.URL,
-			Comments:     utils.CleanText(comments),
+			Title:          title,
+			Header:         q.QuestionText,
+			Content:        strings.Join(q.QuestionImages, "\n"),
+			Questions:      []string{choicesHeader},
+			Answer:         q.Answer,
+			Timestamp:      q.Timestamp,
+			QuestionLink:   q.URL,
+			Comments:       utils.CleanText(comments),
+			QuestionImages: q.QuestionImages,
+			AnswerImages:   q.AnswerImages,
+			RawData:        q,
 		})
 	}
 
@@ -164,21 +193,20 @@ func GetAllPages(providerName string, grepStr string) []models.QuestionData {
 
 	allLinks := fetchAllPageLinksConcurrently(providerName, grepStr, numPages, constants.MaxConcurrentRequests)
 
-	unique := utils.DeduplicateLinks(allLinks)
-	sortedLinks := utils.SortLinksByQuestionNumber(unique)
+	uniqueLinks := utils.DeduplicateLinks(allLinks)
 
-	fmt.Printf("Found %d unique matching links:\n", len(sortedLinks))
+	fmt.Printf("Found %d unique matching links:\n", len(uniqueLinks))
 
 	var wg sync.WaitGroup
 	sem := make(chan struct{}, constants.MaxConcurrentRequests)
-	results := make([]*models.QuestionData, len(sortedLinks))
+	results := make([]*models.QuestionData, len(uniqueLinks))
 	startTime := utils.StartTime()
-	bar := pb.StartNew(len(sortedLinks))
+	bar := pb.StartNew(len(uniqueLinks))
 
 	rateLimiter := utils.CreateRateLimiter(constants.RequestsPerSecond)
 	defer rateLimiter.Stop()
 
-	for i, link := range sortedLinks {
+	for i, link := range uniqueLinks {
 		wg.Add(1)
 		url := utils.AddToBaseUrl(link)
 

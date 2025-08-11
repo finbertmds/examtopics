@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
+import { replaceImgPlaceholders } from '../utils/replaceImgPlaceholders';
 
 // Component for collapsible question text
-const CollapsibleQuestionText: React.FC<{ text: string }> = ({ text }) => {
+const CollapsibleQuestionText: React.FC<{ text: string, images: string[] }> = ({ text, images }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isLongText, setIsLongText] = useState(false);
   const textRef = useRef<HTMLDivElement>(null);
@@ -20,8 +21,8 @@ const CollapsibleQuestionText: React.FC<{ text: string }> = ({ text }) => {
         <div 
           ref={textRef}
           className="question-text text-gray-800 whitespace-pre-wrap"
-        >
-          {text}
+          >
+            <div dangerouslySetInnerHTML={{ __html: replaceImgPlaceholders(text, images) }} />
         </div>
       </div>
     );
@@ -35,7 +36,7 @@ const CollapsibleQuestionText: React.FC<{ text: string }> = ({ text }) => {
           isExpanded ? 'expanded' : 'collapsed'
         }`}
       >
-        {text}
+          <div dangerouslySetInnerHTML={{ __html: replaceImgPlaceholders(text, images) }} />
       </div>
       <button
         onClick={() => setIsExpanded(!isExpanded)}

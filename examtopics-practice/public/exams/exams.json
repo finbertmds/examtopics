@@ -2,6 +2,7 @@
   {
     "id": "aws-sap-c02",
     "name": "AWS Certified Solutions Architect - Professional SAP-C02",
+    "slug": "aws-certified-solutions-architect-professional-sap-c02",
     "description": "Bộ đề thi chứng chỉ AWS Solutions Architect Professional",
     "questionCount": 529,
     "file": "exams/aws_sap_c02_questions.json",

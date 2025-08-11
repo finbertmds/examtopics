@@ -20,8 +20,9 @@ docker run -it \
   --name examtopics-downloader \
   ghcr.io/finbertmds/examtopics-downloader:latest \
   -p google -s devops \
-  -save-links -o output.md
+  -save-links -o output.md -json
 docker cp examtopics-downloader:/app/output.md .
+docker cp examtopics-downloader:/app/output.json .
 docker cp examtopics-downloader:/app/saved-links.txt .
 docker rm examtopics-downloader
 ```
@@ -35,8 +36,9 @@ docker run -it \
   --platform linux/arm64 \
   ghcr.io/finbertmds/examtopics-downloader:latest \
   -p google -s devops \
-  -save-links -o output.md
+  -save-links -o output.md -json
 docker cp examtopics-downloader:/app/output.md .
+docker cp examtopics-downloader:/app/output.json .
 docker cp examtopics-downloader:/app/saved-links.txt .
 docker rm examtopics-downloader
 ```
@@ -64,6 +66,8 @@ Each command line argument you can provide when running the program:
   -c	Optionally include all the comment/discussion text
   -exams
     	Optionally show all the possible exams for your selected provider and exit
+  -json
+    	Export data to JSON format in addition to MD format
   -no-cache
     	Optional argument, set to disable looking through cached data on github
   -o string
@@ -122,6 +126,34 @@ would get all exams from the `google` provider containing the string `devops`.
 
 The `-c` argument is another bool flag, so it is defaultly set to false(as it creates a lot of noise in the `.md` file), but you can include it by adding the flag.
 `-o` is the output path, based on `os.create(path)`, in the current working directory.
+
+### JSON Export, `-json`
+
+The `-json` argument is a bool flag that enables JSON export in addition to the default MD format. When enabled, it will create a JSON file with the same name as the MD file but with `.json` extension.
+
+The JSON format follows the `QuestionDataJson` structure:
+```json
+{
+  "question_number": 1,
+  "answers": {
+    "A": "Answer text for option A",
+    "B": "Answer text for option B",
+    "C": "Answer text for option C",
+    "D": "Answer text for option D"
+  },
+  "suggested_answer": "A",
+  "answer": "A",
+  "link": "https://www.examtopics.com/discussions/...",
+  "multiple_choice": false,
+  "question_text": "The question text here"
+}
+```
+
+Example usage:
+```bash
+go run . -p amazon -s sap-c02 -o aws_sap_c02.md -json
+```
+This will create both `aws_sap_c02.md` and `aws_sap_c02.json` files.
 
 ### Exams output, `-exams`
 

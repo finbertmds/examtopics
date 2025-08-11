@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 
 	"examtopics-downloader/internal/fetch"
 	"examtopics-downloader/internal/utils"
@@ -19,6 +20,7 @@ func main() {
 	saveUrls := flag.Bool("save-links", false, "Optional argument to save unique links to questions")
 	noCache := flag.Bool("no-cache", false, "Optional argument, set to disable looking through cached data on github")
 	token := flag.String("t", "", "Optional argument to make cached requests faster to gh api")
+	exportJSON := flag.Bool("json", false, "Export data to JSON format in addition to MD format")
 	flag.Parse()
 
 	if *examsFlag {
@@ -39,6 +41,13 @@ func main() {
 		if len(links) > 0 {
 			utils.WriteData(links, *outputPath, *commentBool)
 			fmt.Printf("Successfully saved cached output to %s.\n", *outputPath)
+
+			// Export JSON if requested
+			if *exportJSON {
+				jsonPath := strings.TrimSuffix(*outputPath, ".md") + ".json"
+				utils.WriteJSONData(links, jsonPath, true)
+				fmt.Printf("Successfully saved JSON output to %s.\n", jsonPath)
+			}
 			os.Exit(0)
 		}
 	}
@@ -51,4 +60,11 @@ func main() {
 	}
 	utils.WriteData(links, *outputPath, *commentBool)
 	fmt.Printf("Successfully saved output to %s.\n", *outputPath)
+
+	// Export JSON if requested
+	if *exportJSON {
+		jsonPath := strings.TrimSuffix(*outputPath, ".md") + ".json"
+		utils.WriteJSONData(links, jsonPath, false)
+		fmt.Printf("Successfully saved JSON output to %s.\n", jsonPath)
+	}
 }
