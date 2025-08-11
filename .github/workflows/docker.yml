@@ -1,4 +1,4 @@
-name: Build and Push to GHCR
+name: Build, Test and Push to GHCR
 
 on:
   push:
@@ -9,8 +9,27 @@ on:
   workflow_dispatch:
 
 jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.24"
+
+      - name: Build project
+        run: cd examtopics-downloader && go build ./...
+
+      - name: Run tests
+        run: cd examtopics-downloader && go test -v ./tests
+
   build-and-push:
     runs-on: ubuntu-latest
+    needs: test
     permissions:
       contents: read
       packages: write
