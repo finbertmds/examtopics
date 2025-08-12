@@ -1,6 +1,5 @@
 import React from 'react';
 import { FilterState, FilterType } from '../types';
-import { TimeDisplay } from './TimeDisplay';
 
 interface FilterBarProps {
   filterState: FilterState;
@@ -9,7 +8,6 @@ interface FilterBarProps {
   onReset: () => void;
   totalQuestions: number;
   answeredCount: number;
-  timeSpentMs: number;
 }
 
 export const FilterBar: React.FC<FilterBarProps> = ({
@@ -18,8 +16,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
   onRandomize,
   onReset,
   totalQuestions,
-  answeredCount,
-  timeSpentMs
+  answeredCount
 }) => {
   const filterOptions: { value: FilterType; label: string; count?: number }[] = [
     { value: 'all', label: 'Tất cả', count: totalQuestions },
@@ -52,7 +49,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
           ))}
         </div>
 
-        <div className="flex items-center justify-between w-full">
+        <div className="flex items-center justify-end w-full">
           <div className="flex gap-2">
             <button
               onClick={onRandomize}
@@ -66,9 +63,6 @@ export const FilterBar: React.FC<FilterBarProps> = ({
             >
               🔄 Làm lại
             </button>
-          </div>
-          <div className="flex items-center">
-            <TimeDisplay timeSpentMs={timeSpentMs} />
           </div>
         </div>
       </div>

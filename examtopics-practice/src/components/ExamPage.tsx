@@ -28,8 +28,7 @@ const ExamPage: React.FC = () => {
     updateProgress,
     saveAnswer,
     toggleTrainingMark,
-    resetProgress,
-    getCurrentTimeSpent
+    resetProgress
   } = useLocalStorage(examId);
 
   // Load questions from JSON file
@@ -228,7 +227,6 @@ const ExamPage: React.FC = () => {
                 onReset={handleReset}
                 totalQuestions={questions.length + 1}
                 answeredCount={answeredCount}
-                timeSpentMs={getCurrentTimeSpent()}
               />
             </div>
 

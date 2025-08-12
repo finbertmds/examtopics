@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { UserProgress } from '../types';
 
 const STORAGE_KEY = 'exam-progress';
@@ -12,9 +12,6 @@ export const useLocalStorage = (examId?: string) => {
       
       if (examProgress) {
         // Convert date strings back to Date objects
-        if (examProgress.startTime) examProgress.startTime = new Date(examProgress.startTime);
-        if (examProgress.lastSessionTime) examProgress.lastSessionTime = new Date(examProgress.lastSessionTime);
-        if (examProgress.sessionStartTime) examProgress.sessionStartTime = new Date(examProgress.sessionStartTime);
         Object.values(examProgress.answers).forEach((answer: any) => {
           if (answer.answeredAt) answer.answeredAt = new Date(answer.answeredAt);
         });
@@ -27,71 +24,9 @@ export const useLocalStorage = (examId?: string) => {
       answers: {},
       markedForTraining: [],
       currentQuestion: 1,
-      isRandomized: false,
-      startTime: new Date(),
-      lastSessionTime: new Date(),
-      totalTimeSpent: 0,
-      sessionStartTime: new Date()
+      isRandomized: false
     };
   });
-
-  const isPageActive = useRef(true);
-  const sessionStartTime = useRef<Date | null>(null);
-
-  // Tính thời gian đã làm khi page active/inactive
-  const updateTimeSpent = () => {
-    if (!sessionStartTime.current || !isPageActive.current) return;
-    
-    const now = new Date();
-    const sessionTime = now.getTime() - sessionStartTime.current.getTime();
-    
-    setProgress(prev => ({
-      ...prev,
-      totalTimeSpent: prev.totalTimeSpent + sessionTime
-    }));
-  };
-
-  // Handle page visibility change
-  useEffect(() => {
-    const handleVisibilityChange = () => {
-      if (document.hidden) {
-        // Page hidden - stop counting time
-        updateTimeSpent();
-        isPageActive.current = false;
-      } else {
-        // Page visible - start counting time
-        isPageActive.current = true;
-        sessionStartTime.current = new Date();
-      }
-    };
-
-    // Handle window focus/blur
-    const handleFocus = () => {
-      isPageActive.current = true;
-      sessionStartTime.current = new Date();
-    };
-
-    const handleBlur = () => {
-      updateTimeSpent();
-      isPageActive.current = false;
-    };
-
-    // Initialize session start time
-    sessionStartTime.current = progress.sessionStartTime || new Date();
-
-    // Add event listeners
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    window.addEventListener('focus', handleFocus);
-    window.addEventListener('blur', handleBlur);
-
-    // Cleanup
-    return () => {
-      updateTimeSpent();
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-      window.removeEventListener('focus', handleFocus);
-      window.removeEventListener('blur', handleBlur);
-    };
-  }, [progress.sessionStartTime]);
 
   // Save progress to localStorage
   useEffect(() => {
@@ -108,12 +43,8 @@ export const useLocalStorage = (examId?: string) => {
     setProgress(prev => ({
       ...prev,
       ...updates,
-      examId: examId || prev.examId,
-      lastSessionTime: new Date(),
-      sessionStartTime: new Date()
+      examId: examId || prev.examId
     }));
-    // Reset session start time for new activity
-    sessionStartTime.current = new Date();
   };
 
   const saveAnswer = (questionNumber: number, selectedAnswers: string[], isCorrect: boolean) => {
@@ -128,12 +59,8 @@ export const useLocalStorage = (examId?: string) => {
           isCorrect,
           answeredAt: new Date()
         }
-      },
-      lastSessionTime: new Date(),
-      sessionStartTime: new Date()
+      }
     }));
-    // Reset session start time for new activity
-    sessionStartTime.current = new Date();
   };
 
   const toggleTrainingMark = (questionNumber: number) => {
@@ -142,12 +69,8 @@ export const useLocalStorage = (examId?: string) => {
       examId: examId || prev.examId,
       markedForTraining: prev.markedForTraining.includes(questionNumber)
         ? prev.markedForTraining.filter(q => q !== questionNumber)
-        : [...prev.markedForTraining, questionNumber],
-      lastSessionTime: new Date(),
-      sessionStartTime: new Date()
+        : [...prev.markedForTraining, questionNumber]
     }));
-    // Reset session start time for new activity
-    sessionStartTime.current = new Date();
   };
 
   const resetProgress = () => {
@@ -156,11 +79,7 @@ export const useLocalStorage = (examId?: string) => {
       answers: {},
       markedForTraining: [],
       currentQuestion: 1,
-      isRandomized: false,
-      startTime: new Date(),
-      lastSessionTime: new Date(),
-      totalTimeSpent: 0,
-      sessionStartTime: new Date()
+      isRandomized: false
     };
     setProgress(newProgress);
   };
@@ -177,23 +96,8 @@ export const useLocalStorage = (examId?: string) => {
       answers: {},
       markedForTraining: [],
       currentQuestion: 1,
-      isRandomized: false,
-      startTime: new Date(),
-      lastSessionTime: new Date(),
-      totalTimeSpent: 0,
-      sessionStartTime: new Date()
+      isRandomized: false
     });
-  };
-
-  // Hàm để lấy tổng thời gian đã làm (bao gồm session hiện tại)
-  const getCurrentTimeSpent = () => {
-    if (!sessionStartTime.current || !isPageActive.current) {
-      return progress.totalTimeSpent;
-    }
-    
-    const now = new Date();
-    const currentSessionTime = now.getTime() - sessionStartTime.current.getTime();
-    return progress.totalTimeSpent + currentSessionTime;
   };
 
   return {
@@ -203,7 +107,6 @@ export const useLocalStorage = (examId?: string) => {
     toggleTrainingMark,
     resetProgress,
     getAllProgress,
-    clearAllProgress,
-    getCurrentTimeSpent
+    clearAllProgress
   };
 };
