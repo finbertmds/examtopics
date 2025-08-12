@@ -39,6 +39,8 @@ export interface UserProgress {
   isRandomized: boolean;
   startTime?: Date;
   lastSessionTime?: Date;
+  totalTimeSpent: number; // Tổng thời gian đã làm (milliseconds)
+  sessionStartTime?: Date; // Thời điểm bắt đầu session hiện tại
 }
 
 export type FilterType = 'all' | 'answered' | 'unanswered' | 'correct' | 'incorrect' | 'training';

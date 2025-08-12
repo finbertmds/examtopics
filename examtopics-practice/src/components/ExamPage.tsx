@@ -28,7 +28,8 @@ const ExamPage: React.FC = () => {
     updateProgress,
     saveAnswer,
     toggleTrainingMark,
-    resetProgress
+    resetProgress,
+    getCurrentTimeSpent
   } = useLocalStorage(examId);
 
   // Load questions from JSON file
@@ -227,6 +228,7 @@ const ExamPage: React.FC = () => {
                 onReset={handleReset}
                 totalQuestions={questions.length + 1}
                 answeredCount={answeredCount}
+                timeSpentMs={getCurrentTimeSpent()}
               />
             </div>
 
@@ -266,17 +268,6 @@ const ExamPage: React.FC = () => {
             </div>
           </details>
         </div>
-
-        {/* Footer */}
-        <footer className="mt-12 text-center text-gray-500 dark:text-gray-400 text-sm transition-colors">
-          <p>© 2025 Exam Practice Platform</p>
-          <p className="mt-1">
-            {exam?.name} |
-            Tổng số câu hỏi: {questions.length + 1} |
-            Đã làm: {answeredCount} |
-            Tỷ lệ hoàn thành: {Math.round((answeredCount / questions.length) * 100)}%
-          </p>
-        </footer>
       </div>
     </div>
   );

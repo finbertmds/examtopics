@@ -13,19 +13,10 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({ progress, totalQuestio
   const correctCount = Object.values(progress.answers).filter(answer => answer.isCorrect).length;
   const incorrectCount = answeredCount - correctCount;
 
-  const getSessionDuration = () => {
-    if (!progress.startTime) return '0 phút';
-    const now = new Date();
-    const diffMs = now.getTime() - progress.startTime.getTime();
-    const diffMins = Math.floor(diffMs / (1000 * 60));
-    return `${diffMins} phút`;
-  };
-
   return (
     <div className="bg-white rounded-lg shadow-md p-4 mb-6">
       <div className="flex justify-between items-center mb-2">
         <h3 className="text-lg font-semibold text-gray-800">Tiến độ làm bài</h3>
-        <span className="text-sm text-gray-600">{getSessionDuration()}</span>
       </div>
       
       <div className="mb-3">

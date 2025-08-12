@@ -1,5 +1,6 @@
 import React from 'react';
 import { FilterState, FilterType } from '../types';
+import { TimeDisplay } from './TimeDisplay';
 
 interface FilterBarProps {
   filterState: FilterState;
@@ -8,6 +9,7 @@ interface FilterBarProps {
   onReset: () => void;
   totalQuestions: number;
   answeredCount: number;
+  timeSpentMs: number;
 }
 
 export const FilterBar: React.FC<FilterBarProps> = ({
@@ -16,7 +18,8 @@ export const FilterBar: React.FC<FilterBarProps> = ({
   onRandomize,
   onReset,
   totalQuestions,
-  answeredCount
+  answeredCount,
+  timeSpentMs
 }) => {
   const filterOptions: { value: FilterType; label: string; count?: number }[] = [
     { value: 'all', label: 'Tất cả', count: totalQuestions },
@@ -49,19 +52,24 @@ export const FilterBar: React.FC<FilterBarProps> = ({
           ))}
         </div>
 
-        <div className="flex gap-2 ml-auto">
-          <button
-            onClick={onRandomize}
-            className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm font-medium"
-          >
-            🔀 Random
-          </button>
-          <button
-            onClick={onReset}
-            className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-medium"
-          >
-            🔄 Làm lại
-          </button>
+        <div className="flex items-center justify-between w-full">
+          <div className="flex gap-2">
+            <button
+              onClick={onRandomize}
+              className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm font-medium"
+            >
+              🔀 Random
+            </button>
+            <button
+              onClick={onReset}
+              className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-medium"
+            >
+              🔄 Làm lại
+            </button>
+          </div>
+          <div className="flex items-center">
+            <TimeDisplay timeSpentMs={timeSpentMs} />
+          </div>
         </div>
       </div>
 

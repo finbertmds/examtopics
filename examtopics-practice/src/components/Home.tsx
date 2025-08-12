@@ -102,7 +102,7 @@ const Home: React.FC = () => {
         </header>
 
         {/* Search and Filters */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-8 transition-colors">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-4 transition-colors">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             {/* Search */}
             <div className="md:col-span-2">
@@ -158,7 +158,7 @@ const Home: React.FC = () => {
         {
           filteredExams.length > 0 && (
             <div className="text-center text-gray-500 dark:text-gray-400 text-sm transition-colors">
-              <p className="mt-1">
+              <p className="mb-3">
                 Tổng số đề thi: {exams.length} | 
                 Đã lọc: {filteredExams.length} kết quả
               </p>
