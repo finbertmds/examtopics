@@ -231,7 +231,7 @@ const ExamPage: React.FC = () => {
             </div>
 
             {/* Scrollable QuestionList */}
-            <div className="flex-1 overflow-y-auto pr-2 scrollable-content smooth-scroll">
+            <div className="flex-1 overflow-y-auto scrollable-content smooth-scroll">
               <QuestionList
                 questions={questions}
                 userAnswers={progress.answers}

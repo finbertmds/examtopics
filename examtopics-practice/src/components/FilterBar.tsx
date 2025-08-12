@@ -1,5 +1,5 @@
 import React from 'react';
-import { FilterType, FilterState } from '../types';
+import { FilterState, FilterType } from '../types';
 
 interface FilterBarProps {
   filterState: FilterState;
@@ -28,14 +28,14 @@ export const FilterBar: React.FC<FilterBarProps> = ({
   ];
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-4 mb-6">
-      <div className="flex flex-wrap items-center gap-4">
-        <div className="flex flex-wrap gap-2">
+    <div className="bg-white rounded-lg shadow-md p-4">
+      <div className="flex flex-wrap items-center gap-1">
+        <div className="flex flex-nowrap gap-2 overflow-x-auto scrollbar-hide pb-2">
           {filterOptions.map((option) => (
             <button
               key={option.value}
               onClick={() => onFilterChange({ ...filterState, type: option.value })}
-              className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
+              className={`px-3 py-1 rounded-full text-sm font-medium transition-colors whitespace-nowrap flex-shrink-0 ${
                 filterState.type === option.value
                   ? 'bg-blue-600 text-white'
                   : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
@@ -65,7 +65,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
         </div>
       </div>
 
-      <div className="mt-4 flex items-center gap-4">
+      <div className="mt-4 flex items-center gap-1">
         <label className="flex items-center gap-2 text-sm">
           <input
             type="checkbox"
