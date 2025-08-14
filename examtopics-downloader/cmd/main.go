@@ -19,6 +19,8 @@ func main() {
 	examsFlag := flag.Bool("exams", false, "Optionally show all the possible exams for your selected provider and exit")
 	saveUrls := flag.Bool("save-links", false, "Optional argument to save unique links to questions")
 	noCache := flag.Bool("no-cache", false, "Optional argument, set to disable looking through cached data on github")
+	saveAllPages := flag.Bool("save-all-pages", false, "Save all pages from provider to file when using no-cache mode")
+	pushToGitHub := flag.Bool("push-github", false, "Push cached pages to GitHub repository")
 	token := flag.String("t", "", "Optional argument to make cached requests faster to gh api")
 	exportJSON := flag.Bool("json", false, "Export data to JSON format in addition to MD format")
 	flag.Parse()
@@ -53,7 +55,7 @@ func main() {
 	}
 
 	fmt.Println("Going to manual scraping, cached data failed.")
-	links := fetch.GetAllPages(*provider, *grepStr)
+	links := fetch.GetAllPages(*provider, *grepStr, *noCache, *saveAllPages, *pushToGitHub, *token)
 
 	if *saveUrls {
 		utils.SaveLinks("saved-links.txt", links)

@@ -33,6 +33,9 @@ docker rm examtopics-downloader
 # https://www.examtopics.com/exams/amazon/aws-devops-engineer-professional/
 # https://www.examtopics.com/exams/amazon/aws-sysops/
 
-../examtopics-downloader/examtopicsdl -t xxx -p amazon -s aws-certified-solutions-architect-associate-saa-c03 -save-links -o aws_saa_c03.md -json && \
-mv aws_saa_c03.md ./md/aws_saa_c03.md && \
-mv aws_saa_c03.json ./json/aws_saa_c03.json
+../examtopics-downloader/examtopicsdl -t xxx -p amazon -s aws-sysops -save-links -o aws_sys_c00.md -json -save-all-pages -push-github && \
+mv aws_sys_c00.md ./md/aws_sys_c00.md && \
+mv aws_sys_c00.json ./json/aws_sys_c00.json
+
+
+

@@ -76,6 +76,10 @@ Each command line argument you can provide when running the program:
     	Name of the exam provider (default -> google) (default "google")
   -s string
     	String to grep for in discussion links (required)
+  -save-all-pages
+    	Save all pages from provider to file when using no-cache mode
+  -push-github
+    	Push cached pages to GitHub repository (requires token)
   -save-links
     	Optional argument to save unique links to questions
   -t string
@@ -198,6 +202,81 @@ The cached data helps you access big dumps faster.
 
 When you add this argument, it tells the program to ignore the cached `Github` repoitories of updated exam info, however the scraper will take longer than the cache.
 Useful when wanting to scrape realtime data.
+
+### Save All Pages Arg, `-save-all-pages`
+
+This flag works in conjunction with `-no-cache` to save all pages from a provider to a local cache file. When enabled:
+
+1. **First run with `-save-all-pages`**: The program will fetch all pages from the provider and save them to a file named `cached_pages_{provider}.txt`
+2. **Subsequent runs without `-save-all-pages`**: The program will read from the cached file and filter by the grep string, avoiding the need to fetch all pages again
+
+This is particularly useful for providers with many pages, as it allows you to:
+- Save time on subsequent searches by avoiding re-fetching all pages
+- Filter through cached pages locally without making network requests
+- Maintain a local cache of all provider pages for offline use
+
+Example usage:
+```bash
+# First run: save all pages for google provider
+go run . -p google -s devops -no-cache -save-all-pages
+
+# Subsequent runs: use cached pages (much faster)
+go run . -p google -s cloud -no-cache
+```
+
+The cache file will be created in the current working directory as `cached_pages_google.txt` (for the google provider).
+
+**Cache Validation**: The tool automatically validates cache freshness by:
+1. Fetching the current number of pages from ExamTopics
+2. Comparing with the cached page count stored in metadata
+3. Using cache only if the page counts match
+4. Falling back to cache if current page count cannot be determined (e.g., due to rate limiting)
+
+**Cache Strategy**: When `-save-all-pages` is used:
+1. **Cache Storage**: All discussion links are saved to cache (without filtering by grepStr)
+2. **Data Processing**: Only links matching the grepStr are processed for output files (MD/JSON)
+3. **Cache Reuse**: Subsequent runs with different grepStr can reuse the same cache file
+4. **Fallback to Fresh Data**: If no matching links are found in cache, automatically fetch fresh data from ExamTopics
+5. **Optimized Fetching**: Only calls `fetchAllPageLinksConcurrently` once per run, reusing results for both caching and filtering
+
+**No Cache Mode**: When `-no-cache` is used:
+1. **Skip Local Cache**: Does not read from local cached files
+2. **Skip GitHub Cache**: Does not fetch from GitHub cache
+3. **Skip Cache Storage**: Does not save new cache files (even with `-save-all-pages`)
+4. **Skip GitHub Push**: Does not push cache files to GitHub (even with `-push-github`)
+5. **Fresh Data**: Always fetches fresh data from ExamTopics website
+
+Cache files include metadata in the first line:
+```
+# METADATA: {"num_pages":36,"last_updated":"2025-08-14T23:23:30+09:00","provider":"google"}
+/discussions/google/view/12345
+/discussions/google/view/67890
+...
+```
+
+### Push to GitHub Arg, `-push-github`
+
+This flag works in conjunction with `-save-all-pages` and `-t` (token) to push cached pages to the GitHub repository. When enabled:
+
+1. **Requires GitHub Token**: You must provide a GitHub Personal Access Token using the `-t` flag
+2. **Push to Repository**: The cached pages will be pushed to `https://github.com/finbertmds/examtopics-data` in the `CachedPages/` folder
+3. **Automatic Fetching**: On subsequent runs, the tool will automatically try to fetch cached pages from GitHub if local cache doesn't exist
+
+Example usage:
+```bash
+# Save pages locally and push to GitHub
+go run . -p google -s devops -no-cache -save-all-pages -push-github -t YOUR_GITHUB_TOKEN
+
+# Fetch from GitHub on subsequent runs (no need to save locally again)
+go run . -p google -s cloud -no-cache -t YOUR_GITHUB_TOKEN
+```
+
+The files will be stored in the GitHub repository at:
+- `CachedPages/cached_pages_google.txt`
+- `CachedPages/cached_pages_amazon.txt`
+- etc.
+
+**Note**: You need a GitHub Personal Access Token with `repo` permissions to push files to the repository.
 
 ## [For outputted file examples, see the examples folder](examples/google_devops.md)
 

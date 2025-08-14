@@ -158,6 +158,37 @@
 .collapsible-content {
   transition: max-height 0.3s ease-in-out;
   overflow: hidden;
+  /* Add visual feedback for clickable text */
+  position: relative;
+}
+
+.collapsible-content:hover {
+  background-color: rgba(59, 130, 246, 0.05);
+  border-radius: 4px;
+}
+
+.collapsible-content:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Mobile-specific styles for better touch interaction */
+@media (max-width: 768px) {
+  .collapsible-content {
+    /* Larger touch target on mobile */
+    min-height: 44px;
+    padding: 8px 0;
+  }
+  
+  .collapsible-content:hover {
+    background-color: rgba(59, 130, 246, 0.1);
+  }
+  
+  .collapsible-content:active {
+    background-color: rgba(59, 130, 246, 0.15);
+    transform: scale(0.98);
+  }
 }
 
 .collapsible-content.expanded {

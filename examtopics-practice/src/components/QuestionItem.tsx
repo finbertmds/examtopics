@@ -55,6 +55,14 @@ export const QuestionItem: React.FC<QuestionItemProps> = ({
   const correctAnswers = question.suggested_answer.split('').sort();
   const userAnswersSorted = [...selectedAnswers].sort();
 
+  // Check if user has selected enough answers for multiple choice questions
+  const hasSelectedEnoughAnswers = question.multiple_choice 
+    ? selectedAnswers.length >= correctAnswers.length 
+    : selectedAnswers.length > 0;
+
+  // Only show answer if user has selected enough answers or if it's a single choice question
+  const shouldShowAnswer = showAnswer && isAnswered && hasSelectedEnoughAnswers;
+
   let images: string[] = [];
   if (question.question_images && question.question_images.length > 0) {
     images = images.concat(question.question_images)
@@ -110,7 +118,7 @@ export const QuestionItem: React.FC<QuestionItemProps> = ({
             {Object.entries(question.answers).map(([key, answer]) => {
               const isSelected = selectedAnswers.includes(key);
               const isCorrectAnswer = correctAnswers.includes(key);
-              const showCorrectness = showAnswer && isAnswered;
+              const showCorrectness = shouldShowAnswer;
 
               return (
                 <label
@@ -149,7 +157,19 @@ export const QuestionItem: React.FC<QuestionItemProps> = ({
         )
       }
 
-      {isAnswered && showAnswer && (
+      {/* Show notification for multiple choice questions that need more answers */}
+      {isAnswered && showAnswer && !shouldShowAnswer && question.multiple_choice && (
+        <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+          <div className="flex items-center gap-2 text-yellow-800">
+            <span className="text-yellow-600">⚠️</span>
+            <span className="text-sm">
+              Bạn cần chọn thêm {correctAnswers.length - selectedAnswers.length} đáp án để xem kết quả
+            </span>
+          </div>
+        </div>
+      )}
+
+      {shouldShowAnswer && (
         <div className="mt-4 p-4 bg-gray-50 rounded-lg">
           <div className="mb-2">
             <strong className="text-gray-800">Đáp án của bạn:</strong>

@@ -1,12 +1,18 @@
 package utils
 
 import (
+	"bufio"
+	"encoding/base64"
 	"encoding/json"
 	"examtopics-downloader/internal/models"
 	"fmt"
+	"io"
 	"log"
+	"net/http"
+	"os"
 	"sort"
 	"strings"
+	"time"
 )
 
 func writeFile(filename string, content any) {
@@ -165,4 +171,258 @@ func WriteJSONData(dataList []models.QuestionData, outputPath string, fromCache 
 		log.Printf("Error writing JSON file: %v", err)
 		return
 	}
+}
+
+// CacheMetadata represents metadata about cached pages
+type CacheMetadata struct {
+	NumPages    int    `json:"num_pages"`
+	LastUpdated string `json:"last_updated"`
+	Provider    string `json:"provider"`
+}
+
+// SaveAllPagesWithMetadata saves all links from a provider to a cache file with metadata
+func SaveAllPagesWithMetadata(filename string, links []string, numPages int, provider string) {
+	file := CreateFile(filename)
+	defer file.Close()
+
+	// Write metadata as JSON comment at the top
+	metadata := CacheMetadata{
+		NumPages:    numPages,
+		LastUpdated: time.Now().Format(time.RFC3339),
+		Provider:    provider,
+	}
+
+	metadataJSON, err := json.Marshal(metadata)
+	if err != nil {
+		log.Printf("Failed to marshal metadata: %v", err)
+	} else {
+		fmt.Fprintf(file, "# METADATA: %s\n", string(metadataJSON))
+	}
+
+	// Write links
+	for _, link := range links {
+		fmt.Fprintln(file, link)
+	}
+}
+
+// ReadCachedPagesWithMetadata reads cached pages from a file and returns metadata
+func ReadCachedPagesWithMetadata(filename string) ([]string, *CacheMetadata) {
+	file, err := os.Open(filename)
+	if err != nil {
+		return nil, nil
+	}
+	defer file.Close()
+
+	var links []string
+	var metadata *CacheMetadata
+
+	scanner := bufio.NewScanner(file)
+	firstLine := true
+
+	for scanner.Scan() {
+		line := strings.TrimSpace(scanner.Text())
+
+		// Parse metadata from first line if it exists
+		if firstLine && strings.HasPrefix(line, "# METADATA: ") {
+			metadataJSON := strings.TrimPrefix(line, "# METADATA: ")
+			var meta CacheMetadata
+			if err := json.Unmarshal([]byte(metadataJSON), &meta); err == nil {
+				metadata = &meta
+			}
+			firstLine = false
+			continue
+		}
+
+		firstLine = false
+
+		if line != "" && !strings.HasPrefix(line, "#") {
+			links = append(links, line)
+		}
+	}
+
+	return links, metadata
+}
+
+// SaveAllPages saves all links from a provider to a cache file
+func SaveAllPages(filename string, links []string) {
+	file := CreateFile(filename)
+	defer file.Close()
+
+	for _, link := range links {
+		fmt.Fprintln(file, link)
+	}
+}
+
+// ReadCachedPages reads cached pages from a file
+func ReadCachedPages(filename string) []string {
+	file, err := os.Open(filename)
+	if err != nil {
+		return nil
+	}
+	defer file.Close()
+
+	var links []string
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		link := strings.TrimSpace(scanner.Text())
+		if link != "" {
+			links = append(links, link)
+		}
+	}
+
+	return links
+}
+
+// GitHubFileContent represents the content of a file from GitHub API
+type GitHubFileContent struct {
+	Content  string `json:"content"`
+	Encoding string `json:"encoding"`
+	SHA      string `json:"sha"`
+}
+
+// PushFileToGitHub pushes a file to GitHub repository
+func PushFileToGitHub(filePath, fileName, token string) error {
+	repoOwner := "finbertmds"
+	repoName := "examtopics-data"
+	branch := "main"
+
+	// Read file content
+	content, err := os.ReadFile(filePath)
+	if err != nil {
+		return fmt.Errorf("failed to read file %s: %v", filePath, err)
+	}
+
+	// Encode content to base64
+	encodedContent := base64.StdEncoding.EncodeToString(content)
+
+	// Create GitHub API URL
+	apiURL := fmt.Sprintf("https://api.github.com/repos/%s/%s/contents/CachedPages/%s", repoOwner, repoName, fileName)
+
+	// Create request body
+	requestBody := map[string]interface{}{
+		"message": fmt.Sprintf("Update cached pages for %s", strings.TrimSuffix(fileName, ".txt")),
+		"content": encodedContent,
+		"branch":  branch,
+	}
+
+	jsonBody, err := json.Marshal(requestBody)
+	if err != nil {
+		return fmt.Errorf("failed to marshal request body: %v", err)
+	}
+
+	// Create HTTP request
+	req, err := http.NewRequest("PUT", apiURL, strings.NewReader(string(jsonBody)))
+	if err != nil {
+		return fmt.Errorf("failed to create request: %v", err)
+	}
+
+	// Set headers
+	req.Header.Set("Authorization", "token "+token)
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Accept", "application/vnd.github.v3+json")
+
+	// Make request
+	client := &http.Client{Timeout: 30 * time.Second}
+	resp, err := client.Do(req)
+	if err != nil {
+		return fmt.Errorf("failed to make request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
+		body, _ := io.ReadAll(resp.Body)
+		return fmt.Errorf("GitHub API returned status %d: %s", resp.StatusCode, string(body))
+	}
+
+	log.Printf("Successfully pushed %s to GitHub", fileName)
+	return nil
+}
+
+// FetchCachedPagesFromGitHub fetches cached pages from GitHub
+func FetchCachedPagesFromGitHub(providerName, token string) ([]string, *CacheMetadata) {
+	repoOwner := "finbertmds"
+	repoName := "examtopics-data"
+	branch := "main"
+	fileName := fmt.Sprintf("cached_pages_%s.txt", providerName)
+
+	// Create GitHub API URL
+	apiURL := fmt.Sprintf("https://api.github.com/repos/%s/%s/contents/CachedPages/%s?ref=%s",
+		repoOwner, repoName, fileName, branch)
+
+	// Create HTTP request
+	req, err := http.NewRequest("GET", apiURL, nil)
+	if err != nil {
+		log.Printf("Failed to create request: %v", err)
+		return nil, nil
+	}
+
+	// Set headers
+	if token != "" {
+		req.Header.Set("Authorization", "token "+token)
+	}
+	req.Header.Set("Accept", "application/vnd.github.v3+json")
+
+	// Make request
+	client := &http.Client{Timeout: 30 * time.Second}
+	resp, err := client.Do(req)
+	if err != nil {
+		log.Printf("Failed to make request: %v", err)
+		return nil, nil
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		log.Printf("GitHub API returned status %d for %s", resp.StatusCode, fileName)
+		return nil, nil
+	}
+
+	// Parse response
+	var fileContent GitHubFileContent
+	if err := json.NewDecoder(resp.Body).Decode(&fileContent); err != nil {
+		log.Printf("Failed to decode response: %v", err)
+		return nil, nil
+	}
+
+	// Decode content
+	if fileContent.Encoding != "base64" {
+		log.Printf("Unexpected encoding: %s", fileContent.Encoding)
+		return nil, nil
+	}
+
+	decodedContent, err := base64.StdEncoding.DecodeString(fileContent.Content)
+	if err != nil {
+		log.Printf("Failed to decode content: %v", err)
+		return nil, nil
+	}
+
+	// Parse content into lines and extract metadata
+	var links []string
+	var metadata *CacheMetadata
+
+	scanner := bufio.NewScanner(strings.NewReader(string(decodedContent)))
+	firstLine := true
+
+	for scanner.Scan() {
+		line := strings.TrimSpace(scanner.Text())
+
+		// Parse metadata from first line if it exists
+		if firstLine && strings.HasPrefix(line, "# METADATA: ") {
+			metadataJSON := strings.TrimPrefix(line, "# METADATA: ")
+			var meta CacheMetadata
+			if err := json.Unmarshal([]byte(metadataJSON), &meta); err == nil {
+				metadata = &meta
+			}
+			firstLine = false
+			continue
+		}
+
+		firstLine = false
+
+		if line != "" && !strings.HasPrefix(line, "#") {
+			links = append(links, line)
+		}
+	}
+
+	log.Printf("Successfully fetched %d cached pages from GitHub for provider %s", len(links), providerName)
+	return links, metadata
 }

@@ -131,6 +131,25 @@ func getLinksFromPage(url string, grepStr string) []string {
 	return matchingLinks
 }
 
+// Extracts all discussion links from a single page without filtering by grepStr
+func getAllLinksFromPage(url string) []string {
+	doc, err := ParseHTML(url, *client)
+	if err != nil {
+		log.Printf("Failed to parse HTML for %s: %v", url, err)
+		return nil
+	}
+
+	var allLinks []string
+	doc.Find("a").Each(func(i int, s *goquery.Selection) {
+		href, exists := s.Attr("href")
+		if exists && utils.GrepString(href, "/discussions") {
+			allLinks = append(allLinks, href)
+		}
+	})
+
+	return allLinks
+}
+
 func FetchCachedLinks(providerName string, grepStr string, token string) []string {
 	parsedProviderName := utils.CapitalizeFirstLetter(strings.ToLower(providerName))
 	repoOwner := "finbertmds"

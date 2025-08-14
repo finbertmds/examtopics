@@ -202,7 +202,7 @@ const ExamPage: React.FC = () => {
               <div className="space-y-6">
                 <ProgressBar
                   progress={progress}
-                  totalQuestions={questions.length + 1}
+                  totalQuestions={questions.length}
                 />
 
                 <TrainingList
@@ -225,8 +225,10 @@ const ExamPage: React.FC = () => {
                 onFilterChange={setFilterState}
                 onRandomize={handleRandomize}
                 onReset={handleReset}
-                totalQuestions={questions.length + 1}
+                totalQuestions={questions.length}
                 answeredCount={answeredCount}
+                userAnswers={progress.answers}
+                markedForTraining={progress.markedForTraining}
               />
             </div>
 
@@ -254,7 +256,7 @@ const ExamPage: React.FC = () => {
             <div className="p-4 space-y-4">
               <ProgressBar
                 progress={progress}
-                totalQuestions={questions.length + 1}
+                totalQuestions={questions.length}
               />
               <TrainingList
                 questions={questions}

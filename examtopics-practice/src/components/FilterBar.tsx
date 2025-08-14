@@ -1,5 +1,5 @@
 import React from 'react';
-import { FilterState, FilterType } from '../types';
+import { FilterState, FilterType, UserAnswer } from '../types';
 
 interface FilterBarProps {
   filterState: FilterState;
@@ -8,6 +8,8 @@ interface FilterBarProps {
   onReset: () => void;
   totalQuestions: number;
   answeredCount: number;
+  userAnswers: Record<number, UserAnswer>;
+  markedForTraining: number[];
 }
 
 export const FilterBar: React.FC<FilterBarProps> = ({
@@ -16,15 +18,22 @@ export const FilterBar: React.FC<FilterBarProps> = ({
   onRandomize,
   onReset,
   totalQuestions,
-  answeredCount
+  answeredCount,
+  userAnswers,
+  markedForTraining
 }) => {
+  // Calculate counts for different question types
+  const correctCount = Object.values(userAnswers).filter(answer => answer.isCorrect).length;
+  const incorrectCount = Object.values(userAnswers).filter(answer => !answer.isCorrect).length;
+  const trainingCount = markedForTraining.length;
+
   const filterOptions: { value: FilterType; label: string; count?: number }[] = [
     { value: 'all', label: 'Tất cả', count: totalQuestions },
+    { value: 'correct', label: 'Đúng', count: correctCount },
+    { value: 'incorrect', label: 'Sai', count: incorrectCount },
     { value: 'answered', label: 'Đã làm', count: answeredCount },
     { value: 'unanswered', label: 'Chưa làm', count: totalQuestions - answeredCount },
-    { value: 'correct', label: 'Đúng' },
-    { value: 'incorrect', label: 'Sai' },
-    { value: 'training', label: 'Luyện tập' }
+    { value: 'training', label: 'Luyện tập', count: trainingCount }
   ];
 
   return (
