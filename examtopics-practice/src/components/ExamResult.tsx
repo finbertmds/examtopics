@@ -1,4 +1,5 @@
 import React from 'react';
+import { useLanguage } from '../contexts/LanguageContext';
 import { UserAnswer } from '../types';
 
 interface ExamResultProps {
@@ -7,6 +8,7 @@ interface ExamResultProps {
 }
 
 const ExamResult: React.FC<ExamResultProps> = ({ userAnswers, totalQuestions }) => {
+  const { t } = useLanguage();
   const answeredCount = Object.keys(userAnswers).length;
   const correctCount = Object.values(userAnswers).filter(answer => answer.isCorrect).length;
   
@@ -41,18 +43,18 @@ const ExamResult: React.FC<ExamResultProps> = ({ userAnswers, totalQuestions }) 
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
-            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Kết quả:</span>
+            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{t('result')}:</span>
             <span className={`text-lg font-bold ${getAccuracyColor(accuracyPercentage)}`}>
               {accuracyPercentage}%
             </span>
           </div>
           <div className="text-sm text-gray-600 dark:text-gray-400">
-            ({correctCount}/{answeredCount} câu đúng)
+            ({correctCount}/{answeredCount} {t('correctAnswers')})
           </div>
         </div>
         <div className="text-right">
           <div className="text-xs text-gray-500 dark:text-gray-400">
-            Còn {totalQuestions - answeredCount} câu
+            {t('remainingQuestions')} {totalQuestions - answeredCount}
           </div>
         </div>
       </div>

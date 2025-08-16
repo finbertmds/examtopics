@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useLanguage } from '../contexts/LanguageContext';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import { Exam } from '../types';
+import { getExamDescription, getExamName } from '../utils/examUtils';
+import FloatingButtons from './FloatingButtons';
+import { LanguageToggle } from './LanguageToggle';
 import { ThemeToggle } from './ThemeToggle';
 
 const Home: React.FC = () => {
@@ -10,8 +14,10 @@ const Home: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedDifficulty, setSelectedDifficulty] = useState('all');
+  const [isMobile, setIsMobile] = useState(false);
   const navigate = useNavigate();
   const { getAllProgress } = useLocalStorage();
+  const { t, language } = useLanguage();
 
   useEffect(() => {
     const loadExams = async () => {
@@ -29,13 +35,26 @@ const Home: React.FC = () => {
     loadExams();
   }, []);
 
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
       case 'Beginner':
+      case t('beginner'):
         return 'bg-green-100 text-green-800';
       case 'Intermediate':
+      case t('intermediate'):
         return 'bg-yellow-100 text-yellow-800';
       case 'Advanced':
+      case t('advanced'):
         return 'bg-red-100 text-red-800';
       default:
         return 'bg-gray-100 text-gray-800';
@@ -56,21 +75,35 @@ const Home: React.FC = () => {
   };
 
   const filteredExams = exams.filter(exam => {
-    const matchesSearch = exam.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         exam.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    const examName = getExamName(exam, language);
+    const examDescription = getExamDescription(exam, language);
+    
+    const matchesSearch = examName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         examDescription.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          exam.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
     
     const matchesCategory = selectedCategory === 'all' || exam.category === selectedCategory;
-    const matchesDifficulty = selectedDifficulty === 'all' || exam.difficulty === selectedDifficulty;
+    const matchesDifficulty = selectedDifficulty === 'all' || 
+                             exam.difficulty === selectedDifficulty ||
+                             (selectedDifficulty === t('beginner') && exam.difficulty === 'Beginner') ||
+                             (selectedDifficulty === t('intermediate') && exam.difficulty === 'Intermediate') ||
+                             (selectedDifficulty === t('advanced') && exam.difficulty === 'Advanced');
     
     return matchesSearch && matchesCategory && matchesDifficulty;
   });
 
   const categories = ['all', ...Array.from(new Set(exams.map(exam => exam.category)))];
-  const difficulties = ['all', 'Beginner', 'Intermediate', 'Advanced'];
+  const difficulties = ['all', t('beginner'), t('intermediate'), t('advanced')];
 
   const handleExamClick = (exam: Exam) => {
     navigate(`/exam/${exam.id}`, { state: { exam } });
+  };
+
+  const handleScrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
   };
 
   if (loading) {
@@ -78,7 +111,7 @@ const Home: React.FC = () => {
       <div className="min-h-screen bg-gray-100 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Đang tải danh sách đề thi...</p>
+          <p className="text-gray-600">{t('loadingExamList')}</p>
         </div>
       </div>
     );
@@ -91,13 +124,16 @@ const Home: React.FC = () => {
         <header className="text-center mb-8">
           <div className="flex justify-between items-center mb-6">
             <div></div>
-            <ThemeToggle />
+            <div className="flex items-center gap-2">
+              <LanguageToggle />
+              <ThemeToggle />
+            </div>
           </div>
           <h1 className="text-4xl font-bold text-gray-800 dark:text-white mb-2 transition-colors">
-            🎯 Exam Practice Platform
+            {t('examPracticePlatform')}
           </h1>
           <p className="text-gray-600 dark:text-gray-300 text-lg transition-colors">
-            Luyện thi chứng chỉ AWS với các bộ đề chất lượng
+            {t('awsCertificationPractice')}
           </p>
         </header>
 
@@ -107,11 +143,11 @@ const Home: React.FC = () => {
             {/* Search */}
             <div className="md:col-span-2">
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 transition-colors">
-                🔍 Tìm kiếm
+                🔍 {t('search')}
               </label>
               <input
                 type="text"
-                placeholder="Tìm theo tên, mô tả hoặc tags..."
+                placeholder={t('searchPlaceholder')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors"
@@ -121,7 +157,7 @@ const Home: React.FC = () => {
             {/* Category Filter */}
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 transition-colors">
-                📂 Danh mục
+                📂 {t('category')}
               </label>
               <select
                 value={selectedCategory}
@@ -130,7 +166,7 @@ const Home: React.FC = () => {
               >
                 {categories.map(category => (
                   <option key={category} value={category}>
-                    {category === 'all' ? 'Tất cả' : category}
+                    {category === 'all' ? t('all') : category}
                   </option>
                 ))}
               </select>
@@ -139,7 +175,7 @@ const Home: React.FC = () => {
             {/* Difficulty Filter */}
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 transition-colors">
-                ⚡ Độ khó
+                ⚡ {t('difficulty')}
               </label>
               <select
                 value={selectedDifficulty}
@@ -148,7 +184,7 @@ const Home: React.FC = () => {
               >
                 {difficulties.map(difficulty => (
                   <option key={difficulty} value={difficulty}>
-                    {difficulty === 'all' ? 'Tất cả' : difficulty}
+                    {difficulty === 'all' ? t('all') : difficulty}
                   </option>
                 ))}
               </select>
@@ -159,8 +195,8 @@ const Home: React.FC = () => {
           filteredExams.length > 0 && (
             <div className="text-center text-gray-500 dark:text-gray-400 text-sm transition-colors">
               <p className="mb-3">
-                Tổng số đề thi: {exams.length} | 
-                Đã lọc: {filteredExams.length} kết quả
+                {t('totalExams')}: {exams.length} | 
+                {t('filteredResults')}: {filteredExams.length}
               </p>
             </div>
           )
@@ -176,8 +212,11 @@ const Home: React.FC = () => {
             >
               {/* Header */}
               <div className="flex justify-between items-start mb-4">
-                <h3 className="text-xl font-semibold text-gray-800 dark:text-white line-clamp-2 transition-colors">
-                  {exam.name}
+                <h3 
+                  className="text-xl font-semibold text-gray-800 dark:text-white line-clamp-2 transition-colors cursor-help"
+                  title={getExamName(exam, language)}
+                >
+                  {getExamName(exam, language)}
                 </h3>
                 <div className="flex flex-col items-end gap-2">
                   <span className={`px-2 py-1 rounded-full text-xs font-medium ${getDifficultyColor(exam.difficulty)}`}>
@@ -191,18 +230,18 @@ const Home: React.FC = () => {
 
               {/* Description */}
               <p className="text-gray-600 dark:text-gray-300 text-sm mb-4 line-clamp-3 transition-colors">
-                {exam.description}
+                {getExamDescription(exam, language)}
               </p>
 
               {/* Stats */}
               <div className="grid grid-cols-2 gap-4 mb-4">
                 <div className="text-center">
                   <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">{exam.questionCount}</div>
-                  <div className="text-xs text-gray-500 dark:text-gray-400">Câu hỏi</div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400">{t('questions')}</div>
                 </div>
                 <div className="text-center">
                   <div className="text-2xl font-bold text-green-600 dark:text-green-400">{exam.estimatedTime}</div>
-                  <div className="text-xs text-gray-500 dark:text-gray-400">Phút</div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400">{t('minutes')}</div>
                 </div>
               </div>
 
@@ -216,7 +255,7 @@ const Home: React.FC = () => {
                 return examProgress && answeredCount > 0 ? (
                   <div className="mb-4 p-3 bg-blue-50 rounded-lg">
                     <div className="flex justify-between items-center mb-2">
-                      <span className="text-sm font-medium text-blue-800">Tiến độ</span>
+                      <span className="text-sm font-medium text-blue-800">{t('progress')}</span>
                       <span className="text-sm text-blue-600">{percentage}%</span>
                     </div>
                     <div className="w-full bg-blue-200 rounded-full h-2">
@@ -226,27 +265,29 @@ const Home: React.FC = () => {
                       ></div>
                     </div>
                     <div className="text-xs text-blue-600 mt-1">
-                      {answeredCount}/{exam.questionCount} câu đã làm
+                      {answeredCount}/{exam.questionCount} {t('questionsAnswered')}
                     </div>
                   </div>
                 ) : null;
               })()}
 
               {/* Tags */}
-              <div className="flex flex-wrap gap-1 mb-4">
-                {exam.tags.slice(0, 3).map((tag, index) => (
-                  <span
-                    key={index}
-                    className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-xs rounded-full transition-colors"
-                  >
-                    {tag}
-                  </span>
-                ))}
-                {exam.tags.length > 3 && (
-                  <span className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-xs rounded-full transition-colors">
-                    +{exam.tags.length - 3}
-                  </span>
-                )}
+              <div className="mb-4">
+                <div className="flex gap-1 overflow-x-auto scrollbar-hide pb-1">
+                  {exam.tags.slice(0, isMobile ? 4 : 5).map((tag, index) => (
+                    <span
+                      key={index}
+                      className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-xs rounded-full transition-colors whitespace-nowrap flex-shrink-0 border border-gray-200 dark:border-gray-600"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                  {exam.tags.length > (isMobile ? 4 : 5) && (
+                    <span className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-xs rounded-full transition-colors whitespace-nowrap flex-shrink-0 border border-gray-200 dark:border-gray-600">
+                      +{exam.tags.length - (isMobile ? 4 : 5)}
+                    </span>
+                  )}
+                </div>
               </div>
 
               {/* Start Button */}
@@ -262,7 +303,7 @@ const Home: React.FC = () => {
                       ? 'bg-green-600 hover:bg-green-700 text-white' 
                       : 'bg-blue-600 hover:bg-blue-700 text-white'
                   }`}>
-                    {hasProgress ? '🔄 Tiếp tục làm bài' : '🚀 Bắt đầu làm bài'}
+                    {hasProgress ? t('continueExam') : t('startExam')}
                   </button>
                 );
               })()}
@@ -275,19 +316,26 @@ const Home: React.FC = () => {
           <div className="text-center py-12">
             <div className="text-6xl mb-4">🔍</div>
             <h3 className="text-xl font-semibold text-gray-800 dark:text-white mb-2 transition-colors">
-              Không tìm thấy đề thi phù hợp
+              {t('noResults')}
             </h3>
             <p className="text-gray-600 dark:text-gray-300 transition-colors">
-              Thử thay đổi bộ lọc hoặc từ khóa tìm kiếm
+              {t('tryChangingFilters')}
             </p>
           </div>
         )}
 
         {/* Footer */}
         <footer className="mt-12 text-center text-gray-500 dark:text-gray-400 text-sm transition-colors">
-          <p>© 2025 Exam Practice Platform</p>
+          <p>{t('copyright')}</p>
         </footer>
       </div>
+
+      {/* Floating Buttons */}
+      <FloatingButtons
+        onScrollToTop={handleScrollToTop}
+        onScrollToCurrentQuestion={() => {}}
+        hasCurrentQuestion={false}
+      />
     </div>
   );
 };

@@ -1,4 +1,5 @@
 import { forwardRef, useImperativeHandle } from 'react';
+import { useLanguage } from '../contexts/LanguageContext';
 import { FilterState, Question, UserAnswer } from '../types';
 import { QuestionItem } from './QuestionItem';
 
@@ -25,6 +26,7 @@ export const QuestionList = forwardRef<QuestionListRef, QuestionListProps>(({
   onToggleTraining,
   markedForTraining
 }, ref) => {
+  const { t } = useLanguage();
   const getFilteredQuestions = () => {
     let filtered = questions;
 
@@ -75,7 +77,7 @@ export const QuestionList = forwardRef<QuestionListRef, QuestionListProps>(({
   if (filteredQuestions.length === 0) {
     return (
       <div className="bg-white rounded-lg shadow-md p-6 text-center">
-        <p className="text-gray-600">Không có câu hỏi nào phù hợp với bộ lọc hiện tại.</p>
+        <p className="text-gray-600">{t('noQuestionsMatchFilter')}</p>
       </div>
     );
   }

@@ -1,9 +1,17 @@
 [
   {
     "id": "aws-sap-c02",
-    "name": "AWS Certified Solutions Architect - Professional SAP-C02",
+    "name": {
+      "en": "AWS Certified Solutions Architect - Professional",
+      "vi": "AWS Certified Solutions Architect - Professional",
+      "ja": "AWS Certified Solutions Architect - Professional"
+    },
     "slug": "aws-certified-solutions-architect-professional-sap-c02",
-    "description": "Bộ đề thi chứng chỉ AWS Solutions Architect Professional",
+    "description": {
+      "en": "Validate advanced AWS architecture and solution design skills",
+      "vi": "Chứng thực kỹ năng thiết kế kiến trúc và giải pháp AWS tiên tiến",
+      "ja": "高度なAWSアーキテクチャとソリューション設計スキルを検証"
+    },
     "questionCount": 529,
     "file": "exams/aws_sap_c02.json",
     "category": "AWS",
@@ -13,9 +21,17 @@
   },
   {
     "id": "aws-ans-c00",
-    "name": "AWS Certified Advanced Networking - Specialty ANS-C00",
+    "name": {
+      "en": "AWS Certified Advanced Networking - Specialty",
+      "vi": "AWS Certified Advanced Networking - Specialty",
+      "ja": "AWS Certified Advanced Networking - Specialty"
+    },
     "slug": "ans-c00",
-    "description": "Bộ đề thi chứng chỉ AWS Certified Advanced Networking - Specialty ANS-C00",
+    "description": {
+      "en": "Validate advanced networking skills and expertise",
+      "vi": "Chứng thực kỹ năng và chuyên môn về mạng tiên tiến",
+      "ja": "高度なネットワーキングスキルと専門知識を検証"
+    },
     "questionCount": 377,
     "file": "exams/aws_ans_c00.json",
     "category": "AWS",
@@ -25,9 +41,17 @@
   },
   {
     "id": "aws-ans-c01",
-    "name": "AWS Certified Advanced Networking - Specialty ANS-C01",
+    "name": {
+      "en": "AWS Certified Advanced Networking - Specialty",
+      "vi": "AWS Certified Advanced Networking - Specialty",
+      "ja": "AWS Certified Advanced Networking - Specialty"
+    },
     "slug": "aws-certified-advanced-networking-specialty-ans-c01",
-    "description": "Bộ đề thi chứng chỉ AWS Certified Advanced Networking - Specialty ANS-C01",
+    "description": {
+      "en": "Validate advanced networking skills and expertise",
+      "vi": "Chứng thực kỹ năng và chuyên môn về mạng tiên tiến",
+      "ja": "高度なネットワーキングスキルと専門知識を検証"
+    },
     "questionCount": 272,
     "file": "exams/aws_ans_c01.json",
     "category": "AWS",
@@ -37,9 +61,17 @@
   },
   {
     "id": "aws-aif-c01",
-    "name": "AWS Certified AI Practitioner AIF-C01",
+    "name": {
+      "en": "AWS Certified AI Practitioner",
+      "vi": "AWS Certified AI Practitioner",
+      "ja": "AWS Certified AI Practitioner"
+    },
     "slug": "aws-certified-ai-practitioner-aif-c01",
-    "description": "Bộ đề thi chứng chỉ AWS Certified AI Practitioner AIF-C01",
+    "description": {
+      "en": "Validate foundational AI and machine learning skills",
+      "vi": "Chứng thực kỹ năng cơ bản về AI và machine learning",
+      "ja": "AIと機械学習の基礎スキルを検証"
+    },
     "questionCount": 155,
     "file": "exams/aws_aif_c01.json",
     "category": "AWS",
@@ -49,9 +81,17 @@
   },
   {
     "id": "aws-asb-c00",
-    "name": "AWS Certified Alexa Skill Builder - Specialty",
+    "name": {
+      "en": "AWS Certified Alexa Skill Builder - Specialty",
+      "vi": "AWS Certified Alexa Skill Builder - Specialty",
+      "ja": "AWS Certified Alexa Skill Builder - Specialty"
+    },
     "slug": "aws-certified-alexa-skill-builder-specialty",
-    "description": "Bộ đề thi chứng chỉ AWS Certified Alexa Skill Builder - Specialty",
+    "description": {
+      "en": "Validate Alexa skill development expertise",
+      "vi": "Chứng thực chuyên môn phát triển Alexa skill",
+      "ja": "Alexaスキル開発の専門知識を検証"
+    },
     "questionCount": 14,
     "file": "exams/aws_asb_c00.json",
     "category": "AWS",
@@ -61,9 +101,17 @@
   },
   {
     "id": "aws-bds-c00",
-    "name": "AWS Certified Big Data - Specialty",
+    "name": {
+      "en": "AWS Certified Big Data - Specialty",
+      "vi": "AWS Certified Big Data - Specialty",
+      "ja": "AWS Certified Big Data - Specialty"
+    },
     "slug": "aws-certified-big-data-specialty",
-    "description": "Bộ đề thi chứng chỉ AWS Certified Big Data - Specialty",
+    "description": {
+      "en": "Validate big data and analytics expertise",
+      "vi": "Chứng thực chuyên môn về big data và analytics",
+      "ja": "ビッグデータとアナリティクスの専門知識を検証"
+    },
     "questionCount": 20,
     "file": "exams/aws_bds_c00.json",
     "category": "AWS",
@@ -73,9 +121,17 @@
   },
   {
     "id": "aws-clf-c02",
-    "name": "AWS Certified Cloud Practitioner CLF-C02",
+    "name": {
+      "en": "AWS Certified Cloud Practitioner",
+      "vi": "AWS Certified Cloud Practitioner",
+      "ja": "AWS Certified Cloud Practitioner"
+    },
     "slug": "aws-certified-cloud-practitioner",
-    "description": "Bộ đề thi chứng chỉ AWS Certified Cloud Practitioner CLF-C02",
+    "description": {
+      "en": "Validate foundational AWS cloud knowledge",
+      "vi": "Chứng thực kiến thức cơ bản về AWS cloud",
+      "ja": "AWSクラウドの基礎知識を検証"
+    },
     "questionCount": 719,
     "file": "exams/aws_clf_c02.json",
     "category": "AWS",
@@ -85,9 +141,17 @@
   },
   {
     "id": "aws-da-c00",
-    "name": "AWS Certified Data Analytics - Specialty",
+    "name": {
+      "en": "AWS Certified Data Analytics - Specialty",
+      "vi": "AWS Certified Data Analytics - Specialty",
+      "ja": "AWS Certified Data Analytics - Specialty"
+    },
     "slug": "aws-certified-data-analytics-specialty",
-    "description": "Bộ đề thi chứng chỉ AWS Certified Data Analytics - Specialty",
+    "description": {
+      "en": "Validate data analytics and visualization expertise",
+      "vi": "Chứng thực chuyên môn về phân tích dữ liệu và trực quan hóa",
+      "ja": "データ分析と可視化の専門知識を検証"
+    },
     "questionCount": 164,
     "file": "exams/aws_da_c00.json",
     "category": "AWS",
@@ -97,9 +161,17 @@
   },
   {
     "id": "aws-db-c00",
-    "name": "AWS Certified Database - Specialty",
+    "name": {
+      "en": "AWS Certified Database - Specialty",
+      "vi": "AWS Certified Database - Specialty",
+      "ja": "AWS Certified Database - Specialty"
+    },
     "slug": "aws-certified-database-specialty",
-    "description": "Bộ đề thi chứng chỉ AWS Certified Database - Specialty",
+    "description": {
+      "en": "Validate database design and management expertise",
+      "vi": "Chứng thực chuyên môn thiết kế và quản lý cơ sở dữ liệu",
+      "ja": "データベース設計と管理の専門知識を検証"
+    },
     "questionCount": 359,
     "file": "exams/aws_db_c00.json",
     "category": "AWS",
@@ -109,9 +181,17 @@
   },
   {
     "id": "aws-dea-c01",
-    "name": "AWS Certified Data Engineer - Associate DEA-C01",
+    "name": {
+      "en": "AWS Certified Data Engineer - Associate",
+      "vi": "AWS Certified Data Engineer - Associate",
+      "ja": "AWS Certified Data Engineer - Associate"
+    },
     "slug": "aws-certified-data-engineer-associate-dea-c01",
-    "description": "Bộ đề thi chứng chỉ AWS Certified Data Engineer - Associate DEA-C01",
+    "description": {
+      "en": "Validate data engineering and pipeline development skills",
+      "vi": "Chứng thực kỹ năng kỹ thuật dữ liệu và phát triển pipeline",
+      "ja": "データエンジニアリングとパイプライン開発スキルを検証"
+    },
     "questionCount": 207,
     "file": "exams/aws_dea_c01.json",
     "category": "AWS",
@@ -121,9 +201,17 @@
   },
   {
     "id": "aws-dva-c00",
-    "name": "AWS Certified Developer - Associate DVA-C00",
+    "name": {
+      "en": "AWS Certified Developer - Associate",
+      "vi": "AWS Certified Developer - Associate",
+      "ja": "AWS Certified Developer - Associate"
+    },
     "slug": "aws-certified-developer-associate",
-    "description": "Bộ đề thi chứng chỉ AWS Certified Developer - Associate DVA-C00",
+    "description": {
+      "en": "Validate AWS development and deployment skills",
+      "vi": "Chứng thực kỹ năng phát triển và triển khai AWS",
+      "ja": "AWS開発とデプロイメントスキルを検証"
+    },
     "questionCount": 557,
     "file": "exams/aws_dva_c00.json",
     "category": "AWS",
@@ -133,9 +221,17 @@
   },
   {
     "id": "aws-dva-c02",
-    "name": "AWS Certified Developer - Associate DVA-C02",
+    "name": {
+      "en": "AWS Certified Developer - Associate",
+      "vi": "AWS Certified Developer - Associate",
+      "ja": "AWS Certified Developer - Associate"
+    },
     "slug": "aws-certified-developer-associate-dva-c02",
-    "description": "Bộ đề thi chứng chỉ AWS Certified Developer - Associate DVA-C02",
+    "description": {
+      "en": "Validate AWS development and deployment skills",
+      "vi": "Chứng thực kỹ năng phát triển và triển khai AWS",
+      "ja": "AWS開発とデプロイメントスキルを検証"
+    },
     "questionCount": 551,
     "file": "exams/aws_dva_c02.json",
     "category": "AWS",
@@ -145,9 +241,17 @@
   },
   {
     "id": "aws-dop-c02",
-    "name": "AWS Certified DevOps Engineer - Professional DOP-C02",
+    "name": {
+      "en": "AWS Certified DevOps Engineer - Professional",
+      "vi": "AWS Certified DevOps Engineer - Professional",
+      "ja": "AWS Certified DevOps Engineer - Professional"
+    },
     "slug": "aws-certified-devops-engineer-professional-dop-c02",
-    "description": "Bộ đề thi chứng chỉ AWS Certified DevOps Engineer - Professional DOP-C02",
+    "description": {
+      "en": "Validate advanced DevOps practices and automation skills",
+      "vi": "Chứng thực kỹ năng DevOps tiên tiến và tự động hóa",
+      "ja": "高度なDevOpsプラクティスと自動化スキルを検証"
+    },
     "questionCount": 363,
     "file": "exams/aws_dop_c02.json",
     "category": "AWS",
@@ -157,9 +261,17 @@
   },
   {
     "id": "aws-mla-c01",
-    "name": "AWS Certified Machine Learning Engineer - Associate MLA-C01",
+    "name": {
+      "en": "AWS Certified Machine Learning Engineer - Associate",
+      "vi": "AWS Certified Machine Learning Engineer - Associate",
+      "ja": "AWS Certified Machine Learning Engineer - Associate"
+    },
     "slug": "aws-certified-machine-learning-engineer-associate-mla-c01",
-    "description": "Bộ đề thi chứng chỉ AWS Certified Machine Learning Engineer - Associate MLA-C01",
+    "description": {
+      "en": "Validate machine learning engineering and deployment skills",
+      "vi": "Chứng thực kỹ năng kỹ thuật machine learning và triển khai",
+      "ja": "機械学習エンジニアリングとデプロイメントスキルを検証"
+    },
     "questionCount": 114,
     "file": "exams/aws_mla_c01.json",
     "category": "AWS",
@@ -169,9 +281,17 @@
   },
   {
     "id": "aws-ml-c00",
-    "name": "AWS Certified Machine Learning - Specialty",
+    "name": {
+      "en": "AWS Certified Machine Learning - Specialty",
+      "vi": "AWS Certified Machine Learning - Specialty",
+      "ja": "AWS Certified Machine Learning - Specialty"
+    },
     "slug": "aws-certified-machine-learning-specialty",
-    "description": "Bộ đề thi chứng chỉ AWS Certified Machine Learning - Specialty",
+    "description": {
+      "en": "Validate machine learning and AI expertise",
+      "vi": "Chứng thực chuyên môn về machine learning và AI",
+      "ja": "機械学習とAIの専門知識を検証"
+    },
     "questionCount": 369,
     "file": "exams/aws_ml_c00.json",
     "category": "AWS",
@@ -181,9 +301,17 @@
   },
   {
     "id": "aws-pas-c01",
-    "name": "AWS Certified SAP on AWS - Specialty PAS-C01",
+    "name": {
+      "en": "AWS Certified SAP on AWS - Specialty",
+      "vi": "AWS Certified SAP on AWS - Specialty",
+      "ja": "AWS Certified SAP on AWS - Specialty"
+    },
     "slug": "aws-certified-sap-on-aws-specialty-pas-c01",
-    "description": "Bộ đề thi chứng chỉ AWS Certified SAP on AWS - Specialty PAS-C01",
+    "description": {
+      "en": "Validate SAP on AWS deployment and management expertise",
+      "vi": "Chứng thực chuyên môn triển khai và quản lý SAP trên AWS",
+      "ja": "AWSでのSAPデプロイメントと管理の専門知識を検証"
+    },
     "questionCount": 130,
     "file": "exams/aws_pas_c01.json",
     "category": "AWS",
@@ -193,9 +321,17 @@
   },
   {
     "id": "aws-scs-c02",
-    "name": "AWS Certified Security - Specialty SCS-C02",
+    "name": {
+      "en": "AWS Certified Security - Specialty",
+      "vi": "AWS Certified Security - Specialty",
+      "ja": "AWS Certified Security - Specialty"
+    },
     "slug": "aws-certified-security-specialty",
-    "description": "Bộ đề thi chứng chỉ AWS Certified Security - Specialty SCS-C02",
+    "description": {
+      "en": "Validate AWS security and compliance expertise",
+      "vi": "Chứng thực chuyên môn về bảo mật và tuân thủ AWS",
+      "ja": "AWSセキュリティとコンプライアンスの専門知識を検証"
+    },
     "questionCount": 297,
     "file": "exams/aws_scs_c02.json",
     "category": "AWS",
@@ -205,9 +341,17 @@
   },
   {
     "id": "aws-saa-c02",
-    "name": "AWS Certified Solutions Architect - Associate SAA-C02",
+    "name": {
+      "en": "AWS Certified Solutions Architect - Associate",
+      "vi": "AWS Certified Solutions Architect - Associate",
+      "ja": "AWS Certified Solutions Architect - Associate"
+    },
     "slug": "aws-certified-solutions-architect-associate-saa-c02",
-    "description": "Bộ đề thi chứng chỉ AWS Certified Solutions Architect - Associate SAA-C02",
+    "description": {
+      "en": "Validate AWS solution design and implementation skills",
+      "vi": "Chứng thực kỹ năng thiết kế và triển khai giải pháp AWS",
+      "ja": "AWSソリューション設計と実装スキルを検証"
+    },
     "questionCount": 0,
     "file": "exams/aws_saa_c02.json",
     "category": "AWS",
@@ -217,9 +361,17 @@
   },
   {
     "id": "aws-saa-c03",
-    "name": "AWS Certified Solutions Architect - Associate SAA-C03",
+    "name": {
+      "en": "AWS Certified Solutions Architect - Associate",
+      "vi": "AWS Certified Solutions Architect - Associate",
+      "ja": "AWS Certified Solutions Architect - Associate"
+    },
     "slug": "aws-certified-solutions-architect-associate-saa-c03",
-    "description": "Bộ đề thi chứng chỉ AWS Certified Solutions Architect - Associate SAA-C03",
+    "description": {
+      "en": "Validate AWS solution design and implementation skills",
+      "vi": "Chứng thực kỹ năng thiết kế và triển khai giải pháp AWS",
+      "ja": "AWSソリューション設計と実装スキルを検証"
+    },
     "questionCount": 1019,
     "file": "exams/aws_saa_c03.json",
     "category": "AWS",
@@ -229,9 +381,17 @@
   },
   {
     "id": "aws-sys-c00",
-    "name": "AWS Certified SysOps Administrator - Associate SYS-C00",
+    "name": {
+      "en": "AWS Certified SysOps Administrator - Associate",
+      "vi": "AWS Certified SysOps Administrator - Associate",
+      "ja": "AWS Certified SysOps Administrator - Associate"
+    },
     "slug": "aws-certified-sysops-administrator-associate",
-    "description": "Bộ đề thi chứng chỉ AWS Certified SysOps Administrator - Associate SYS-C00",
+    "description": {
+      "en": "Validate AWS operations and deployment skills",
+      "vi": "Chứng thực kỹ năng vận hành và triển khai AWS",
+      "ja": "AWS運用とデプロイメントスキルを検証"
+    },
     "questionCount": 0,
     "file": "exams/aws_sys_c00.json",
     "category": "AWS",
@@ -241,9 +401,17 @@
   },
   {
     "id": "aws-soa-c00",
-    "name": "AWS Certified SysOps Administrator - Associate SOA-C00",
+    "name": {
+      "en": "AWS Certified SysOps Administrator - Associate",
+      "vi": "AWS Certified SysOps Administrator - Associate",
+      "ja": "AWS Certified SysOps Administrator - Associate"
+    },
     "slug": "aws-certified-sysops-administrator-associate-soa-c00",
-    "description": "Bộ đề thi chứng chỉ AWS Certified SysOps Administrator - Associate",
+    "description": {
+      "en": "Validate AWS operations and deployment skills",
+      "vi": "Chứng thực kỹ năng vận hành và triển khai AWS",
+      "ja": "AWS運用とデプロイメントスキルを検証"
+    },
     "questionCount": 478,
     "file": "exams/aws_soa_c00.json",
     "category": "AWS",
@@ -253,9 +421,17 @@
   },
   {
     "id": "aws-dop-c00",
-    "name": "AWS DevOps Engineer Professional",
+    "name": {
+      "en": "AWS Certified DevOps Engineer - Professional",
+      "vi": "AWS Certified DevOps Engineer - Professional",
+      "ja": "AWS Certified DevOps Engineer - Professional"
+    },
     "slug": "aws-devops-engineer-professional",
-    "description": "Bộ đề thi chứng chỉ AWS DevOps Engineer Professional",
+    "description": {
+      "en": "Validate advanced DevOps practices and automation skills",
+      "vi": "Chứng thực kỹ năng DevOps tiên tiến và tự động hóa",
+      "ja": "高度なDevOpsプラクティスと自動化スキルを検証"
+    },
     "questionCount": 208,
     "file": "exams/aws_dop_c00.json",
     "category": "AWS",

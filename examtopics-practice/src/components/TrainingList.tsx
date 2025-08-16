@@ -1,4 +1,5 @@
 import React from 'react';
+import { useLanguage } from '../contexts/LanguageContext';
 import { Question, UserAnswer } from '../types';
 
 interface TrainingListProps {
@@ -16,13 +17,14 @@ export const TrainingList: React.FC<TrainingListProps> = ({
   onQuestionClick,
   onRemoveFromTraining
 }) => {
+  const { t } = useLanguage();
   const trainingQuestions = questions.filter(q => markedForTraining.includes(q.question_number));
 
   if (trainingQuestions.length === 0) {
     return (
       <div className="bg-white rounded-lg shadow-md p-6">
-        <h3 className="text-lg font-semibold text-gray-800 mb-4">📚 Danh sách luyện tập</h3>
-        <p className="text-gray-600">Chưa có câu hỏi nào được đánh dấu để luyện tập.</p>
+        <h3 className="text-lg font-semibold text-gray-800 mb-4">{t('trainingList')}</h3>
+        <p className="text-gray-600">{t('noQuestionsMarkedForTraining')}</p>
       </div>
     );
   }
@@ -30,7 +32,7 @@ export const TrainingList: React.FC<TrainingListProps> = ({
   return (
     <div className="bg-white rounded-lg shadow-md p-6 training-list">
       <h3 className="text-lg font-semibold text-gray-800 mb-4">
-        📚 Danh sách luyện tập ({trainingQuestions.length})
+        {t('trainingList')} ({trainingQuestions.length})
       </h3>
       
       <div className="space-y-2 max-h-64 overflow-y-auto scrollable-content">
@@ -49,7 +51,7 @@ export const TrainingList: React.FC<TrainingListProps> = ({
                 className="flex-1 text-left flex items-center gap-3"
               >
                 <span className="font-medium text-gray-800">
-                  Câu {question.question_number}
+                  {t('question')} {question.question_number}
                 </span>
                 {isAnswered && (
                   <span className={`flex items-center justify-center px-2 py-1 rounded-full text-xs font-medium ${
@@ -60,7 +62,7 @@ export const TrainingList: React.FC<TrainingListProps> = ({
                 )}
                 {!isAnswered && (
                   <span className="px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                    Chưa làm
+                    {t('unanswered')}
                   </span>
                 )}
               </button>
@@ -68,7 +70,7 @@ export const TrainingList: React.FC<TrainingListProps> = ({
               <button
                 onClick={() => onRemoveFromTraining(question.question_number)}
                 className="p-1 text-gray-500 hover:text-red-600 transition-colors"
-                title="Bỏ khỏi luyện tập"
+                title={t('removeFromTraining')}
               >
                 ✕
               </button>

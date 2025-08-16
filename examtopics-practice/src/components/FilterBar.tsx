@@ -1,4 +1,5 @@
 import React from 'react';
+import { useLanguage } from '../contexts/LanguageContext';
 import { FilterState, FilterType, UserAnswer } from '../types';
 
 interface FilterBarProps {
@@ -22,18 +23,20 @@ export const FilterBar: React.FC<FilterBarProps> = ({
   userAnswers,
   markedForTraining
 }) => {
+  const { t } = useLanguage();
+  
   // Calculate counts for different question types
   const correctCount = Object.values(userAnswers).filter(answer => answer.isCorrect).length;
   const incorrectCount = Object.values(userAnswers).filter(answer => !answer.isCorrect).length;
   const trainingCount = markedForTraining.length;
 
   const filterOptions: { value: FilterType; label: string; count?: number }[] = [
-    { value: 'all', label: 'Tất cả', count: totalQuestions },
-    { value: 'correct', label: 'Đúng', count: correctCount },
-    { value: 'incorrect', label: 'Sai', count: incorrectCount },
-    { value: 'answered', label: 'Đã làm', count: answeredCount },
-    { value: 'unanswered', label: 'Chưa làm', count: totalQuestions - answeredCount },
-    { value: 'training', label: 'Luyện tập', count: trainingCount }
+    { value: 'all', label: t('all'), count: totalQuestions },
+    { value: 'correct', label: t('correct'), count: correctCount },
+    { value: 'incorrect', label: t('incorrect'), count: incorrectCount },
+    { value: 'answered', label: t('questionsAnswered'), count: answeredCount },
+    { value: 'unanswered', label: t('unanswered'), count: totalQuestions - answeredCount },
+    { value: 'training', label: t('training'), count: trainingCount }
   ];
 
   return (
@@ -64,19 +67,19 @@ export const FilterBar: React.FC<FilterBarProps> = ({
               onClick={() => onFilterChange({ ...filterState, type: 'training' })}
               className="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors text-sm font-medium"
             >
-              📚 Luyện tập
+              📚 {t('training')}
             </button>
             <button
               onClick={onRandomize}
               className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm font-medium"
             >
-              🔀 Ngẫu nhiên
+              🔀 {t('randomize')}
             </button>
             <button
               onClick={onReset}
               className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-medium"
             >
-              🔄 Làm lại
+              🔄 {t('reset')}
             </button>
           </div>
         </div>
@@ -90,7 +93,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
             onChange={(e) => onFilterChange({ ...filterState, showCorrect: e.target.checked })}
             className="rounded"
           />
-          Hiển thị đáp án đúng
+          {t('showCorrectAnswers')}
         </label>
         <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
           <input
@@ -99,7 +102,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
             onChange={(e) => onFilterChange({ ...filterState, showIncorrect: e.target.checked })}
             className="rounded"
           />
-          Hiển thị đáp án sai
+          {t('showIncorrectAnswers')}
         </label>
       </div>
     </div>

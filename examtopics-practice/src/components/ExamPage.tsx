@@ -1,10 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { useLanguage } from '../contexts/LanguageContext';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import { Exam, FilterState, Question } from '../types';
+import { getExamDescription, getExamName } from '../utils/examUtils';
 import ExamResult from './ExamResult';
 import { FilterBar } from './FilterBar';
 import FloatingButtons from './FloatingButtons';
+import { LanguageToggle } from './LanguageToggle';
 import { ProgressBar } from './ProgressBar';
 import { QuestionList, QuestionListRef } from './QuestionList';
 import { ThemeToggle } from './ThemeToggle';
@@ -14,6 +17,7 @@ const ExamPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const exam = location.state?.exam as Exam;
+  const { t, language } = useLanguage();
 
   const [questions, setQuestions] = useState<Question[]>([]);
   const [loading, setLoading] = useState(true);
@@ -117,7 +121,7 @@ const ExamPage: React.FC = () => {
   };
 
   const handleReset = () => {
-    if (window.confirm('Bạn có chắc chắn muốn làm lại toàn bộ bài thi? Tiến độ hiện tại sẽ bị mất.')) {
+    if (window.confirm(t('confirmResetExam'))) {
       resetProgress();
       setFilterState({
         type: 'all',
@@ -130,7 +134,7 @@ const ExamPage: React.FC = () => {
   };
 
   const handleBackToHome = () => {
-    // if (window.confirm('Bạn có chắc chắn muốn quay về trang chủ? Tiến độ hiện tại sẽ được lưu.')) {
+    // if (window.confirm(t('confirmBackToHome'))) {
     navigate('/');
     // }
   };
@@ -148,7 +152,7 @@ const ExamPage: React.FC = () => {
       <div className="min-h-screen bg-gray-100 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Đang tải câu hỏi...</p>
+          <p className="text-gray-600">{t('loadingQuestions')}</p>
         </div>
       </div>
     );
@@ -166,24 +170,27 @@ const ExamPage: React.FC = () => {
               onClick={handleBackToHome}
               className="flex items-center gap-2 text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 font-medium transition-colors"
             >
-              ← Quay về trang chủ
+              {t('backToHome')}
             </button>
             <div className="flex items-center gap-4">
+              <LanguageToggle />
               <ThemeToggle />
             </div>
           </div>
           <div className="flex items-center justify-between mb-4">
             <h1 className="text-2xl font-bold text-gray-800 dark:text-white transition-colors">
-              {exam?.name}
+              {exam ? getExamName(exam, language) : ''}
             </h1>
             <div className="text-sm text-gray-600 dark:text-gray-300 transition-colors">
-              {exam?.questionCount} câu hỏi • {exam?.estimatedTime} phút
+              {exam?.questionCount} {t('questions')} • {exam?.estimatedTime} {t('minutes')}
             </div>
           </div>
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 transition-colors">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-600 dark:text-gray-300 text-sm transition-colors">{exam?.description}</p>
+                <p className="text-gray-600 dark:text-gray-300 text-sm transition-colors">
+                  {exam ? getExamDescription(exam, language) : ''}
+                </p>
                 <div className="flex gap-2 mt-2">
                   <span className={`px-2 py-1 rounded-full text-xs font-medium ${exam?.difficulty === 'Advanced' ? 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200' :
                       exam?.difficulty === 'Intermediate' ? 'bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200' :
@@ -198,7 +205,7 @@ const ExamPage: React.FC = () => {
               </div>
               <div className="text-right">
                 <div className="text-2xl font-bold text-blue-600 dark:text-blue-400 transition-colors">{answeredCount}</div>
-                <div className="text-sm text-gray-500 dark:text-gray-400 transition-colors">Đã làm</div>
+                <div className="text-sm text-gray-500 dark:text-gray-400 transition-colors">{t('answered')}</div>
               </div>
             </div>
           </div>

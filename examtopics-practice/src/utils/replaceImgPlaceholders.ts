@@ -11,10 +11,10 @@ export function replaceImgPlaceholders(
 
   images.forEach((url) => {
     const imgTag = `<img src="${url}" style="max-width:100%; height:auto; margin:10px 0;" />`;
-    processedText = processedText.replace("//IMG//", imgTag); // thay đúng thứ tự
+          processedText = processedText.replace("//IMG//", imgTag); // replace in correct order
   });
 
-  // Thay \n thành <br/> để hiển thị xuống dòng
+  // Replace \n with <br/> to display line breaks
   processedText = processedText.replace(/\n/g, "<br/>");
 
   return processedText;

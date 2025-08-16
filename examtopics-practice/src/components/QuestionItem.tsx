@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { useLanguage } from '../contexts/LanguageContext';
 import { Question, UserAnswer } from '../types';
 import { replaceImgPlaceholders } from '../utils/replaceImgPlaceholders';
 import CollapsibleQuestionText from './CollapsibleQuestionText';
@@ -22,6 +23,7 @@ export const QuestionItem: React.FC<QuestionItemProps> = ({
   showAnswer,
   isCurrentQuestion
 }) => {
+  const { t } = useLanguage();
   const [selectedAnswers, setSelectedAnswers] = useState<string[]>(
     userAnswer?.selectedAnswers || []
   );
@@ -89,7 +91,7 @@ export const QuestionItem: React.FC<QuestionItemProps> = ({
     >
       <div className="flex justify-between items-start mb-4">
         <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">
-          Câu {question.question_number}
+          {t('question')} {question.question_number}
         </h3>
         <div className="flex gap-2">
           <button
@@ -98,7 +100,7 @@ export const QuestionItem: React.FC<QuestionItemProps> = ({
                 ? 'bg-indigo-100 dark:bg-indigo-900 text-indigo-600 dark:text-indigo-400'
                 : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-indigo-100 dark:hover:bg-indigo-900 hover:text-indigo-600 dark:hover:text-indigo-400'
               }`}
-            title={isMarkedForTraining ? 'Bỏ khỏi luyện tập' : 'Thêm vào luyện tập'}
+            title={isMarkedForTraining ? t('removeFromTraining') : t('addToTraining')}
           >
             📚
           </button>
@@ -153,7 +155,7 @@ export const QuestionItem: React.FC<QuestionItemProps> = ({
                     <span className="font-medium text-gray-700 dark:text-gray-300 mr-2">{key}.</span>
                     <span className="text-gray-800 dark:text-gray-200" dangerouslySetInnerHTML={{ __html: replaceImgPlaceholders(answer, images) }} />
                     {showCorrectness && isCorrectAnswer && (
-                      <span className="ml-2 text-green-600 dark:text-green-400 font-medium">✓ Đáp án đúng</span>
+                      <span className="ml-2 text-green-600 dark:text-green-400 font-medium">✓ {t('correct')}</span>
                     )}
                   </div>
                 </label>
@@ -169,7 +171,7 @@ export const QuestionItem: React.FC<QuestionItemProps> = ({
           <div className="flex items-center gap-2 text-yellow-800 dark:text-yellow-200">
             <span className="text-yellow-600 dark:text-yellow-400">⚠️</span>
             <span className="text-sm">
-              Bạn cần chọn thêm {correctAnswers.length - selectedAnswers.length} đáp án để xem kết quả
+              {t('selectMoreAnswers')} {correctAnswers.length - selectedAnswers.length} {t('toViewResult')}
             </span>
           </div>
         </div>
@@ -177,26 +179,26 @@ export const QuestionItem: React.FC<QuestionItemProps> = ({
 
       {shouldShowAnswer && (
         <div className="mt-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-          <div className="mb-2">
-            <strong className="text-gray-800 dark:text-gray-200">Đáp án của bạn:</strong>
-            <span className="ml-2 text-gray-600 dark:text-gray-400">
-              {userAnswersSorted.length > 0 ? userAnswersSorted.join(', ') : 'Chưa chọn'}
-            </span>
-          </div>
-          <div className="mb-2">
-            <strong className="text-gray-800 dark:text-gray-200">Đáp án gợi ý:</strong>
-            <span className="ml-2 text-green-600 dark:text-green-400 font-medium">
-              {correctAnswers.join(', ')}
-            </span>
-          </div>
-          {question.answer !== question.suggested_answer && (
-            <div className="mb-2">
-              <strong className="text-gray-800 dark:text-gray-200">Đáp án phụ:</strong>
-              <span className="ml-2 text-indigo-600 dark:text-indigo-400 font-medium">
-                {question.answer}
-              </span>
-            </div>
-          )}
+                     <div className="mb-2">
+             <strong className="text-gray-800 dark:text-gray-200">{t('yourAnswer')}</strong>
+             <span className="ml-2 text-gray-600 dark:text-gray-400">
+               {userAnswersSorted.length > 0 ? userAnswersSorted.join(', ') : t('unanswered')}
+             </span>
+           </div>
+           <div className="mb-2">
+             <strong className="text-gray-800 dark:text-gray-200">{t('suggestedAnswer')}</strong>
+             <span className="ml-2 text-green-600 dark:text-green-400 font-medium">
+               {correctAnswers.join(', ')}
+             </span>
+           </div>
+           {question.answer !== question.suggested_answer && (
+             <div className="mb-2">
+               <strong className="text-gray-800 dark:text-gray-200">{t('additionalAnswer')}</strong>
+               <span className="ml-2 text-indigo-600 dark:text-indigo-400 font-medium">
+                 {question.answer}
+               </span>
+             </div>
+           )}
         </div>
       )}
       {question.link && (
@@ -206,7 +208,7 @@ export const QuestionItem: React.FC<QuestionItemProps> = ({
           rel="noopener noreferrer"
           className="inline-flex items-center mt-3 gap-1 text-blue-600 hover:text-blue-800 font-medium"
         >
-          🔗 Xem giải thích
+          🔗 {t('viewExplanation')}
         </a>
       )}
     </div>

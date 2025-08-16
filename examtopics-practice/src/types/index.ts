@@ -14,8 +14,16 @@ export interface Question {
 
 export interface Exam {
   id: string;
-  name: string;
-  description: string;
+  name: string | {
+    en: string;
+    vi: string;
+    ja: string;
+  };
+  description: string | {
+    en: string;
+    vi: string;
+    ja: string;
+  };
   questionCount: number;
   file: string;
   category: string;
