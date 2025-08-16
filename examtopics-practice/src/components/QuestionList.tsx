@@ -1,4 +1,4 @@
-import React from 'react';
+import { forwardRef, useImperativeHandle } from 'react';
 import { FilterState, Question, UserAnswer } from '../types';
 import { QuestionItem } from './QuestionItem';
 
@@ -12,7 +12,11 @@ interface QuestionListProps {
   markedForTraining: number[];
 }
 
-export const QuestionList: React.FC<QuestionListProps> = ({
+export interface QuestionListRef {
+  scrollToCurrentQuestion: () => void;
+}
+
+export const QuestionList = forwardRef<QuestionListRef, QuestionListProps>(({
   questions,
   userAnswers,
   filterState,
@@ -20,7 +24,7 @@ export const QuestionList: React.FC<QuestionListProps> = ({
   onAnswer,
   onToggleTraining,
   markedForTraining
-}) => {
+}, ref) => {
   const getFilteredQuestions = () => {
     let filtered = questions;
 
@@ -55,6 +59,19 @@ export const QuestionList: React.FC<QuestionListProps> = ({
 
   const filteredQuestions = getFilteredQuestions();
 
+  // Expose scrollToCurrentQuestion method to parent
+  useImperativeHandle(ref, () => ({
+    scrollToCurrentQuestion: () => {
+      const currentQuestionElement = document.querySelector(`[data-question-number="${currentQuestion}"]`);
+      if (currentQuestionElement) {
+        currentQuestionElement.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'center' 
+        });
+      }
+    }
+  }), [currentQuestion]);
+
   if (filteredQuestions.length === 0) {
     return (
       <div className="bg-white rounded-lg shadow-md p-6 text-center">
@@ -85,4 +102,4 @@ export const QuestionList: React.FC<QuestionListProps> = ({
       })}
     </div>
   );
-};
+});

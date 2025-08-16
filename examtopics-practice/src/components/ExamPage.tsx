@@ -4,8 +4,9 @@ import { useLocalStorage } from '../hooks/useLocalStorage';
 import { Exam, FilterState, Question } from '../types';
 import ExamResult from './ExamResult';
 import { FilterBar } from './FilterBar';
+import FloatingButtons from './FloatingButtons';
 import { ProgressBar } from './ProgressBar';
-import { QuestionList } from './QuestionList';
+import { QuestionList, QuestionListRef } from './QuestionList';
 import { ThemeToggle } from './ThemeToggle';
 
 const ExamPage: React.FC = () => {
@@ -22,6 +23,7 @@ const ExamPage: React.FC = () => {
     showIncorrect: true
   });
   const hasLoadedRef = useRef(false);
+  const questionListRef = useRef<QuestionListRef>(null);
 
   const {
     progress,
@@ -80,12 +82,12 @@ const ExamPage: React.FC = () => {
 
   // Auto-scroll to next unanswered question
   useEffect(() => {
-    // if (!loading && questions.length > 0) {
+    if (!loading && questions.length > 0) {
     //   const nextUnanswered = questions.find(q => !progress.answers[q.question_number]);
     //   if (nextUnanswered && nextUnanswered.question_number !== progress.currentQuestion) {
     //     updateProgress({ currentQuestion: nextUnanswered.question_number });
     //   }
-    // }
+    }
   }, [loading, questions, progress.answers, progress.currentQuestion, updateProgress]);
 
   const handleAnswer = (questionNumber: number, selectedAnswers: string[]) => {
@@ -97,9 +99,11 @@ const ExamPage: React.FC = () => {
     const isCorrect = JSON.stringify(correctAnswers) === JSON.stringify(userAnswersSorted);
 
     saveAnswer(questionNumber, selectedAnswers, isCorrect);
-    const nextUnanswered = questions.find(q => !progress.answers[questionNumber]);
-    if (nextUnanswered && nextUnanswered.question_number !== progress.currentQuestion) {
-      updateProgress({ currentQuestion: nextUnanswered.question_number });
+    const nextQuestion = questions.find(q => q.question_number === questionNumber + 1);
+    if (isCorrect && nextQuestion) {
+      updateProgress({ currentQuestion: nextQuestion.question_number });
+    } else {
+      updateProgress({ currentQuestion: questionNumber });
     }
   };
 
@@ -120,6 +124,8 @@ const ExamPage: React.FC = () => {
         showCorrect: true,
         showIncorrect: true
       });
+      // Reset current question to 1
+      updateProgress({ currentQuestion: 1 });
     }
   };
 
@@ -127,6 +133,14 @@ const ExamPage: React.FC = () => {
     // if (window.confirm('Bạn có chắc chắn muốn quay về trang chủ? Tiến độ hiện tại sẽ được lưu.')) {
     navigate('/');
     // }
+  };
+
+  const handleScrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleScrollToCurrentQuestion = () => {
+    questionListRef.current?.scrollToCurrentQuestion();
   };
 
   if (loading) {
@@ -220,6 +234,7 @@ const ExamPage: React.FC = () => {
         {/* QuestionList */}
         <div className="bg-white dark:bg-gray-800">
           <QuestionList
+            ref={questionListRef}
             questions={questions}
             userAnswers={progress.answers}
             filterState={filterState}
@@ -229,6 +244,13 @@ const ExamPage: React.FC = () => {
             markedForTraining={progress.markedForTraining}
           />
         </div>
+
+        {/* Floating Buttons */}
+        <FloatingButtons
+          onScrollToTop={handleScrollToTop}
+          onScrollToCurrentQuestion={handleScrollToCurrentQuestion}
+          hasCurrentQuestion={progress.currentQuestion > 0}
+        />
       </div>
     </div>
   );

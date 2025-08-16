@@ -33,6 +33,11 @@ export const QuestionItem: React.FC<QuestionItemProps> = ({
     }
   }, [isCurrentQuestion]);
 
+  // Reset selectedAnswers when userAnswer changes (e.g., after reset)
+  useEffect(() => {
+    setSelectedAnswers(userAnswer?.selectedAnswers || []);
+  }, [userAnswer?.selectedAnswers]);
+
   const handleAnswerChange = (answerKey: string, checked: boolean) => {
     let newSelectedAnswers: string[];
 
@@ -78,6 +83,7 @@ export const QuestionItem: React.FC<QuestionItemProps> = ({
   return (
     <div
       ref={questionRef}
+      data-question-number={question.question_number}
       className={`bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6 border-l-4 ${isCurrentQuestion ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900' : 'border-gray-200 dark:border-gray-600'
         } ${isAnswered ? (isCorrect ? 'border-green-500' : 'border-red-500') : ''}`}
     >
@@ -198,7 +204,7 @@ export const QuestionItem: React.FC<QuestionItemProps> = ({
           href={question.link}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 font-medium"
+          className="inline-flex items-center mt-3 gap-1 text-blue-600 hover:text-blue-800 font-medium"
         >
           🔗 Xem giải thích
         </a>
