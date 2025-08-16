@@ -64,7 +64,7 @@ export const QuestionList: React.FC<QuestionListProps> = ({
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 bg-gray-100 dark:bg-gray-900">
       {filteredQuestions.map((question) => {
         const userAnswer = userAnswers[question.question_number];
         const isMarkedForTraining = markedForTraining.includes(question.question_number);

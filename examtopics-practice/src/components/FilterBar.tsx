@@ -37,7 +37,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
   ];
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-4">
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4">
       <div className="flex flex-wrap items-center gap-1">
         <div className="flex flex-nowrap gap-2 overflow-x-auto scrollbar-hide pb-2">
           {filterOptions.map((option) => (
@@ -47,7 +47,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
               className={`px-3 py-1 rounded-full text-sm font-medium transition-colors whitespace-nowrap flex-shrink-0 ${
                 filterState.type === option.value
                   ? 'bg-blue-600 text-white'
-                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                  : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
               }`}
             >
               {option.label}
@@ -77,7 +77,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
       </div>
 
       <div className="mt-4 flex items-center gap-1">
-        <label className="flex items-center gap-2 text-sm">
+        <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
           <input
             type="checkbox"
             checked={filterState.showCorrect}
@@ -86,7 +86,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
           />
           Hiển thị đáp án đúng
         </label>
-        <label className="flex items-center gap-2 text-sm">
+        <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
           <input
             type="checkbox"
             checked={filterState.showIncorrect}

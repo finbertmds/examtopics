@@ -20,7 +20,7 @@ const CollapsibleQuestionText: React.FC<{ text: string, images: string[] }> = ({
       <div className="question-text-container p-4">
         <div 
           ref={textRef}
-          className="question-text text-gray-800 whitespace-pre-wrap"
+          className="question-text text-gray-800 dark:text-gray-200 whitespace-pre-wrap"
           >
             <div dangerouslySetInnerHTML={{ __html: replaceImgPlaceholders(text, images) }} />
         </div>
@@ -32,10 +32,14 @@ const CollapsibleQuestionText: React.FC<{ text: string, images: string[] }> = ({
     <div className="question-text-container p-4">
       <div 
         ref={textRef}
-        className={`question-text text-gray-800 whitespace-pre-wrap collapsible-content cursor-pointer ${
+        className={`question-text text-gray-800 dark:text-gray-200 whitespace-pre-wrap collapsible-content cursor-pointer ${
           isExpanded ? 'expanded' : 'collapsed'
         }`}
-        onClick={() => setIsExpanded(!isExpanded)}
+        onClick={(e) => {
+          setIsExpanded(!isExpanded);
+          // Remove focus outline after click
+          e.currentTarget.blur();
+        }}
         role="button"
         tabIndex={0}
         onKeyDown={(e) => {
@@ -51,7 +55,7 @@ const CollapsibleQuestionText: React.FC<{ text: string, images: string[] }> = ({
       </div>
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="mt-3 text-blue-600 hover:text-blue-800 text-sm font-medium flex items-center gap-1 transition-colors hover:bg-blue-50 px-2 py-1 rounded"
+        className="mt-3 text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300 text-sm font-medium flex items-center gap-1 transition-colors hover:bg-indigo-50 dark:hover:bg-indigo-900 px-2 py-1 rounded"
         aria-label={isExpanded ? 'Thu gọn nội dung' : 'Mở rộng nội dung'}
       >
         {isExpanded ? (

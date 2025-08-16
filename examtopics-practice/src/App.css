@@ -142,15 +142,15 @@
 }
 
 .question-text-container {
-  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
-  border-left: 4px solid #3b82f6;
+  background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
+  border-left: 4px solid #6366f1;
   border-radius: 0 8px 8px 0;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .dark .question-text-container {
-  background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
-  border-left: 4px solid #60a5fa;
+  background: linear-gradient(135deg, #312e81 0%, #3730a3 100%);
+  border-left: 4px solid #a5b4fc;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
@@ -162,15 +162,10 @@
   position: relative;
 }
 
-.collapsible-content:hover {
-  background-color: rgba(59, 130, 246, 0.05);
-  border-radius: 4px;
-}
+/* Removed hover effect - no color change on hover */
 
 .collapsible-content:focus {
-  outline: 2px solid #3b82f6;
-  outline-offset: 2px;
-  border-radius: 4px;
+  outline: none;
 }
 
 /* Mobile-specific styles for better touch interaction */
@@ -181,12 +176,10 @@
     padding: 8px 0;
   }
   
-  .collapsible-content:hover {
-    background-color: rgba(59, 130, 246, 0.1);
-  }
+  /* Removed hover effect for mobile - no color change on hover */
   
   .collapsible-content:active {
-    background-color: rgba(59, 130, 246, 0.15);
+    background-color: rgba(99, 102, 241, 0.15);
     transform: scale(0.98);
   }
 }

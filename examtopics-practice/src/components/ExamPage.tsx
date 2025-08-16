@@ -7,7 +7,6 @@ import { FilterBar } from './FilterBar';
 import { ProgressBar } from './ProgressBar';
 import { QuestionList } from './QuestionList';
 import { ThemeToggle } from './ThemeToggle';
-import { TrainingList } from './TrainingList';
 
 const ExamPage: React.FC = () => {
   const { examId } = useParams<{ examId: string }>();
@@ -124,10 +123,6 @@ const ExamPage: React.FC = () => {
     }
   };
 
-  const handleQuestionClick = (questionNumber: number) => {
-    updateProgress({ currentQuestion: questionNumber });
-  };
-
   const handleBackToHome = () => {
     // if (window.confirm('Bạn có chắc chắn muốn quay về trang chủ? Tiến độ hiện tại sẽ được lưu.')) {
     navigate('/');
@@ -195,86 +190,44 @@ const ExamPage: React.FC = () => {
           </div>
         </header>
 
-        {/* Mobile ProgressBar - Only visible on mobile */}
-        <div className="lg:hidden mb-4">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 transition-colors">
+        {/* ProgressBar */}
+        <div className="mb-4">
             <ProgressBar
               progress={progress}
               totalQuestions={questions.length}
             />
-          </div>
         </div>
 
-        {/* Fixed Layout Container */}
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 exam-layout relative">
-          {/* Fixed Sidebar - Hidden on mobile, visible on lg+ */}
-          <div className="hidden lg:flex lg:col-span-1">
-            <div className="w-full sidebar-container bg-gray-100 dark:bg-gray-800 rounded-lg p-4 transition-colors">
-              <div className="space-y-6">
-                <ProgressBar
-                  progress={progress}
-                  totalQuestions={questions.length}
-                />
-
-                <TrainingList
-                  questions={questions}
-                  userAnswers={progress.answers}
-                  markedForTraining={progress.markedForTraining}
-                  onQuestionClick={handleQuestionClick}
-                  onRemoveFromTraining={toggleTrainingMark}
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Main content with scrollable area */}
-          <div className="col-span-1 lg:col-span-3 flex flex-col h-full">
-            {/* Fixed FilterBar */}
-            <div className="sticky-filter">
-              <FilterBar
-                filterState={filterState}
-                onFilterChange={setFilterState}
-                onRandomize={handleRandomize}
-                onReset={handleReset}
-                totalQuestions={questions.length}
-                answeredCount={answeredCount}
-                userAnswers={progress.answers}
-                markedForTraining={progress.markedForTraining}
-              />
-              <ExamResult userAnswers={progress.answers} totalQuestions={questions.length} />
-            </div>
-
-            {/* Scrollable QuestionList */}
-            <div className="flex-1 overflow-y-auto scrollable-content smooth-scroll">
-              <QuestionList
-                questions={questions}
-                userAnswers={progress.answers}
-                filterState={filterState}
-                currentQuestion={progress.currentQuestion}
-                onAnswer={handleAnswer}
-                onToggleTraining={toggleTrainingMark}
-                markedForTraining={progress.markedForTraining}
-              />
-            </div>
-          </div>
+        {/* FilterBar */}
+        <div className="mb-4">
+          <FilterBar
+            filterState={filterState}
+            onFilterChange={setFilterState}
+            onRandomize={handleRandomize}
+            onReset={handleReset}
+            totalQuestions={questions.length}
+            answeredCount={answeredCount}
+            userAnswers={progress.answers}
+            markedForTraining={progress.markedForTraining}
+          />
         </div>
 
-        {/* Mobile Sidebar - Collapsible */}
-        <div className="lg:hidden mt-6">
-          <details className="bg-white dark:bg-gray-800 rounded-lg shadow-md transition-colors">
-            <summary className="p-4 cursor-pointer font-medium text-gray-800 dark:text-white border-b border-gray-200 dark:border-gray-700 transition-colors">
-              📊 Tiến độ & Luyện tập
-            </summary>
-            <div className="p-4 space-y-4">
-              <TrainingList
-                questions={questions}
-                userAnswers={progress.answers}
-                markedForTraining={progress.markedForTraining}
-                onQuestionClick={handleQuestionClick}
-                onRemoveFromTraining={toggleTrainingMark}
-              />
-            </div>
-          </details>
+        {/* ExamResult */}
+        <div className="mb-4">
+          <ExamResult userAnswers={progress.answers} totalQuestions={questions.length} />
+        </div>
+
+        {/* QuestionList */}
+        <div className="bg-white dark:bg-gray-800">
+          <QuestionList
+            questions={questions}
+            userAnswers={progress.answers}
+            filterState={filterState}
+            currentQuestion={progress.currentQuestion}
+            onAnswer={handleAnswer}
+            onToggleTraining={toggleTrainingMark}
+            markedForTraining={progress.markedForTraining}
+          />
         </div>
       </div>
     </div>

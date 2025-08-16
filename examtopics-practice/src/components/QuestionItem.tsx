@@ -78,26 +78,26 @@ export const QuestionItem: React.FC<QuestionItemProps> = ({
   return (
     <div
       ref={questionRef}
-      className={`bg-white rounded-lg shadow-md p-6 mb-6 border-l-4 ${isCurrentQuestion ? 'border-blue-500 bg-blue-50' : 'border-gray-200'
+      className={`bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6 border-l-4 ${isCurrentQuestion ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900' : 'border-gray-200 dark:border-gray-600'
         } ${isAnswered ? (isCorrect ? 'border-green-500' : 'border-red-500') : ''}`}
     >
       <div className="flex justify-between items-start mb-4">
-        <h3 className="text-lg font-semibold text-gray-800">
+        <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">
           Câu {question.question_number}
         </h3>
         <div className="flex gap-2">
           <button
             onClick={() => onToggleTraining(question.question_number)}
             className={`px-2 rounded-full transition-colors ${isMarkedForTraining
-                ? 'bg-blue-100 text-blue-600'
-                : 'bg-gray-100 text-gray-600 hover:bg-blue-100 hover:text-blue-600'
+                ? 'bg-indigo-100 dark:bg-indigo-900 text-indigo-600 dark:text-indigo-400'
+                : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-indigo-100 dark:hover:bg-indigo-900 hover:text-indigo-600 dark:hover:text-indigo-400'
               }`}
             title={isMarkedForTraining ? 'Bỏ khỏi luyện tập' : 'Thêm vào luyện tập'}
           >
             📚
           </button>
           {isAnswered && (
-            <span className={`flex items-center justify-center px-2 py-1 rounded-full text-xs font-medium ${isCorrect ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+            <span className={`flex items-center justify-center px-2 py-1 rounded-full text-xs font-medium ${isCorrect ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200' : 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200'
               }`}>
               {isCorrect ? '✓' : '✗'}
             </span>
@@ -126,12 +126,12 @@ export const QuestionItem: React.FC<QuestionItemProps> = ({
                   className={`flex items-start gap-3 p-3 rounded-lg border-2 cursor-pointer transition-all ${isSelected
                       ? showCorrectness
                         ? isCorrectAnswer
-                          ? 'border-green-500 bg-green-50'
-                          : 'border-red-500 bg-red-50'
-                        : 'border-blue-500 bg-blue-50'
+                          ? 'border-green-500 bg-green-50 dark:bg-green-900'
+                          : 'border-red-500 bg-red-50 dark:bg-red-900'
+                        : 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900'
                       : showCorrectness && isCorrectAnswer
-                        ? 'border-green-300 bg-green-50'
-                        : 'border-gray-200 hover:border-gray-300'
+                        ? 'border-green-300 bg-green-50 dark:bg-green-900'
+                        : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
                     }`}
                 >
                   <input
@@ -144,10 +144,10 @@ export const QuestionItem: React.FC<QuestionItemProps> = ({
                   // disabled={isAnswered}
                   />
                   <div className="flex-1">
-                    <span className="font-medium text-gray-700 mr-2">{key}.</span>
-                    <span className="text-gray-800" dangerouslySetInnerHTML={{ __html: replaceImgPlaceholders(answer, images) }} />
+                    <span className="font-medium text-gray-700 dark:text-gray-300 mr-2">{key}.</span>
+                    <span className="text-gray-800 dark:text-gray-200" dangerouslySetInnerHTML={{ __html: replaceImgPlaceholders(answer, images) }} />
                     {showCorrectness && isCorrectAnswer && (
-                      <span className="ml-2 text-green-600 font-medium">✓ Đáp án đúng</span>
+                      <span className="ml-2 text-green-600 dark:text-green-400 font-medium">✓ Đáp án đúng</span>
                     )}
                   </div>
                 </label>
@@ -159,9 +159,9 @@ export const QuestionItem: React.FC<QuestionItemProps> = ({
 
       {/* Show notification for multiple choice questions that need more answers */}
       {isAnswered && showAnswer && !shouldShowAnswer && question.multiple_choice && (
-        <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-          <div className="flex items-center gap-2 text-yellow-800">
-            <span className="text-yellow-600">⚠️</span>
+        <div className="mt-4 p-3 bg-yellow-50 dark:bg-yellow-900 border border-yellow-200 dark:border-yellow-700 rounded-lg">
+          <div className="flex items-center gap-2 text-yellow-800 dark:text-yellow-200">
+            <span className="text-yellow-600 dark:text-yellow-400">⚠️</span>
             <span className="text-sm">
               Bạn cần chọn thêm {correctAnswers.length - selectedAnswers.length} đáp án để xem kết quả
             </span>
@@ -170,23 +170,23 @@ export const QuestionItem: React.FC<QuestionItemProps> = ({
       )}
 
       {shouldShowAnswer && (
-        <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+        <div className="mt-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
           <div className="mb-2">
-            <strong className="text-gray-800">Đáp án của bạn:</strong>
-            <span className="ml-2 text-gray-600">
+            <strong className="text-gray-800 dark:text-gray-200">Đáp án của bạn:</strong>
+            <span className="ml-2 text-gray-600 dark:text-gray-400">
               {userAnswersSorted.length > 0 ? userAnswersSorted.join(', ') : 'Chưa chọn'}
             </span>
           </div>
           <div className="mb-2">
-            <strong className="text-gray-800">Đáp án gợi ý:</strong>
-            <span className="ml-2 text-green-600 font-medium">
+            <strong className="text-gray-800 dark:text-gray-200">Đáp án gợi ý:</strong>
+            <span className="ml-2 text-green-600 dark:text-green-400 font-medium">
               {correctAnswers.join(', ')}
             </span>
           </div>
           {question.answer !== question.suggested_answer && (
             <div className="mb-2">
-              <strong className="text-gray-800">Đáp án phụ:</strong>
-              <span className="ml-2 text-blue-600 font-medium">
+              <strong className="text-gray-800 dark:text-gray-200">Đáp án phụ:</strong>
+              <span className="ml-2 text-indigo-600 dark:text-indigo-400 font-medium">
                 {question.answer}
               </span>
             </div>
