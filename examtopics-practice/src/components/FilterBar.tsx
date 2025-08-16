@@ -61,10 +61,16 @@ export const FilterBar: React.FC<FilterBarProps> = ({
         <div className="flex items-center justify-end w-full">
           <div className="flex gap-2">
             <button
+              onClick={() => onFilterChange({ ...filterState, type: 'training' })}
+              className="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors text-sm font-medium"
+            >
+              📚 Luyện tập
+            </button>
+            <button
               onClick={onRandomize}
               className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm font-medium"
             >
-              🔀 Random
+              🔀 Ngẫu nhiên
             </button>
             <button
               onClick={onReset}
