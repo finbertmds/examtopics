@@ -14,7 +14,7 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({ progress, totalQuestio
   const incorrectCount = answeredCount - correctCount;
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-4 mb-6">
+    <div className="bg-white rounded-lg shadow-md p-4">
       <div className="flex justify-between items-center mb-2">
         <h3 className="text-lg font-semibold text-gray-800">Tiến độ làm bài</h3>
       </div>

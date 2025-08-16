@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import { Exam, FilterState, Question } from '../types';
+import ExamResult from './ExamResult';
 import { FilterBar } from './FilterBar';
 import { ProgressBar } from './ProgressBar';
 import { QuestionList } from './QuestionList';
@@ -194,6 +195,16 @@ const ExamPage: React.FC = () => {
           </div>
         </header>
 
+        {/* Mobile ProgressBar - Only visible on mobile */}
+        <div className="lg:hidden mb-4">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 transition-colors">
+            <ProgressBar
+              progress={progress}
+              totalQuestions={questions.length}
+            />
+          </div>
+        </div>
+
         {/* Fixed Layout Container */}
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 exam-layout relative">
           {/* Fixed Sidebar - Hidden on mobile, visible on lg+ */}
@@ -230,6 +241,7 @@ const ExamPage: React.FC = () => {
                 userAnswers={progress.answers}
                 markedForTraining={progress.markedForTraining}
               />
+              <ExamResult userAnswers={progress.answers} totalQuestions={questions.length} />
             </div>
 
             {/* Scrollable QuestionList */}
@@ -254,10 +266,6 @@ const ExamPage: React.FC = () => {
               📊 Tiến độ & Luyện tập
             </summary>
             <div className="p-4 space-y-4">
-              <ProgressBar
-                progress={progress}
-                totalQuestions={questions.length}
-              />
               <TrainingList
                 questions={questions}
                 userAnswers={progress.answers}
