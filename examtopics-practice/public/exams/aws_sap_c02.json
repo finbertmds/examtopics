@@ -100,8 +100,8 @@
       "D": "In Account B, set the permissions of User_DataProcessor to the following: //IMG//",
       "E": "In Account B, set the permissions of User_DataProcessor to the following: //IMG//"
     },
-    "suggested_answer": "C",
-    "answer": "C",
+    "suggested_answer": "CD",
+    "answer": "CD",
     "link": "https://www.examtopics.com/discussions/amazon/view/90940-exam-aws-certified-solutions-architect-professional-sap-c02/",
     "multiple_choice": false,
     "question_text": "A retail company needs to provide a series of data files to another company, which is its business partner. These files are saved in an Amazon S3 bucket under Account A, which belongs to the retail company. The business partner company wants one of its IAM users, User_DataProcessor, to access the files from its own AWS account (Account B).\nWhich combination of steps must the companies take so that User_DataProcessor can access the S3 bucket successfully? (Choose two.)",
