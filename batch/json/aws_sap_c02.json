@@ -95,17 +95,22 @@
     "title": "Exam AWS Certified Solutions Architect - Professional SAP-C02 topic 1 question 6 discussion",
     "answers": {
       "A": "Turn on the cross-origin resource sharing (CORS) feature for the S3 bucket in Account A.",
-      "B": "In Account A, set the S3 bucket policy to the following:",
-      "C": "In Account A, set the S3 bucket policy to the following:",
-      "D": "In Account B, set the permissions of User_DataProcessor to the following:",
-      "E": "In Account B, set the permissions of User_DataProcessor to the following:"
+      "B": "In Account A, set the S3 bucket policy to the following: //IMG//",
+      "C": "In Account A, set the S3 bucket policy to the following: //IMG//",
+      "D": "In Account B, set the permissions of User_DataProcessor to the following: //IMG//",
+      "E": "In Account B, set the permissions of User_DataProcessor to the following: //IMG//"
     },
-    "suggested_answer": "C",
-    "answer": "C",
+    "suggested_answer": "CD",
+    "answer": "CD",
     "link": "https://www.examtopics.com/discussions/amazon/view/90940-exam-aws-certified-solutions-architect-professional-sap-c02/",
-    "multiple_choice": false,
+    "multiple_choice": true,
     "question_text": "A retail company needs to provide a series of data files to another company, which is its business partner. These files are saved in an Amazon S3 bucket under Account A, which belongs to the retail company. The business partner company wants one of its IAM users, User_DataProcessor, to access the files from its own AWS account (Account B).\nWhich combination of steps must the companies take so that User_DataProcessor can access the S3 bucket successfully? (Choose two.)",
-    "answer_images": [],
+    "answer_images": [
+      "https://img.examtopics.com/aws-certified-solutions-architect-professional-sap-c02/image1.png",
+      "https://img.examtopics.com/aws-certified-solutions-architect-professional-sap-c02/image2.png",
+      "https://img.examtopics.com/aws-certified-solutions-architect-professional-sap-c02/image1.png",
+      "https://img.examtopics.com/aws-certified-solutions-architect-professional-sap-c02/image4.png"
+    ],
     "question_images": []
   },
   {
@@ -6656,15 +6661,18 @@
     "answers": {
       "A": "Enable tag policies in the organization. Create a tag policy for the BusinessUnit tag. Ensure that compliance with tag key capitalization is turned off. Implement the tag policy for the ec2:instance resource type. Attach the tag policy to the root of the organization.",
       "B": "Enable tag policies in the organization. Create a tag policy for the BusinessUnit tag. Ensure that compliance with tag key capitalization is turned on. Implement the tag policy for the ec2:instance resource type. Attach the tag policy to the organization's management account.",
-      "C": "Create an SCP and attach the SCP to the root of the organization. Include the following statement in the SCP:",
-      "D": "Create an SCP and attach the SCP to the organization’s management account. Include the following statement in the SCP:"
+      "C": "Create an SCP and attach the SCP to the root of the organization. Include the following statement in the SCP: //IMG//",
+      "D": "Create an SCP and attach the SCP to the organization’s management account. Include the following statement in the SCP: //IMG//"
     },
     "suggested_answer": "C",
     "answer": "C",
     "link": "https://www.examtopics.com/discussions/amazon/view/126830-exam-aws-certified-solutions-architect-professional-sap-c02/",
     "multiple_choice": false,
     "question_text": "A company is managing many AWS accounts by using an organization in AWS Organizations. Different business units in the company run applications on Amazon EC2 instances. All the EC2 instances must have a BusinessUnit tag so that the company can track the cost for each business unit.\n\nA recent audit revealed that some instances were missing this tag. The company manually added the missing tag to the instances.\n\nWhat should a solutions architect do to enforce the tagging requirement in the future?",
-    "answer_images": [],
+    "answer_images": [
+      "https://img.examtopics.com/aws-certified-solutions-architect-professional-sap-c02/image8.png",
+      "https://img.examtopics.com/aws-certified-solutions-architect-professional-sap-c02/image9.png"
+    ],
     "question_images": []
   },
   {
