@@ -249,6 +249,7 @@ const ExamPage: React.FC = () => {
             onAnswer={handleAnswer}
             onToggleTraining={toggleTrainingMark}
             markedForTraining={progress.markedForTraining}
+            examId={examId || ''}
           />
         </div>
 

@@ -1,8 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { toast } from 'react-toastify';
 import { useLanguage } from '../contexts/LanguageContext';
 import { Question, UserAnswer } from '../types';
 import { replaceImgPlaceholders } from '../utils/replaceImgPlaceholders';
 import CollapsibleQuestionText from './CollapsibleQuestionText';
+import ReportModal from './ReportModal';
 
 interface QuestionItemProps {
   question: Question;
@@ -12,6 +14,7 @@ interface QuestionItemProps {
   isMarkedForTraining: boolean;
   showAnswer: boolean;
   isCurrentQuestion: boolean;
+  examId: string;
 }
 
 export const QuestionItem: React.FC<QuestionItemProps> = ({
@@ -21,12 +24,14 @@ export const QuestionItem: React.FC<QuestionItemProps> = ({
   onToggleTraining,
   isMarkedForTraining,
   showAnswer,
-  isCurrentQuestion
+  isCurrentQuestion,
+  examId
 }) => {
   const { t } = useLanguage();
   const [selectedAnswers, setSelectedAnswers] = useState<string[]>(
     userAnswer?.selectedAnswers || []
   );
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const questionRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -55,6 +60,38 @@ export const QuestionItem: React.FC<QuestionItemProps> = ({
 
     setSelectedAnswers(newSelectedAnswers);
     onAnswer(question.question_number, newSelectedAnswers);
+  };
+
+  const handleReportSubmit = async (reason: string, comment: string) => {
+    try {
+      // Sử dụng backend URL từ environment hoặc fallback
+      const backendUrl = process.env.REACT_APP_BACKEND_URL || 'https://examtopics-backend-latest.onrender.com';
+      const response = await fetch(`${backendUrl}/report`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          questionId: question.question_number.toString(),
+          examId: examId,
+          reason: reason,
+          comment: comment,
+          user: null // Có thể thêm user authentication sau này
+        }),
+      });
+
+      const data = await response.json();
+      
+      if (data.success) {
+        toast.success(`${t('reportSubmittedSuccessfully')} - ${t('question')} ${question.question_number}`);
+      } else {
+        throw new Error(data.error || 'Failed to submit report');
+      }
+    } catch (error) {
+      console.error('Error submitting report:', error);
+      toast.error(t('errorSubmittingReport'));
+      throw error;
+    }
   };
 
   const isCorrect = userAnswer?.isCorrect;
@@ -94,6 +131,13 @@ export const QuestionItem: React.FC<QuestionItemProps> = ({
           {t('question')} {question.question_number}
         </h3>
         <div className="flex gap-2">
+          <button
+            onClick={() => setIsReportModalOpen(true)}
+            className="px-2 rounded-full transition-colors bg-red-100 dark:bg-red-900 text-red-600 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-800 hover:text-red-700 dark:hover:text-red-300"
+            title={t('reportQuestion')}
+          >
+            🚨
+          </button>
           <button
             onClick={() => onToggleTraining(question.question_number)}
             className={`px-2 rounded-full transition-colors ${isMarkedForTraining
@@ -228,6 +272,15 @@ export const QuestionItem: React.FC<QuestionItemProps> = ({
           🔗 {t('viewExplanation')}
         </a>
       )}
+
+      {/* Report Modal */}
+      <ReportModal
+        isOpen={isReportModalOpen}
+        onClose={() => setIsReportModalOpen(false)}
+        onSubmit={handleReportSubmit}
+        questionId={question.question_number.toString()}
+        examId={examId}
+      />
     </div>
   );
 };

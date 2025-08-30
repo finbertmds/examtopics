@@ -11,6 +11,7 @@ interface QuestionListProps {
   onAnswer: (questionNumber: number, selectedAnswers: string[]) => void;
   onToggleTraining: (questionNumber: number) => void;
   markedForTraining: number[];
+  examId: string;
 }
 
 export interface QuestionListRef {
@@ -24,7 +25,8 @@ export const QuestionList = forwardRef<QuestionListRef, QuestionListProps>(({
   currentQuestion,
   onAnswer,
   onToggleTraining,
-  markedForTraining
+  markedForTraining,
+  examId
 }, ref) => {
   const { t } = useLanguage();
   const getFilteredQuestions = () => {
@@ -99,6 +101,7 @@ export const QuestionList = forwardRef<QuestionListRef, QuestionListProps>(({
             isMarkedForTraining={isMarkedForTraining}
             showAnswer={filterState.showCorrect || filterState.showIncorrect}
             isCurrentQuestion={isCurrentQuestion}
+            examId={examId}
           />
         );
       })}

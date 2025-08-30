@@ -1,0 +1,66 @@
+/* Custom toast styles */
+.Toastify__toast {
+  border-radius: 8px;
+  font-family: inherit;
+}
+
+.Toastify__toast--success {
+  background: #10b981;
+  color: white;
+}
+
+.Toastify__toast--error {
+  background: #ef4444;
+  color: white;
+}
+
+.Toastify__toast--warning {
+  background: #f59e0b;
+  color: white;
+}
+
+.Toastify__toast--info {
+  background: #3b82f6;
+  color: white;
+}
+
+/* Dark mode support */
+.dark .Toastify__toast {
+  background: #374151;
+  color: #f9fafb;
+}
+
+.dark .Toastify__toast--success {
+  background: #059669;
+}
+
+.dark .Toastify__toast--error {
+  background: #dc2626;
+}
+
+.dark .Toastify__toast--warning {
+  background: #d97706;
+}
+
+.dark .Toastify__toast--info {
+  background: #2563eb;
+}
+
+/* Toast close button */
+.Toastify__close-button {
+  color: inherit;
+  opacity: 0.7;
+}
+
+.Toastify__close-button:hover {
+  opacity: 1;
+}
+
+/* Progress bar */
+.Toastify__progress-bar {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.dark .Toastify__progress-bar {
+  background: rgba(249, 250, 251, 0.3);
+}

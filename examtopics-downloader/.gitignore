@@ -1,0 +1,6 @@
+examtopics_output*
+*.txt
+env/
+!examples/*
+examtopics-downloader
+examtopicsdl
