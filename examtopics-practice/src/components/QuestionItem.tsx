@@ -123,10 +123,27 @@ export const QuestionItem: React.FC<QuestionItemProps> = ({
       {
         question.answers && (
           <div className="space-y-3 mb-4">
-            {Object.entries(question.answers).map(([key, answer]) => {
+            {Object.entries(question.answers).map(([key, answer], answerIndex) => {
               const isSelected = selectedAnswers.includes(key);
               const isCorrectAnswer = correctAnswers.includes(key);
               const showCorrectness = shouldShowAnswer;
+
+              // Đếm số lượng placeholder //IMG// trong question_text
+              const questionPlaceholderCount = (question.question_text.match(/\/\/IMG\/\//g) || []).length;
+              
+              // Tính toán vị trí bắt đầu trong mảng images cho answer này
+              let startIndex = questionPlaceholderCount; // Bắt đầu sau các hình ảnh của question_text
+              for (let i = 0; i < answerIndex; i++) {
+                const prevAnswer = Object.values(question.answers)[i];
+                const prevPlaceholderCount = (prevAnswer.match(/\/\/IMG\/\//g) || []).length;
+                startIndex += prevPlaceholderCount;
+              }
+              
+              // Đếm số lượng placeholder //IMG// trong answer này
+              const placeholderCount = (answer.match(/\/\/IMG\/\//g) || []).length;
+              
+              // Lấy hình ảnh cho answer này
+              const answerImages = images.slice(startIndex, startIndex + placeholderCount);
 
               return (
                 <label
@@ -153,7 +170,7 @@ export const QuestionItem: React.FC<QuestionItemProps> = ({
                   />
                   <div className="flex-1">
                     <span className="font-medium text-gray-700 dark:text-gray-300 mr-2">{key}.</span>
-                    <span className="text-gray-800 dark:text-gray-200" dangerouslySetInnerHTML={{ __html: replaceImgPlaceholders(answer, images) }} />
+                    <span className="text-gray-800 dark:text-gray-200" dangerouslySetInnerHTML={{ __html: replaceImgPlaceholders(answer, answerImages) }} />
                     {showCorrectness && isCorrectAnswer && (
                       <span className="ml-2 text-green-600 dark:text-green-400 font-medium">✓ {t('correct')}</span>
                     )}
