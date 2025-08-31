@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { UserProgress } from '../types';
+import { getBackendUrl } from '../utils/backendUrl';
 
 const STORAGE_KEY = 'exam-progress';
-const backendUrl = process.env.REACT_APP_BACKEND_URL || 'https://examtopics-backend-latest.onrender.com';
+const backendUrl = getBackendUrl();
 
 export const useProgress = (examId?: string) => {
   const { isAuthenticated, token } = useAuth();

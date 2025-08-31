@@ -90,11 +90,21 @@ const UserMenu: React.FC = () => {
       >
         {/* Avatar */}
         <div className="relative">
-          <div className="w-6 h-6 md:w-8 md:h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg">
-            <span className="text-white text-sm md:text-lg font-semibold">
-              {user.name.charAt(0).toUpperCase()}
-            </span>
-          </div>
+          {user.picture ? (
+            // Use Google profile picture if available
+            <img
+              src={user.picture}
+              alt={user.name}
+              className="w-6 h-6 md:w-8 md:h-8 rounded-full shadow-lg object-cover"
+            />
+          ) : (
+            // Fallback to initials
+            <div className="w-6 h-6 md:w-8 md:h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg">
+              <span className="text-white text-sm md:text-lg font-semibold">
+                {user.name.charAt(0).toUpperCase()}
+              </span>
+            </div>
+          )}
           {/* Online indicator */}
           <div className="absolute -bottom-0.5 -right-0.5 md:-bottom-1 md:-right-1 w-3 h-3 md:w-4 md:h-4 bg-green-500 border-2 border-white dark:border-gray-800 rounded-full"></div>
         </div>
@@ -108,9 +118,8 @@ const UserMenu: React.FC = () => {
 
         {/* Dropdown Arrow */}
         <svg
-          className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${
-            isMenuOpen ? 'rotate-180' : ''
-          }`}
+          className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${isMenuOpen ? 'rotate-180' : ''
+            }`}
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -130,11 +139,21 @@ const UserMenu: React.FC = () => {
           {/* Menu Header */}
           <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
             <div className="flex items-center space-x-3">
-              <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg">
-                <span className="text-white text-xl font-semibold">
-                  {user.name.charAt(0).toUpperCase()}
-                </span>
-              </div>
+              {user.picture ? (
+                // Use Google profile picture if available
+                <img
+                  src={user.picture}
+                  alt={user.name}
+                  className="w-6 h-6 md:w-8 md:h-8 rounded-full shadow-lg object-cover"
+                />
+              ) : (
+                // Fallback to initials
+                <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg">
+                  <span className="text-white text-xl font-semibold">
+                    {user.name.charAt(0).toUpperCase()}
+                  </span>
+                </div>
+              )}
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">
                   {user.name}

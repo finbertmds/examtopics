@@ -18,9 +18,27 @@ connectDB();
 
 // Middleware
 app.use(helmet());
+// CORS configuration with environment-based origins
+const getCorsOrigins = () => {
+  const env = process.env.NODE_ENV || 'development';
+  
+  if (env === 'production') {
+    // Production: Allow specific origins
+    const origins = [
+      'https://examtopics-practice.onrender.com',
+      process.env.FRONTEND_URL
+    ].filter(Boolean);
+    
+    return origins.length > 0 ? origins : ['https://examtopics-practice.onrender.com'];
+  } else {
+    // Development: Allow localhost
+    return ['http://localhost:3000', 'http://localhost:3001'];
+  }
+};
+
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || '*',
-  methods: ['GET', 'POST'],
+  origin: getCorsOrigins(),
+  methods: ['GET', 'POST', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
 }));
@@ -74,8 +92,21 @@ app.get('/auth/google/callback',
     // Successful authentication, generate JWT token
     const token = generateToken(req.user);
     
-    // Redirect to frontend with token
-    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3001';
+    // Get frontend URL based on environment
+    const getFrontendUrl = () => {
+      const env = process.env.NODE_ENV || 'development';
+      
+      if (env === 'production') {
+        // Production: Use environment variable or default Render frontend URL
+        return process.env.FRONTEND_URL || 'https://examtopics-practice.onrender.com';
+      } else {
+        // Development: Use localhost
+        return process.env.FRONTEND_URL || 'http://localhost:3000';
+      }
+    };
+    
+    const frontendUrl = getFrontendUrl();
+    console.log(`🔗 Redirecting to frontend: ${frontendUrl}/auth/callback`);
     res.redirect(`${frontendUrl}/auth/callback?token=${token}`);
   }
 );
@@ -88,6 +119,7 @@ app.get('/auth/me', authenticateToken, (req, res) => {
       id: req.user.userId,
       email: req.user.email,
       name: req.user.name,
+      picture: req.user.picture || null
     }
   });
 });

@@ -1,9 +1,11 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import { getBackendUrl } from '../utils/backendUrl';
 
 interface User {
   id: string;
   email: string;
   name: string;
+  picture?: string; // Google profile picture URL
 }
 
 interface AuthContextType {
@@ -37,7 +39,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   });
   const [isLoading, setIsLoading] = useState(true);
 
-  const backendUrl = process.env.REACT_APP_BACKEND_URL || 'https://examtopics-backend-latest.onrender.com';
+  const backendUrl = getBackendUrl();
 
   // Load user info when token changes
   useEffect(() => {

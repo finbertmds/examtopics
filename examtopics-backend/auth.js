@@ -7,11 +7,24 @@ require('dotenv').config();
 // JWT secret key
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
 
-// Configure Google OAuth Strategy
+// Configure Google OAuth Strategy with environment-based callback URL
+const getCallbackURL = () => {
+  const env = process.env.NODE_ENV || 'development';
+  const port = process.env.PORT || 3001;
+  
+  if (env === 'production') {
+    // Production: Use Render URL or custom domain
+    return process.env.GOOGLE_CALLBACK_URL || `https://examtopics-backend-latest.onrender.com/auth/google/callback`;
+  } else {
+    // Development: Use localhost
+    return `http://localhost:${port}/auth/google/callback`;
+  }
+};
+
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: process.env.GOOGLE_CALLBACK_URL || "http://localhost:3000/auth/google/callback"
+    callbackURL: getCallbackURL()
   },
   async function(accessToken, refreshToken, profile, cb) {
     try {
@@ -47,6 +60,7 @@ const generateToken = (user) => {
       userId: user._id, 
       email: user.email,
       name: user.name,
+      picture: user.picture || null
     },
     JWT_SECRET,
     { expiresIn: '7d' }

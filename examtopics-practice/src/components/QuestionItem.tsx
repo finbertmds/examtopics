@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
 import { useLanguage } from '../contexts/LanguageContext';
 import { Question, UserAnswer } from '../types';
+import { getBackendUrl } from '../utils/backendUrl';
 import { replaceImgPlaceholders } from '../utils/replaceImgPlaceholders';
 import CollapsibleQuestionText from './CollapsibleQuestionText';
 import ReportModal from './ReportModal';
@@ -64,8 +65,7 @@ export const QuestionItem: React.FC<QuestionItemProps> = ({
 
   const handleReportSubmit = async (reason: string, comment: string) => {
     try {
-      // Sử dụng backend URL từ environment hoặc fallback
-      const backendUrl = process.env.REACT_APP_BACKEND_URL || 'https://examtopics-backend-latest.onrender.com';
+      const backendUrl = getBackendUrl();
       const response = await fetch(`${backendUrl}/report`, {
         method: 'POST',
         headers: {
