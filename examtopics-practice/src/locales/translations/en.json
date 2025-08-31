@@ -82,5 +82,11 @@
   "pleaseSelectReason": "Please select a reason",
   "errorSubmittingReport": "Error submitting report. Please try again.",
   "reportSubmittedSuccessfully": "Report submitted successfully!",
-  "exam": "Exam"
+  "exam": "Exam",
+  "loginWithGoogle": "Login with Google",
+  "logout": "Logout",
+  "authenticating": "Authenticating...",
+  "pleaseWait": "Please wait while we authenticate you.",
+  "loading": "Loading...",
+  "loadingProgress": "Loading progress..."
 }

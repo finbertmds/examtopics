@@ -24,7 +24,7 @@ cd examtopics-backend
 npm install
 ```
 
-### 3. Cấu hình Google Sheets
+### 3. Cấu hình Google Services
 
 #### Tạo Google Service Account:
 1. Vào [Google Cloud Console](https://console.cloud.google.com/)
@@ -37,7 +37,32 @@ npm install
 #### Tạo Google Sheet:
 Tạo sheet với các cột: `timestamp`, `questionId`, `examId`, `reason`, `comment`, `user`
 
-### 4. Cấu hình Environment Variables
+#### Tạo Google OAuth Credentials:
+1. Vào [Google Cloud Console](https://console.cloud.google.com/)
+2. Chọn project của bạn
+3. Vào "APIs & Services" → "Credentials"
+4. Click "Create Credentials" → "OAuth 2.0 Client IDs"
+5. Chọn "Web application"
+6. Thêm Authorized redirect URIs:
+   - `http://localhost:3000/auth/google/callback` (development)
+   - `https://your-backend-domain.com/auth/google/callback` (production)
+7. Copy Client ID và Client Secret
+
+### 4. Cấu hình MongoDB Atlas
+
+#### Tạo MongoDB Atlas Cluster:
+1. Vào [MongoDB Atlas](https://cloud.mongodb.com/)
+2. Tạo account mới hoặc đăng nhập
+3. Tạo cluster mới (Free tier M0)
+4. Tạo database user với username và password
+5. Whitelist IP address (0.0.0.0/0 cho development)
+6. Copy connection string
+
+#### Cấu hình Database:
+- Database name: `examtopics`
+- Collections sẽ được tạo tự động: `users`, `progresses`
+
+### 5. Cấu hình Environment Variables
 
 Copy file `env.example` thành `.env`:
 ```bash
@@ -49,7 +74,21 @@ Cập nhật các giá trị trong `.env`:
 GOOGLE_SHEET_ID=your_google_sheet_id_here
 GOOGLE_CLIENT_EMAIL=your_service_account_email@project.iam.gserviceaccount.com
 GOOGLE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nYour private key here\n-----END PRIVATE KEY-----\n"
-PORT=3000
+
+# Google OAuth Configuration
+GOOGLE_CLIENT_ID=your_google_oauth_client_id
+GOOGLE_CLIENT_SECRET=your_google_oauth_client_secret
+GOOGLE_CALLBACK_URL=http://localhost:3000/auth/google/callback
+
+# JWT Configuration
+JWT_SECRET=your-jwt-secret-key-change-in-production
+SESSION_SECRET=your-session-secret-key
+
+# MongoDB Configuration
+MONGO_URI=mongodb+srv://username:password@cluster.mongodb.net/examtopics?retryWrites=true&w=majority
+
+PORT=3001
+FRONTEND_URL=http://localhost:3000
 CORS_ORIGIN=https://your-frontend-domain.com
 ```
 
@@ -102,7 +141,82 @@ Kiểm tra trạng thái service.
   "status": "healthy",
   "timestamp": "2024-01-01T00:00:00.000Z",
   "services": {
-    "googleSheets": "connected"
+    "googleSheets": "connected",
+    "mongodb": "connected"
+  },
+  "stats": {
+    "totalUsers": 5,
+    "totalExams": 12,
+    "storageSize": 5
+  }
+}
+```
+
+### GET /auth/me
+
+Lấy thông tin user hiện tại (cần JWT token).
+
+**Headers:**
+```
+Authorization: Bearer <jwt_token>
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "user": {
+    "id": "123456789",
+    "email": "user@example.com",
+    "name": "John Doe"
+  }
+}
+```
+
+### POST /progress/save
+
+Lưu progress cho user (cần JWT token).
+
+**Headers:**
+```
+Authorization: Bearer <jwt_token>
+Content-Type: application/json
+```
+
+**Request Body:**
+```json
+{
+  "examId": "aws-saa-c02",
+  "progress": {
+    "examId": "aws-saa-c02",
+    "answers": {...},
+    "markedForTraining": [1, 5, 10],
+    "currentQuestion": 15,
+    "isRandomized": false
+  }
+}
+```
+
+### GET /progress/load/:examId
+
+Lấy progress cho user (cần JWT token).
+
+**Headers:**
+```
+Authorization: Bearer <jwt_token>
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "progress": {
+    "examId": "aws-saa-c02",
+    "answers": {...},
+    "markedForTraining": [1, 5, 10],
+    "currentQuestion": 15,
+    "isRandomized": false,
+    "lastUpdated": "2024-01-01T00:00:00.000Z"
   }
 }
 ```
@@ -167,7 +281,14 @@ curl -X POST https://your-service.onrender.com/report \
 ```
 examtopics-backend/
 ├── index.js          # Express server và routes
+├── auth.js           # Authentication middleware
 ├── sheets.js         # Google Sheets helper
+├── progress.js       # Progress service
+├── config/
+│   └── database.js   # MongoDB connection
+├── models/
+│   ├── User.js       # User model
+│   └── Progress.js   # Progress model
 ├── package.json      # Dependencies
 ├── env.example       # Environment variables template
 ├── Dockerfile        # Docker configuration

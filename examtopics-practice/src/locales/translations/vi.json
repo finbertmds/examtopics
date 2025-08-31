@@ -82,5 +82,11 @@
   "pleaseSelectReason": "Vui lòng chọn lý do",
   "errorSubmittingReport": "Lỗi khi gửi báo cáo. Vui lòng thử lại.",
   "reportSubmittedSuccessfully": "Báo cáo đã được gửi thành công!",
-  "exam": "Đề thi"
+  "exam": "Đề thi",
+  "loginWithGoogle": "Đăng nhập với Google",
+  "logout": "Đăng xuất",
+  "authenticating": "Đang xác thực...",
+  "pleaseWait": "Vui lòng chờ trong khi chúng tôi xác thực bạn.",
+  "loading": "Đang tải...",
+  "loadingProgress": "Đang tải tiến độ..."
 }

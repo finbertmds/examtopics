@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
-import { useLocalStorage } from '../hooks/useLocalStorage';
+import { useAllProgress } from '../hooks/useAllProgress';
 import { Exam } from '../types';
 import { getExamDescription, getExamName } from '../utils/examUtils';
 import FloatingButtons from './FloatingButtons';
 import { LanguageToggle } from './LanguageToggle';
 import { ThemeToggle } from './ThemeToggle';
+import UserMenu from './UserMenu';
 
 const Home: React.FC = () => {
   const [exams, setExams] = useState<Exam[]>([]);
@@ -16,7 +17,7 @@ const Home: React.FC = () => {
   const [selectedDifficulty, setSelectedDifficulty] = useState('all');
   const [isMobile, setIsMobile] = useState(false);
   const navigate = useNavigate();
-  const { getAllProgress } = useLocalStorage();
+  const { getProgressStats } = useAllProgress();
   const { t, language } = useLanguage();
 
   useEffect(() => {
@@ -125,6 +126,7 @@ const Home: React.FC = () => {
           <div className="flex justify-between items-center mb-6">
             <div></div>
             <div className="flex items-center gap-2">
+              <UserMenu />
               <LanguageToggle />
               <ThemeToggle />
             </div>
@@ -247,28 +249,36 @@ const Home: React.FC = () => {
 
               {/* Progress */}
               {(() => {
-                const allProgress = getAllProgress();
-                const examProgress = allProgress[exam.id];
-                const answeredCount = examProgress ? Object.keys(examProgress.answers).length : 0;
-                const percentage = examProgress ? Math.round((answeredCount / exam.questionCount) * 100) : 0;
+                const progressStats = getProgressStats(exam.id);
                 
-                return examProgress && answeredCount > 0 ? (
-                  <div className="mb-4 p-3 bg-blue-50 rounded-lg">
-                    <div className="flex justify-between items-center mb-2">
-                      <span className="text-sm font-medium text-blue-800">{t('progress')}</span>
-                      <span className="text-sm text-blue-600">{percentage}%</span>
+                if (progressStats && progressStats.totalAnswers > 0) {
+                  const percentage = Math.round((progressStats.totalAnswers / exam.questionCount) * 100);
+                  
+                  return (
+                    <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="text-sm font-medium text-blue-800 dark:text-blue-200">{t('progress')}</span>
+                        <span className="text-sm text-blue-600 dark:text-blue-300">{percentage}%</span>
+                      </div>
+                      <div className="w-full bg-blue-200 dark:bg-blue-800 rounded-full h-2">
+                        <div 
+                          className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                          style={{ width: `${percentage}%` }}
+                        ></div>
+                      </div>
+                      <div className="flex justify-between text-xs text-blue-600 dark:text-blue-300 mt-1">
+                        <span>{progressStats.totalAnswers}/{exam.questionCount} {t('questionsAnswered')}</span>
+                        <span>{progressStats.accuracy}% {t('accuracy')}</span>
+                      </div>
+                      {progressStats.markedForTraining > 0 && (
+                        <div className="text-xs text-orange-600 dark:text-orange-300 mt-1">
+                          📚 {progressStats.markedForTraining} {t('markedForTraining')}
+                        </div>
+                      )}
                     </div>
-                    <div className="w-full bg-blue-200 rounded-full h-2">
-                      <div 
-                        className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-                        style={{ width: `${percentage}%` }}
-                      ></div>
-                    </div>
-                    <div className="text-xs text-blue-600 mt-1">
-                      {answeredCount}/{exam.questionCount} {t('questionsAnswered')}
-                    </div>
-                  </div>
-                ) : null;
+                  );
+                }
+                return null;
               })()}
 
               {/* Tags */}
@@ -292,10 +302,8 @@ const Home: React.FC = () => {
 
               {/* Start Button */}
               {(() => {
-                const allProgress = getAllProgress();
-                const examProgress = allProgress[exam.id];
-                const answeredCount = examProgress ? Object.keys(examProgress.answers).length : 0;
-                const hasProgress = answeredCount > 0;
+                const progressStats = getProgressStats(exam.id);
+                const hasProgress = progressStats && progressStats.totalAnswers > 0;
                 
                 return (
                   <button className={`w-full py-2 px-4 rounded-lg transition-colors font-medium ${

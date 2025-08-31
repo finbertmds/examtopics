@@ -1,39 +1,227 @@
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
+const session = require('express-session');
 require('dotenv').config();
 
+const connectDB = require('./config/database');
 const sheetsHelper = require('./sheets');
+const { passport, generateToken, authenticateToken, getUserFromToken } = require('./auth');
+const progressService = require('./progress');
+const errorHandler = require('./middleware/errorHandler');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
+
+// Connect to MongoDB
+connectDB();
 
 // Middleware
 app.use(helmet());
 app.use(cors({
   origin: process.env.CORS_ORIGIN || '*',
   methods: ['GET', 'POST'],
-  allowedHeaders: ['Content-Type']
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
 }));
 app.use(express.json({ limit: '1mb' }));
+
+// Session configuration
+app.use(session({
+  secret: process.env.SESSION_SECRET || 'your-session-secret',
+  resave: false,
+  saveUninitialized: false,
+  cookie: { secure: process.env.NODE_ENV === 'production' }
+}));
+
+// Initialize passport
+app.use(passport.initialize());
+app.use(passport.session());
 
 // Health check endpoint
 app.get('/health', async (req, res) => {
   try {
     const sheetsConnected = await sheetsHelper.testConnection();
+    const progressStats = await progressService.getStats();
     
     res.json({
       success: true,
       status: 'healthy',
       timestamp: new Date().toISOString(),
       services: {
-        googleSheets: sheetsConnected ? 'connected' : 'disconnected'
-      }
+        googleSheets: sheetsConnected ? 'connected' : 'disconnected',
+        mongodb: 'connected'
+      },
+      stats: progressStats
     });
   } catch (error) {
     res.status(500).json({
       success: false,
       error: 'Health check failed',
+      details: error.message
+    });
+  }
+});
+
+// Auth routes
+app.get('/auth/google',
+  passport.authenticate('google', { scope: ['profile', 'email'] })
+);
+
+app.get('/auth/google/callback', 
+  passport.authenticate('google', { failureRedirect: '/login' }),
+  function(req, res) {
+    // Successful authentication, generate JWT token
+    const token = generateToken(req.user);
+    
+    // Redirect to frontend with token
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3001';
+    res.redirect(`${frontendUrl}/auth/callback?token=${token}`);
+  }
+);
+
+// Get current user info
+app.get('/auth/me', authenticateToken, (req, res) => {
+  res.json({
+    success: true,
+    user: {
+      id: req.user.userId,
+      email: req.user.email,
+      name: req.user.name,
+    }
+  });
+});
+
+// Progress routes
+app.post('/progress/save', authenticateToken, async (req, res) => {
+  try {
+    const { examId, progress } = req.body;
+    const userId = req.user.userId;
+
+    if (!examId || !progress) {
+      return res.status(400).json({
+        success: false,
+        error: 'examId and progress are required'
+      });
+    }
+
+    const saved = await progressService.saveProgress(userId, examId, progress);
+    
+    res.json({
+      success: true,
+      message: 'Progress saved successfully',
+      saved
+    });
+  } catch (error) {
+    console.error('Error saving progress:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to save progress',
+      details: error.message
+    });
+  }
+});
+
+app.get('/progress/load/:examId', authenticateToken, async (req, res) => {
+  try {
+    const { examId } = req.params;
+    const userId = req.user.userId;
+
+    const progress = await progressService.loadProgress(userId, examId);
+    
+    res.json({
+      success: true,
+      progress: progress || null
+    });
+  } catch (error) {
+    console.error('Error loading progress:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to load progress',
+      details: error.message
+    });
+  }
+});
+
+app.get('/progress/all', authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    const allProgress = await progressService.getAllProgress(userId);
+    
+    res.json({
+      success: true,
+      progress: allProgress
+    });
+  } catch (error) {
+    console.error('Error loading all progress:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to load progress',
+      details: error.message
+    });
+  }
+});
+
+// Add single answer endpoint (atomic operation)
+app.post('/progress/answer', authenticateToken, async (req, res) => {
+  try {
+    const { examId, questionNumber, selectedAnswers, isCorrect } = req.body;
+    const userId = req.user.userId;
+
+    if (!examId || !questionNumber || !selectedAnswers || isCorrect === undefined) {
+      return res.status(400).json({
+        success: false,
+        error: 'examId, questionNumber, selectedAnswers, and isCorrect are required'
+      });
+    }
+
+    const progress = await progressService.addAnswer(userId, examId, questionNumber, selectedAnswers, isCorrect);
+    
+    res.json({
+      success: true,
+      message: 'Answer saved successfully',
+      progress: {
+        examId: progress.examId,
+        answers: Object.fromEntries(progress.answers),
+        currentQuestion: progress.currentQuestion,
+        score: progress.score
+      }
+    });
+  } catch (error) {
+    console.error('Error saving answer:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to save answer',
+      details: error.message
+    });
+  }
+});
+
+// Toggle training mark endpoint (atomic operation)
+app.post('/progress/training-mark', authenticateToken, async (req, res) => {
+  try {
+    const { examId, questionNumber } = req.body;
+    const userId = req.user.userId;
+
+    if (!examId || !questionNumber) {
+      return res.status(400).json({
+        success: false,
+        error: 'examId and questionNumber are required'
+      });
+    }
+
+    const progress = await progressService.toggleTrainingMark(userId, examId, questionNumber);
+    
+    res.json({
+      success: true,
+      message: 'Training mark toggled successfully',
+      markedForTraining: progress.markedForTraining
+    });
+  } catch (error) {
+    console.error('Error toggling training mark:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to toggle training mark',
       details: error.message
     });
   }
@@ -122,6 +310,9 @@ app.use((error, req, res, next) => {
 });
 
 // Start server
+// Error handling middleware (must be last)
+app.use(errorHandler);
+
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
   console.log(`Health check: http://localhost:${PORT}/health`);

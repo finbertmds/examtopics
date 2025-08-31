@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
-import { useLocalStorage } from '../hooks/useLocalStorage';
+import { useProgress } from '../hooks/useProgress';
 import { Exam, FilterState, Question } from '../types';
 import { getExamDescription, getExamName } from '../utils/examUtils';
 import ExamResult from './ExamResult';
@@ -31,11 +31,12 @@ const ExamPage: React.FC = () => {
 
   const {
     progress,
+    isLoading: progressLoading,
     updateProgress,
     saveAnswer,
     toggleTrainingMark,
     resetProgress
-  } = useLocalStorage(examId);
+  } = useProgress(examId);
 
   // Load questions from JSON file
   useEffect(() => {
@@ -147,12 +148,14 @@ const ExamPage: React.FC = () => {
     questionListRef.current?.scrollToCurrentQuestion();
   };
 
-  if (loading) {
+  if (loading || progressLoading) {
     return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">{t('loadingQuestions')}</p>
+          <p className="text-gray-600 dark:text-gray-300">
+            {loading ? t('loadingQuestions') : t('loadingProgress')}
+          </p>
         </div>
       </div>
     );

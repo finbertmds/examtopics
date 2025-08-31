@@ -2,8 +2,10 @@ import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './App.css';
+import AuthCallback from './components/AuthCallback';
 import ExamPage from './components/ExamPage';
 import Home from './components/Home';
+import { AuthProvider } from './contexts/AuthContext';
 import { LanguageProvider } from './contexts/LanguageContext';
 import { ThemeProvider, useTheme } from './contexts/ThemeContext';
 import './toast.css';
@@ -34,15 +36,18 @@ function App() {
   return (
     <LanguageProvider>
       <ThemeProvider>
-        <Router>
-          <div className="App">
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/exam/:examId" element={<ExamPage />} />
-            </Routes>
-            <ToastContainerWithTheme />
-          </div>
-        </Router>
+        <AuthProvider>
+          <Router>
+            <div className="App">
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/exam/:examId" element={<ExamPage />} />
+                <Route path="/auth/callback" element={<AuthCallback />} />
+              </Routes>
+              <ToastContainerWithTheme />
+            </div>
+          </Router>
+        </AuthProvider>
       </ThemeProvider>
     </LanguageProvider>
   );

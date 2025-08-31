@@ -82,5 +82,11 @@
   "pleaseSelectReason": "理由を選択してください",
   "errorSubmittingReport": "報告の送信にエラーが発生しました。もう一度お試しください。",
   "reportSubmittedSuccessfully": "報告が正常に送信されました！",
-  "exam": "試験"
+  "exam": "試験",
+  "loginWithGoogle": "Googleでログイン",
+  "logout": "ログアウト",
+  "authenticating": "認証中...",
+  "pleaseWait": "認証中です。お待ちください。",
+  "loading": "読み込み中...",
+  "loadingProgress": "進捗を読み込み中..."
 }
