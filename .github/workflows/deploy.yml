@@ -12,32 +12,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Lấy code
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      # Setup Node.js
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
-          cache-dependency-path: examtopics-practice/package-lock.json
-
-      # Cài dependencies
-      - name: Install dependencies
-        run: |
-          cd examtopics-practice
-          npm ci
-
-      # Build project
-      - name: Build project
-        env:
-          REACT_APP_BACKEND_URL: https://examtopics-backend-latest.onrender.com
-        run: |
-          cd examtopics-practice
-          npm run build
-
       # Trigger deploy trên Render
       - name: Trigger Render deploy
         run: |
