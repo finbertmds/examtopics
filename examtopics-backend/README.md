@@ -85,7 +85,7 @@ JWT_SECRET=your-jwt-secret-key-change-in-production
 SESSION_SECRET=your-session-secret-key
 
 # MongoDB Configuration
-MONGO_URI=mongodb+srv://username:password@cluster.mongodb.net/examtopics?retryWrites=true&w=majority
+MONGO_URI=
 
 PORT=3001
 FRONTEND_URL=http://localhost:3000
