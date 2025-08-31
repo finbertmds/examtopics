@@ -131,6 +131,7 @@ export const useProgress = (examId?: string) => {
     }, 1000); // Wait 1 second before saving
 
     return () => clearTimeout(timeoutId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [progress, examId, isAuthenticated, token]);
 
   const updateProgress = (updates: Partial<UserProgress>) => {
