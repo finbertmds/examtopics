@@ -78,26 +78,29 @@ const Home: React.FC = () => {
   const filteredExams = exams.filter(exam => {
     const examName = getExamName(exam, language);
     const examDescription = getExamDescription(exam, language);
-    
+
     const matchesSearch = examName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         examDescription.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         exam.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
-    
+      examDescription.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      exam.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
+
     const matchesCategory = selectedCategory === 'all' || exam.category === selectedCategory;
-    const matchesDifficulty = selectedDifficulty === 'all' || 
-                             exam.difficulty === selectedDifficulty ||
-                             (selectedDifficulty === t('beginner') && exam.difficulty === 'Beginner') ||
-                             (selectedDifficulty === t('intermediate') && exam.difficulty === 'Intermediate') ||
-                             (selectedDifficulty === t('advanced') && exam.difficulty === 'Advanced');
-    
+    const matchesDifficulty = selectedDifficulty === 'all' ||
+      exam.difficulty === selectedDifficulty ||
+      (selectedDifficulty === t('beginner') && exam.difficulty === 'Beginner') ||
+      (selectedDifficulty === t('intermediate') && exam.difficulty === 'Intermediate') ||
+      (selectedDifficulty === t('advanced') && exam.difficulty === 'Advanced');
+
     return matchesSearch && matchesCategory && matchesDifficulty;
   });
 
   const categories = ['all', ...Array.from(new Set(exams.map(exam => exam.category)))];
   const difficulties = ['all', t('beginner'), t('intermediate'), t('advanced')];
 
-  const handleExamClick = (exam: Exam) => {
-    navigate(`/exam/${exam.id}`, { state: { exam } });
+  const handleExamClick = (exam: Exam, mode: 'exam' | 'practice' = 'exam') => {
+    const url = mode === 'practice'
+      ? `/exam/${exam.id}?mode=practice`
+      : `/exam/${exam.id}`;
+    navigate(url, { state: { exam } });
   };
 
   const handleScrollToTop = () => {
@@ -135,7 +138,7 @@ const Home: React.FC = () => {
             {t('examPracticePlatform')}
           </h1>
           <p className="text-gray-600 dark:text-gray-300 text-lg transition-colors">
-            {t('awsCertificationPractice')}
+            {t('itCertificationPractice')}
           </p>
         </header>
 
@@ -197,7 +200,7 @@ const Home: React.FC = () => {
           filteredExams.length > 0 && (
             <div className="text-center text-gray-500 dark:text-gray-400 text-sm transition-colors">
               <p className="mb-3">
-                {t('totalExams')}: {exams.length} | 
+                {t('totalExams')}: {exams.length} |
                 {t('filteredResults')}: {filteredExams.length}
               </p>
             </div>
@@ -214,7 +217,7 @@ const Home: React.FC = () => {
             >
               {/* Header */}
               <div className="flex justify-between items-start mb-4">
-                <h3 
+                <h3
                   className="text-xl font-semibold text-gray-800 dark:text-white line-clamp-2 transition-colors cursor-help"
                   title={getExamName(exam, language)}
                 >
@@ -250,10 +253,10 @@ const Home: React.FC = () => {
               {/* Progress */}
               {(() => {
                 const progressStats = getProgressStats(exam.id);
-                
+
                 if (progressStats && progressStats.totalAnswers > 0) {
                   const percentage = Math.round((progressStats.totalAnswers / exam.questionCount) * 100);
-                  
+
                   return (
                     <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
                       <div className="flex justify-between items-center mb-2">
@@ -261,7 +264,7 @@ const Home: React.FC = () => {
                         <span className="text-sm text-blue-600 dark:text-blue-300">{percentage}%</span>
                       </div>
                       <div className="w-full bg-blue-200 dark:bg-blue-800 rounded-full h-2">
-                        <div 
+                        <div
                           className="bg-blue-600 h-2 rounded-full transition-all duration-300"
                           style={{ width: `${percentage}%` }}
                         ></div>
@@ -300,18 +303,63 @@ const Home: React.FC = () => {
                 </div>
               </div>
 
-              {/* Start Button */}
+              {/* Exam Buttons */}
               {(() => {
                 const progressStats = getProgressStats(exam.id);
                 const hasProgress = progressStats && progressStats.totalAnswers > 0;
-                
+                const hasTraining = progressStats && progressStats.markedForTraining > 0;
+
+                // Case 1: No progress - show only Start Exam button
+                if (!hasProgress) {
+                  return (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleExamClick(exam);
+                      }}
+                      className="w-full py-2 px-4 rounded-lg transition-colors font-medium bg-blue-600 hover:bg-blue-700 text-white"
+                    >
+                      {t('startExam')}
+                    </button>
+                  );
+                }
+
+                // Case 2: Has progress and has training - show both buttons on same line
+                if (hasProgress && hasTraining) {
+                  return (
+                    <div className="flex gap-2">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleExamClick(exam);
+                        }}
+                        className="flex-1 py-2 px-4 rounded-lg transition-colors font-medium bg-green-600 hover:bg-green-700 text-white"
+                      >
+                        {t('continueExam')}
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleExamClick(exam, 'practice');
+                        }}
+                        className="flex-1 py-2 px-4 rounded-lg transition-colors font-medium bg-orange-600 hover:bg-orange-700 text-white"
+                      >
+                        {t('practiceExam')}
+                      </button>
+                    </div>
+                  );
+                }
+
+                // Case 3: Has progress but no training - show only Continue Exam button
                 return (
-                  <button className={`w-full py-2 px-4 rounded-lg transition-colors font-medium ${
-                    hasProgress 
-                      ? 'bg-green-600 hover:bg-green-700 text-white' 
-                      : 'bg-blue-600 hover:bg-blue-700 text-white'
-                  }`}>
-                    {hasProgress ? t('continueExam') : t('startExam')}
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleExamClick(exam);
+                    }}
+                    className="w-full py-2 px-4 rounded-lg transition-colors font-medium bg-green-600 hover:bg-green-700 text-white"
+                  >
+                    {t('continueExam')}
                   </button>
                 );
               })()}
@@ -341,7 +389,7 @@ const Home: React.FC = () => {
       {/* Floating Buttons */}
       <FloatingButtons
         onScrollToTop={handleScrollToTop}
-        onScrollToCurrentQuestion={() => {}}
+        onScrollToCurrentQuestion={() => { }}
         hasCurrentQuestion={false}
       />
     </div>

@@ -18,6 +18,7 @@ src/locales/
 ## Cấu trúc file JSON
 
 ### en.json (English)
+
 ```json
 {
   "loading": "Loading...",
@@ -62,7 +63,7 @@ src/locales/
   "reset": "Reset",
   "viewExplanation": "View explanation",
   "examPracticePlatform": "🎯 Exam Practice Platform",
-  "awsCertificationPractice": "Practice AWS certification with quality exam sets",
+  "itCertificationPractice": "Practice AWS certification with quality exam sets",
   "searchPlaceholder": "Search by name, description or tags...",
   "totalExams": "Total exams",
   "filteredResults": "Filtered results",
@@ -85,6 +86,7 @@ src/locales/
 ```
 
 ### vi.json (Vietnamese)
+
 ```json
 {
   "loading": "Đang tải...",
@@ -129,7 +131,7 @@ src/locales/
   "reset": "Làm lại",
   "viewExplanation": "Xem giải thích",
   "examPracticePlatform": "🎯 Exam Practice Platform",
-  "awsCertificationPractice": "Luyện thi chứng chỉ AWS với các bộ đề chất lượng",
+  "itCertificationPractice": "Luyện thi chứng chỉ AWS với các bộ đề chất lượng",
   "searchPlaceholder": "Tìm theo tên, mô tả hoặc tags...",
   "totalExams": "Tổng số đề thi",
   "filteredResults": "Đã lọc",
@@ -152,6 +154,7 @@ src/locales/
 ```
 
 ### ja.json (Japanese)
+
 ```json
 {
   "loading": "読み込み中...",
@@ -196,7 +199,7 @@ src/locales/
   "reset": "リセット",
   "viewExplanation": "説明を見る",
   "examPracticePlatform": "🎯 Exam Practice Platform",
-  "awsCertificationPractice": "高品質な試験セットでAWS認定を練習",
+  "itCertificationPractice": "高品質な試験セットでAWS認定を練習",
   "searchPlaceholder": "名前、説明、またはタグで検索...",
   "totalExams": "試験総数",
   "filteredResults": "フィルター結果",
@@ -221,16 +224,17 @@ src/locales/
 ## Cách sử dụng
 
 ### 1. Import và sử dụng trong component
+
 ```tsx
-import { useLanguage } from '../contexts/LanguageContext';
+import { useLanguage } from "../contexts/LanguageContext";
 
 const MyComponent = () => {
   const { t } = useLanguage();
-  
+
   return (
     <div>
-      <h1>{t('examPracticePlatform')}</h1>
-      <p>{t('loading')}</p>
+      <h1>{t("examPracticePlatform")}</h1>
+      <p>{t("loading")}</p>
     </div>
   );
 };
@@ -239,6 +243,7 @@ const MyComponent = () => {
 ### 2. Thêm translation key mới
 
 #### Bước 1: Thêm key vào tất cả file JSON
+
 ```json
 // en.json
 {
@@ -257,29 +262,34 @@ const MyComponent = () => {
 ```
 
 #### Bước 2: Sử dụng trong component
+
 ```tsx
 const { t } = useLanguage();
-return <div>{t('newKey')}</div>;
+return <div>{t("newKey")}</div>;
 ```
 
 ## Lợi ích của cấu trúc mới
 
 ### 1. Tách biệt dữ liệu
+
 - Mỗi ngôn ngữ có file riêng biệt
 - Dễ dàng quản lý và bảo trì
 - Có thể chỉnh sửa từng ngôn ngữ độc lập
 
 ### 2. Dễ mở rộng
+
 - Thêm ngôn ngữ mới chỉ cần tạo file JSON mới
 - Không cần sửa code TypeScript
 - Có thể load động từ API
 
 ### 3. Performance
+
 - Chỉ load ngôn ngữ cần thiết
 - Bundle size nhỏ hơn
 - Lazy loading có thể được implement
 
 ### 4. Tooling support
+
 - JSON files có syntax highlighting tốt hơn
 - Có thể sử dụng JSON validation tools
 - Dễ dàng tích hợp với translation management systems
@@ -288,11 +298,11 @@ return <div>{t('newKey')}</div>;
 
 ```typescript
 // Import translations from JSON files
-import enTranslations from './translations/en.json';
-import viTranslations from './translations/vi.json';
-import jaTranslations from './translations/ja.json';
+import enTranslations from "./translations/en.json";
+import viTranslations from "./translations/vi.json";
+import jaTranslations from "./translations/ja.json";
 
-export type Language = 'en' | 'vi' | 'ja';
+export type Language = "en" | "vi" | "ja";
 
 export interface Translations {
   [key: string]: string;
@@ -312,25 +322,27 @@ export const getTranslation = (language: Language, key: string): string => {
 ## Migration từ cấu trúc cũ
 
 ### Trước khi migration
+
 ```typescript
 // Cấu trúc cũ - tất cả trong một file
 export const translations = {
   en: {
-    loading: 'Loading...',
+    loading: "Loading...",
     // ... nhiều keys
   },
   vi: {
-    loading: 'Đang tải...',
+    loading: "Đang tải...",
     // ... nhiều keys
-  }
+  },
 };
 ```
 
 ### Sau khi migration
+
 ```typescript
 // Cấu trúc mới - tách thành file JSON
-import enTranslations from './translations/en.json';
-import viTranslations from './translations/vi.json';
+import enTranslations from "./translations/en.json";
+import viTranslations from "./translations/vi.json";
 
 export const translations = {
   en: enTranslations,
@@ -341,21 +353,25 @@ export const translations = {
 ## Best Practices
 
 ### 1. Naming conventions
+
 - Sử dụng camelCase cho key names
 - Mô tả rõ ràng chức năng của key
 - Nhóm các key liên quan
 
 ### 2. Organization
+
 - Sắp xếp keys theo thứ tự alphabet
 - Comment để phân nhóm (nếu cần)
 - Đảm bảo tất cả file JSON có cùng keys
 
 ### 3. Validation
+
 - Kiểm tra tất cả file có cùng keys
 - Validate JSON syntax
 - Test với tất cả ngôn ngữ
 
 ### 4. Maintenance
+
 - Cập nhật tất cả file khi thêm key mới
 - Backup trước khi thay đổi lớn
 - Document changes

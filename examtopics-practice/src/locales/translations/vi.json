@@ -41,12 +41,13 @@
   "reset": "Làm lại",
   "viewExplanation": "Xem giải thích",
   "examPracticePlatform": "🎯 Exam Practice Platform",
-  "awsCertificationPractice": "Luyện thi chứng chỉ AWS với các bộ đề chất lượng",
+  "itCertificationPractice": "Luyện thi chứng chỉ IT với các bộ đề chất lượng",
   "searchPlaceholder": "Tìm theo tên, mô tả hoặc tags...",
   "totalExams": "Tổng số đề thi",
   "filteredResults": "Đã lọc",
   "startExam": "🚀 Bắt đầu làm bài",
   "continueExam": "🔄 Tiếp tục làm bài",
+  "practiceExam": "📚 Luyện tập",
   "backToHome": "← Quay về trang chủ",
   "loadingQuestions": "Đang tải câu hỏi...",
   "loadingExamList": "Đang tải danh sách đề thi...",
@@ -87,6 +88,5 @@
   "logout": "Đăng xuất",
   "authenticating": "Đang xác thực...",
   "pleaseWait": "Vui lòng chờ trong khi chúng tôi xác thực bạn.",
-  "loading": "Đang tải...",
   "loadingProgress": "Đang tải tiến độ..."
 }

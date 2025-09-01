@@ -41,12 +41,13 @@
   "reset": "Reset",
   "viewExplanation": "View explanation",
   "examPracticePlatform": "🎯 Exam Practice Platform",
-  "awsCertificationPractice": "Practice AWS certification with quality exam sets",
+  "itCertificationPractice": "Practice IT certification with quality exam sets",
   "searchPlaceholder": "Search by name, description or tags...",
   "totalExams": "Total exams",
   "filteredResults": "Filtered results",
   "startExam": "🚀 Start Exam",
   "continueExam": "🔄 Continue Exam",
+  "practiceExam": "📚 Practice Exam",
   "backToHome": "← Back to Home",
   "loadingQuestions": "Loading questions...",
   "loadingExamList": "Loading exam list...",
@@ -87,6 +88,5 @@
   "logout": "Logout",
   "authenticating": "Authenticating...",
   "pleaseWait": "Please wait while we authenticate you.",
-  "loading": "Loading...",
   "loadingProgress": "Loading progress..."
 }

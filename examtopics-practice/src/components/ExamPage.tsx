@@ -29,6 +29,22 @@ const ExamPage: React.FC = () => {
   const hasLoadedRef = useRef(false);
   const questionListRef = useRef<QuestionListRef>(null);
 
+  // Check for practice mode in URL and set filter state accordingly
+  useEffect(() => {
+    const urlParams = new URLSearchParams(location.search);
+    const mode = urlParams.get('mode');
+
+    console.log('URL mode parameter:', mode);
+
+    if (mode === 'practice') {
+      console.log('Practice mode detected, setting filter to training');
+      setFilterState(prevState => ({
+        ...prevState,
+        type: 'training'
+      }));
+    }
+  }, [location.search]);
+
   const {
     progress,
     isLoading: progressLoading,
@@ -41,7 +57,7 @@ const ExamPage: React.FC = () => {
   // Load questions from JSON file
   useEffect(() => {
     const abortController = new AbortController();
-    
+
     const loadQuestions = async () => {
       if (!exam) {
         navigate('/');
@@ -88,10 +104,10 @@ const ExamPage: React.FC = () => {
   // Auto-scroll to next unanswered question
   useEffect(() => {
     if (!loading && questions.length > 0) {
-    //   const nextUnanswered = questions.find(q => !progress.answers[q.question_number]);
-    //   if (nextUnanswered && nextUnanswered.question_number !== progress.currentQuestion) {
-    //     updateProgress({ currentQuestion: nextUnanswered.question_number });
-    //   }
+      //   const nextUnanswered = questions.find(q => !progress.answers[q.question_number]);
+      //   if (nextUnanswered && nextUnanswered.question_number !== progress.currentQuestion) {
+      //     updateProgress({ currentQuestion: nextUnanswered.question_number });
+      //   }
     }
   }, [loading, questions, progress.answers, progress.currentQuestion, updateProgress]);
 
@@ -196,8 +212,8 @@ const ExamPage: React.FC = () => {
                 </p>
                 <div className="flex gap-2 mt-2">
                   <span className={`px-2 py-1 rounded-full text-xs font-medium ${exam?.difficulty === 'Advanced' ? 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200' :
-                      exam?.difficulty === 'Intermediate' ? 'bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200' :
-                        'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200'
+                    exam?.difficulty === 'Intermediate' ? 'bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200' :
+                      'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200'
                     } transition-colors`}>
                     {exam?.difficulty}
                   </span>
@@ -216,10 +232,10 @@ const ExamPage: React.FC = () => {
 
         {/* ProgressBar */}
         <div className="mb-4">
-            <ProgressBar
-              progress={progress}
-              totalQuestions={questions.length}
-            />
+          <ProgressBar
+            progress={progress}
+            totalQuestions={questions.length}
+          />
         </div>
 
         {/* FilterBar */}

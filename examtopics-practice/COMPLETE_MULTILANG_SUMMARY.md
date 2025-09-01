@@ -7,17 +7,20 @@ Hệ thống đa ngôn ngữ đã được hoàn thành với **100% coverage** 
 ## ✅ Đã hoàn thành
 
 ### 1. Text cố định trong UI (100% coverage)
+
 - ✅ **55+ translation keys** cho tất cả text
 - ✅ **3 ngôn ngữ**: English, Vietnamese, Japanese
 - ✅ **Tất cả components** đã được cập nhật
 - ✅ **Không còn text tiếng Việt** nào trong code
 
 ### 2. Exam Data (100% coverage)
+
 - ✅ **22 exams** với tên và mô tả đa ngôn ngữ
 - ✅ **Thông tin chính thức** từ trang AWS Certification
 - ✅ **Backward compatibility** với cấu trúc cũ
 
 ### 3. Cấu trúc hệ thống
+
 - ✅ **JSON files** riêng biệt cho từng ngôn ngữ
 - ✅ **Type-safe** với TypeScript
 - ✅ **Real-time updates** khi chuyển đổi ngôn ngữ
@@ -27,6 +30,7 @@ Hệ thống đa ngôn ngữ đã được hoàn thành với **100% coverage** 
 ## 📊 Thống kê chi tiết
 
 ### Translation Keys (55+)
+
 ```
 Common (20+ keys):
 - loading, all, search, category, difficulty
@@ -45,7 +49,7 @@ UI Elements (15+ keys):
 - copyright, randomize, reset, viewExplanation
 
 Home Page (10+ keys):
-- examPracticePlatform, awsCertificationPractice
+- examPracticePlatform, itCertificationPractice
 - searchPlaceholder, totalExams, filteredResults
 - startExam, continueExam, backToHome
 - loadingQuestions, loadingExamList
@@ -68,6 +72,7 @@ Answer Details (4 keys):
 ```
 
 ### Components được cập nhật (10/10)
+
 1. ✅ **Home.tsx** - Trang chủ với exam list
 2. ✅ **ExamPage.tsx** - Trang làm bài thi
 3. ✅ **FilterBar.tsx** - Thanh lọc câu hỏi
@@ -80,6 +85,7 @@ Answer Details (4 keys):
 10. ✅ **CollapsibleQuestionText.tsx** - Text có thể thu gọn
 
 ### Exam Data (22 exams)
+
 ```
 Foundational (1):
 - AWS Certified Cloud Practitioner
@@ -110,16 +116,19 @@ Specialty (15):
 ## 🌍 Ngôn ngữ hỗ trợ
 
 ### English (en)
+
 - **Source**: Official AWS Certification page
 - **Status**: ✅ Complete
 - **Keys**: 55+
 
 ### Vietnamese (vi)
+
 - **Source**: Official AWS Certification Vietnam page
 - **Status**: ✅ Complete
 - **Keys**: 55+
 
 ### Japanese (ja)
+
 - **Source**: Official AWS Certification Japan page
 - **Status**: ✅ Complete
 - **Keys**: 55+
@@ -127,21 +136,25 @@ Specialty (15):
 ## 🎯 Tính năng đã triển khai
 
 ### 1. Language Detection & Persistence
+
 - ✅ Tự động detect ngôn ngữ từ browser
 - ✅ Lưu trữ ngôn ngữ trong localStorage
 - ✅ Fallback về English nếu không có bản dịch
 
 ### 2. Real-time Updates
+
 - ✅ UI cập nhật ngay lập tức khi đổi ngôn ngữ
 - ✅ Exam data cập nhật theo ngôn ngữ
 - ✅ Search functionality hoạt động với localized text
 
 ### 3. Accessibility
+
 - ✅ Cập nhật `lang` attribute của HTML
 - ✅ Screen reader support
 - ✅ Keyboard navigation
 
 ### 4. Performance
+
 - ✅ JSON files được optimize
 - ✅ Lazy loading có thể implement
 - ✅ Bundle size tối ưu
@@ -174,19 +187,21 @@ public/
 ## 🔧 Cách sử dụng
 
 ### 1. Chuyển đổi ngôn ngữ
+
 ```tsx
-import { useLanguage } from '../contexts/LanguageContext';
+import { useLanguage } from "../contexts/LanguageContext";
 
 const { language, setLanguage, t } = useLanguage();
 
 // Chuyển sang tiếng Việt
-setLanguage('vi');
+setLanguage("vi");
 
 // Sử dụng translation
-return <div>{t('examPracticePlatform')}</div>;
+return <div>{t("examPracticePlatform")}</div>;
 ```
 
 ### 2. Thêm key mới
+
 ```json
 // en.json
 {
@@ -205,26 +220,30 @@ return <div>{t('examPracticePlatform')}</div>;
 ```
 
 ### 3. Sử dụng trong component
+
 ```tsx
 const { t } = useLanguage();
-return <div>{t('newKey')}</div>;
+return <div>{t("newKey")}</div>;
 ```
 
 ## 🚀 Lợi ích đạt được
 
 ### 1. User Experience
+
 - ✅ **Native language support** cho 3 ngôn ngữ
 - ✅ **Consistent experience** across all components
 - ✅ **Professional appearance** với text chính thức
 - ✅ **Accessibility** cho người dùng đa quốc gia
 
 ### 2. Developer Experience
+
 - ✅ **Easy maintenance** với JSON files
 - ✅ **Type safety** với TypeScript
 - ✅ **Clear structure** dễ mở rộng
 - ✅ **Documentation** đầy đủ
 
 ### 3. Business Value
+
 - ✅ **Global reach** với đa ngôn ngữ
 - ✅ **Professional credibility** với AWS official content
 - ✅ **Scalability** dễ thêm ngôn ngữ mới
