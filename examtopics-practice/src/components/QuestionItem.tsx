@@ -81,7 +81,7 @@ export const QuestionItem: React.FC<QuestionItemProps> = ({
       });
 
       const data = await response.json();
-      
+
       if (data.success) {
         toast.success(`${t('reportSubmittedSuccessfully')} - ${t('question')} ${question.question_number}`);
       } else {
@@ -100,8 +100,8 @@ export const QuestionItem: React.FC<QuestionItemProps> = ({
   const userAnswersSorted = [...selectedAnswers].sort();
 
   // Check if user has selected enough answers for multiple choice questions
-  const hasSelectedEnoughAnswers = question.multiple_choice 
-    ? selectedAnswers.length >= correctAnswers.length 
+  const hasSelectedEnoughAnswers = question.multiple_choice
+    ? selectedAnswers.length >= correctAnswers.length
     : selectedAnswers.length > 0;
 
   // Only show answer if user has selected enough answers or if it's a single choice question
@@ -141,12 +141,12 @@ export const QuestionItem: React.FC<QuestionItemProps> = ({
           <button
             onClick={() => onToggleTraining(question.question_number)}
             className={`px-2 rounded-full transition-colors ${isMarkedForTraining
-                ? 'bg-indigo-100 dark:bg-indigo-900 text-indigo-600 dark:text-indigo-400'
-                : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-indigo-100 dark:hover:bg-indigo-900 hover:text-indigo-600 dark:hover:text-indigo-400'
+              ? 'bg-indigo-100 dark:bg-indigo-900 text-indigo-600 dark:text-indigo-400'
+              : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-indigo-100 dark:hover:bg-indigo-900 hover:text-indigo-600 dark:hover:text-indigo-400'
               }`}
             title={isMarkedForTraining ? t('removeFromTraining') : t('addToTraining')}
           >
-            📚
+            {isMarkedForTraining ? '➖' : '➕'}
           </button>
           {isAnswered && (
             <span className={`flex items-center justify-center px-2 py-1 rounded-full text-xs font-medium ${isCorrect ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200' : 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200'
@@ -174,7 +174,7 @@ export const QuestionItem: React.FC<QuestionItemProps> = ({
 
               // Đếm số lượng placeholder //IMG// trong question_text
               const questionPlaceholderCount = (question.question_text.match(/\/\/IMG\/\//g) || []).length;
-              
+
               // Tính toán vị trí bắt đầu trong mảng images cho answer này
               let startIndex = questionPlaceholderCount; // Bắt đầu sau các hình ảnh của question_text
               for (let i = 0; i < answerIndex; i++) {
@@ -182,10 +182,10 @@ export const QuestionItem: React.FC<QuestionItemProps> = ({
                 const prevPlaceholderCount = (prevAnswer.match(/\/\/IMG\/\//g) || []).length;
                 startIndex += prevPlaceholderCount;
               }
-              
+
               // Đếm số lượng placeholder //IMG// trong answer này
               const placeholderCount = (answer.match(/\/\/IMG\/\//g) || []).length;
-              
+
               // Lấy hình ảnh cho answer này
               const answerImages = images.slice(startIndex, startIndex + placeholderCount);
 
@@ -193,14 +193,14 @@ export const QuestionItem: React.FC<QuestionItemProps> = ({
                 <label
                   key={key}
                   className={`flex items-start gap-3 p-3 rounded-lg border-2 cursor-pointer transition-all ${isSelected
-                      ? showCorrectness
-                        ? isCorrectAnswer
-                          ? 'border-green-500 bg-green-50 dark:bg-green-900'
-                          : 'border-red-500 bg-red-50 dark:bg-red-900'
-                        : 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900'
-                      : showCorrectness && isCorrectAnswer
-                        ? 'border-green-300 bg-green-50 dark:bg-green-900'
-                        : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
+                    ? showCorrectness
+                      ? isCorrectAnswer
+                        ? 'border-green-500 bg-green-50 dark:bg-green-900'
+                        : 'border-red-500 bg-red-50 dark:bg-red-900'
+                      : 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900'
+                    : showCorrectness && isCorrectAnswer
+                      ? 'border-green-300 bg-green-50 dark:bg-green-900'
+                      : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
                     }`}
                 >
                   <input
@@ -240,26 +240,26 @@ export const QuestionItem: React.FC<QuestionItemProps> = ({
 
       {shouldShowAnswer && (
         <div className="mt-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                     <div className="mb-2">
-             <strong className="text-gray-800 dark:text-gray-200">{t('yourAnswer')}</strong>
-             <span className="ml-2 text-gray-600 dark:text-gray-400">
-               {userAnswersSorted.length > 0 ? userAnswersSorted.join(', ') : t('unanswered')}
-             </span>
-           </div>
-           <div className="mb-2">
-             <strong className="text-gray-800 dark:text-gray-200">{t('suggestedAnswer')}</strong>
-             <span className="ml-2 text-green-600 dark:text-green-400 font-medium">
-               {correctAnswers.join(', ')}
-             </span>
-           </div>
-           {question.answer !== question.suggested_answer && (
-             <div className="mb-2">
-               <strong className="text-gray-800 dark:text-gray-200">{t('additionalAnswer')}</strong>
-               <span className="ml-2 text-indigo-600 dark:text-indigo-400 font-medium">
-                 {question.answer}
-               </span>
-             </div>
-           )}
+          <div className="mb-2">
+            <strong className="text-gray-800 dark:text-gray-200">{t('yourAnswer')}</strong>
+            <span className="ml-2 text-gray-600 dark:text-gray-400">
+              {userAnswersSorted.length > 0 ? userAnswersSorted.join(', ') : t('unanswered')}
+            </span>
+          </div>
+          <div className="mb-2">
+            <strong className="text-gray-800 dark:text-gray-200">{t('suggestedAnswer')}</strong>
+            <span className="ml-2 text-green-600 dark:text-green-400 font-medium">
+              {correctAnswers.join(', ')}
+            </span>
+          </div>
+          {question.answer !== question.suggested_answer && (
+            <div className="mb-2">
+              <strong className="text-gray-800 dark:text-gray-200">{t('additionalAnswer')}</strong>
+              <span className="ml-2 text-indigo-600 dark:text-indigo-400 font-medium">
+                {question.answer}
+              </span>
+            </div>
+          )}
         </div>
       )}
       {question.link && (
