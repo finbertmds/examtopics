@@ -104,27 +104,27 @@ const ExamPage: React.FC = () => {
   // Auto-scroll to next unanswered question
   useEffect(() => {
     if (!loading && questions.length > 0) {
-      //   const nextUnanswered = questions.find(q => !progress.answers[q.question_number]);
-      //   if (nextUnanswered && nextUnanswered.question_number !== progress.currentQuestion) {
+      //   const nextUnanswered = questions.find(q => !progress.answers[q.topic_number}-${q.question_number}`);
+      //   if (nextUnanswered && nextUnanswered.question_number !== progress.currentQuestion && nextUnanswered.topic_number === progress.currentTopic ) {
       //     updateProgress({ currentQuestion: nextUnanswered.question_number });
       //   }
     }
-  }, [loading, questions, progress.answers, progress.currentQuestion, updateProgress]);
+  }, [loading, questions, progress.answers, progress.currentTopic, progress.currentQuestion, updateProgress]);
 
-  const handleAnswer = (questionNumber: number, selectedAnswers: string[]) => {
-    const question = questions.find(q => q.question_number === questionNumber);
+  const handleAnswer = (topicNumber: number, questionNumber: number, selectedAnswers: string[]) => {
+    const question = questions.find(q => q.topic_number === topicNumber && q.question_number === questionNumber);
     if (!question) return;
 
     const correctAnswers = question.suggested_answer.split('').sort();
     const userAnswersSorted = [...selectedAnswers].sort();
     const isCorrect = JSON.stringify(correctAnswers) === JSON.stringify(userAnswersSorted);
 
-    saveAnswer(questionNumber, selectedAnswers, isCorrect);
-    const nextQuestion = questions.find(q => q.question_number === questionNumber + 1);
+    saveAnswer(topicNumber, questionNumber, selectedAnswers, isCorrect);
+    const nextQuestion = questions.find(q => q.topic_number === topicNumber && q.question_number === questionNumber + 1);
     if (isCorrect && nextQuestion) {
-      updateProgress({ currentQuestion: nextQuestion.question_number });
+      updateProgress({ currentTopic: topicNumber, currentQuestion: nextQuestion.question_number });
     } else {
-      updateProgress({ currentQuestion: questionNumber });
+      updateProgress({ currentTopic: topicNumber, currentQuestion: questionNumber });
     }
   };
 
@@ -133,6 +133,7 @@ const ExamPage: React.FC = () => {
     setQuestions(shuffled);
     updateProgress({
       isRandomized: true,
+      currentTopic: 1,
       currentQuestion: 1
     });
   };
@@ -146,7 +147,7 @@ const ExamPage: React.FC = () => {
         showIncorrect: true
       });
       // Reset current question to 1
-      updateProgress({ currentQuestion: 1 });
+      updateProgress({ currentTopic: 1, currentQuestion: 1 });
     }
   };
 
@@ -251,7 +252,7 @@ const ExamPage: React.FC = () => {
 
         {/* ExamResult */}
         <div className="mb-4 flex justify-end">
-          <ExamResult userAnswers={progress.answers} totalQuestions={questions.length} />
+          <ExamResult userAnswers={progress.answers} totalQuestions={questions.length} questions={questions} />
         </div>
 
         {/* FilterBar */}
@@ -265,6 +266,7 @@ const ExamPage: React.FC = () => {
             answeredCount={answeredCount}
             userAnswers={progress.answers}
             markedForTraining={progress.markedForTraining}
+            questions={questions}
           />
         </div>
 
@@ -273,12 +275,11 @@ const ExamPage: React.FC = () => {
           <QuestionList
             ref={questionListRef}
             questions={questions}
-            userAnswers={progress.answers}
+            progress={progress}
             filterState={filterState}
             currentQuestion={progress.currentQuestion}
             onAnswer={handleAnswer}
             onToggleTraining={toggleTrainingMark}
-            markedForTraining={progress.markedForTraining}
             examId={examId || ''}
           />
         </div>

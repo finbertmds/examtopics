@@ -1,19 +1,32 @@
 import React from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
-import { UserAnswer } from '../types';
+import { Question, UserAnswer } from '../types';
 
 interface ExamResultProps {
-  userAnswers: Record<number, UserAnswer>;
+  userAnswers: Record<string, UserAnswer>;
   totalQuestions: number;
+  questions: Question[];
 }
 
-const ExamResult: React.FC<ExamResultProps> = ({ userAnswers, totalQuestions }) => {
+const ExamResult: React.FC<ExamResultProps> = ({ userAnswers, totalQuestions, questions }) => {
   const { t } = useLanguage();
   const answeredCount = Object.keys(userAnswers).length;
   const correctCount = Object.values(userAnswers).filter(answer => answer.isCorrect).length;
 
   // Calculate accuracy percentage
   const accuracyPercentage = answeredCount > 0 ? Math.round((correctCount / answeredCount) * 100) : 0;
+
+  // Calculate topic distribution from all questions
+  const topicDistribution = questions.reduce((acc, question) => {
+    acc[question.topic_number] = (acc[question.topic_number] || 0) + 1;
+    return acc;
+  }, {} as Record<number, number>);
+
+  // Calculate answered questions per topic
+  const answeredTopicDistribution = Object.values(userAnswers).reduce((acc, answer) => {
+    acc[answer.topicNumber] = (acc[answer.topicNumber] || 0) + 1;
+    return acc;
+  }, {} as Record<number, number>);
 
   // Determine color based on accuracy
   const getAccuracyColor = (percentage: number) => {
@@ -48,6 +61,20 @@ const ExamResult: React.FC<ExamResultProps> = ({ userAnswers, totalQuestions }) 
               {accuracyPercentage}%
             </span>
           </div>
+          {Object.keys(topicDistribution).length > 0 && (
+            <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
+              <span>|</span>
+              {Object.entries(topicDistribution).map(([topic, totalCount], index) => {
+                const answeredCount = answeredTopicDistribution[parseInt(topic)] || 0;
+                return (
+                  <span key={topic}>
+                    {index > 0 && <span className="mx-1">•</span>}
+                    {t('topic')} {topic}: {answeredCount}/{totalCount}
+                  </span>
+                );
+              })}
+            </div>
+          )}
         </div>
       </div>
     </div>

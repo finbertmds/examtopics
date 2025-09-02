@@ -1,16 +1,15 @@
 import { forwardRef, useImperativeHandle } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
-import { FilterState, Question, UserAnswer } from '../types';
+import { FilterState, Question, UserProgress } from '../types';
 import { QuestionItem } from './QuestionItem';
 
 interface QuestionListProps {
   questions: Question[];
-  userAnswers: Record<number, UserAnswer>;
+  progress: UserProgress;
   filterState: FilterState;
+  onAnswer: (topicNumber: number, questionNumber: number, selectedAnswers: string[]) => void;
+  onToggleTraining: (topicNumber: number, questionNumber: number) => void;
   currentQuestion: number;
-  onAnswer: (questionNumber: number, selectedAnswers: string[]) => void;
-  onToggleTraining: (questionNumber: number) => void;
-  markedForTraining: number[];
   examId: string;
 }
 
@@ -20,39 +19,50 @@ export interface QuestionListRef {
 
 export const QuestionList = forwardRef<QuestionListRef, QuestionListProps>(({
   questions,
-  userAnswers,
+  progress,
   filterState,
   currentQuestion,
   onAnswer,
   onToggleTraining,
-  markedForTraining,
   examId
 }, ref) => {
   const { t } = useLanguage();
+  
   const getFilteredQuestions = () => {
     let filtered = questions;
 
     switch (filterState.type) {
       case 'answered':
-        filtered = questions.filter(q => userAnswers[q.question_number]);
+        filtered = questions.filter(q => {
+          const key = `${q.topic_number}-${q.question_number}`;
+          return progress.answers[key];
+        });
         break;
       case 'unanswered':
-        filtered = questions.filter(q => !userAnswers[q.question_number]);
+        filtered = questions.filter(q => {
+          const key = `${q.topic_number}-${q.question_number}`;
+          return !progress.answers[key];
+        });
         break;
       case 'correct':
         filtered = questions.filter(q => {
-          const answer = userAnswers[q.question_number];
+          const key = `${q.topic_number}-${q.question_number}`;
+          const answer = progress.answers[key];
           return answer && answer.isCorrect;
         });
         break;
       case 'incorrect':
         filtered = questions.filter(q => {
-          const answer = userAnswers[q.question_number];
+          const key = `${q.topic_number}-${q.question_number}`;
+          const answer = progress.answers[key];
           return answer && !answer.isCorrect;
         });
         break;
       case 'training':
-        filtered = questions.filter(q => markedForTraining.includes(q.question_number));
+        filtered = questions.filter(q => {
+          const key = `${q.topic_number}-${q.question_number}`;
+          return progress.markedForTraining.includes(key);
+        });
         break;
       default:
         break;
@@ -87,8 +97,9 @@ export const QuestionList = forwardRef<QuestionListRef, QuestionListProps>(({
   return (
     <div className="space-y-6 bg-gray-100 dark:bg-gray-900">
       {filteredQuestions.map((question) => {
-        const userAnswer = userAnswers[question.question_number];
-        const isMarkedForTraining = markedForTraining.includes(question.question_number);
+        const key = `${question.topic_number}-${question.question_number}`;
+        const userAnswer = progress.answers[key];
+        const isMarkedForTraining = progress.markedForTraining.includes(key);
         const isCurrentQuestion = question.question_number === currentQuestion;
 
         return (

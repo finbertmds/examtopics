@@ -10,8 +10,8 @@ import ReportModal from './ReportModal';
 interface QuestionItemProps {
   question: Question;
   userAnswer?: UserAnswer;
-  onAnswer: (questionNumber: number, selectedAnswers: string[]) => void;
-  onToggleTraining: (questionNumber: number) => void;
+  onAnswer: (topicNumber: number, questionNumber: number, selectedAnswers: string[]) => void;
+  onToggleTraining: (topicNumber: number, questionNumber: number) => void;
   isMarkedForTraining: boolean;
   showAnswer: boolean;
   isCurrentQuestion: boolean;
@@ -60,7 +60,7 @@ export const QuestionItem: React.FC<QuestionItemProps> = ({
     }
 
     setSelectedAnswers(newSelectedAnswers);
-    onAnswer(question.question_number, newSelectedAnswers);
+    onAnswer(question.topic_number, question.question_number, newSelectedAnswers);
   };
 
   const handleReportSubmit = async (reason: string, comment: string) => {
@@ -128,7 +128,7 @@ export const QuestionItem: React.FC<QuestionItemProps> = ({
     >
       <div className="flex justify-between items-start mb-4">
         <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">
-          {t('question')} {question.question_number}
+          {t('question')} {question.question_number} <span className="text-sm font-normal text-gray-500 dark:text-gray-400">({t('topic')} {question.topic_number})</span>
         </h3>
         <div className="flex gap-2">
           <button
@@ -139,7 +139,7 @@ export const QuestionItem: React.FC<QuestionItemProps> = ({
             🚨
           </button>
           <button
-            onClick={() => onToggleTraining(question.question_number)}
+                            onClick={() => onToggleTraining(question.topic_number, question.question_number)}
             className={`px-2 rounded-full transition-colors ${isMarkedForTraining
               ? 'bg-indigo-100 dark:bg-indigo-900 text-indigo-600 dark:text-indigo-400'
               : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-indigo-100 dark:hover:bg-indigo-900 hover:text-indigo-600 dark:hover:text-indigo-400'

@@ -22,6 +22,10 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({ progress, totalQuestio
           <span>{answeredCount}/{totalQuestions} {t('questionsAnswered')}</span>
           <span>{percentage}%</span>
         </div>
+        <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mb-2">
+          <span>{t('currentTopic')}: {progress.currentTopic}</span>
+          <span>{t('currentQuestion')}: {progress.currentQuestion}</span>
+        </div>
         <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
           <div
             className="bg-blue-600 h-2 rounded-full transition-all duration-300"

@@ -88,5 +88,9 @@
   "logout": "ログアウト",
   "authenticating": "認証中...",
   "pleaseWait": "認証中です。お待ちください。",
-  "loadingProgress": "進捗を読み込み中..."
+  "loadingProgress": "進捗を読み込み中...",
+  "currentTopic": "現在のトピック",
+  "currentQuestion": "現在の問題",
+  "topicDistribution": "トピック分布",
+  "topic": "トピック"
 }

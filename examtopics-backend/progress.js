@@ -127,13 +127,15 @@ class ProgressService {
   }
 
   // Add single answer (atomic operation)
-  async addAnswer(userId, examId, questionNumber, selectedAnswers, isCorrect) {
+  async addAnswer(userId, examId, topicNumber, questionNumber, selectedAnswers, isCorrect) {
     try {
+      const key = `${topicNumber}-${questionNumber}`;
       const progress = await Progress.findOneAndUpdate(
         { userId, examId },
         {
           $set: {
-            [`answers.${questionNumber}`]: {
+            [`answers.${key}`]: {
+              topicNumber,
               questionNumber,
               selectedAnswers,
               isCorrect,
@@ -160,17 +162,18 @@ class ProgressService {
   }
 
   // Toggle training mark (atomic operation)
-  async toggleTrainingMark(userId, examId, questionNumber) {
+  async toggleTrainingMark(userId, examId, topicNumber, questionNumber) {
     try {
+      const key = `${topicNumber}-${questionNumber}`;
       const progress = await Progress.findOne({ userId, examId });
       if (!progress) {
         throw new Error('Progress not found');
       }
 
-      const index = progress.markedForTraining.indexOf(questionNumber);
+      const index = progress.markedForTraining.indexOf(key);
       const update = index > -1
-        ? { $pull: { markedForTraining: questionNumber } }
-        : { $addToSet: { markedForTraining: questionNumber } };
+        ? { $pull: { markedForTraining: key } }
+        : { $addToSet: { markedForTraining: key } };
 
       const updatedProgress = await Progress.findOneAndUpdate(
         { userId, examId },

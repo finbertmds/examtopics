@@ -88,5 +88,9 @@
   "logout": "Logout",
   "authenticating": "Authenticating...",
   "pleaseWait": "Please wait while we authenticate you.",
-  "loadingProgress": "Loading progress..."
+  "loadingProgress": "Loading progress...",
+  "currentTopic": "Current Topic",
+  "currentQuestion": "Current Question",
+  "topicDistribution": "Topic Distribution",
+  "topic": "Topic"
 }

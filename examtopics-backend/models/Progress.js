@@ -15,6 +15,7 @@ const progressSchema = new mongoose.Schema({
   answers: {
     type: Map,
     of: {
+      topicNumber: Number,
       questionNumber: Number,
       selectedAnswers: [String],
       isCorrect: Boolean,
@@ -26,7 +27,7 @@ const progressSchema = new mongoose.Schema({
     default: new Map()
   },
   markedForTraining: {
-    type: [Number],
+    type: [String], // Changed from [Number] to [String] with format "topicNumber-questionNumber"
     default: []
   },
   currentQuestion: {
@@ -84,8 +85,10 @@ progressSchema.methods.updateScore = function() {
   return this;
 };
 
-progressSchema.methods.addAnswer = function(questionNumber, selectedAnswers, isCorrect) {
-  this.answers.set(questionNumber.toString(), {
+progressSchema.methods.addAnswer = function(topicNumber, questionNumber, selectedAnswers, isCorrect) {
+  const key = `${topicNumber}-${questionNumber}`;
+  this.answers.set(key, {
+    topicNumber,
     questionNumber,
     selectedAnswers,
     isCorrect,
@@ -97,12 +100,13 @@ progressSchema.methods.addAnswer = function(questionNumber, selectedAnswers, isC
   return this;
 };
 
-progressSchema.methods.toggleTrainingMark = function(questionNumber) {
-  const index = this.markedForTraining.indexOf(questionNumber);
+progressSchema.methods.toggleTrainingMark = function(topicNumber, questionNumber) {
+  const key = `${topicNumber}-${questionNumber}`;
+  const index = this.markedForTraining.indexOf(key);
   if (index > -1) {
     this.markedForTraining.splice(index, 1);
   } else {
-    this.markedForTraining.push(questionNumber);
+    this.markedForTraining.push(key);
   }
   return this; // Return this instead of save() to avoid parallel save
 };

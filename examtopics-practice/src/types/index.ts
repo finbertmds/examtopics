@@ -34,6 +34,7 @@ export interface Exam {
 }
 
 export interface UserAnswer {
+  topicNumber: number;
   questionNumber: number;
   selectedAnswers: string[];
   isCorrect: boolean;
@@ -42,8 +43,9 @@ export interface UserAnswer {
 
 export interface UserProgress {
   examId: string;
-  answers: Record<number, UserAnswer>;
-  markedForTraining: number[];
+  answers: Record<string, UserAnswer>; // Key format: "topicNumber-questionNumber"
+  markedForTraining: string[]; // Changed from number[] to string[] with format "topicNumber-questionNumber"
+  currentTopic: number;
   currentQuestion: number;
   isRandomized: boolean;
 }

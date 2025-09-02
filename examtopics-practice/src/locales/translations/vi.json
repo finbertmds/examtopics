@@ -88,5 +88,9 @@
   "logout": "Đăng xuất",
   "authenticating": "Đang xác thực...",
   "pleaseWait": "Vui lòng chờ trong khi chúng tôi xác thực bạn.",
-  "loadingProgress": "Đang tải tiến độ..."
+  "loadingProgress": "Đang tải tiến độ...",
+  "currentTopic": "Chủ đề hiện tại",
+  "currentQuestion": "Câu hỏi hiện tại",
+  "topicDistribution": "Phân bố chủ đề",
+  "topic": "Chủ đề"
 }

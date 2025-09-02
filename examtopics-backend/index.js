@@ -197,17 +197,17 @@ app.get('/progress/all', authenticateToken, async (req, res) => {
 // Add single answer endpoint (atomic operation)
 app.post('/progress/answer', authenticateToken, async (req, res) => {
   try {
-    const { examId, questionNumber, selectedAnswers, isCorrect } = req.body;
+    const { examId, topicNumber, questionNumber, selectedAnswers, isCorrect } = req.body;
     const userId = req.user.userId;
 
-    if (!examId || !questionNumber || !selectedAnswers || isCorrect === undefined) {
+    if (!examId || !topicNumber || !questionNumber || !selectedAnswers || isCorrect === undefined) {
       return res.status(400).json({
         success: false,
-        error: 'examId, questionNumber, selectedAnswers, and isCorrect are required'
+        error: 'examId, topicNumber, questionNumber, selectedAnswers, and isCorrect are required'
       });
     }
 
-    const progress = await progressService.addAnswer(userId, examId, questionNumber, selectedAnswers, isCorrect);
+    const progress = await progressService.addAnswer(userId, examId, topicNumber, questionNumber, selectedAnswers, isCorrect);
     
     res.json({
       success: true,
@@ -232,17 +232,17 @@ app.post('/progress/answer', authenticateToken, async (req, res) => {
 // Toggle training mark endpoint (atomic operation)
 app.post('/progress/training-mark', authenticateToken, async (req, res) => {
   try {
-    const { examId, questionNumber } = req.body;
+    const { examId, topicNumber, questionNumber } = req.body;
     const userId = req.user.userId;
 
-    if (!examId || !questionNumber) {
+    if (!examId || !topicNumber || !questionNumber) {
       return res.status(400).json({
         success: false,
-        error: 'examId and questionNumber are required'
+        error: 'examId, topicNumber, and questionNumber are required'
       });
     }
 
-    const progress = await progressService.toggleTrainingMark(userId, examId, questionNumber);
+    const progress = await progressService.toggleTrainingMark(userId, examId, topicNumber, questionNumber);
     
     res.json({
       success: true,

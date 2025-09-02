@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { UserProgress } from '../types';
+import { migrateProgressData } from '../utils/migration';
 
 const STORAGE_KEY = 'exam-progress';
 
@@ -11,11 +12,14 @@ export const useLocalStorage = (examId?: string) => {
       const examProgress = examId ? allProgress[examId] : null;
       
       if (examProgress) {
+        // Migrate old format to new format if needed
+        const migratedProgress = migrateProgressData(examProgress);
+        
         // Convert date strings back to Date objects
-        Object.values(examProgress.answers).forEach((answer: any) => {
+        Object.values(migratedProgress.answers).forEach((answer: any) => {
           if (answer.answeredAt) answer.answeredAt = new Date(answer.answeredAt);
         });
-        return examProgress;
+        return migratedProgress;
       }
     }
     
@@ -23,6 +27,7 @@ export const useLocalStorage = (examId?: string) => {
       examId: examId || '',
       answers: {},
       markedForTraining: [],
+      currentTopic: 1,
       currentQuestion: 1,
       isRandomized: false
     };
@@ -47,13 +52,15 @@ export const useLocalStorage = (examId?: string) => {
     }));
   };
 
-  const saveAnswer = (questionNumber: number, selectedAnswers: string[], isCorrect: boolean) => {
+  const saveAnswer = (topicNumber: number, questionNumber: number, selectedAnswers: string[], isCorrect: boolean) => {
+    const key = `${topicNumber}-${questionNumber}`;
     setProgress(prev => ({
       ...prev,
       examId: examId || prev.examId,
       answers: {
         ...prev.answers,
-        [questionNumber]: {
+        [key]: {
+          topicNumber,
           questionNumber,
           selectedAnswers,
           isCorrect,
@@ -63,13 +70,14 @@ export const useLocalStorage = (examId?: string) => {
     }));
   };
 
-  const toggleTrainingMark = (questionNumber: number) => {
+  const toggleTrainingMark = (topicNumber: number, questionNumber: number) => {
+    const key = `${topicNumber}-${questionNumber}`;
     setProgress(prev => ({
       ...prev,
       examId: examId || prev.examId,
-      markedForTraining: prev.markedForTraining.includes(questionNumber)
-        ? prev.markedForTraining.filter(q => q !== questionNumber)
-        : [...prev.markedForTraining, questionNumber]
+      markedForTraining: prev.markedForTraining.includes(key)
+        ? prev.markedForTraining.filter(q => q !== key)
+        : [...prev.markedForTraining, key]
     }));
   };
 
@@ -78,6 +86,7 @@ export const useLocalStorage = (examId?: string) => {
       examId: examId || '',
       answers: {},
       markedForTraining: [],
+      currentTopic: 1,
       currentQuestion: 1,
       isRandomized: false
     };
@@ -95,6 +104,7 @@ export const useLocalStorage = (examId?: string) => {
       examId: examId || '',
       answers: {},
       markedForTraining: [],
+      currentTopic: 1,
       currentQuestion: 1,
       isRandomized: false
     });
