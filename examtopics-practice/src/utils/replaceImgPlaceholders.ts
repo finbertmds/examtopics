@@ -9,9 +9,30 @@ export function replaceImgPlaceholders(
 
   let processedText = text;
 
+  const toLocalThenRemoteImgTag = (url: string) => {
+    try {
+      const parsed = new URL(url);
+      if (parsed.hostname === 'img.examtopics.com') {
+        // Path: /<folder>/<filename>
+        const parts = parsed.pathname.split('/').filter(Boolean);
+        if (parts.length >= 2) {
+          const folder = parts[0];
+          const filename = parts[parts.length - 1];
+          const localSrc = `/img/${folder}/${filename}`;
+          // Fallback to remote if local 404
+          return `<img src="${localSrc}" onerror="this.onerror=null;this.src='${url}'" style="max-width:100%; height:auto; margin:10px 0;" />`;
+        }
+      }
+    } catch (_) {
+      // ignore parsing errors and fall through to default
+    }
+    // Default: use provided URL directly
+    return `<img src="${url}" style="max-width:100%; height:auto; margin:10px 0;" />`;
+  };
+
   // Thay thế từng placeholder với hình ảnh tương ứng
-  images.forEach((url, index) => {
-    const imgTag = `<img src="${url}" style="max-width:100%; height:auto; margin:10px 0;" />`;
+  images.forEach((url) => {
+    const imgTag = toLocalThenRemoteImgTag(url);
     processedText = processedText.replace("//IMG//", imgTag);
   });
 

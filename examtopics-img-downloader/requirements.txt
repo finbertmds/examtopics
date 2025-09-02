@@ -1,0 +1,2 @@
+requests>=2.25.1
+pathlib2>=2.3.6; python_version < "3.4"
