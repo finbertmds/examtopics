@@ -181,10 +181,10 @@ const ExamPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900 transition-colors">
-      <div className="container mx-auto px-4 py-8">
-        {/* Header */}
-        <header className="mb-8">
-          <div className="flex items-center justify-between mb-4">
+      {/* Top header - Sticky */}
+      <div className="sticky top-0 z-50 bg-gray-100 dark:bg-gray-900 py-2 border-b border-gray-200 dark:border-gray-700">
+        <div className="container mx-auto px-4">
+          <div className="flex items-center justify-between">
             <button
               onClick={handleBackToHome}
               className="flex items-center gap-2 text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 font-medium transition-colors"
@@ -192,50 +192,66 @@ const ExamPage: React.FC = () => {
               {t('backToHome')}
             </button>
             <div className="flex items-center gap-4">
+              <h1 className="text-2xl font-bold text-gray-800 dark:text-white transition-colors">
+                {exam ? getExamName(exam, language) : ''}
+              </h1>
+            </div>
+            <div className="flex items-center gap-4">
               <LanguageToggle />
               <ThemeToggle />
             </div>
           </div>
-          <div className="flex items-center justify-between mb-4">
-            <h1 className="text-2xl font-bold text-gray-800 dark:text-white transition-colors">
-              {exam ? getExamName(exam, language) : ''}
-            </h1>
-            <div className="text-sm text-gray-600 dark:text-gray-300 transition-colors">
-              {exam?.questionCount} {t('questions')} • {exam?.estimatedTime} {t('minutes')}
-            </div>
-          </div>
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 transition-colors">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-gray-600 dark:text-gray-300 text-sm transition-colors">
-                  {exam ? getExamDescription(exam, language) : ''}
-                </p>
-                <div className="flex gap-2 mt-2">
-                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${exam?.difficulty === 'Advanced' ? 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200' :
-                    exam?.difficulty === 'Intermediate' ? 'bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200' :
-                      'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200'
-                    } transition-colors`}>
-                    {exam?.difficulty}
-                  </span>
-                  <span className="px-2 py-1 rounded-full text-xs font-medium bg-orange-100 dark:bg-orange-900 text-orange-800 dark:text-orange-200 transition-colors">
-                    {exam?.category}
-                  </span>
+        </div>
+      </div>
+
+      <div className="container mx-auto px-4 py-4">
+        <div className="mb-4">
+          {/* Exam info with ProgressBar */}
+          <div className="flex items-center gap-6 mb-4">
+            {/* Left side - Exam info */}
+            <div className="flex-1">
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 transition-colors">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-xl text-gray-600 dark:text-gray-300 text-sm transition-colors">
+                      {exam ? getExamDescription(exam, language) : ''}
+                    </p>
+                    <div className="text-sm mt-1 text-gray-600 dark:text-gray-300 transition-colors">
+                      {exam?.questionCount} {t('questions')} • {exam?.estimatedTime} {t('minutes')}
+                    </div>
+                    <div className="flex gap-2">
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${exam?.difficulty === 'Advanced' ? 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200' :
+                        exam?.difficulty === 'Intermediate' ? 'bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200' :
+                          'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200'
+                        } transition-colors`}>
+                        {exam?.difficulty}
+                      </span>
+                      <span className="px-2 py-1 rounded-full text-xs font-medium bg-orange-100 dark:bg-orange-900 text-orange-800 dark:text-orange-200 transition-colors">
+                        {exam?.category}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-2xl font-bold text-blue-600 dark:text-blue-400 transition-colors">{answeredCount}</div>
+                    <div className="text-sm text-gray-500 dark:text-gray-400 transition-colors">{t('answered')}</div>
+                  </div>
                 </div>
               </div>
-              <div className="text-right">
-                <div className="text-2xl font-bold text-blue-600 dark:text-blue-400 transition-colors">{answeredCount}</div>
-                <div className="text-sm text-gray-500 dark:text-gray-400 transition-colors">{t('answered')}</div>
-              </div>
+            </div>
+
+            {/* Right side - ProgressBar */}
+            <div className="flex-1">
+              <ProgressBar
+                progress={progress}
+                totalQuestions={questions.length}
+              />
             </div>
           </div>
-        </header>
+        </div>
 
-        {/* ProgressBar */}
-        <div className="mb-4">
-          <ProgressBar
-            progress={progress}
-            totalQuestions={questions.length}
-          />
+        {/* ExamResult */}
+        <div className="mb-4 flex justify-end">
+          <ExamResult userAnswers={progress.answers} totalQuestions={questions.length} />
         </div>
 
         {/* FilterBar */}
@@ -250,11 +266,6 @@ const ExamPage: React.FC = () => {
             userAnswers={progress.answers}
             markedForTraining={progress.markedForTraining}
           />
-        </div>
-
-        {/* ExamResult */}
-        <div className="mb-4">
-          <ExamResult userAnswers={progress.answers} totalQuestions={questions.length} />
         </div>
 
         {/* QuestionList */}

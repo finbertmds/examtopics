@@ -123,7 +123,7 @@ export const QuestionItem: React.FC<QuestionItemProps> = ({
     <div
       ref={questionRef}
       data-question-number={question.question_number}
-      className={`bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6 border-l-4 ${isCurrentQuestion ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900' : 'border-gray-200 dark:border-gray-600'
+      className={`bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6 border-l-4 ${isCurrentQuestion ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200 dark:border-gray-600'
         } ${isAnswered ? (isCorrect ? 'border-green-500' : 'border-red-500') : ''}`}
     >
       <div className="flex justify-between items-start mb-4">

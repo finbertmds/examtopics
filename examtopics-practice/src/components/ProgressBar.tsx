@@ -11,23 +11,19 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({ progress, totalQuestio
   const { t } = useLanguage();
   const answeredCount = Object.keys(progress.answers).length;
   const percentage = Math.round((answeredCount / totalQuestions) * 100);
-  
+
   const correctCount = Object.values(progress.answers).filter(answer => answer.isCorrect).length;
   const incorrectCount = answeredCount - correctCount;
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4">
-      <div className="flex justify-between items-center mb-2">
-        <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">{t('progress')}</h3>
-      </div>
-      
       <div className="mb-3">
         <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400 mb-1">
           <span>{answeredCount}/{totalQuestions} {t('questionsAnswered')}</span>
           <span>{percentage}%</span>
         </div>
         <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-          <div 
+          <div
             className="bg-blue-600 h-2 rounded-full transition-all duration-300"
             style={{ width: `${percentage}%` }}
           ></div>
@@ -36,16 +32,16 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({ progress, totalQuestio
 
       <div className="grid grid-cols-3 gap-4 text-sm">
         <div className="text-center">
-          <div className="text-green-600 dark:text-green-400 font-semibold">{correctCount}</div>
-          <div className="text-gray-500 dark:text-gray-400">{t('correct')}</div>
+          <span className="text-2xl text-green-600 dark:text-green-400 font-semibold">{correctCount}</span>
+          <span className="pl-2 text-gray-500 dark:text-gray-400">{t('correct')}</span>
         </div>
         <div className="text-center">
-          <div className="text-red-600 dark:text-red-400 font-semibold">{incorrectCount}</div>
-          <div className="text-gray-500 dark:text-gray-400">{t('incorrect')}</div>
+          <span className="text-2xl text-red-600 dark:text-red-400 font-semibold">{incorrectCount}</span>
+          <span className="pl-2 text-gray-500 dark:text-gray-400">{t('incorrect')}</span>
         </div>
         <div className="text-center">
-          <div className="text-blue-600 dark:text-blue-400 font-semibold">{progress.markedForTraining.length}</div>
-          <div className="text-gray-500 dark:text-gray-400">{t('training')}</div>
+          <span className="text-2xl text-blue-600 dark:text-blue-400 font-semibold">{progress.markedForTraining.length}</span>
+          <span className="pl-2 text-gray-500 dark:text-gray-400">{t('training')}</span>
         </div>
       </div>
     </div>

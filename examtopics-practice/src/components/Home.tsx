@@ -123,25 +123,25 @@ const Home: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900 transition-colors">
-      <div className="container mx-auto px-4 py-8">
-        {/* Header */}
-        <header className="text-center mb-8">
-          <div className="flex justify-between items-center mb-6">
-            <div></div>
-            <div className="flex items-center gap-2">
-              <UserMenu />
-              <LanguageToggle />
-              <ThemeToggle />
+      {/* Header - Sticky */}
+      <div className="sticky top-0 z-50 bg-gray-100 dark:bg-gray-900 py-4 border-b border-gray-200 dark:border-gray-700">
+        <div className="container mx-auto px-4">
+          <div className="text-center">
+            <div className="flex justify-between items-center">
+              <h1 className="text-4xl font-bold text-gray-800 dark:text-white transition-colors">
+                {t('examPracticePlatform')}
+              </h1>
+              <div className="flex items-center gap-2">
+                <UserMenu />
+                <LanguageToggle />
+                <ThemeToggle />
+              </div>
             </div>
           </div>
-          <h1 className="text-4xl font-bold text-gray-800 dark:text-white mb-2 transition-colors">
-            {t('examPracticePlatform')}
-          </h1>
-          <p className="text-gray-600 dark:text-gray-300 text-lg transition-colors">
-            {t('itCertificationPractice')}
-          </p>
-        </header>
+        </div>
+      </div>
 
+      <div className="container mx-auto px-4 py-4">
         {/* Search and Filters */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-4 transition-colors">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -200,7 +200,7 @@ const Home: React.FC = () => {
           filteredExams.length > 0 && (
             <div className="text-center text-gray-500 dark:text-gray-400 text-sm transition-colors">
               <p className="mb-3">
-                {t('totalExams')}: {exams.length} |
+                {t('totalExams')}: {exams.length} |&nbsp;
                 {t('filteredResults')}: {filteredExams.length}
               </p>
             </div>

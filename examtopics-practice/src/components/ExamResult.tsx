@@ -11,10 +11,10 @@ const ExamResult: React.FC<ExamResultProps> = ({ userAnswers, totalQuestions }) 
   const { t } = useLanguage();
   const answeredCount = Object.keys(userAnswers).length;
   const correctCount = Object.values(userAnswers).filter(answer => answer.isCorrect).length;
-  
+
   // Calculate accuracy percentage
   const accuracyPercentage = answeredCount > 0 ? Math.round((correctCount / answeredCount) * 100) : 0;
-  
+
   // Determine color based on accuracy
   const getAccuracyColor = (percentage: number) => {
     if (percentage >= 80) return 'text-green-600 dark:text-green-400';
@@ -39,7 +39,7 @@ const ExamResult: React.FC<ExamResultProps> = ({ userAnswers, totalQuestions }) 
   }
 
   return (
-    <div className={`mt-4 p-3 rounded-lg border ${getAccuracyBgColor(accuracyPercentage)} ${getAccuracyBorderColor(accuracyPercentage)} transition-colors`}>
+    <div className={`pt-1 pb-1 pl-2 pr-2 rounded-lg border ${getAccuracyBgColor(accuracyPercentage)} ${getAccuracyBorderColor(accuracyPercentage)} transition-colors`}>
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
@@ -47,14 +47,6 @@ const ExamResult: React.FC<ExamResultProps> = ({ userAnswers, totalQuestions }) 
             <span className={`text-lg font-bold ${getAccuracyColor(accuracyPercentage)}`}>
               {accuracyPercentage}%
             </span>
-          </div>
-          <div className="text-sm text-gray-600 dark:text-gray-400">
-            ({correctCount}/{answeredCount} {t('correctAnswers')})
-          </div>
-        </div>
-        <div className="text-right">
-          <div className="text-xs text-gray-500 dark:text-gray-400">
-            {t('remainingQuestions')} {totalQuestions - answeredCount}
           </div>
         </div>
       </div>
