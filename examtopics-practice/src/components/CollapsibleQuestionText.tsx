@@ -12,7 +12,7 @@ const CollapsibleQuestionText: React.FC<{ text: string, images: string[] }> = ({
   useEffect(() => {
     if (textRef.current) {
       // Check if text is longer than 8 lines (approximately 200px height)
-      const maxHeight = 200; // 8 lines * 25px line height
+      const maxHeight = 210; // 8 lines * 25px line height + 10px padding
       setIsLongText(textRef.current.scrollHeight > maxHeight);
     }
   }, [text]);
@@ -20,11 +20,11 @@ const CollapsibleQuestionText: React.FC<{ text: string, images: string[] }> = ({
   if (!isLongText) {
     return (
       <div className="question-text-container p-4">
-        <div 
+        <div
           ref={textRef}
           className="question-text text-gray-800 dark:text-gray-200 whitespace-pre-wrap"
-          >
-            <div dangerouslySetInnerHTML={{ __html: replaceImgPlaceholders(text, images) }} />
+        >
+          <div dangerouslySetInnerHTML={{ __html: replaceImgPlaceholders(text, images) }} />
         </div>
       </div>
     );
@@ -32,28 +32,14 @@ const CollapsibleQuestionText: React.FC<{ text: string, images: string[] }> = ({
 
   return (
     <div className="question-text-container p-4">
-      <div 
+      <div
         ref={textRef}
-        className={`question-text text-gray-800 dark:text-gray-200 whitespace-pre-wrap collapsible-content cursor-pointer ${
-          isExpanded ? 'expanded' : 'collapsed'
-        }`}
-        onClick={(e) => {
-          setIsExpanded(!isExpanded);
-          // Remove focus outline after click
-          e.currentTarget.blur();
-        }}
+        className={`question-text text-gray-800 dark:text-gray-200 whitespace-pre-wrap collapsible-content cursor-pointer ${isExpanded ? 'expanded' : 'collapsed'
+          }`}
         role="button"
         tabIndex={0}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            setIsExpanded(!isExpanded);
-          }
-        }}
-        aria-expanded={isExpanded}
-        aria-label={isExpanded ? t('collapse') : t('expand')}
       >
-          <div dangerouslySetInnerHTML={{ __html: replaceImgPlaceholders(text, images) }} />
+        <div dangerouslySetInnerHTML={{ __html: replaceImgPlaceholders(text, images) }} />
       </div>
       <button
         onClick={() => setIsExpanded(!isExpanded)}

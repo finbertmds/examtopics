@@ -65,7 +65,7 @@
   background-color: #f3f4f6; /* bg-gray-100 */
 }
 
-.training-list .scrollable-content{
+.training-list .scrollable-content {
   background-color: unset !important;
 }
 
@@ -175,9 +175,9 @@
     min-height: 44px;
     padding: 8px 0;
   }
-  
+
   /* Removed hover effect for mobile - no color change on hover */
-  
+
   .collapsible-content:active {
     background-color: rgba(99, 102, 241, 0.15);
     transform: scale(0.98);
@@ -189,5 +189,5 @@
 }
 
 .collapsible-content.collapsed {
-  max-height: 80px;
+  max-height: 210px;
 }
