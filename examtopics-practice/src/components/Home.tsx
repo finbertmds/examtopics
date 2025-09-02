@@ -80,10 +80,11 @@ const Home: React.FC = () => {
     const examDescription = getExamDescription(exam, language);
 
     const matchesSearch = examName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      examDescription.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      exam.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      exam.slug.toLowerCase().includes(searchTerm.toLowerCase()) ||
       exam.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        exam.slug.toLowerCase().includes(searchTerm.toLowerCase())
-      );
+      examDescription.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
     const matchesCategory = selectedCategory === 'all' || exam.category === selectedCategory;
     const matchesDifficulty = selectedDifficulty === 'all' ||
@@ -130,10 +131,10 @@ const Home: React.FC = () => {
         <div className="container mx-auto px-4">
           <div className="text-center">
             <div className="flex justify-between items-center">
-              <h1 className="text-4xl font-bold text-gray-800 dark:text-white transition-colors">
+              <h1 className="text-4xl font-bold text-gray-800 dark:text-white transition-colors truncate flex-1 min-w-0">
                 {t('examPracticePlatform')}
               </h1>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-shrink-0">
                 <UserMenu />
                 <LanguageToggle />
                 <ThemeToggle />

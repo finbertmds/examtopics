@@ -10,6 +10,7 @@ interface QuestionListProps {
   onAnswer: (topicNumber: number, questionNumber: number, selectedAnswers: string[]) => void;
   onToggleTraining: (topicNumber: number, questionNumber: number) => void;
   currentQuestion: number;
+  currentTopic: number;
   examId: string;
 }
 
@@ -22,6 +23,7 @@ export const QuestionList = forwardRef<QuestionListRef, QuestionListProps>(({
   progress,
   filterState,
   currentQuestion,
+  currentTopic,
   onAnswer,
   onToggleTraining,
   examId
@@ -31,35 +33,41 @@ export const QuestionList = forwardRef<QuestionListRef, QuestionListProps>(({
   const getFilteredQuestions = () => {
     let filtered = questions;
 
+    // First filter by selected topic
+    if (filterState.selectedTopic !== 'all') {
+      filtered = filtered.filter(q => q.topic_number === filterState.selectedTopic);
+    }
+
+    // Then apply other filters
     switch (filterState.type) {
       case 'answered':
-        filtered = questions.filter(q => {
+        filtered = filtered.filter(q => {
           const key = `${q.topic_number}-${q.question_number}`;
           return progress.answers[key];
         });
         break;
       case 'unanswered':
-        filtered = questions.filter(q => {
+        filtered = filtered.filter(q => {
           const key = `${q.topic_number}-${q.question_number}`;
           return !progress.answers[key];
         });
         break;
       case 'correct':
-        filtered = questions.filter(q => {
+        filtered = filtered.filter(q => {
           const key = `${q.topic_number}-${q.question_number}`;
           const answer = progress.answers[key];
           return answer && answer.isCorrect;
         });
         break;
       case 'incorrect':
-        filtered = questions.filter(q => {
+        filtered = filtered.filter(q => {
           const key = `${q.topic_number}-${q.question_number}`;
           const answer = progress.answers[key];
           return answer && !answer.isCorrect;
         });
         break;
       case 'training':
-        filtered = questions.filter(q => {
+        filtered = filtered.filter(q => {
           const key = `${q.topic_number}-${q.question_number}`;
           return progress.markedForTraining.includes(key);
         });
@@ -76,7 +84,7 @@ export const QuestionList = forwardRef<QuestionListRef, QuestionListProps>(({
   // Expose scrollToCurrentQuestion method to parent
   useImperativeHandle(ref, () => ({
     scrollToCurrentQuestion: () => {
-      const currentQuestionElement = document.querySelector(`[data-question-number="${currentQuestion}"]`);
+      const currentQuestionElement = document.querySelector(`[data-topic-number="${currentTopic}"][data-question-number="${currentQuestion}"]`);
       if (currentQuestionElement) {
         currentQuestionElement.scrollIntoView({ 
           behavior: 'smooth', 
@@ -84,7 +92,7 @@ export const QuestionList = forwardRef<QuestionListRef, QuestionListProps>(({
         });
       }
     }
-  }), [currentQuestion]);
+  }), [currentQuestion, currentTopic]);
 
   if (filteredQuestions.length === 0) {
     return (
@@ -100,11 +108,11 @@ export const QuestionList = forwardRef<QuestionListRef, QuestionListProps>(({
         const key = `${question.topic_number}-${question.question_number}`;
         const userAnswer = progress.answers[key];
         const isMarkedForTraining = progress.markedForTraining.includes(key);
-        const isCurrentQuestion = question.question_number === currentQuestion;
+        const isCurrentQuestion = question.topic_number === currentTopic && question.question_number === currentQuestion;
 
         return (
           <QuestionItem
-            key={question.question_number}
+            key={`${question.topic_number}-${question.question_number}`}
             question={question}
             userAnswer={userAnswer}
             onAnswer={onAnswer}

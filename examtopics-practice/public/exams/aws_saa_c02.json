@@ -9240,12 +9240,17 @@
     "topic_number": 1,
     "question_number": 510,
     "title": "Exam AWS Certified Solutions Architect - Associate SAA-C02 topic 1 question 510 discussion",
-    "answers": {},
-    "suggested_answer": "B",
-    "answer": "B",
+    "answers": {
+      "A": "Save the .pdf files to Amazon S3. Configure an S3 PUT event to invoke an AWS Lambda function to convert the files to .jpg format and store them back in Amazon S3.",
+      "B": "Save the .pdf files to Amazon DynamoDUse the DynamoDB Streams feature to invoke an AWS Lambda function to convert the files to .jpg format and store them back in DynamoDB.",
+      "C": "Upload the .pdf files to an AWS Elastic Beanstalk application that includes Amazon EC2 instances, Amazon Elastic Block Store (Amazon EBS) storage, and an Auto Scaling group. Use a program in the EC2 instances to convert the files to .jpg format. Save the .pdf files and the .jpg files in the EBS store.",
+      "D": "Upload the .pdf files to an AWS Elastic Beanstalk application that includes Amazon EC2 instances, Amazon Elastic File System (Amazon EFS) storage, and an Auto Scaling group. Use a program in the EC2 instances to convert the file to .jpg format. Save the .pdf files and the .jpg files in the EBS store."
+    },
+    "suggested_answer": "A",
+    "answer": "A",
     "link": "https://www.examtopics.com/discussions/amazon/view/68875-exam-aws-certified-solutions-architect-associate-saa-c02/",
     "multiple_choice": false,
-    "question_text": "A company runs its infrastructure on AWS and has a registered base of 700,000 users for its document management application. The company intends to create a\u003cbr/\u003e[1]\u003cbr/\u003esolutions architect must design a scalable solution to accommodate demand that will grow rapidly over time.\u003cbr/\u003eWhich solution meets these requirements MOST cost-effectively?\u003cbr/\u003e[1]\u003cbr/\u003eAmazon S3.\u003cbr/\u003e[1]\u003cbr/\u003ethem back in DynamoDB.\u003cbr/\u003eC. Upload the .pdf files to an AWS Elastic Beanstalk application that includes Amazon EC2 instances. Amazon Elastic Block Store (Amazon EBS) storage, and\u003cbr/\u003e[1]\u003cbr/\u003eD. Upload the .pdf files to an AWS Elastic Beanstalk application that includes Amazon EC2 instances, Amazon Elastic File System (Amazon EFS) storage, and\u003cbr/\u003e[1]\u003cbr/\u003e",
+    "question_text": "A company runs its infrastructure on AWS and has a registered base of 700,000 users for its document management application. The company intends to create a product that converts large .pdf files to .jpg image files. The .pdf files average 5 MB in size. The company needs to store the original files and the converted files. A solutions architect must design a scalable solution to accommodate demand that will grow rapidly over time.\u003cbr/\u003eWhich solution meets these requirements MOST cost-effectively?",
     "answer_images": null,
     "question_images": null
   },

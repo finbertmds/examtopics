@@ -39,16 +39,18 @@ class GoogleSheetsHelper {
       const timestamp = new Date().toISOString();
       const row = [
         timestamp,
-        data.questionId || '',
+        data.topicNumber || '',
+        data.questionNumber || '',
         data.examId || '',
         data.reason || '',
         data.comment || '',
-        data.user || ''
+        data.user || '',
+        data.url || ''
       ];
 
       const response = await this.sheets.spreadsheets.values.append({
         spreadsheetId: this.sheetId,
-        range: 'A:F', // Assuming columns A-F for timestamp, questionId, examId, reason, comment, user
+        range: 'A:H', // Assuming columns A-H for timestamp, topicNumber, questionNumber, examId, reason, comment, user, url
         valueInputOption: 'RAW',
         insertDataOption: 'INSERT_ROWS',
         resource: {

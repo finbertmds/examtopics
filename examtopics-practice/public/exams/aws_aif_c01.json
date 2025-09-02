@@ -2041,12 +2041,14 @@
     "topic_number": 1,
     "question_number": 114,
     "title": "Exam AWS Certified AI Practitioner AIF-C01 topic 1 question 114 discussion",
-    "answers": {},
-    "suggested_answer": "",
-    "answer": "",
+    "answers": {
+      "A": "//IMG//"
+    },
+    "suggested_answer": "A",
+    "answer": "A",
     "link": "https://www.examtopics.com/discussions/amazon/view/156318-exam-aws-certified-ai-practitioner-aif-c01-topic-1-question/",
     "multiple_choice": false,
-    "question_text": "HOTSPOT\n-\n\nA company wants to build an ML application.\n\nSelect and order the correct steps from the following list to develop a well-architected ML workload. Each step should be selected one time.\n\n",
+    "question_text": "HOTSPOT\n-\n\nA company wants to build an ML application.\n\nSelect and order the correct steps from the following list to develop a well-architected ML workload. Each step should be selected one time.\n\n//IMG//",
     "answer_images": [
       "https://img.examtopics.com/aws-certified-ai-practitioner-aif-c01/image2.png"
     ],
@@ -2238,12 +2240,14 @@
     "topic_number": 1,
     "question_number": 125,
     "title": "Exam AWS Certified AI Practitioner AIF-C01 topic 1 question 125 discussion",
-    "answers": {},
-    "suggested_answer": "",
-    "answer": "",
+    "answers": {
+      "A": "//IMG//"
+    },
+    "suggested_answer": "A",
+    "answer": "A",
     "link": "https://www.examtopics.com/discussions/amazon/view/156319-exam-aws-certified-ai-practitioner-aif-c01-topic-1-question/",
     "multiple_choice": false,
-    "question_text": "HOTSPOT\n-\n\nA company has developed a large language model (LLM) and wants to make the LLM available to multiple internal teams. The company needs to select the appropriate inference mode for each team.\n\nSelect the correct inference mode from the following list for each use case. Each inference mode should be selected one or more times.\n\n",
+    "question_text": "HOTSPOT\n-\n\nA company has developed a large language model (LLM) and wants to make the LLM available to multiple internal teams. The company needs to select the appropriate inference mode for each team.\n\nSelect the correct inference mode from the following list for each use case. Each inference mode should be selected one or more times.\n\n//IMG//",
     "answer_images": [
       "https://img.examtopics.com/aws-certified-ai-practitioner-aif-c01/image4.png"
     ],
@@ -2418,12 +2422,14 @@
     "topic_number": 1,
     "question_number": 135,
     "title": "Exam AWS Certified AI Practitioner AIF-C01 topic 1 question 135 discussion",
-    "answers": {},
-    "suggested_answer": "",
-    "answer": "",
+    "answers": {
+      "A": "//IMG//"
+    },
+    "suggested_answer": "A",
+    "answer": "A",
     "link": "https://www.examtopics.com/discussions/amazon/view/155872-exam-aws-certified-ai-practitioner-aif-c01-topic-1-question/",
     "multiple_choice": false,
-    "question_text": "HOTSPOT\n-\n\nA company wants to develop ML applications to improve business operations and efficiency.\n\nSelect the correct ML paradigm from the following list for each use case. Each ML paradigm should be selected one or more times.\n\n",
+    "question_text": "HOTSPOT\n-\n\nA company wants to develop ML applications to improve business operations and efficiency.\n\nSelect the correct ML paradigm from the following list for each use case. Each ML paradigm should be selected one or more times.\n\n//IMG//",
     "answer_images": [
       "https://img.examtopics.com/aws-certified-ai-practitioner-aif-c01/image6.png"
     ],
@@ -2561,12 +2567,14 @@
     "topic_number": 1,
     "question_number": 143,
     "title": "Exam AWS Certified AI Practitioner AIF-C01 topic 1 question 143 discussion",
-    "answers": {},
-    "suggested_answer": "",
-    "answer": "",
+    "answers": {
+      "A": "//IMG//"
+    },
+    "suggested_answer": "A",
+    "answer": "A",
     "link": "https://www.examtopics.com/discussions/amazon/view/156390-exam-aws-certified-ai-practitioner-aif-c01-topic-1-question/",
     "multiple_choice": false,
-    "question_text": "HOTSPOT\n-\n\nA company is training its employees on how to structure prompts for foundation models.\n\nSelect the correct prompt engineering technique from the following list for each prompt template. Each prompt engineering technique should be selected one time.\n\n",
+    "question_text": "HOTSPOT\n-\n\nA company is training its employees on how to structure prompts for foundation models.\n\nSelect the correct prompt engineering technique from the following list for each prompt template. Each prompt engineering technique should be selected one time.\n\n//IMG//",
     "answer_images": [
       "https://img.examtopics.com/aws-certified-ai-practitioner-aif-c01/image8.png"
     ],
@@ -2759,12 +2767,14 @@
     "topic_number": 1,
     "question_number": 155,
     "title": "Exam AWS Certified AI Practitioner AIF-C01 topic 1 question 155 discussion",
-    "answers": {},
-    "suggested_answer": "",
-    "answer": "",
+    "answers": {
+      "A": "//IMG//"
+    },
+    "suggested_answer": "A",
+    "answer": "A",
     "link": "https://www.examtopics.com/discussions/amazon/view/302416-exam-aws-certified-ai-practitioner-aif-c01-topic-1-question/",
     "multiple_choice": false,
-    "question_text": "HOTSPOT\n-\n\nA company wants more customized responses to its generative AI models’ prompts.\n\nSelect the correct customization methodology from the following list for each use case. Each use case should be selected one time.\n\n",
+    "question_text": "HOTSPOT\n-\n\nA company wants more customized responses to its generative AI models’ prompts.\n\nSelect the correct customization methodology from the following list for each use case. Each use case should be selected one time.\n\n//IMG//",
     "answer_images": [
       "https://img.examtopics.com/aws-certified-ai-practitioner-aif-c01/image12.png"
     ],

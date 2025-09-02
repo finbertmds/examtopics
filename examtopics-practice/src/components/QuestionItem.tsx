@@ -72,18 +72,20 @@ export const QuestionItem: React.FC<QuestionItemProps> = ({
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          questionId: question.question_number.toString(),
+          topicNumber: question.topic_number,
+          questionNumber: question.question_number,
           examId: examId,
           reason: reason,
           comment: comment,
-          user: null // Có thể thêm user authentication sau này
+          user: null, // Có thể thêm user authentication sau này
+          url: `${window.location.origin}/exam/${examId}?topicNumber=${question.topic_number}&questionNumber=${question.question_number}`
         }),
       });
 
       const data = await response.json();
 
       if (data.success) {
-        toast.success(`${t('reportSubmittedSuccessfully')} - ${t('question')} ${question.question_number}`);
+        toast.success(`${t('reportSubmittedSuccessfully')} - ${t('topic')} ${question.topic_number}, ${t('question')} ${question.question_number}`);
       } else {
         throw new Error(data.error || 'Failed to submit report');
       }
@@ -122,6 +124,7 @@ export const QuestionItem: React.FC<QuestionItemProps> = ({
   return (
     <div
       ref={questionRef}
+      data-topic-number={question.topic_number}
       data-question-number={question.question_number}
       className={`bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6 border-l-4 ${isCurrentQuestion ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200 dark:border-gray-600'
         } ${isAnswered ? (isCorrect ? 'border-green-500' : 'border-red-500') : ''}`}
@@ -139,14 +142,14 @@ export const QuestionItem: React.FC<QuestionItemProps> = ({
             🚨
           </button>
           <button
-                            onClick={() => onToggleTraining(question.topic_number, question.question_number)}
+            onClick={() => onToggleTraining(question.topic_number, question.question_number)}
             className={`px-2 rounded-full transition-colors ${isMarkedForTraining
-              ? 'bg-indigo-100 dark:bg-indigo-900 text-indigo-600 dark:text-indigo-400'
-              : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-indigo-100 dark:hover:bg-indigo-900 hover:text-indigo-600 dark:hover:text-indigo-400'
+              ? 'bg-orange-600 text-white'
+              : 'bg-orange-600 text-white hover:bg-orange-700'
               }`}
             title={isMarkedForTraining ? t('removeFromTraining') : t('addToTraining')}
           >
-            {isMarkedForTraining ? '➖' : '➕'}
+            {isMarkedForTraining ? '📚' : '📖'}
           </button>
           {isAnswered && (
             <span className={`flex items-center justify-center px-2 py-1 rounded-full text-xs font-medium ${isCorrect ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200' : 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200'
@@ -192,7 +195,7 @@ export const QuestionItem: React.FC<QuestionItemProps> = ({
               return (
                 <label
                   key={key}
-                  className={`flex items-start gap-3 p-3 rounded-lg border-2 cursor-pointer transition-all ${isSelected
+                  className={`flex items-start gap-3 p-3 rounded-lg border-2 cursor-pointer transition-all overflow-hidden ${isSelected
                     ? showCorrectness
                       ? isCorrectAnswer
                         ? 'border-green-500 bg-green-50 dark:bg-green-900'
@@ -205,16 +208,16 @@ export const QuestionItem: React.FC<QuestionItemProps> = ({
                 >
                   <input
                     type={question.multiple_choice ? 'checkbox' : 'radio'}
-                    name={`question-${question.question_number}`}
+                    name={`question-${question.topic_number}-${question.question_number}`}
                     value={key}
                     checked={isSelected}
                     onChange={(e) => handleAnswerChange(key, e.target.checked)}
                     className="mt-1"
                   // disabled={isAnswered}
                   />
-                  <div className="flex-1">
+                  <div className="flex-1 min-w-0">
                     <span className="font-medium text-gray-700 dark:text-gray-300 mr-2">{key}.</span>
-                    <span className="text-gray-800 dark:text-gray-200" dangerouslySetInnerHTML={{ __html: replaceImgPlaceholders(answer, answerImages) }} />
+                    <span className="text-gray-800 dark:text-gray-200 break-words" dangerouslySetInnerHTML={{ __html: replaceImgPlaceholders(answer, answerImages) }} />
                     {showCorrectness && isCorrectAnswer && (
                       <span className="ml-2 text-green-600 dark:text-green-400 font-medium">✓ {t('correct')}</span>
                     )}
@@ -242,20 +245,20 @@ export const QuestionItem: React.FC<QuestionItemProps> = ({
         <div className="mt-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
           <div className="mb-2">
             <strong className="text-gray-800 dark:text-gray-200">{t('yourAnswer')}</strong>
-            <span className="ml-2 text-gray-600 dark:text-gray-400">
+            <span className="ml-2 text-gray-600 dark:text-gray-400 break-words">
               {userAnswersSorted.length > 0 ? userAnswersSorted.join(', ') : t('unanswered')}
             </span>
           </div>
           <div className="mb-2">
             <strong className="text-gray-800 dark:text-gray-200">{t('suggestedAnswer')}</strong>
-            <span className="ml-2 text-green-600 dark:text-green-400 font-medium">
+            <span className="ml-2 text-green-600 dark:text-green-400 font-medium break-words">
               {correctAnswers.join(', ')}
             </span>
           </div>
           {question.answer !== question.suggested_answer && (
             <div className="mb-2">
               <strong className="text-gray-800 dark:text-gray-200">{t('additionalAnswer')}</strong>
-              <span className="ml-2 text-indigo-600 dark:text-indigo-400 font-medium">
+              <span className="ml-2 text-indigo-600 dark:text-indigo-400 font-medium break-words">
                 {question.answer}
               </span>
             </div>
@@ -278,7 +281,8 @@ export const QuestionItem: React.FC<QuestionItemProps> = ({
         isOpen={isReportModalOpen}
         onClose={() => setIsReportModalOpen(false)}
         onSubmit={handleReportSubmit}
-        questionId={question.question_number.toString()}
+        topicNumber={question.topic_number}
+        questionNumber={question.question_number}
         examId={examId}
       />
     </div>

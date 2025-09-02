@@ -8641,13 +8641,23 @@
     "topic_number": 1,
     "question_number": 477,
     "title": "Exam AWS Certified Solutions Architect - Associate SAA-C03 topic 1 question 477 discussion",
-    "answers": {},
+    "answers": {
+      "A": "//IMG//",
+      "B": "//IMG//",
+      "C": "//IMG//",
+      "D": "//IMG//"
+    },
     "suggested_answer": "D",
     "answer": "D",
     "link": "https://www.examtopics.com/discussions/amazon/view/109459-exam-aws-certified-solutions-architect-associate-saa-c03/",
     "multiple_choice": false,
     "question_text": "A group requires permissions to list an Amazon S3 bucket and delete objects from that bucket. An administrator has created the following IAM policy to provide access to the bucket and applied that policy to the group. The group is not able to delete objects in the bucket. The company follows least-privilege access rules.\u003cbr/\u003e\u003cbr/\u003e//IMG//\u003cbr/\u003e\u003cbr/\u003eWhich statement should a solutions architect add to the policy to correct bucket access?",
-    "answer_images": null,
+    "answer_images": [
+      "https://img.examtopics.com/aws-certified-solutions-architect-associate-saa-c03/image7.png",
+      "https://img.examtopics.com/aws-certified-solutions-architect-associate-saa-c03/image8.png",
+      "https://img.examtopics.com/aws-certified-solutions-architect-associate-saa-c03/image9.png",
+      "https://img.examtopics.com/aws-certified-solutions-architect-associate-saa-c03/image10.png"
+    ],
     "question_images": [
       "https://img.examtopics.com/aws-certified-solutions-architect-associate-saa-c03/image6.png"
     ]

@@ -69,6 +69,7 @@
   "comment": "Comment",
   "optional": "optional",
   "selectReason": "Select a reason",
+  "wrongContent": "Wrong question or answer",
   "incorrectAnswer": "Incorrect answer",
   "wrongExplanation": "Wrong explanation",
   "outdatedContent": "Outdated content",
@@ -92,5 +93,7 @@
   "currentTopic": "Current Topic",
   "currentQuestion": "Current Question",
   "topicDistribution": "Topic Distribution",
-  "topic": "Topic"
+  "topic": "Topic",
+  "selectTopic": "Select Topic",
+  "allTopics": "All Topics"
 }

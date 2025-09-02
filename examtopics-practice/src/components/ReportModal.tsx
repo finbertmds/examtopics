@@ -6,7 +6,8 @@ interface ReportModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (reason: string, comment: string) => void;
-  questionId: string;
+  topicNumber: number;
+  questionNumber: number;
   examId: string;
 }
 
@@ -14,7 +15,8 @@ const ReportModal: React.FC<ReportModalProps> = ({
   isOpen,
   onClose,
   onSubmit,
-  questionId,
+  topicNumber,
+  questionNumber,
   examId
 }) => {
   const { t } = useLanguage();
@@ -75,7 +77,8 @@ const ReportModal: React.FC<ReportModalProps> = ({
           </div>
 
           <div className="mb-4 text-sm text-gray-600 dark:text-gray-400">
-            <p><strong>{t('question')}:</strong> {questionId}</p>
+            <p><strong>{t('topic')}:</strong> {topicNumber}</p>
+            <p><strong>{t('question')}:</strong> {questionNumber}</p>
             <p><strong>{t('exam')}:</strong> {examId}</p>
           </div>
 
@@ -92,9 +95,10 @@ const ReportModal: React.FC<ReportModalProps> = ({
                 required
               >
                 <option value="">{t('selectReason')}</option>
+                <option value="Wrong content">{t('wrongContent')}</option>
+                <option value="Outdated content">{t('outdatedContent')}</option>
                 <option value="Incorrect answer">{t('incorrectAnswer')}</option>
                 <option value="Wrong explanation">{t('wrongExplanation')}</option>
-                <option value="Outdated content">{t('outdatedContent')}</option>
                 <option value="Poor question quality">{t('poorQuestionQuality')}</option>
                 <option value="Duplicate question">{t('duplicateQuestion')}</option>
                 <option value="Technical issue">{t('technicalIssue')}</option>

@@ -1077,12 +1077,14 @@
     "topic_number": 1,
     "question_number": 60,
     "title": "Exam AWS Certified SysOps Administrator - Associate topic 1 question 60 discussion",
-    "answers": {},
-    "suggested_answer": "See explanation below.",
-    "answer": "See explanation below.",
+    "answers": {
+      "A": "See explanation above"
+    },
+    "suggested_answer": "A",
+    "answer": "A",
     "link": "https://www.examtopics.com/discussions/amazon/view/104162-exam-aws-certified-sysops-administrator-associate-topic-1/",
-    "multiple_choice": true,
-    "question_text": "SIMULATION -\n\nInstructions -\nIf the copy-paste functionality is not working in your environment, refer to the instructions file on the VM desktop and use Ctrl+C, Ctrl+V or Command-C,\nCommand-V.\nConfigure Amazon EventBridge to meet the following requirements.\n1. Use the us-east-2 Region for all resources.\n2. Unless specified below, use the default configuration settings.\n3. Use your own resource naming unless a resource name is specified below.\n4. Ensure all Amazon EC2 events in the default event bus are replayable for the past 45 days.\n5. Create a rule named RunFunction to send the exact message {\"name\":\"example\") every 15 minutes to an existing AWS Lambda function named LogEventFunction\n6. Create a rule named SpotWarning to send a notification to a new standard Amazon SNS topic named TopicEvents whenever an Amazon EC2 Spot Instance is interrupted. Do NOT create any topic subscriptions. The notification must match the following structure:\nInput path:\n{`instance`:`detail.instance-id}\nInput template:\n`The EC2 Spot Instance \u003cinstance\u003e has been interrupted.`\nImportant: Click the Next button to complete this lab and continue to the next lab. Once you click the Next button, you will NOT be able to return to this lab.",
+    "multiple_choice": false,
+    "question_text": "SIMULATION -\n\nInstructions -\nIf the copy-paste functionality is not working in your environment, refer to the instructions file on the VM desktop and use Ctrl+C, Ctrl+V or Command-C,\nCommand-V.\nConfigure Amazon EventBridge to meet the following requirements.\n1. Use the us-east-2 Region for all resources.\n2. Unless specified below, use the default configuration settings.\n3. Use your own resource naming unless a resource name is specified below.\n4. Ensure all Amazon EC2 events in the default event bus are replayable for the past 45 days.\n5. Create a rule named RunFunction to send the exact message {\"name\":\"example\") every 15 minutes to an existing AWS Lambda function named LogEventFunction\n6. Create a rule named SpotWarning to send a notification to a new standard Amazon SNS topic named TopicEvents whenever an Amazon EC2 Spot Instance is interrupted. Do NOT create any topic subscriptions. The notification must match the following structure:\nInput path:\n{`instance`:`detail.instance-id}\nInput template:\n`The EC2 Spot Instance \u003cinstance\u003e has been interrupted.`\nImportant: Click the Next button to complete this lab and continue to the next lab. Once you click the Next button, you will NOT be able to return to this lab.See explanation below. //IMG//<br>//IMG//<br>//IMG//<br>//IMG//<br>//IMG//<br>//IMG//<br>//IMG//<br>//IMG//<br>//IMG//<br>//IMG//<br>//IMG//<br>//IMG//<br>//IMG//<br>//IMG//<br>//IMG//<br>//IMG//<br>//IMG//<br>//IMG//<br>//IMG//<br>//IMG//<br>//IMG//<br>//IMG//<br>//IMG//<br>//IMG//<br>//IMG//<br>//IMG//<br>//IMG//<br>//IMG//<br>//IMG//<br>//IMG//<br>//IMG//",
     "answer_images": [
       "https://www.examtopics.com/assets/media/exam-media/04242/0003700001.jpg",
       "https://www.examtopics.com/assets/media/exam-media/04242/0003800001.jpg",
@@ -6180,12 +6182,14 @@
     "topic_number": 1,
     "question_number": 340,
     "title": "Exam AWS Certified SysOps Administrator - Associate topic 1 question 340 discussion",
-    "answers": {},
-    "suggested_answer": "",
-    "answer": "",
+    "answers": {
+      "A": "//IMG//"
+    },
+    "suggested_answer": "A",
+    "answer": "A",
     "link": "https://www.examtopics.com/discussions/amazon/view/126137-exam-aws-certified-sysops-administrator-associate-topic-1/",
     "multiple_choice": false,
-    "question_text": "SIMULATION\n-\n\nInstructions.\n\nIf your AWS Management Console browser does not show that you are logged in to an AWS account, close the browser and relaunch the console by using the AWS Management Console shortcut from the VM desktop.\n\nIf the copy-paste functionality is not working in your environment, refer to the instructions file on the VM desktop and use Ctrl+C, Ctrl+V or Command-C, Command-V.\n\nCreate a solution to automate Amazon EBS Volume snapshots using Amazon Data Lifecycle Manager.\n\n1. Use the us-east-2 Region for all resources.\n2. Unless specified below, use the default configuration settings.\n3. Create a snapshot of the existing EBS Volume named OriginalVolume.\n4. Create a 1 GB EBS Volume from the snapshot with default encryption.\n5. Add the tag Snapshot: true to the new EBS Volume.\n6. Ensure that snapshots of all volumes with the tag Snapshot:true are taken every 6 hours and retained for 90 days. Do NOT use a cron expression. Ensure this is the only lifecycle policy that exists. Use the IAM role named DLMRole.\n\nImportant: Click the Next button to complete this lab and continue to the next lab. Once you click the Next button, you will NOT be able to return to this lab.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+    "question_text": "SIMULATION\n-\n\nInstructions.\n\nIf your AWS Management Console browser does not show that you are logged in to an AWS account, close the browser and relaunch the console by using the AWS Management Console shortcut from the VM desktop.\n\nIf the copy-paste functionality is not working in your environment, refer to the instructions file on the VM desktop and use Ctrl+C, Ctrl+V or Command-C, Command-V.\n\nCreate a solution to automate Amazon EBS Volume snapshots using Amazon Data Lifecycle Manager.\n\n1. Use the us-east-2 Region for all resources.\n2. Unless specified below, use the default configuration settings.\n3. Create a snapshot of the existing EBS Volume named OriginalVolume.\n4. Create a 1 GB EBS Volume from the snapshot with default encryption.\n5. Add the tag Snapshot: true to the new EBS Volume.\n6. Ensure that snapshots of all volumes with the tag Snapshot:true are taken every 6 hours and retained for 90 days. Do NOT use a cron expression. Ensure this is the only lifecycle policy that exists. Use the IAM role named DLMRole.\n\nImportant: Click the Next button to complete this lab and continue to the next lab. Once you click the Next button, you will NOT be able to return to this lab.\n\n//IMG//<br>//IMG//<br>//IMG//<br>//IMG//<br>//IMG//<br>//IMG//<br>//IMG//<br>//IMG//<br>//IMG//<br>//IMG//<br>//IMG//<br>//IMG//<br>//IMG//<br>//IMG//<br>",
     "answer_images": [
       "https://img.examtopics.com/aws-certified-sysops-administrator-associate/image17.png"
     ],

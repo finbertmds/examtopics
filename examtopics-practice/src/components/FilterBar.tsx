@@ -12,6 +12,7 @@ interface FilterBarProps {
   userAnswers: Record<string, UserAnswer>;
   markedForTraining: string[];
   questions: Question[];
+  onTopicChange: (topic: number | 'all') => void;
 }
 
 export const FilterBar: React.FC<FilterBarProps> = ({
@@ -20,17 +21,13 @@ export const FilterBar: React.FC<FilterBarProps> = ({
   onRandomize,
   onReset,
   totalQuestions,
-  answeredCount,
+  answeredCount: totalAnsweredCount,
   userAnswers,
   markedForTraining,
-  questions
+  questions,
+  onTopicChange
 }) => {
   const { t } = useLanguage();
-  
-  // Calculate counts for different question types
-  const correctCount = Object.values(userAnswers).filter(answer => answer.isCorrect).length;
-  const incorrectCount = Object.values(userAnswers).filter(answer => !answer.isCorrect).length;
-  const trainingCount = markedForTraining.length;
 
   // Calculate topic distribution from all questions (not just answered ones)
   const topicDistribution = questions.reduce((acc, question) => {
@@ -38,34 +35,90 @@ export const FilterBar: React.FC<FilterBarProps> = ({
     return acc;
   }, {} as Record<number, number>);
 
-  // Calculate answered questions per topic
-  const answeredTopicDistribution = Object.values(userAnswers).reduce((acc, answer) => {
-    acc[answer.topicNumber] = (acc[answer.topicNumber] || 0) + 1;
-    return acc;
-  }, {} as Record<number, number>);
+  // Calculate counts for different question types based on selected topic
+  const getFilteredQuestions = () => {
+    let filtered = questions;
+    if (filterState.selectedTopic !== 'all') {
+      filtered = filtered.filter(q => q.topic_number === filterState.selectedTopic);
+    }
+    return filtered;
+  };
+
+  const filteredQuestions = getFilteredQuestions();
+  const filteredAnsweredQuestions = filteredQuestions.filter(q => {
+    const key = `${q.topic_number}-${q.question_number}`;
+    return userAnswers[key];
+  });
+
+  const correctCount = filteredAnsweredQuestions.filter(q => {
+    const key = `${q.topic_number}-${q.question_number}`;
+    return userAnswers[key]?.isCorrect;
+  }).length;
+
+  const incorrectCount = filteredAnsweredQuestions.filter(q => {
+    const key = `${q.topic_number}-${q.question_number}`;
+    return userAnswers[key] && !userAnswers[key].isCorrect;
+  }).length;
+
+  const answeredCount = filteredAnsweredQuestions.length;
+  const unansweredCount = filteredQuestions.length - answeredCount;
+  const trainingCount = filteredQuestions.filter(q => {
+    const key = `${q.topic_number}-${q.question_number}`;
+    return markedForTraining.includes(key);
+  }).length;
 
   const filterOptions: { value: FilterType; label: string; count?: number }[] = [
-    { value: 'all', label: t('all'), count: totalQuestions },
+    { value: 'all', label: t('all'), count: filteredQuestions.length },
     { value: 'correct', label: t('correct'), count: correctCount },
     { value: 'incorrect', label: t('incorrect'), count: incorrectCount },
-    { value: 'answered', label: t('questionsAnswered'), count: answeredCount },
-    { value: 'unanswered', label: t('unanswered'), count: totalQuestions - answeredCount },
+    { value: 'answered', label: t('answered'), count: answeredCount },
+    { value: 'unanswered', label: t('unanswered'), count: unansweredCount },
     { value: 'training', label: t('training'), count: trainingCount }
   ];
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4">
+      {Object.keys(topicDistribution).length > 0 && (
+        <div className="pb-2 gap-2 border-gray-200">
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2">
+              <label className="text-xs text-gray-500 dark:text-gray-400">
+                {t('selectTopic')}:
+              </label>
+              <select
+                value={filterState.selectedTopic}
+                onChange={(e) => {
+                  const newTopic = e.target.value === 'all' ? 'all' : parseInt(e.target.value);
+                  onFilterChange({
+                    ...filterState,
+                    selectedTopic: newTopic
+                  });
+                  onTopicChange(newTopic);
+                }}
+                className="px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="all">{t('allTopics')}</option>
+                {Object.keys(topicDistribution).map((topic) => (
+                  <option key={topic} value={topic}>
+                    {t('topic')} {topic}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="flex flex-wrap items-center gap-1">
         <div className="flex flex-nowrap gap-2 overflow-x-auto scrollbar-hide pb-2">
           {filterOptions.map((option) => (
             <button
               key={option.value}
               onClick={() => onFilterChange({ ...filterState, type: option.value })}
-              className={`px-3 py-1 rounded-full text-sm font-medium transition-colors whitespace-nowrap flex-shrink-0 ${
-                filterState.type === option.value
+              className={`px-3 py-1 rounded-full text-sm font-medium transition-colors whitespace-nowrap flex-shrink-0 ${filterState.type === option.value
                   ? 'bg-blue-600 text-white'
                   : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
-              }`}
+                }`}
             >
               {option.label}
               {option.count !== undefined && (
@@ -76,50 +129,28 @@ export const FilterBar: React.FC<FilterBarProps> = ({
         </div>
 
         <div className="flex items-center justify-end w-full">
-          <div className="flex gap-2">
+          <div className="flex gap-1 sm:gap-2">
             <button
               onClick={() => onFilterChange({ ...filterState, type: 'training' })}
-              className="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors text-sm font-medium"
+              className="px-2 sm:px-4 py-1 sm:py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors text-xs sm:text-sm font-medium"
             >
               📚 {t('training')}
             </button>
             <button
               onClick={onRandomize}
-              className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm font-medium"
+              className="px-2 sm:px-4 py-1 sm:py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-xs sm:text-sm font-medium"
             >
               🔀 {t('randomize')}
             </button>
             <button
               onClick={onReset}
-              className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-medium"
+              className="px-2 sm:px-4 py-1 sm:py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-xs sm:text-sm font-medium"
             >
               🔄 {t('reset')}
             </button>
           </div>
         </div>
       </div>
-
-      {/* Topic distribution info */}
-      {Object.keys(topicDistribution).length > 0 && (
-        <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
-          <div className="text-xs text-gray-500 dark:text-gray-400 mb-2">
-            {t('topicDistribution')}:
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {Object.entries(topicDistribution).map(([topic, totalCount]) => {
-              const answeredCount = answeredTopicDistribution[parseInt(topic)] || 0;
-              return (
-                <span
-                  key={topic}
-                  className="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full text-xs"
-                >
-                  {t('topic')} {topic}: {answeredCount}/{totalCount}
-                </span>
-              );
-            })}
-          </div>
-        </div>
-      )}
 
       <div className="mt-4 flex items-center gap-1">
         <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">

@@ -3227,12 +3227,17 @@
     "topic_number": 1,
     "question_number": 178,
     "title": "Exam ANS-C00 topic 1 question 178 discussion",
-    "answers": {},
+    "answers": {
+      "A": "Classic Load Balancer does not support path-based routing rules",
+      "B": "Create two target groups and associate them with each autoscaling group.",
+      "C": "Configure a Classic Load Balancer",
+      "D": "Configure an Application Load Balancer"
+    },
     "suggested_answer": "ABD",
     "answer": "ABD",
     "link": "https://www.examtopics.com/discussions/amazon/view/37302-exam-ans-c00-topic-1-question-178-discussion/",
     "multiple_choice": true,
-    "question_text": "You have two autoscaling groups in your VPC. One deploys servers that host the index of your website and another that deploys servers that host the images for your website. What three steps would you take to ensure the right servers are used for the right purpose? (Choose three.)\u003cbr/\u003e[1]\u003cbr/\u003eB. Create two target groups and associate them with each autoscaling group.\u003cbr/\u003eC. Configure a Classic Load Balancer\u003cbr/\u003eD. Configure an Application Load Balancer\u003cbr/\u003e",
+    "question_text": "You have two autoscaling groups in your VPC. One deploys servers that host the index of your website and another that deploys servers that host the images for your website. What three steps would you take to ensure the right servers are used for the right purpose? (Choose three.)",
     "answer_images": null,
     "question_images": null
   },
@@ -5905,12 +5910,17 @@
     "topic_number": 1,
     "question_number": 327,
     "title": "Exam ANS-C00 topic 1 question 327 discussion",
-    "answers": {},
+    "answers": {
+      "A": "http://d111111abcdef8.cloudfront.net/images/image.jpg",
+      "B": "http://d111111abcdef8.dns/images/image.jpg",
+      "C": "http://d111111abcdef8.dns/image.jpg",
+      "D": "http://d111111abcdef8.cloudfront.net/image.jpg"
+    },
     "suggested_answer": "D",
     "answer": "D",
     "link": "https://www.examtopics.com/discussions/amazon/view/37559-exam-ans-c00-topic-1-question-327-discussion/",
     "multiple_choice": false,
-    "question_text": "[1]\u003cbr/\u003eyour webpage will be _____.\u003cbr/\u003e[1]\u003cbr/\u003e[1]\u003cbr/\u003e[1]\u003cbr/\u003e[1]\u003cbr/\u003e",
+    "question_text": "In Amazon CloudFront, to link to your objects, if your domain name is d111111abcdef8.cloudfront.net and your object is image.jpg, then the URL for the link in your webpage will be _____.",
     "answer_images": null,
     "question_images": null
   },

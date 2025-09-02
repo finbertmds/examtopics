@@ -75,12 +75,14 @@
     "topic_number": 1,
     "question_number": 5,
     "title": "Exam AWS Certified Machine Learning Engineer - Associate MLA-C01 topic 1 question 5 discussion",
-    "answers": {},
-    "suggested_answer": "",
-    "answer": "",
+    "answers": {
+      "A": "//IMG//"
+    },
+    "suggested_answer": "A",
+    "answer": "A",
     "link": "https://www.examtopics.com/discussions/amazon/view/156754-exam-aws-certified-machine-learning-engineer-associate-mla/",
     "multiple_choice": false,
-    "question_text": "HOTSPOT -\nA company stores historical data in .csv files in Amazon S3. Only some of the rows and columns in the .csv files are populated. The columns are not labeled. An ML engineer needs to prepare and store the data so that the company can use the data to train ML models.\nSelect and order the correct steps from the following list to perform this task. Each step should be selected one time or not at all. (Select and order three.)\n• Create an Amazon SageMaker batch transform job for data cleaning and feature engineering.\n• Store the resulting data back in Amazon S3.\n• Use Amazon Athena to infer the schemas and available columns.\n• Use AWS Glue crawlers to infer the schemas and available columns.\n• Use AWS Glue DataBrew for data cleaning and feature engineering.\n",
+    "question_text": "HOTSPOT -\nA company stores historical data in .csv files in Amazon S3. Only some of the rows and columns in the .csv files are populated. The columns are not labeled. An ML engineer needs to prepare and store the data so that the company can use the data to train ML models.\nSelect and order the correct steps from the following list to perform this task. Each step should be selected one time or not at all. (Select and order three.)\n• Create an Amazon SageMaker batch transform job for data cleaning and feature engineering.\n• Store the resulting data back in Amazon S3.\n• Use Amazon Athena to infer the schemas and available columns.\n• Use AWS Glue crawlers to infer the schemas and available columns.\n• Use AWS Glue DataBrew for data cleaning and feature engineering.\n//IMG//",
     "answer_images": [
       "https://img.examtopics.com/aws-certified-machine-learning-engineer-associate-mla-c01/image2.png"
     ],
@@ -92,12 +94,14 @@
     "topic_number": 1,
     "question_number": 6,
     "title": "Exam AWS Certified Machine Learning Engineer - Associate MLA-C01 topic 1 question 6 discussion",
-    "answers": {},
-    "suggested_answer": "",
-    "answer": "",
+    "answers": {
+      "A": "//IMG//"
+    },
+    "suggested_answer": "A",
+    "answer": "A",
     "link": "https://www.examtopics.com/discussions/amazon/view/156755-exam-aws-certified-machine-learning-engineer-associate-mla/",
     "multiple_choice": false,
-    "question_text": "HOTSPOT -\nAn ML engineer needs to use Amazon SageMaker Feature Store to create and manage features to train a model.\nSelect and order the steps from the following list to create and use the features in Feature Store. Each step should be selected one time. (Select and order three.)\n• Access the store to build datasets for training.\n• Create a feature group.\n• Ingest the records.\n",
+    "question_text": "HOTSPOT -\nAn ML engineer needs to use Amazon SageMaker Feature Store to create and manage features to train a model.\nSelect and order the steps from the following list to create and use the features in Feature Store. Each step should be selected one time. (Select and order three.)\n• Access the store to build datasets for training.\n• Create a feature group.\n• Ingest the records.\n//IMG//",
     "answer_images": [
       "https://img.examtopics.com/aws-certified-machine-learning-engineer-associate-mla-c01/image4.png"
     ],
@@ -109,12 +113,14 @@
     "topic_number": 1,
     "question_number": 7,
     "title": "Exam AWS Certified Machine Learning Engineer - Associate MLA-C01 topic 1 question 7 discussion",
-    "answers": {},
-    "suggested_answer": "",
-    "answer": "",
+    "answers": {
+      "A": "//IMG//"
+    },
+    "suggested_answer": "A",
+    "answer": "A",
     "link": "https://www.examtopics.com/discussions/amazon/view/154557-exam-aws-certified-machine-learning-engineer-associate-mla/",
     "multiple_choice": false,
-    "question_text": "HOTSPOT -\nA company wants to host an ML model on Amazon SageMaker. An ML engineer is configuring a continuous integration and continuous delivery (Cl/CD) pipeline in AWS CodePipeline to deploy the model. The pipeline must run automatically when new training data for the model is uploaded to an Amazon S3 bucket.\nSelect and order the pipeline's correct steps from the following list. Each step should be selected one time or not at all. (Select and order three.)\n• An S3 event notification invokes the pipeline when new data is uploaded.\n• S3 Lifecycle rule invokes the pipeline when new data is uploaded.\n• SageMaker retrains the model by using the data in the S3 bucket.\n• The pipeline deploys the model to a SageMaker endpoint.\n• The pipeline deploys the model to SageMaker Model Registry.\n",
+    "question_text": "HOTSPOT -\nA company wants to host an ML model on Amazon SageMaker. An ML engineer is configuring a continuous integration and continuous delivery (Cl/CD) pipeline in AWS CodePipeline to deploy the model. The pipeline must run automatically when new training data for the model is uploaded to an Amazon S3 bucket.\nSelect and order the pipeline's correct steps from the following list. Each step should be selected one time or not at all. (Select and order three.)\n• An S3 event notification invokes the pipeline when new data is uploaded.\n• S3 Lifecycle rule invokes the pipeline when new data is uploaded.\n• SageMaker retrains the model by using the data in the S3 bucket.\n• The pipeline deploys the model to a SageMaker endpoint.\n• The pipeline deploys the model to SageMaker Model Registry.\n//IMG//",
     "answer_images": [
       "https://img.examtopics.com/aws-certified-machine-learning-engineer-associate-mla-c01/image6.png"
     ],
@@ -126,12 +132,14 @@
     "topic_number": 1,
     "question_number": 8,
     "title": "Exam AWS Certified Machine Learning Engineer - Associate MLA-C01 topic 1 question 8 discussion",
-    "answers": {},
-    "suggested_answer": "",
-    "answer": "",
+    "answers": {
+      "A": "//IMG//"
+    },
+    "suggested_answer": "A",
+    "answer": "A",
     "link": "https://www.examtopics.com/discussions/amazon/view/156757-exam-aws-certified-machine-learning-engineer-associate-mla/",
     "multiple_choice": false,
-    "question_text": "HOTSPOT -\nAn ML engineer is building a generative AI application on Amazon Bedrock by using large language models (LLMs).\nSelect the correct generative AI term from the following list for each description. Each term should be selected one time or not at all. (Select three.)\n• Embedding\n• Retrieval Augmented Generation (RAG)\n• Temperature\n• Token\n",
+    "question_text": "HOTSPOT -\nAn ML engineer is building a generative AI application on Amazon Bedrock by using large language models (LLMs).\nSelect the correct generative AI term from the following list for each description. Each term should be selected one time or not at all. (Select three.)\n• Embedding\n• Retrieval Augmented Generation (RAG)\n• Temperature\n• Token\n//IMG//",
     "answer_images": [
       "https://img.examtopics.com/aws-certified-machine-learning-engineer-associate-mla-c01/image8.png"
     ],
@@ -143,12 +151,14 @@
     "topic_number": 1,
     "question_number": 9,
     "title": "Exam AWS Certified Machine Learning Engineer - Associate MLA-C01 topic 1 question 9 discussion",
-    "answers": {},
-    "suggested_answer": "",
-    "answer": "",
+    "answers": {
+      "A": "//IMG//"
+    },
+    "suggested_answer": "A",
+    "answer": "A",
     "link": "https://www.examtopics.com/discussions/amazon/view/155580-exam-aws-certified-machine-learning-engineer-associate-mla/",
     "multiple_choice": false,
-    "question_text": "HOTSPOT -\nAn ML engineer is working on an ML model to predict the prices of similarly sized homes. The model will base predictions on several features The ML engineer will use the following feature engineering techniques to estimate the prices of the homes:\n• Feature splitting\n• Logarithmic transformation\n• One-hot encoding\n• Standardized distribution\nSelect the correct feature engineering techniques for the following list of features. Each feature engineering technique should be selected one time or not at all (Select three.)\n",
+    "question_text": "HOTSPOT -\nAn ML engineer is working on an ML model to predict the prices of similarly sized homes. The model will base predictions on several features The ML engineer will use the following feature engineering techniques to estimate the prices of the homes:\n• Feature splitting\n• Logarithmic transformation\n• One-hot encoding\n• Standardized distribution\nSelect the correct feature engineering techniques for the following list of features. Each feature engineering technique should be selected one time or not at all (Select three.)\n//IMG//",
     "answer_images": [
       "https://img.examtopics.com/aws-certified-machine-learning-engineer-associate-mla-c01/image10.png"
     ],

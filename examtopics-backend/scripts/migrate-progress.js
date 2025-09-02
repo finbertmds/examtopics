@@ -31,10 +31,24 @@ async function migrateProgressData() {
               newAnswers.set(key, answer);
             } else {
               // Old format - convert to new format
-              const questionNumber = parseInt(key);
-              const newKey = `1-${questionNumber}`; // Default topic number to 1
+              let topicNumber = 1;
+              let questionNumber;
+              let newKey;
+              
+              if (typeof key === 'string' && key.includes('-')) {
+                // Key is already in new format (contains dash)
+                newKey = key;
+                const parts = key.split('-');
+                topicNumber = parseInt(parts[0]);
+                questionNumber = parseInt(parts[1]);
+              } else {
+                // Old format - convert to new format
+                questionNumber = typeof key === 'string' ? parseInt(key) : key;
+                newKey = `1-${questionNumber}`; // Default topic number to 1
+              }
+              
               newAnswers.set(newKey, {
-                topicNumber: 1,
+                topicNumber: topicNumber,
                 questionNumber: questionNumber,
                 selectedAnswers: answer.selectedAnswers || [],
                 isCorrect: answer.isCorrect || false,
@@ -48,8 +62,14 @@ async function migrateProgressData() {
         // Migrate markedForTraining
         for (const item of progress.markedForTraining) {
           if (typeof item === 'string') {
-            // Already in new format
-            newMarkedForTraining.push(item);
+            if (item.includes('-')) {
+              // Already in new format (contains dash)
+              newMarkedForTraining.push(item);
+            } else {
+              // Old format - string without dash, convert to new format
+              newMarkedForTraining.push(`1-${item}`);
+              needsUpdate = true;
+            }
           } else if (typeof item === 'number') {
             // Old format - convert to new format
             newMarkedForTraining.push(`1-${item}`);

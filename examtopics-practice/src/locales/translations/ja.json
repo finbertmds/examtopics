@@ -69,6 +69,7 @@
   "comment": "コメント",
   "optional": "オプション",
   "selectReason": "理由を選択",
+  "wrongContent": "問題又は回答が間違っている",
   "incorrectAnswer": "不正解",
   "wrongExplanation": "説明が間違っている",
   "outdatedContent": "古いコンテンツ",
@@ -92,5 +93,7 @@
   "currentTopic": "現在のトピック",
   "currentQuestion": "現在の問題",
   "topicDistribution": "トピック分布",
-  "topic": "トピック"
+  "topic": "トピック",
+  "selectTopic": "トピックを選択",
+  "allTopics": "すべてのトピック"
 }

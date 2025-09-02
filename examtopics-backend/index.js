@@ -262,21 +262,21 @@ app.post('/progress/training-mark', authenticateToken, async (req, res) => {
 // Report endpoint
 app.post('/report', async (req, res) => {
   try {
-    const { questionId, examId, reason, comment, user } = req.body;
+    const { topicNumber, questionNumber, examId, reason, comment, user, url } = req.body;
 
     // Validate required fields
-    if (!questionId || !examId || !reason) {
+    if (topicNumber === undefined || questionNumber === undefined || !examId || !reason) {
       return res.status(400).json({
         success: false,
-        error: 'Missing required fields: questionId, examId, and reason are required'
+        error: 'Missing required fields: topicNumber, questionNumber, examId, and reason are required'
       });
     }
 
     // Validate data types
-    if (typeof questionId !== 'string' || typeof examId !== 'string' || typeof reason !== 'string') {
+    if (typeof topicNumber !== 'number' || typeof questionNumber !== 'number' || typeof examId !== 'string' || typeof reason !== 'string') {
       return res.status(400).json({
         success: false,
-        error: 'Invalid data types: questionId, examId, and reason must be strings'
+        error: 'Invalid data types: topicNumber and questionNumber must be numbers, examId and reason must be strings'
       });
     }
 
@@ -297,11 +297,13 @@ app.post('/report', async (req, res) => {
 
     // Prepare data for Google Sheets
     const reportData = {
-      questionId: questionId.trim(),
+      topicNumber: topicNumber,
+      questionNumber: questionNumber,
       examId: examId.trim(),
       reason: reason.trim(),
       comment: comment ? comment.trim() : '',
-      user: user ? user.trim() : ''
+      user: user ? user.trim() : '',
+      url: url ? url.trim() : ''
     };
 
     // Append to Google Sheets

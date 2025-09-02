@@ -69,6 +69,7 @@
   "comment": "Bình luận",
   "optional": "tùy chọn",
   "selectReason": "Chọn lý do",
+  "wrongContent": "Câu hỏi hoặc đáp án sai",
   "incorrectAnswer": "Đáp án sai",
   "wrongExplanation": "Giải thích sai",
   "outdatedContent": "Nội dung lỗi thời",
@@ -92,5 +93,7 @@
   "currentTopic": "Chủ đề hiện tại",
   "currentQuestion": "Câu hỏi hiện tại",
   "topicDistribution": "Phân bố chủ đề",
-  "topic": "Chủ đề"
+  "topic": "Chủ đề",
+  "selectTopic": "Chọn chủ đề",
+  "allTopics": "Tất cả chủ đề"
 }

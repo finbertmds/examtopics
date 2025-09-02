@@ -56,4 +56,5 @@ export interface FilterState {
   type: FilterType;
   showCorrect: boolean;
   showIncorrect: boolean;
+  selectedTopic: number | 'all'; // 'all' means show all topics, number means specific topic
 }
