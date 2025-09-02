@@ -1733,7 +1733,7 @@
     "question_text": "An Amazon EC2 administrator created the following policy associated with an IAM group containing several users:\u003cbr/\u003e//IMG//\u003cbr/\u003eWhat is the effect of this policy?",
     "answer_images": null,
     "question_images": [
-      "https://www.examtopics.comhttps://img.examtopics.com/aws-certified-solutions-architect-associate-saa-c03/image1.png"
+      "https://img.examtopics.com/aws-certified-solutions-architect-associate-saa-c03/image1.png"
     ]
   },
   {
@@ -4583,8 +4583,8 @@
     "question_text": "A solutions architect has created two IAM policies: Policy1 and Policy2. Both policies are attached to an IAM group.\u003cbr/\u003e\u003cbr/\u003e//IMG//\u003cbr/\u003e\u003cbr/\u003e//IMG//\u003cbr/\u003e\u003cbr/\u003eA cloud engineer is added as an IAM user to the IAM group. Which action will the cloud engineer be able to perform?",
     "answer_images": null,
     "question_images": [
-      "https://www.examtopics.comhttps://img.examtopics.com/aws-certified-solutions-architect-associate-saa-c03/image2.png",
-      "https://www.examtopics.comhttps://img.examtopics.com/aws-certified-solutions-architect-associate-saa-c03/image3.png"
+      "https://img.examtopics.com/aws-certified-solutions-architect-associate-saa-c03/image2.png",
+      "https://img.examtopics.com/aws-certified-solutions-architect-associate-saa-c03/image3.png"
     ]
   },
   {
@@ -7669,7 +7669,7 @@
     "question_text": "A solutions architect wants to use the following JSON text as an identity-based policy to grant specific permissions:\u003cbr/\u003e\u003cbr/\u003e//IMG//\u003cbr/\u003e\u003cbr/\u003eWhich IAM principals can the solutions architect attach this policy to? (Choose two.)",
     "answer_images": null,
     "question_images": [
-      "https://www.examtopics.comhttps://img.examtopics.com/aws-certified-solutions-architect-associate-saa-c03/image4.png"
+      "https://img.examtopics.com/aws-certified-solutions-architect-associate-saa-c03/image4.png"
     ]
   },
   {
@@ -7779,7 +7779,7 @@
     "question_text": "The following IAM policy is attached to an IAM group. This is the only policy applied to the group.\u003cbr/\u003e\u003cbr/\u003e//IMG//\u003cbr/\u003e\u003cbr/\u003eWhat are the effective IAM permissions of this policy for group members?",
     "answer_images": null,
     "question_images": [
-      "https://www.examtopics.comhttps://img.examtopics.com/aws-certified-solutions-architect-associate-saa-c03/image5.png"
+      "https://img.examtopics.com/aws-certified-solutions-architect-associate-saa-c03/image5.png"
     ]
   },
   {
@@ -8649,7 +8649,7 @@
     "question_text": "A group requires permissions to list an Amazon S3 bucket and delete objects from that bucket. An administrator has created the following IAM policy to provide access to the bucket and applied that policy to the group. The group is not able to delete objects in the bucket. The company follows least-privilege access rules.\u003cbr/\u003e\u003cbr/\u003e//IMG//\u003cbr/\u003e\u003cbr/\u003eWhich statement should a solutions architect add to the policy to correct bucket access?",
     "answer_images": null,
     "question_images": [
-      "https://www.examtopics.comhttps://img.examtopics.com/aws-certified-solutions-architect-associate-saa-c03/image6.png"
+      "https://img.examtopics.com/aws-certified-solutions-architect-associate-saa-c03/image6.png"
     ]
   },
   {
@@ -8960,7 +8960,7 @@
     "question_text": "A company uses Amazon EC2 instances to host its internal systems. As part of a deployment operation, an administrator tries to use the AWS CLI to terminate an EC2 instance. However, the administrator receives a 403 (Access Denied) error message.\u003cbr/\u003e\u003cbr/\u003eThe administrator is using an IAM role that has the following IAM policy attached:\u003cbr/\u003e\u003cbr/\u003e//IMG//\u003cbr/\u003e\u003cbr/\u003eWhat is the cause of the unsuccessful request?",
     "answer_images": null,
     "question_images": [
-      "https://www.examtopics.comhttps://img.examtopics.com/aws-certified-solutions-architect-associate-saa-c03/image11.png"
+      "https://img.examtopics.com/aws-certified-solutions-architect-associate-saa-c03/image11.png"
     ]
   },
   {

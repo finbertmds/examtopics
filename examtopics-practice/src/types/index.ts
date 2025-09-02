@@ -19,6 +19,7 @@ export interface Exam {
     vi: string;
     ja: string;
   };
+  slug: string;
   description: string | {
     en: string;
     vi: string;

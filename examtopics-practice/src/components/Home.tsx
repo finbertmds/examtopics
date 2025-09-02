@@ -81,7 +81,9 @@ const Home: React.FC = () => {
 
     const matchesSearch = examName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       examDescription.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      exam.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
+      exam.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        exam.slug.toLowerCase().includes(searchTerm.toLowerCase())
+      );
 
     const matchesCategory = selectedCategory === 'all' || exam.category === selectedCategory;
     const matchesDifficulty = selectedDifficulty === 'all' ||

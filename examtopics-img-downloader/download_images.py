@@ -2,7 +2,9 @@
 """
 Script to download images from all exam JSON files
 Downloads all images from answer_images and question_images URLs to local folders
-Automatically determines output folders based on image URLs from img.examtopics.com
+Automatically determines output folders based on image domains:
+- img.examtopics.com -> batch/img/<first-path-segment>
+- www.examtopics.com -> batch/img/assets/<path-without-leading-"assets"-and-filename>
 """
 
 import json
@@ -63,40 +65,56 @@ class MultiImageDownloader:
             logging.error(f"Error parsing JSON file {json_file_path}: {e}")
             return None
     
-    def extract_folder_from_url(self, url):
-        """Extract folder name from img.examtopics.com URL"""
-        if not url.startswith('https://img.examtopics.com/'):
+    def folder_key_for_url(self, url: str):
+        """Determine relative folder key under base_output_folder for a given URL.
+        - img.examtopics.com: use first path segment as folder
+        - www.examtopics.com: place under assets/<path_without_leading_assets_and_filename>
+        Returns None if URL is unsupported.
+        """
+        try:
+            parsed = urlparse(url)
+        except Exception:
             return None
-        
-        # Remove the base URL and get the path
-        path = url.replace('https://img.examtopics.com/', '')
-        
-        # Split by '/' and get the folder name (first part before filename)
-        parts = path.split('/')
-        if len(parts) >= 2:
-            return parts[0]  # Return the folder name
+        host = parsed.netloc
+        path = parsed.path or ""
+        parts = [p for p in path.split('/') if p]
+        if host == 'img.examtopics.com':
+            if len(parts) >= 2:
+                return parts[0]
+            return None
+        if host == 'www.examtopics.com':
+            # Build under assets/, remove leading 'assets' if present, and drop filename
+            if len(parts) == 0:
+                return None
+            # Remove filename
+            dir_parts = parts[:-1]
+            # Strip leading 'assets'
+            if dir_parts and dir_parts[0] == 'assets':
+                dir_parts = dir_parts[1:]
+            if not dir_parts:
+                return 'assets'
+            return 'assets/' + '/'.join(dir_parts)
         return None
     
     def extract_image_urls_by_folder(self, data):
-        """Extract all image URLs from the JSON data, grouped by folder"""
+        """Extract all image URLs from the JSON data, grouped by resolved folder key"""
         images_by_folder = defaultdict(set)
+        
+        def add_url(url: str):
+            key = self.folder_key_for_url(url)
+            if key:
+                images_by_folder[key].add(url)
         
         for question in data:
             # Extract answer images
             if 'answer_images' in question and question['answer_images']:
                 for url in question['answer_images']:
-                    if url.startswith('https://img.examtopics.com'):
-                        folder = self.extract_folder_from_url(url)
-                        if folder:
-                            images_by_folder[folder].add(url)
+                    add_url(url)
             
             # Extract question images
             if 'question_images' in question and question['question_images']:
                 for url in question['question_images']:
-                    if url.startswith('https://img.examtopics.com'):
-                        folder = self.extract_folder_from_url(url)
-                        if folder:
-                            images_by_folder[folder].add(url)
+                    add_url(url)
         
         return images_by_folder
     
@@ -129,6 +147,7 @@ class MultiImageDownloader:
                     return False
                 
                 # Save the image
+                output_folder.mkdir(parents=True, exist_ok=True)
                 with open(file_path, 'wb') as f:
                     f.write(response.content)
                 
@@ -145,18 +164,18 @@ class MultiImageDownloader:
                     self.failed_downloads.append(url)
                     return False
     
-    def download_images_for_folder(self, folder_name, image_urls):
-        """Download all images for a specific folder"""
-        output_folder = self.base_output_folder / folder_name
+    def download_images_for_folder(self, folder_key, image_urls):
+        """Download all images for a specific folder key (relative under base_output_folder)"""
+        output_folder = self.base_output_folder / folder_key
         output_folder.mkdir(parents=True, exist_ok=True)
         
-        logging.info(f"Processing folder: {folder_name} with {len(image_urls)} images")
+        logging.info(f"Processing folder: {folder_key} with {len(image_urls)} images")
         
         successful = 0
         failed = 0
         
         for i, url in enumerate(image_urls, 1):
-            logging.info(f"Progress for {folder_name}: {i}/{len(image_urls)}")
+            logging.info(f"Progress for {folder_key}: {i}/{len(image_urls)}")
             
             if self.download_image(url, output_folder):
                 successful += 1
@@ -167,9 +186,9 @@ class MultiImageDownloader:
             time.sleep(0.5)
         
         # Update folder statistics
-        self.folder_stats[folder_name]['total'] = len(image_urls)
-        self.folder_stats[folder_name]['successful'] = successful
-        self.folder_stats[folder_name]['failed'] = failed
+        self.folder_stats[folder_key]['total'] = len(image_urls)
+        self.folder_stats[folder_key]['successful'] = successful
+        self.folder_stats[folder_key]['failed'] = failed
         
         return successful, failed
     
@@ -194,16 +213,16 @@ class MultiImageDownloader:
             images_by_folder = self.extract_image_urls_by_folder(data)
             
             # Merge with overall collection
-            for folder, urls in images_by_folder.items():
-                all_images_by_folder[folder].update(urls)
+            for folder_key, urls in images_by_folder.items():
+                all_images_by_folder[folder_key].update(urls)
         
         # Download images for each folder
         total_folders = len(all_images_by_folder)
         logging.info(f"Found {total_folders} folders with images to download")
         
-        for i, (folder_name, image_urls) in enumerate(all_images_by_folder.items(), 1):
-            logging.info(f"Processing folder {i}/{total_folders}: {folder_name}")
-            self.download_images_for_folder(folder_name, image_urls)
+        for i, (folder_key, image_urls) in enumerate(all_images_by_folder.items(), 1):
+            logging.info(f"Processing folder {i}/{total_folders}: {folder_key}")
+            self.download_images_for_folder(folder_key, image_urls)
         
         # Print summary
         self.print_summary()

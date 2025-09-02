@@ -92,7 +92,7 @@
       "vi": "Chứng thực chuyên môn phát triển Alexa skill",
       "ja": "Alexaスキル開発の専門知識を検証"
     },
-    "questionCount": 14,
+    "questionCount": 58,
     "file": "exams/aws_asb_c00.json",
     "category": "AWS",
     "difficulty": "Advanced",
@@ -112,7 +112,7 @@
       "vi": "Chứng thực chuyên môn về big data và analytics",
       "ja": "ビッグデータとアナリティクスの専門知識を検証"
     },
-    "questionCount": 20,
+    "questionCount": 85,
     "file": "exams/aws_bds_c00.json",
     "category": "AWS",
     "difficulty": "Advanced",
@@ -132,7 +132,7 @@
       "vi": "Chứng thực kiến thức cơ bản về AWS cloud",
       "ja": "AWSクラウドの基礎知識を検証"
     },
-    "questionCount": 719,
+    "questionCount": 718,
     "file": "exams/aws_clf_c02.json",
     "category": "AWS",
     "difficulty": "Beginner",
@@ -152,7 +152,7 @@
       "vi": "Chứng thực chuyên môn về phân tích dữ liệu và trực quan hóa",
       "ja": "データ分析と可視化の専門知識を検証"
     },
-    "questionCount": 164,
+    "questionCount": 154,
     "file": "exams/aws_da_c00.json",
     "category": "AWS",
     "difficulty": "Advanced",
@@ -212,7 +212,7 @@
       "vi": "Chứng thực kỹ năng phát triển và triển khai AWS",
       "ja": "AWS開発とデプロイメントスキルを検証"
     },
-    "questionCount": 557,
+    "questionCount": 989,
     "file": "exams/aws_dva_c00.json",
     "category": "AWS",
     "difficulty": "Intermediate",
@@ -252,7 +252,7 @@
       "vi": "Chứng thực kỹ năng DevOps tiên tiến và tự động hóa",
       "ja": "高度なDevOpsプラクティスと自動化スキルを検証"
     },
-    "questionCount": 363,
+    "questionCount": 355,
     "file": "exams/aws_dop_c02.json",
     "category": "AWS",
     "difficulty": "Advanced",
@@ -272,7 +272,7 @@
       "vi": "Chứng thực kỹ năng kỹ thuật machine learning và triển khai",
       "ja": "機械学習エンジニアリングとデプロイメントスキルを検証"
     },
-    "questionCount": 114,
+    "questionCount": 106,
     "file": "exams/aws_mla_c01.json",
     "category": "AWS",
     "difficulty": "Intermediate",
@@ -332,7 +332,7 @@
       "vi": "Chứng thực chuyên môn về bảo mật và tuân thủ AWS",
       "ja": "AWSセキュリティとコンプライアンスの専門知識を検証"
     },
-    "questionCount": 297,
+    "questionCount": 288,
     "file": "exams/aws_scs_c02.json",
     "category": "AWS",
     "difficulty": "Advanced",
@@ -352,7 +352,7 @@
       "vi": "Chứng thực kỹ năng thiết kế và triển khai giải pháp AWS",
       "ja": "AWSソリューション設計と実装スキルを検証"
     },
-    "questionCount": 0,
+    "questionCount": 800,
     "file": "exams/aws_saa_c02.json",
     "category": "AWS",
     "difficulty": "Intermediate",
@@ -392,7 +392,7 @@
       "vi": "Chứng thực kỹ năng vận hành và triển khai AWS",
       "ja": "AWS運用とデプロイメントスキルを検証"
     },
-    "questionCount": 0,
+    "questionCount": 928,
     "file": "exams/aws_sys_c00.json",
     "category": "AWS",
     "difficulty": "Intermediate",
@@ -412,7 +412,7 @@
       "vi": "Chứng thực kỹ năng vận hành và triển khai AWS",
       "ja": "AWS運用とデプロイメントスキルを検証"
     },
-    "questionCount": 478,
+    "questionCount": 477,
     "file": "exams/aws_soa_c00.json",
     "category": "AWS",
     "difficulty": "Intermediate",

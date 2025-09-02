@@ -12,16 +12,11 @@ export function replaceImgPlaceholders(
   const toLocalThenRemoteImgTag = (url: string) => {
     try {
       const parsed = new URL(url);
-      if (parsed.hostname === 'img.examtopics.com') {
-        // Path: /<folder>/<filename>
-        const parts = parsed.pathname.split('/').filter(Boolean);
-        if (parts.length >= 2) {
-          const folder = parts[0];
-          const filename = parts[parts.length - 1];
-          const localSrc = `/img/${folder}/${filename}`;
-          // Fallback to remote if local 404
-          return `<img src="${localSrc}" onerror="this.onerror=null;this.src='${url}'" style="max-width:100%; height:auto; margin:10px 0;" />`;
-        }
+      if (parsed.hostname === 'img.examtopics.com' || parsed.hostname === 'www.examtopics.com') {
+        // Replace hostname with empty string, keep full path
+        const localSrc = parsed.pathname;
+        // Fallback to remote if local 404
+        return `<img src="/img${localSrc}" onerror="this.onerror=null;this.src='${url}'" style="max-width:100%; height:auto; margin:10px 0;" />`;
       }
     } catch (_) {
       // ignore parsing errors and fall through to default
