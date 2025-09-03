@@ -181,7 +181,7 @@ const ExamPage: React.FC = () => {
     }
   }, [loading, questions, progress.currentTopic, progress.currentQuestion, urlTopicNumber, urlQuestionNumber]);
 
-  const handleAnswer = (topicNumber: number, questionNumber: number, selectedAnswers: string[]) => {
+  const handleAnswer = async (topicNumber: number, questionNumber: number, selectedAnswers: string[]) => {
     const question = questions.find(q => q.topic_number === topicNumber && q.question_number === questionNumber);
     if (!question) return;
 
@@ -189,7 +189,7 @@ const ExamPage: React.FC = () => {
     const userAnswersSorted = [...selectedAnswers].sort();
     const isCorrect = JSON.stringify(correctAnswers) === JSON.stringify(userAnswersSorted);
 
-    saveAnswer(topicNumber, questionNumber, selectedAnswers, isCorrect);
+    await saveAnswer(topicNumber, questionNumber, selectedAnswers, isCorrect);
     const nextQuestion = questions.find(q => q.topic_number === topicNumber && q.question_number === questionNumber + 1);
     if (isCorrect && nextQuestion) {
       updateProgress({ currentTopic: topicNumber, currentQuestion: nextQuestion.question_number });

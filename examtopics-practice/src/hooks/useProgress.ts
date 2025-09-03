@@ -62,8 +62,6 @@ export const useProgress = (examId?: string) => {
                 if (answer.answeredAt) answer.answeredAt = new Date(answer.answeredAt);
               });
               setProgress(migratedProgress);
-              // Set last saved progress to avoid unnecessary saves
-              setLastSavedProgress(JSON.stringify(migratedProgress));
             }
           }
         } catch (error) {
@@ -77,72 +75,6 @@ export const useProgress = (examId?: string) => {
     loadProgress();
   }, [isAuthenticated, token, examId]);
 
-  const [lastSavedProgress, setLastSavedProgress] = useState<string>('');
-
-  // Save progress to backend if authenticated, otherwise to localStorage
-  const saveProgress = async (newProgress: UserProgress) => {
-    // Convert progress to string for comparison
-    const progressString = JSON.stringify(newProgress);
-    
-    // Only save if progress has actually changed
-    if (progressString === lastSavedProgress) {
-      return;
-    }
-
-    if (isAuthenticated && token && examId) {
-      try {
-        await fetch(`${backendUrl}/progress/save`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          },
-          body: JSON.stringify({
-            examId,
-            progress: newProgress
-          })
-        });
-        
-        // Update last saved progress
-        setLastSavedProgress(progressString);
-        console.log('Progress saved to backend');
-      } catch (error) {
-        console.error('Error saving progress to backend:', error);
-        // Fallback to localStorage
-        saveToLocalStorage(newProgress);
-      }
-    } else {
-      // Save to localStorage if not authenticated
-      saveToLocalStorage(newProgress);
-      setLastSavedProgress(progressString);
-    }
-  };
-
-  const saveToLocalStorage = (newProgress: UserProgress) => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    const allProgress = stored ? JSON.parse(stored) : {};
-    
-    allProgress[examId || ''] = newProgress;
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(allProgress));
-  };
-
-  // Save progress only when there are actual changes
-  useEffect(() => {
-    if (!examId) return;
-    
-    // Debounce save to avoid too many API calls
-    const timeoutId = setTimeout(() => {
-      if (isAuthenticated && token) {
-        saveProgress(progress);
-      } else {
-        saveToLocalStorage(progress);
-      }
-    }, 1000); // Wait 1 second before saving
-
-    return () => clearTimeout(timeoutId);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [progress, examId, isAuthenticated, token]);
-
   const updateProgress = (updates: Partial<UserProgress>) => {
     setProgress(prev => ({
       ...prev,
@@ -151,8 +83,10 @@ export const useProgress = (examId?: string) => {
     }));
   };
 
-  const saveAnswer = (topicNumber: number, questionNumber: number, selectedAnswers: string[], isCorrect: boolean) => {
+  const saveAnswer = async (topicNumber: number, questionNumber: number, selectedAnswers: string[], isCorrect: boolean) => {
     const key = `${topicNumber}-${questionNumber}`;
+    
+    // Update local state immediately
     setProgress(prev => ({
       ...prev,
       examId: examId || prev.examId,
@@ -167,10 +101,67 @@ export const useProgress = (examId?: string) => {
         }
       }
     }));
+
+    // Save to backend if authenticated, otherwise to localStorage
+    if (isAuthenticated && token && examId) {
+      try {
+        await fetch(`${backendUrl}/progress/answer`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            examId,
+            topicNumber,
+            questionNumber,
+            selectedAnswers,
+            isCorrect
+          })
+        });
+        console.log('Answer saved to backend');
+      } catch (error) {
+        console.error('Error saving answer to backend:', error);
+        // Fallback to localStorage
+        saveAnswerToLocalStorage(topicNumber, questionNumber, selectedAnswers, isCorrect);
+      }
+    } else {
+      // Save to localStorage if not authenticated
+      saveAnswerToLocalStorage(topicNumber, questionNumber, selectedAnswers, isCorrect);
+    }
   };
 
-  const toggleTrainingMark = (topicNumber: number, questionNumber: number) => {
+  const saveAnswerToLocalStorage = (topicNumber: number, questionNumber: number, selectedAnswers: string[], isCorrect: boolean) => {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    const allProgress = stored ? JSON.parse(stored) : {};
+    
+    if (!allProgress[examId || '']) {
+      allProgress[examId || ''] = {
+        examId: examId || '',
+        answers: {},
+        markedForTraining: [],
+        currentTopic: 1,
+        currentQuestion: 1,
+        isRandomized: false
+      };
+    }
+    
     const key = `${topicNumber}-${questionNumber}`;
+    allProgress[examId || ''].answers[key] = {
+      topicNumber,
+      questionNumber,
+      selectedAnswers,
+      isCorrect,
+      answeredAt: new Date()
+    };
+    
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(allProgress));
+  };
+
+  const toggleTrainingMark = async (topicNumber: number, questionNumber: number) => {
+    const key = `${topicNumber}-${questionNumber}`;
+    
+    // Update local state immediately
     setProgress(prev => ({
       ...prev,
       examId: examId || prev.examId,
@@ -178,6 +169,59 @@ export const useProgress = (examId?: string) => {
         ? prev.markedForTraining.filter(q => q !== key)
         : [...prev.markedForTraining, key]
     }));
+
+    // Save to backend if authenticated, otherwise to localStorage
+    if (isAuthenticated && token && examId) {
+      try {
+        await fetch(`${backendUrl}/progress/training-mark`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            examId,
+            topicNumber,
+            questionNumber
+          })
+        });
+        console.log('Training mark toggled in backend');
+      } catch (error) {
+        console.error('Error toggling training mark in backend:', error);
+        // Fallback to localStorage
+        saveTrainingMarkToLocalStorage(topicNumber, questionNumber);
+      }
+    } else {
+      // Save to localStorage if not authenticated
+      saveTrainingMarkToLocalStorage(topicNumber, questionNumber);
+    }
+  };
+
+  const saveTrainingMarkToLocalStorage = (topicNumber: number, questionNumber: number) => {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    const allProgress = stored ? JSON.parse(stored) : {};
+    
+    if (!allProgress[examId || '']) {
+      allProgress[examId || ''] = {
+        examId: examId || '',
+        answers: {},
+        markedForTraining: [],
+        currentTopic: 1,
+        currentQuestion: 1,
+        isRandomized: false
+      };
+    }
+    
+    const key = `${topicNumber}-${questionNumber}`;
+    const currentMarkedForTraining = allProgress[examId || ''].markedForTraining || [];
+    
+    if (currentMarkedForTraining.includes(key)) {
+      allProgress[examId || ''].markedForTraining = currentMarkedForTraining.filter((q: string) => q !== key);
+    } else {
+      allProgress[examId || ''].markedForTraining = [...currentMarkedForTraining, key];
+    }
+    
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(allProgress));
   };
 
   const resetProgress = () => {
