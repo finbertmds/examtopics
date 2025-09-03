@@ -96,5 +96,17 @@
   "topicDistribution": "トピック分布",
   "topic": "トピック",
   "selectTopic": "トピックを選択",
-  "allTopics": "すべてのトピック"
+  "allTopics": "すべてのトピック",
+  "history": "履歴",
+  "allHistory": "すべての履歴",
+  "statistics": "統計",
+  "noHistoryFound": "履歴が見つかりません",
+  "noStatsAvailable": "統計が利用できません",
+  "totalSubmissions": "総提出回数",
+  "averageAccuracy": "平均精度",
+  "averageAnswered": "平均回答数",
+  "bestScore": "最高スコア",
+  "worstScore": "最低スコア",
+  "examId": "試験ID",
+  "viewHistory": "履歴を表示"
 }

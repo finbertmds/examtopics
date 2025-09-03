@@ -8,6 +8,7 @@ import ConfirmModal from './ConfirmModal';
 import ExamResult from './ExamResult';
 import { FilterBar } from './FilterBar';
 import FloatingButtons from './FloatingButtons';
+import HistoryModal from './HistoryModal';
 import { LanguageToggle } from './LanguageToggle';
 import { ProgressBar } from './ProgressBar';
 import { QuestionList, QuestionListRef } from './QuestionList';
@@ -32,6 +33,7 @@ const ExamPage: React.FC = () => {
     selectedTopic: 'all'
   });
   const [showSubmitModal, setShowSubmitModal] = useState(false);
+  const [showHistoryModal, setShowHistoryModal] = useState(false);
   const hasLoadedRef = useRef(false);
   const questionListRef = useRef<QuestionListRef>(null);
 
@@ -42,9 +44,6 @@ const ExamPage: React.FC = () => {
     saveAnswer,
     toggleTrainingMark,
     submitExam,
-    resetProgress,
-    getHistory,
-    getExamStats
   } = useProgress(examId);
 
   // Check for URL parameters and set state accordingly
@@ -380,6 +379,13 @@ const ExamPage: React.FC = () => {
               {/* Action buttons - Desktop */}
               <div className="hidden sm:flex items-center gap-2">
                 <button
+                  onClick={() => setShowHistoryModal(true)}
+                  className="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-xs font-medium"
+                  title={t('viewHistory')}
+                >
+                  📊 {t('history')}
+                </button>
+                <button
                   onClick={() => handleFilterChange({ ...filterState, type: 'training' })}
                   className="px-3 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors text-xs font-medium"
                 >
@@ -408,22 +414,29 @@ const ExamPage: React.FC = () => {
         <div className="sm:hidden container mx-auto px-6 py-4 border-t border-gray-200 dark:border-gray-700">
           <div className="flex flex-col gap-4">
             {/* Action buttons */}
-            <div className="flex items-center justify-center gap-2">
+            <div className="flex items-center justify-center gap-1">
+              <button
+                onClick={() => setShowHistoryModal(true)}
+                className="px-2 py-1 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-xs font-medium"
+                title={t('viewHistory')}
+              >
+                📊 {t('history')}
+              </button>
               <button
                 onClick={() => handleFilterChange({ ...filterState, type: 'training' })}
-                className="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors text-xs font-medium"
+                className="px-2 py-1 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors text-xs font-medium"
               >
                 📚 {t('training')}
               </button>
               <button
                 onClick={handleRandomize}
-                className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-xs font-medium"
+                className="px-2 py-1 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-xs font-medium"
               >
                 🔀 {t('randomize')}
               </button>
               <button
                 onClick={handleSubmit}
-                className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-xs font-medium"
+                className="px-2 py-1 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-xs font-medium"
               >
                 📝 {t('submit')}
               </button>
@@ -536,6 +549,12 @@ const ExamPage: React.FC = () => {
         confirmButtonColor="green"
       />
 
+      {/* History Modal */}
+      <HistoryModal
+        isOpen={showHistoryModal}
+        onClose={() => setShowHistoryModal(false)}
+        examId={examId}
+      />
 
     </div>
   );

@@ -96,5 +96,17 @@
   "topicDistribution": "Topic Distribution",
   "topic": "Topic",
   "selectTopic": "Select Topic",
-  "allTopics": "All Topics"
+  "allTopics": "All Topics",
+  "history": "History",
+  "allHistory": "All History",
+  "statistics": "Statistics",
+  "noHistoryFound": "No history found",
+  "noStatsAvailable": "No statistics available",
+  "totalSubmissions": "Total Submissions",
+  "averageAccuracy": "Average Accuracy",
+  "averageAnswered": "Average Answered",
+  "bestScore": "Best Score",
+  "worstScore": "Worst Score",
+  "examId": "Exam ID",
+  "viewHistory": "View History"
 }

@@ -91,10 +91,20 @@ historySchema.statics.getUserExamHistory = async function(userId, examId, limit 
       .lean();
 
     // Convert Map to object for JSON serialization
-    return history.map(item => ({
-      ...item,
-      progress: Object.fromEntries(item.progress || new Map())
-    }));
+    return history.map(item => {
+      let progressData = {};
+      if (item.progress) {
+        if (item.progress instanceof Map) {
+          progressData = Object.fromEntries(item.progress);
+        } else if (typeof item.progress === 'object') {
+          progressData = item.progress;
+        }
+      }
+      return {
+        ...item,
+        progress: progressData
+      };
+    });
   } catch (error) {
     console.error('Error getting user exam history:', error);
     throw error;
@@ -110,10 +120,20 @@ historySchema.statics.getUserHistory = async function(userId, limit = 50) {
       .lean();
 
     // Convert Map to object for JSON serialization
-    return history.map(item => ({
-      ...item,
-      progress: Object.fromEntries(item.progress || new Map())
-    }));
+    return history.map(item => {
+      let progressData = {};
+      if (item.progress) {
+        if (item.progress instanceof Map) {
+          progressData = Object.fromEntries(item.progress);
+        } else if (typeof item.progress === 'object') {
+          progressData = item.progress;
+        }
+      }
+      return {
+        ...item,
+        progress: progressData
+      };
+    });
   } catch (error) {
     console.error('Error getting user history:', error);
     throw error;

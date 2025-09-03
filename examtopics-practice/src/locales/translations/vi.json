@@ -96,5 +96,17 @@
   "topicDistribution": "Phân bố chủ đề",
   "topic": "Chủ đề",
   "selectTopic": "Chọn chủ đề",
-  "allTopics": "Tất cả chủ đề"
+  "allTopics": "Tất cả chủ đề",
+  "history": "Lịch sử",
+  "allHistory": "Tất cả lịch sử",
+  "statistics": "Thống kê",
+  "noHistoryFound": "Không tìm thấy lịch sử",
+  "noStatsAvailable": "Không có thống kê",
+  "totalSubmissions": "Tổng số lần nộp",
+  "averageAccuracy": "Độ chính xác trung bình",
+  "averageAnswered": "Số câu trả lời trung bình",
+  "bestScore": "Điểm cao nhất",
+  "worstScore": "Điểm thấp nhất",
+  "examId": "Mã đề thi",
+  "viewHistory": "Xem lịch sử"
 }
