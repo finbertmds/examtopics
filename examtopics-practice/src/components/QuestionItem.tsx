@@ -99,7 +99,6 @@ export const QuestionItem: React.FC<QuestionItemProps> = ({
   const isCorrect = userAnswer?.isCorrect;
   const isAnswered = !!userAnswer;
   const correctAnswers = question.suggested_answer.split('').sort();
-  const userAnswersSorted = [...selectedAnswers].sort();
 
   // Check if user has selected enough answers for multiple choice questions
   const hasSelectedEnoughAnswers = question.multiple_choice
@@ -242,21 +241,15 @@ export const QuestionItem: React.FC<QuestionItemProps> = ({
       )}
 
       {shouldShowAnswer && (
-        <div className="mt-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-          <div className="mb-2">
-            <strong className="text-gray-800 dark:text-gray-200">{t('yourAnswer')}</strong>
-            <span className="ml-2 text-gray-600 dark:text-gray-400 break-words">
-              {userAnswersSorted.length > 0 ? userAnswersSorted.join(', ') : t('unanswered')}
-            </span>
-          </div>
-          <div className="mb-2">
+        <div className="mt-4 p-2 pl-4 pr-4 bg-gray-50 dark:bg-gray-700 rounded-lg w-fit">
+          <div className="flex items-center gap-2">
             <strong className="text-gray-800 dark:text-gray-200">{t('suggestedAnswer')}</strong>
             <span className="ml-2 text-green-600 dark:text-green-400 font-medium break-words">
               {correctAnswers.join(', ')}
             </span>
           </div>
           {question.answer !== question.suggested_answer && (
-            <div className="mb-2">
+            <div className="flex items-center gap-2">
               <strong className="text-gray-800 dark:text-gray-200">{t('additionalAnswer')}</strong>
               <span className="ml-2 text-indigo-600 dark:text-indigo-400 font-medium break-words">
                 {question.answer}

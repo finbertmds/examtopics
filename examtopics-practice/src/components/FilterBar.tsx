@@ -82,7 +82,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
         <div className="pb-2 gap-2 border-gray-200">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
-              <label className="text-xs text-gray-500 dark:text-gray-400">
+              <label className="text-md text-gray-500 dark:text-gray-400">
                 {t('selectTopic')}:
               </label>
               <select
@@ -95,7 +95,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
                   });
                   onTopicChange(newTopic);
                 }}
-                className="px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="px-2 py-1 text-md border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 <option value="all">{t('allTopics')}</option>
                 {Object.keys(topicDistribution).map((topic) => (
@@ -116,8 +116,8 @@ export const FilterBar: React.FC<FilterBarProps> = ({
               key={option.value}
               onClick={() => onFilterChange({ ...filterState, type: option.value })}
               className={`px-3 py-1 rounded-full text-sm font-medium transition-colors whitespace-nowrap flex-shrink-0 ${filterState.type === option.value
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
+                ? 'bg-blue-600 text-white'
+                : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
                 }`}
             >
               {option.label}
@@ -132,19 +132,19 @@ export const FilterBar: React.FC<FilterBarProps> = ({
           <div className="flex gap-1 sm:gap-2">
             <button
               onClick={() => onFilterChange({ ...filterState, type: 'training' })}
-              className="px-2 sm:px-4 py-1 sm:py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors text-xs sm:text-sm font-medium"
+              className="px-3 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors text-xs text-sm font-medium"
             >
               📚 {t('training')}
             </button>
             <button
               onClick={onRandomize}
-              className="px-2 sm:px-4 py-1 sm:py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-xs sm:text-sm font-medium"
+              className="px-3 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-xs text-sm font-medium"
             >
               🔀 {t('randomize')}
             </button>
             <button
               onClick={onReset}
-              className="px-2 sm:px-4 py-1 sm:py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-xs sm:text-sm font-medium"
+              className="px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-xs text-sm font-medium"
             >
               🔄 {t('reset')}
             </button>
