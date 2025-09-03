@@ -1,4 +1,5 @@
 const Progress = require('./models/Progress');
+const History = require('./models/History');
 const Debouncer = require('./utils/debounce');
 
 class ProgressService {
@@ -212,6 +213,92 @@ class ProgressService {
       return { totalQuestions, correctAnswers, accuracy };
     } catch (error) {
       console.error('Error updating score:', error);
+      throw error;
+    }
+  }
+
+  // Save to history using History model
+  async saveToHistory(userId, examId, progress, score, totalQuestions, answeredCount) {
+    try {
+      // Validate and use the score object directly
+      const calculatedScore = {
+        totalQuestions: score?.totalQuestions || totalQuestions,
+        correctAnswers: score?.correctAnswers || 0,
+        accuracy: score?.accuracy || 0
+      };
+
+      // Save to History collection
+      const history = await History.saveHistory(
+        userId, 
+        examId, 
+        progress, 
+        calculatedScore, 
+        totalQuestions, 
+        answeredCount
+      );
+      
+      return history;
+    } catch (error) {
+      console.error('Error saving to history:', error);
+      throw error;
+    }
+  }
+
+  // Get user's exam history
+  async getUserExamHistory(userId, examId, limit = 10) {
+    try {
+      return await History.getUserExamHistory(userId, examId, limit);
+    } catch (error) {
+      console.error('Error getting user exam history:', error);
+      throw error;
+    }
+  }
+
+  // Get user's all history
+  async getUserHistory(userId, limit = 50) {
+    try {
+      return await History.getUserHistory(userId, limit);
+    } catch (error) {
+      console.error('Error getting user history:', error);
+      throw error;
+    }
+  }
+
+  // Get exam statistics
+  async getExamStats(examId) {
+    try {
+      return await History.getExamStats(examId);
+    } catch (error) {
+      console.error('Error getting exam stats:', error);
+      throw error;
+    }
+  }
+
+  // Reset progress
+  async resetProgress(userId, examId) {
+    try {
+      const result = await Progress.findOneAndUpdate(
+        { userId, examId },
+        {
+          $set: {
+            answers: new Map(),
+            markedForTraining: [],
+            currentQuestion: 1,
+            isRandomized: false,
+            score: {
+              totalQuestions: 0,
+              correctAnswers: 0,
+              accuracy: 0
+            }
+          }
+        },
+        { new: true }
+      );
+      
+      console.log(`Progress reset for user ${userId}, exam ${examId}`);
+      return result;
+    } catch (error) {
+      console.error('Error resetting progress:', error);
       throw error;
     }
   }

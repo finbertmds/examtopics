@@ -259,6 +259,143 @@ app.post('/progress/training-mark', authenticateToken, async (req, res) => {
   }
 });
 
+// Submit exam and save to history endpoint
+app.post('/progress/submit', authenticateToken, async (req, res) => {
+  try {
+    const { examId, progress, score, totalQuestions, answeredCount } = req.body;
+    const userId = req.user.userId;
+
+    if (!examId || !progress || !score || !totalQuestions || answeredCount === undefined) {
+      return res.status(400).json({
+        success: false,
+        error: 'examId, progress, score object, totalQuestions, and answeredCount are required'
+      });
+    }
+
+    // Validate score object structure
+    if (!score.totalQuestions || score.correctAnswers === undefined || score.accuracy === undefined) {
+      return res.status(400).json({
+        success: false,
+        error: 'Score object must contain totalQuestions, correctAnswers, and accuracy'
+      });
+    }
+
+    // Save to history (you'll need to implement this in progressService)
+    await progressService.saveToHistory(userId, examId, progress, score, totalQuestions, answeredCount);
+    
+    // Reset progress
+    await progressService.resetProgress(userId, examId);
+    
+    res.json({
+      success: true,
+      message: 'Exam submitted and progress reset successfully'
+    });
+  } catch (error) {
+    console.error('Error submitting exam:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to submit exam',
+      details: error.message
+    });
+  }
+});
+
+// Reset progress endpoint
+app.post('/progress/reset', authenticateToken, async (req, res) => {
+  try {
+    const { examId } = req.body;
+    const userId = req.user.userId;
+
+    if (!examId) {
+      return res.status(400).json({
+        success: false,
+        error: 'examId is required'
+      });
+    }
+
+    await progressService.resetProgress(userId, examId);
+    
+    res.json({
+      success: true,
+      message: 'Progress reset successfully'
+    });
+  } catch (error) {
+    console.error('Error resetting progress:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to reset progress',
+      details: error.message
+    });
+  }
+});
+
+// Get user's exam history endpoint
+app.get('/progress/history/:examId', authenticateToken, async (req, res) => {
+  try {
+    const { examId } = req.params;
+    const { limit = 10 } = req.query;
+    const userId = req.user.userId;
+
+    const history = await progressService.getUserExamHistory(userId, examId, parseInt(limit));
+    
+    res.json({
+      success: true,
+      history
+    });
+  } catch (error) {
+    console.error('Error getting exam history:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to get exam history',
+      details: error.message
+    });
+  }
+});
+
+// Get user's all history endpoint
+app.get('/progress/history', authenticateToken, async (req, res) => {
+  try {
+    const { limit = 50 } = req.query;
+    const userId = req.user.userId;
+
+    const history = await progressService.getUserHistory(userId, parseInt(limit));
+    
+    res.json({
+      success: true,
+      history
+    });
+  } catch (error) {
+    console.error('Error getting user history:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to get user history',
+      details: error.message
+    });
+  }
+});
+
+// Get exam statistics endpoint
+app.get('/progress/stats/:examId', authenticateToken, async (req, res) => {
+  try {
+    const { examId } = req.params;
+    const userId = req.user.userId;
+
+    const stats = await progressService.getExamStats(examId);
+    
+    res.json({
+      success: true,
+      stats
+    });
+  } catch (error) {
+    console.error('Error getting exam stats:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to get exam stats',
+      details: error.message
+    });
+  }
+});
+
 // Report endpoint
 app.post('/report', async (req, res) => {
   try {

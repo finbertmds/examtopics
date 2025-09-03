@@ -224,6 +224,58 @@ export const useProgress = (examId?: string) => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(allProgress));
   };
 
+  const submitExam = async (score: { totalQuestions: number; correctAnswers: number; accuracy: number }, totalQuestions: number, answeredCount: number) => {
+    if (isAuthenticated && token && examId) {
+      try {
+        await fetch(`${backendUrl}/progress/submit`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            examId,
+            progress,
+            score,
+            totalQuestions,
+            answeredCount
+          })
+        });
+        console.log('Exam submitted to backend');
+      } catch (error) {
+        console.error('Error submitting exam to backend:', error);
+        // Fallback to localStorage
+        submitExamToLocalStorage(score, totalQuestions, answeredCount);
+      }
+    } else {
+      // Save to localStorage if not authenticated
+      submitExamToLocalStorage(score, totalQuestions, answeredCount);
+    }
+
+    // Reset progress after submission
+    resetProgress();
+  };
+
+  const submitExamToLocalStorage = (score: { totalQuestions: number; correctAnswers: number; accuracy: number }, totalQuestions: number, answeredCount: number) => {
+    // Save current progress to history
+    const historyKey = `${examId}_history`;
+    const history = JSON.parse(localStorage.getItem(historyKey) || '[]');
+    
+    // Only save necessary data like backend History model
+    const historyEntry = {
+      examId,
+      progress: progress.answers || {},
+      markedForTraining: progress.markedForTraining || [],
+      score,
+      answeredCount,
+      submittedAt: new Date().toISOString()
+    };
+    
+    history.push(historyEntry);
+    localStorage.setItem(historyKey, JSON.stringify(history));
+    console.log('Exam submitted to localStorage history');
+  };
+
   const resetProgress = () => {
     const newProgress: UserProgress = {
       examId: examId || '',
@@ -234,11 +286,82 @@ export const useProgress = (examId?: string) => {
       isRandomized: false
     };
     setProgress(newProgress);
+
+    // Reset in backend if authenticated
+    if (isAuthenticated && token && examId) {
+      fetch(`${backendUrl}/progress/reset`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          examId
+        })
+      }).catch(error => {
+        console.error('Error resetting progress in backend:', error);
+      });
+    }
+
+    // Reset in localStorage
+    const stored = localStorage.getItem(STORAGE_KEY);
+    const allProgress = stored ? JSON.parse(stored) : {};
+    delete allProgress[examId || ''];
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(allProgress));
   };
 
   const getAllProgress = () => {
     const stored = localStorage.getItem(STORAGE_KEY);
     return stored ? JSON.parse(stored) : {};
+  };
+
+  const getHistory = async (examId?: string) => {
+    if (isAuthenticated && token) {
+      try {
+        const url = examId 
+          ? `${backendUrl}/progress/history/${examId}`
+          : `${backendUrl}/progress/history`;
+        
+        const response = await fetch(url, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          return data.history;
+        }
+      } catch (error) {
+        console.error('Error getting history from backend:', error);
+      }
+    }
+    
+    // Fallback to localStorage
+    const historyKey = examId ? `${examId}_history` : 'all_history';
+    const stored = localStorage.getItem(historyKey);
+    return stored ? JSON.parse(stored) : [];
+  };
+
+  const getExamStats = async (examId: string) => {
+    if (isAuthenticated && token) {
+      try {
+        const response = await fetch(`${backendUrl}/progress/stats/${examId}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          return data.stats;
+        }
+      } catch (error) {
+        console.error('Error getting exam stats from backend:', error);
+      }
+    }
+    
+    return null;
   };
 
   const clearAllProgress = () => {
@@ -259,8 +382,11 @@ export const useProgress = (examId?: string) => {
     updateProgress,
     saveAnswer,
     toggleTrainingMark,
+    submitExam,
     resetProgress,
     getAllProgress,
+    getHistory,
+    getExamStats,
     clearAllProgress
   };
 };

@@ -39,7 +39,10 @@ const ExamPage: React.FC = () => {
     updateProgress,
     saveAnswer,
     toggleTrainingMark,
-    resetProgress
+    submitExam,
+    resetProgress,
+    getHistory,
+    getExamStats
   } = useProgress(examId);
 
   // Check for URL parameters and set state accordingly
@@ -208,9 +211,19 @@ const ExamPage: React.FC = () => {
     });
   };
 
-  const handleReset = () => {
-    if (window.confirm(t('confirmResetExam'))) {
-      resetProgress();
+  const handleSubmit = () => {
+    const answeredCount = Object.keys(progress.answers).length;
+    const correctCount = Object.values(progress.answers).filter((answer: any) => answer.isCorrect).length;
+    const accuracy = answeredCount > 0 ? Math.round((correctCount / questions.length) * 100) : 0;
+    
+    const score = {
+      totalQuestions: questions.length,
+      correctAnswers: correctCount,
+      accuracy: accuracy
+    };
+    
+    if (window.confirm(t('confirmSubmitExam'))) {
+      submitExam(score, questions.length, answeredCount);
       setFilterState({
         type: 'all',
         showCorrect: true,
@@ -410,7 +423,7 @@ const ExamPage: React.FC = () => {
             filterState={filterState}
             onFilterChange={handleFilterChange}
             onRandomize={handleRandomize}
-            onReset={handleReset}
+            onReset={handleSubmit}
             totalQuestions={questions.length}
             answeredCount={answeredCount}
             userAnswers={progress.answers}
