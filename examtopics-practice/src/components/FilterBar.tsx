@@ -5,8 +5,6 @@ import { FilterState, FilterType, Question, UserAnswer } from '../types';
 interface FilterBarProps {
   filterState: FilterState;
   onFilterChange: (filter: FilterState) => void;
-  onRandomize: () => void;
-  onReset: () => void;
   totalQuestions: number;
   answeredCount: number;
   userAnswers: Record<string, UserAnswer>;
@@ -18,8 +16,6 @@ interface FilterBarProps {
 export const FilterBar: React.FC<FilterBarProps> = ({
   filterState,
   onFilterChange,
-  onRandomize,
-  onReset,
   totalQuestions,
   answeredCount: totalAnsweredCount,
   userAnswers,
@@ -128,28 +124,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
           ))}
         </div>
 
-        <div className="flex items-center justify-end w-full">
-          <div className="flex gap-1 sm:gap-2">
-            <button
-              onClick={() => onFilterChange({ ...filterState, type: 'training' })}
-              className="px-3 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors text-xs text-sm font-medium"
-            >
-              📚 {t('training')}
-            </button>
-            <button
-              onClick={onRandomize}
-              className="px-3 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-xs text-sm font-medium"
-            >
-              🔀 {t('randomize')}
-            </button>
-            <button
-              onClick={onReset}
-              className="px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-xs text-sm font-medium"
-            >
-              📝 {t('submit')}
-            </button>
-          </div>
-        </div>
+
       </div>
 
       <div className="mt-4 flex items-center gap-1">

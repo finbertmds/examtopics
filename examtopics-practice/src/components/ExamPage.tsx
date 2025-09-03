@@ -4,6 +4,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { useProgress } from '../hooks/useProgress';
 import { Exam, FilterState, Question } from '../types';
 import { getExamDescription, getExamName } from '../utils/examUtils';
+import ConfirmModal from './ConfirmModal';
 import ExamResult from './ExamResult';
 import { FilterBar } from './FilterBar';
 import FloatingButtons from './FloatingButtons';
@@ -30,6 +31,7 @@ const ExamPage: React.FC = () => {
     showIncorrect: true,
     selectedTopic: 'all'
   });
+  const [showSubmitModal, setShowSubmitModal] = useState(false);
   const hasLoadedRef = useRef(false);
   const questionListRef = useRef<QuestionListRef>(null);
 
@@ -65,7 +67,7 @@ const ExamPage: React.FC = () => {
     if (topicNumber && questionNumber) {
       const topicNum = parseInt(topicNumber);
       const questionNum = parseInt(questionNumber);
-      
+
       if (!isNaN(topicNum) && !isNaN(questionNum)) {
         console.log('URL contains topic and question, will scroll to:', { topicNum, questionNum });
         setUrlTopicNumber(topicNum);
@@ -94,13 +96,13 @@ const ExamPage: React.FC = () => {
           });
           const examsData = await examsResponse.json();
           currentExam = examsData.find((e: Exam) => e.id === examId);
-          
+
           if (!currentExam) {
             console.error('Exam not found for examId:', examId);
             navigate('/');
             return;
           }
-          
+
           console.log('Exam loaded from exams.json:', currentExam);
           setCurrentExam(currentExam);
         } catch (error: any) {
@@ -212,41 +214,43 @@ const ExamPage: React.FC = () => {
   };
 
   const handleSubmit = () => {
+    setShowSubmitModal(true);
+  };
+
+  const confirmSubmit = () => {
     const answeredCount = Object.keys(progress.answers).length;
     const correctCount = Object.values(progress.answers).filter((answer: any) => answer.isCorrect).length;
     const accuracy = answeredCount > 0 ? Math.round((correctCount / questions.length) * 100) : 0;
-    
+
     const score = {
       totalQuestions: questions.length,
       correctAnswers: correctCount,
       accuracy: accuracy
     };
-    
-    if (window.confirm(t('confirmSubmitExam'))) {
-      submitExam(score, questions.length, answeredCount);
-      setFilterState({
-        type: 'all',
-        showCorrect: true,
-        showIncorrect: true,
-        selectedTopic: 'all'
-      });
-      // Reset current question to 1
-      updateProgress({ currentTopic: 1, currentQuestion: 1 });
-    }
+
+    submitExam(score, questions.length, answeredCount);
+    setFilterState({
+      type: 'all',
+      showCorrect: true,
+      showIncorrect: true,
+      selectedTopic: 'all'
+    });
+    // Reset current question to 1
+    updateProgress({ currentTopic: 1, currentQuestion: 1 });
   };
 
   const handleFilterChange = (newFilterState: FilterState) => {
     // Check if we're changing from training to something else and URL has mode=practice
     const urlParams = new URLSearchParams(location.search);
     const mode = urlParams.get('mode');
-    
+
     if (newFilterState.type !== 'training' && mode === 'practice') {
       // Remove mode parameter from URL
       urlParams.delete('mode');
       const newUrl = `${location.pathname}${urlParams.toString() ? '?' + urlParams.toString() : ''}`;
       navigate(newUrl, { replace: true });
     }
-    
+
     setFilterState(newFilterState);
   };
 
@@ -254,7 +258,7 @@ const ExamPage: React.FC = () => {
     if (topicNumber === 'all') {
       // Find the first topic that is not completed
       const topicNumbers = Array.from(new Set(questions.map(q => q.topic_number))).sort((a, b) => a - b);
-      
+
       for (const topicNum of topicNumbers) {
         const topicQuestions = questions.filter(q => q.topic_number === topicNum);
         const answeredQuestionsInTopic = topicQuestions.filter(q => {
@@ -267,25 +271,25 @@ const ExamPage: React.FC = () => {
           let nextQuestionNumber = 1;
           if (answeredQuestionsInTopic.length > 0) {
             // Find the highest question number that has been answered in this topic
-            const lastAnsweredQuestion = answeredQuestionsInTopic.reduce((prev, current) => 
+            const lastAnsweredQuestion = answeredQuestionsInTopic.reduce((prev, current) =>
               prev.question_number > current.question_number ? prev : current
             );
             nextQuestionNumber = lastAnsweredQuestion.question_number + 1;
           }
 
           // Update current topic and question
-          updateProgress({ 
-            currentTopic: topicNum, 
-            currentQuestion: nextQuestionNumber 
+          updateProgress({
+            currentTopic: topicNum,
+            currentQuestion: nextQuestionNumber
           });
           return;
         }
       }
 
       // If all topics are completed, go to the first topic, first question
-      updateProgress({ 
-        currentTopic: topicNumbers[0] || 1, 
-        currentQuestion: 1 
+      updateProgress({
+        currentTopic: topicNumbers[0] || 1,
+        currentQuestion: 1
       });
     } else {
       // Find the last answered question in the selected topic
@@ -298,24 +302,22 @@ const ExamPage: React.FC = () => {
       let nextQuestionNumber = 1;
       if (answeredQuestionsInTopic.length > 0) {
         // Find the highest question number that has been answered in this topic
-        const lastAnsweredQuestion = answeredQuestionsInTopic.reduce((prev, current) => 
+        const lastAnsweredQuestion = answeredQuestionsInTopic.reduce((prev, current) =>
           prev.question_number > current.question_number ? prev : current
         );
         nextQuestionNumber = lastAnsweredQuestion.question_number + 1;
       }
 
       // Update current topic and question
-      updateProgress({ 
-        currentTopic: topicNumber, 
-        currentQuestion: nextQuestionNumber 
+      updateProgress({
+        currentTopic: topicNumber,
+        currentQuestion: nextQuestionNumber
       });
     }
   };
 
   const handleBackToHome = () => {
-    // if (window.confirm(t('confirmBackToHome'))) {
     navigate('/');
-    // }
   };
 
   const handleScrollToTop = () => {
@@ -344,15 +346,21 @@ const ExamPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900 transition-colors">
       {/* Top header - Sticky */}
-      <div className="sticky top-0 z-50 bg-gray-100 dark:bg-gray-900 py-2 border-b border-gray-200 dark:border-gray-700">
-        <div className="container mx-auto px-4">
+      <div className="sticky top-0 z-50 bg-gray-100 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
+        {/* Main header row */}
+        <div className="container mx-auto px-4 py-2">
           <div className="flex items-center justify-between">
             <button
               onClick={handleBackToHome}
               className="flex items-center justify-center w-10 h-10 text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 font-medium transition-colors rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20"
               title={t('backToHome')}
             >
-              ←
+              <svg xmlns="http://www.w3.org/2000/svg"
+                fill="none" viewBox="0 0 24 24"
+                strokeWidth={2} stroke="currentColor"
+                style={{ width: "28px", height: "28px" }}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+              </svg>
             </button>
             <div className="flex items-center gap-4 flex-1 min-w-0">
               <h1 className="text-2xl font-bold text-gray-800 dark:text-white transition-colors truncate">
@@ -360,8 +368,74 @@ const ExamPage: React.FC = () => {
               </h1>
             </div>
             <div className="flex items-center gap-4">
+              {/* ExamResult - Desktop */}
+              <div className="hidden sm:block">
+                <ExamResult 
+                  userAnswers={progress.answers} 
+                  totalQuestions={questions.length} 
+                  questions={questions} 
+                  currentTopic={progress.currentTopic} 
+                />
+              </div>
+              {/* Action buttons - Desktop */}
+              <div className="hidden sm:flex items-center gap-2">
+                <button
+                  onClick={() => handleFilterChange({ ...filterState, type: 'training' })}
+                  className="px-3 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors text-xs font-medium"
+                >
+                  📚 {t('training')}
+                </button>
+                <button
+                  onClick={handleRandomize}
+                  className="px-3 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-xs font-medium"
+                >
+                  🔀 {t('randomize')}
+                </button>
+                <button
+                  onClick={handleSubmit}
+                  className="px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-xs font-medium"
+                >
+                  📝 {t('submit')}
+                </button>
+              </div>
               <LanguageToggle />
               <ThemeToggle />
+            </div>
+          </div>
+        </div>
+        
+        {/* Action buttons and ExamResult row - Mobile */}
+        <div className="sm:hidden container mx-auto px-6 py-4 border-t border-gray-200 dark:border-gray-700">
+          <div className="flex flex-col gap-4">
+            {/* Action buttons */}
+            <div className="flex items-center justify-center gap-2">
+              <button
+                onClick={() => handleFilterChange({ ...filterState, type: 'training' })}
+                className="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors text-xs font-medium"
+              >
+                📚 {t('training')}
+              </button>
+              <button
+                onClick={handleRandomize}
+                className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-xs font-medium"
+              >
+                🔀 {t('randomize')}
+              </button>
+              <button
+                onClick={handleSubmit}
+                className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-xs font-medium"
+              >
+                📝 {t('submit')}
+              </button>
+            </div>
+            {/* ExamResult - Mobile */}
+            <div className="flex justify-center">
+              <ExamResult 
+                userAnswers={progress.answers} 
+                totalQuestions={questions.length} 
+                questions={questions} 
+                currentTopic={progress.currentTopic} 
+              />
             </div>
           </div>
         </div>
@@ -412,18 +486,13 @@ const ExamPage: React.FC = () => {
           </div>
         </div>
 
-        {/* ExamResult */}
-        <div className="mb-4 flex justify-end">
-          <ExamResult userAnswers={progress.answers} totalQuestions={questions.length} questions={questions} currentTopic={progress.currentTopic} />
-        </div>
+
 
         {/* FilterBar */}
         <div className="mb-4">
           <FilterBar
             filterState={filterState}
             onFilterChange={handleFilterChange}
-            onRandomize={handleRandomize}
-            onReset={handleSubmit}
             totalQuestions={questions.length}
             answeredCount={answeredCount}
             userAnswers={progress.answers}
@@ -455,6 +524,19 @@ const ExamPage: React.FC = () => {
           hasCurrentQuestion={progress.currentQuestion > 0}
         />
       </div>
+
+      {/* Confirm Modals */}
+      <ConfirmModal
+        isOpen={showSubmitModal}
+        onClose={() => setShowSubmitModal(false)}
+        onConfirm={confirmSubmit}
+        title={t('submitExam')}
+        message={t('confirmSubmitExam')}
+        confirmText={t('submit')}
+        confirmButtonColor="green"
+      />
+
+
     </div>
   );
 };
