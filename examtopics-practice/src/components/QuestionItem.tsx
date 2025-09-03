@@ -143,8 +143,8 @@ export const QuestionItem: React.FC<QuestionItemProps> = ({
           <button
             onClick={() => onToggleTraining(question.topic_number, question.question_number)}
             className={`px-2 rounded-full transition-colors ${isMarkedForTraining
-              ? 'bg-orange-600 text-white'
-              : 'bg-orange-600 text-white hover:bg-orange-700'
+              ? 'bg-orange-600 text-white hover:bg-orange-700'
+              : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-indigo-100 dark:hover:bg-indigo-900 hover:text-indigo-600 dark:hover:text-indigo-400'
               }`}
             title={isMarkedForTraining ? t('removeFromTraining') : t('addToTraining')}
           >
