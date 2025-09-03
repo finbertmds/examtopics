@@ -33,7 +33,7 @@ class MultiImageDownloader:
         self.base_output_folder = Path(base_output_folder)
         self.downloaded_images = set()
         self.failed_downloads = []
-        self.folder_stats = defaultdict(lambda: {'total': 0, 'successful': 0, 'failed': 0})
+        self.folder_stats = defaultdict(lambda: {'total': 0, 'successful': 0, 'failed': 0, 'skipped': 0})
         
         # Create base output folder if it doesn't exist
         self.base_output_folder.mkdir(parents=True, exist_ok=True)
@@ -131,7 +131,7 @@ class MultiImageDownloader:
         # Skip if already downloaded
         if file_path.exists():
             logging.info(f"Image already exists: {filename}")
-            return True
+            return 2  # 2 = skipped
         
         for attempt in range(max_retries):
             try:
@@ -153,7 +153,7 @@ class MultiImageDownloader:
                 
                 logging.info(f"Successfully downloaded: {filename}")
                 self.downloaded_images.add(url)
-                return True
+                return 1  # 1 = success
                 
             except requests.exceptions.RequestException as e:
                 logging.warning(f"Attempt {attempt + 1} failed for {filename}: {e}")
@@ -162,7 +162,7 @@ class MultiImageDownloader:
                 else:
                     logging.error(f"Failed to download {filename} after {max_retries} attempts")
                     self.failed_downloads.append(url)
-                    return False
+                    return 0  # 0 = failed
     
     def download_images_for_folder(self, folder_key, image_urls):
         """Download all images for a specific folder key (relative under base_output_folder)"""
@@ -173,12 +173,16 @@ class MultiImageDownloader:
         
         successful = 0
         failed = 0
+        skipped = 0
         
         for i, url in enumerate(image_urls, 1):
             logging.info(f"Progress for {folder_key}: {i}/{len(image_urls)}")
             
-            if self.download_image(url, output_folder):
+            result = self.download_image(url, output_folder)
+            if result == 1:
                 successful += 1
+            elif result == 2:
+                skipped += 1
             else:
                 failed += 1
             
@@ -189,6 +193,7 @@ class MultiImageDownloader:
         self.folder_stats[folder_key]['total'] = len(image_urls)
         self.folder_stats[folder_key]['successful'] = successful
         self.folder_stats[folder_key]['failed'] = failed
+        self.folder_stats[folder_key]['skipped'] = skipped
         
         return successful, failed
     
@@ -244,7 +249,7 @@ class MultiImageDownloader:
         
         logging.info("\nFolder Statistics:")
         for folder, stats in self.folder_stats.items():
-            logging.info(f"  {folder}: {stats['successful']}/{stats['total']} successful")
+            logging.info(f"  {folder}: {stats['successful']} successful, {stats['failed']} failed, {stats['skipped']} skipped")
         
         if failed > 0:
             logging.info("\nFailed URLs:")
