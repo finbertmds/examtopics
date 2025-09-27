@@ -1,8 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
+import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
-import { Question, UserAnswer } from '../types';
-import { getBackendUrl } from '../utils/backendUrl';
+import { Question, ReportData, UserAnswer } from '../types';
+import { apiClient } from '../utils/apiClient';
 import { replaceImgPlaceholders } from '../utils/replaceImgPlaceholders';
 import CollapsibleQuestionText from './CollapsibleQuestionText';
 import ReportModal from './ReportModal';
@@ -29,6 +30,8 @@ export const QuestionItem: React.FC<QuestionItemProps> = ({
   examId
 }) => {
   const { t } = useLanguage();
+  const { user } = useAuth();
+
   const [selectedAnswers, setSelectedAnswers] = useState<string[]>(
     userAnswer?.selectedAnswers || []
   );
@@ -65,29 +68,22 @@ export const QuestionItem: React.FC<QuestionItemProps> = ({
 
   const handleReportSubmit = async (reason: string, comment: string) => {
     try {
-      const backendUrl = getBackendUrl();
-      const response = await fetch(`${backendUrl}/report`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          topicNumber: question.topic_number,
-          questionNumber: question.question_number,
-          examId: examId,
-          reason: reason,
-          comment: comment,
-          user: null, // Có thể thêm user authentication sau này
-          url: `${window.location.origin}/exam/${examId}?topicNumber=${question.topic_number}&questionNumber=${question.question_number}`
-        }),
-      });
+      const reportData: ReportData = {
+        topicNumber: question.topic_number,
+        questionNumber: question.question_number,
+        examId: examId,
+        reason: reason,
+        comment: comment,
+        user: user?.email || null,
+        url: `${window.location.origin}/exam/${examId}?topicNumber=${question.topic_number}&questionNumber=${question.question_number}`
+      };
 
-      const data = await response.json();
+      const response = await apiClient.submitReport(reportData);
 
-      if (data.success) {
+      if (response.success) {
         toast.success(`${t('reportSubmittedSuccessfully')} - ${t('topic')} ${question.topic_number}, ${t('question')} ${question.question_number}`);
       } else {
-        throw new Error(data.error || 'Failed to submit report');
+        throw new Error(response.error || 'Failed to submit report');
       }
     } catch (error) {
       console.error('Error submitting report:', error);

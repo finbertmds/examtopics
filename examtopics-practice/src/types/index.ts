@@ -58,3 +58,75 @@ export interface FilterState {
   showIncorrect: boolean;
   selectedTopic: number | 'all'; // 'all' means show all topics, number means specific topic
 }
+
+export interface HistoryEntry {
+  _id: string;
+  examId: string;
+  progress: Record<string, any>;
+  markedForTraining: string[];
+  score: {
+    totalQuestions: number;
+    correctAnswers: number;
+    accuracy: number;
+  };
+  answeredCount: number;
+  submittedAt: string;
+}
+
+
+
+// Types for API responses
+export interface ApiResponse<T = any> {
+  success: boolean;
+  data?: T;
+  error?: string;
+  message?: string;
+}
+
+export interface ProgressData {
+  examId: string;
+  answers: Record<string, any>;
+  markedForTraining: number[];
+  currentQuestion: number;
+  isRandomized: boolean;
+  lastUpdated: string;
+}
+
+export interface AllProgressData {
+  progress: Record<string, ProgressData>;
+}
+
+export interface HistoryData {
+  history: HistoryEntry[];
+}
+
+export interface StatsData {
+  stats: {
+    totalQuestions: number;
+    answeredQuestions: number;
+    correctAnswers: number;
+    accuracy: number;
+    markedForTraining: number;
+  }
+}
+
+export interface ReportData {
+  topicNumber: number;
+  questionNumber: number;
+  examId: string;
+  reason: string;
+  comment: string;
+  user: string | null;
+  url: string;
+}
+
+export interface UserData {
+  user: User;
+}
+
+export interface User {
+  id: string;
+  email: string;
+  name: string;
+  picture?: string; // Google profile picture URL
+}

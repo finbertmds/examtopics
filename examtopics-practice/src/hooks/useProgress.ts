@@ -1,11 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { UserProgress } from '../types';
-import { getBackendUrl } from '../utils/backendUrl';
+import { UserAnswer, UserProgress } from '../types';
+import { apiClient } from '../utils/apiClient';
 import { migrateProgressData } from '../utils/migration';
 
 const STORAGE_KEY = 'exam-progress';
-const backendUrl = getBackendUrl();
 
 export const useProgress = (examId?: string) => {
   const { isAuthenticated, token } = useAuth();
@@ -20,7 +19,7 @@ export const useProgress = (examId?: string) => {
         const migratedProgress = migrateProgressData(examProgress);
         
         // Convert date strings back to Date objects
-        Object.values(migratedProgress.answers).forEach((answer: any) => {
+        Object.values(migratedProgress.answers).forEach((answer: UserAnswer) => {
           if (answer.answeredAt) answer.answeredAt = new Date(answer.answeredAt);
         });
         return migratedProgress;
@@ -45,24 +44,17 @@ export const useProgress = (examId?: string) => {
       if (isAuthenticated && token && examId) {
         setIsLoading(true);
         try {
-          const response = await fetch(`${backendUrl}/progress/load/${examId}`, {
-            headers: {
-              'Authorization': `Bearer ${token}`
-            }
-          });
+          const response = await apiClient.loadProgress(examId, token);
 
-          if (response.ok) {
-            const data = await response.json();
-            if (data.progress) {
-              // Migrate old format to new format if needed
-              const migratedProgress = migrateProgressData(data.progress);
+          if (response.success && response.data?.progress) {
+            // Migrate old format to new format if needed
+            const migratedProgress = migrateProgressData(response.data.progress);
               
-              // Convert date strings back to Date objects
-              Object.values(migratedProgress.answers).forEach((answer: any) => {
-                if (answer.answeredAt) answer.answeredAt = new Date(answer.answeredAt);
-              });
-              setProgress(migratedProgress);
-            }
+            // Convert date strings back to Date objects
+            Object.values(migratedProgress.answers).forEach((answer: UserAnswer) => {
+              if (answer.answeredAt) answer.answeredAt = new Date(answer.answeredAt);
+            });
+            setProgress(migratedProgress);
           }
         } catch (error) {
           console.error('Error loading progress from backend:', error);
@@ -105,20 +97,14 @@ export const useProgress = (examId?: string) => {
     // Save to backend if authenticated, otherwise to localStorage
     if (isAuthenticated && token && examId) {
       try {
-        await fetch(`${backendUrl}/progress/answer`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          },
-          body: JSON.stringify({
-            examId,
-            topicNumber,
-            questionNumber,
-            selectedAnswers,
-            isCorrect
-          })
-        });
+        await apiClient.saveAnswer(
+          examId,
+          topicNumber,
+          questionNumber,
+          selectedAnswers,
+          isCorrect, 
+          token,
+        );
         console.log('Answer saved to backend');
       } catch (error) {
         console.error('Error saving answer to backend:', error);
@@ -173,18 +159,12 @@ export const useProgress = (examId?: string) => {
     // Save to backend if authenticated, otherwise to localStorage
     if (isAuthenticated && token && examId) {
       try {
-        await fetch(`${backendUrl}/progress/training-mark`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          },
-          body: JSON.stringify({
-            examId,
-            topicNumber,
-            questionNumber
-          })
-        });
+        await apiClient.markForTraining(
+          examId,
+          topicNumber,
+          questionNumber,
+          token,
+        );
         console.log('Training mark toggled in backend');
       } catch (error) {
         console.error('Error toggling training mark in backend:', error);
@@ -227,20 +207,14 @@ export const useProgress = (examId?: string) => {
   const submitExam = async (score: { totalQuestions: number; correctAnswers: number; accuracy: number }, totalQuestions: number, answeredCount: number) => {
     if (isAuthenticated && token && examId) {
       try {
-        await fetch(`${backendUrl}/progress/submit`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          },
-          body: JSON.stringify({
-            examId,
-            progress,
-            score,
-            totalQuestions,
-            answeredCount
-          })
-        });
+        await apiClient.submitProgress(
+          examId,
+          progress,
+          score,
+          totalQuestions,
+          answeredCount,
+          token,
+        );
         console.log('Exam submitted to backend');
       } catch (error) {
         console.error('Error submitting exam to backend:', error);
@@ -289,16 +263,7 @@ export const useProgress = (examId?: string) => {
 
     // Reset in backend if authenticated
     if (isAuthenticated && token && examId) {
-      fetch(`${backendUrl}/progress/reset`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          examId
-        })
-      }).catch(error => {
+      apiClient.resetProgress(examId, token).catch(error => {
         console.error('Error resetting progress in backend:', error);
       });
     }
@@ -318,19 +283,10 @@ export const useProgress = (examId?: string) => {
   const getHistory = async (examId?: string) => {
     if (isAuthenticated && token) {
       try {
-        const url = examId 
-          ? `${backendUrl}/progress/history/${examId}`
-          : `${backendUrl}/progress/history`;
+        const response = await apiClient.getHistory(examId, token);
         
-        const response = await fetch(url, {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-        
-        if (response.ok) {
-          const data = await response.json();
-          return data.history;
+        if (response.success && response.data?.history) {
+          return response.data.history;
         }
       } catch (error) {
         console.error('Error getting history from backend:', error);
@@ -346,15 +302,10 @@ export const useProgress = (examId?: string) => {
   const getExamStats = async (examId: string) => {
     if (isAuthenticated && token) {
       try {
-        const response = await fetch(`${backendUrl}/progress/stats/${examId}`, {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
+        const response = await apiClient.getStats(examId, token);
         
-        if (response.ok) {
-          const data = await response.json();
-          return data.stats;
+        if (response.success && response.data?.stats) {
+          return response.data.stats;
         }
       } catch (error) {
         console.error('Error getting exam stats from backend:', error);

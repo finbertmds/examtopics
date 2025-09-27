@@ -1,21 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { getBackendUrl } from '../utils/backendUrl';
-
-const backendUrl = getBackendUrl();
-
-interface ExamProgress {
-  examId: string;
-  answers: Record<string, any>;
-  markedForTraining: number[];
-  currentQuestion: number;
-  isRandomized: boolean;
-  lastUpdated: string;
-}
+import { ProgressData } from '../types';
+import { apiClient } from '../utils/apiClient';
 
 export const useAllProgress = () => {
   const { isAuthenticated, token } = useAuth();
-  const [allProgress, setAllProgress] = useState<Record<string, ExamProgress>>({});
+  const [allProgress, setAllProgress] = useState<Record<string, ProgressData>>({});
   const [isLoading, setIsLoading] = useState(false);
 
   // Load all progress from backend if authenticated
@@ -24,25 +14,19 @@ export const useAllProgress = () => {
       if (isAuthenticated && token) {
         setIsLoading(true);
         try {
-          const response = await fetch(`${backendUrl}/progress/all`, {
-            headers: {
-              'Authorization': `Bearer ${token}`
-            }
-          });
-
-          if (response.ok) {
-            const data = await response.json();
-            if (data.progress) {
-              // Convert date strings back to Date objects
-              Object.values(data.progress).forEach((examProgress: any) => {
-                if (examProgress.answers) {
-                  Object.values(examProgress.answers).forEach((answer: any) => {
-                    if (answer.answeredAt) answer.answeredAt = new Date(answer.answeredAt);
-                  });
-                }
-              });
-              setAllProgress(data.progress);
-            }
+          const response = await apiClient.loadAllProgress(token);
+          
+          if (response.success && response.data?.progress) {
+            let progress = response.data.progress;
+            // Convert date strings back to Date objects
+            Object.values(progress).forEach((examProgress: any) => {
+              if (examProgress.answers) {
+                Object.values(examProgress.answers).forEach((answer: any) => {
+                  if (answer.answeredAt) answer.answeredAt = new Date(answer.answeredAt);
+                });
+              }
+            });
+            setAllProgress(progress);
           }
         } catch (error) {
           console.error('Error loading all progress from backend:', error);
@@ -76,7 +60,7 @@ export const useAllProgress = () => {
     loadAllProgress();
   }, [isAuthenticated, token]);
 
-  const getExamProgress = (examId: string): ExamProgress | null => {
+  const getExamProgress = (examId: string): ProgressData | null => {
     return allProgress[examId] || null;
   };
 

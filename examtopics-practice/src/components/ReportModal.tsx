@@ -17,7 +17,7 @@ const ReportModal: React.FC<ReportModalProps> = ({
   onSubmit,
   topicNumber,
   questionNumber,
-  examId
+  examId,
 }) => {
   const { t } = useLanguage();
   const [reason, setReason] = useState('');
@@ -26,14 +26,14 @@ const ReportModal: React.FC<ReportModalProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!reason.trim()) {
       toast.error(t('pleaseSelectReason'));
       return;
     }
 
     setIsSubmitting(true);
-    
+
     try {
       await onSubmit(reason.trim(), comment.trim());
       // Reset form

@@ -1,21 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useProgress } from '../hooks/useProgress';
-
-interface HistoryEntry {
-  _id: string;
-  examId: string;
-  progress: Record<string, any>;
-  markedForTraining: string[];
-  score: {
-    totalQuestions: number;
-    correctAnswers: number;
-    accuracy: number;
-  };
-  answeredCount: number;
-  submittedAt: string;
-}
-
+import { HistoryEntry } from '../types';
 interface HistoryModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -34,7 +20,7 @@ const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose, examId }) 
     if (isOpen) {
       loadData();
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, examId]);
 
   const loadData = async () => {
@@ -81,11 +67,11 @@ const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose, examId }) 
     <div className="fixed inset-0 z-50 overflow-y-auto">
       <div className="flex min-h-screen items-center justify-center p-4">
         {/* Backdrop */}
-        <div 
+        <div
           className="fixed inset-0 bg-black bg-opacity-50 transition-opacity"
           onClick={onClose}
         />
-        
+
         {/* Modal */}
         <div className="relative w-full max-w-4xl transform rounded-lg bg-white dark:bg-gray-800 shadow-xl transition-all">
           {/* Header */}
@@ -107,22 +93,20 @@ const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose, examId }) 
           <div className="flex border-b border-gray-200 dark:border-gray-700">
             <button
               onClick={() => setActiveTab('history')}
-              className={`px-6 py-3 text-sm font-medium transition-colors ${
-                activeTab === 'history'
-                  ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400'
-                  : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
-              }`}
+              className={`px-6 py-3 text-sm font-medium transition-colors ${activeTab === 'history'
+                ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400'
+                : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                }`}
             >
               {t('history')}
             </button>
             {examId && (
               <button
                 onClick={() => setActiveTab('stats')}
-                className={`px-6 py-3 text-sm font-medium transition-colors ${
-                  activeTab === 'stats'
-                    ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400'
-                    : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
-                }`}
+                className={`px-6 py-3 text-sm font-medium transition-colors ${activeTab === 'stats'
+                  ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400'
+                  : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                  }`}
               >
                 {t('statistics')}
               </button>
@@ -161,7 +145,7 @@ const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose, examId }) 
                           {formatDate(entry.submittedAt)}
                         </div>
                       </div>
-                      
+
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                         <div>
                           <span className="text-gray-500 dark:text-gray-400">{t('answered')}:</span>

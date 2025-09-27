@@ -1,12 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { getBackendUrl } from '../utils/backendUrl';
-
-interface User {
-  id: string;
-  email: string;
-  name: string;
-  picture?: string; // Google profile picture URL
-}
+import { User } from '../types';
+import { apiClient } from '../utils/apiClient';
 
 interface AuthContextType {
   user: User | null;
@@ -39,22 +33,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   });
   const [isLoading, setIsLoading] = useState(true);
 
-  const backendUrl = getBackendUrl();
-
   // Load user info when token changes
   useEffect(() => {
     const loadUser = async () => {
       if (token) {
         try {
-          const response = await fetch(`${backendUrl}/auth/me`, {
-            headers: {
-              'Authorization': `Bearer ${token}`
-            }
-          });
+          const response = await apiClient.getCurrentUser(token);
 
-          if (response.ok) {
-            const data = await response.json();
-            setUser(data.user);
+          if (response.success && response.data?.user) {
+            setUser(response.data.user);
           } else {
             // Token is invalid, remove it
             localStorage.removeItem('auth_token');
@@ -74,12 +61,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     };
 
     loadUser();
-  }, [token, backendUrl]);
+  }, [token]);
 
   const login = () => {
     localStorage.removeItem('exam-progress');
     // Redirect to Google OAuth
-    window.location.href = `${backendUrl}/auth/google`;
+    window.location.href = apiClient.getGoogleAuthUrl();
   };
 
   const logout = () => {

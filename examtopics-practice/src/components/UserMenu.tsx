@@ -103,7 +103,7 @@ const UserMenu: React.FC = () => {
             // Fallback to initials
             <div className="w-6 h-6 md:w-8 md:h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg">
               <span className="text-white text-sm md:text-lg font-semibold">
-                {user.name.charAt(0).toUpperCase()}
+                {user && user.name ? user.name.charAt(0).toUpperCase() : ''}
               </span>
             </div>
           )}
@@ -114,7 +114,7 @@ const UserMenu: React.FC = () => {
         {/* User Info - Hidden on mobile */}
         <div className="hidden md:block text-left">
           <p className="text-sm font-semibold text-gray-900 dark:text-white truncate max-w-32">
-            {user.name}
+            {user && user.name ? user.name : ''}
           </p>
         </div>
 
@@ -152,16 +152,16 @@ const UserMenu: React.FC = () => {
                 // Fallback to initials
                 <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg">
                   <span className="text-white text-xl font-semibold">
-                    {user.name.charAt(0).toUpperCase()}
+                    {user && user.name ? user.name.charAt(0).toUpperCase() : ''}
                   </span>
                 </div>
               )}
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">
-                  {user.name}
+                  {user && user.name ? user.name : ''}
                 </p>
                 <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                  {user.email}
+                  {user && user.email ? user.email : ''}
                 </p>
               </div>
             </div>
