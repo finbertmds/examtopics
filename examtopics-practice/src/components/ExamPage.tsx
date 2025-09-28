@@ -1,15 +1,16 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useExams } from '../hooks/useExams';
 import { useProgress } from '../hooks/useProgress';
-import { Exam, FilterState, Question } from '../types';
+import { useQuestions } from '../hooks/useQuestions';
+import { Exam, FilterState } from '../types';
 import { getExamDescription, getExamName } from '../utils/examUtils';
 import ConfirmModal from './ConfirmModal';
 import ExamResult from './ExamResult';
 import { FilterBar } from './FilterBar';
 import FloatingButtons from './FloatingButtons';
 import HistoryModal from './HistoryModal';
-import { LanguageToggle } from './LanguageToggle';
 import { ProgressBar } from './ProgressBar';
 import { QuestionList, QuestionListRef } from './QuestionList';
 import { ThemeToggle } from './ThemeToggle';
@@ -20,10 +21,11 @@ const ExamPage: React.FC = () => {
   const location = useLocation();
   const exam = location.state?.exam as Exam;
   const { t, language } = useLanguage();
-
-  const [questions, setQuestions] = useState<Question[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { findExamById } = useExams();
   const [currentExam, setCurrentExam] = useState<Exam | null>(exam);
+  const questionsHook = useQuestions(examId, currentExam?.file);
+  const { questions, loading: questionsLoading, error: questionsError } = questionsHook;
+
   const [urlTopicNumber, setUrlTopicNumber] = useState<number | null>(null);
   const [urlQuestionNumber, setUrlQuestionNumber] = useState<number | null>(null);
   const [filterState, setFilterState] = useState<FilterState>({
@@ -34,7 +36,6 @@ const ExamPage: React.FC = () => {
   });
   const [showSubmitModal, setShowSubmitModal] = useState(false);
   const [showHistoryModal, setShowHistoryModal] = useState(false);
-  const hasLoadedRef = useRef(false);
   const questionListRef = useRef<QuestionListRef>(null);
 
   const {
@@ -84,32 +85,18 @@ const ExamPage: React.FC = () => {
     const abortController = new AbortController();
 
     const loadExamAndQuestions = async () => {
-      let currentExam = exam;
+      let currentExam: Exam | undefined = exam;
 
-      // If no exam in state but we have examId, try to load exam from exams.json
+      // If no exam in state but we have examId, try to load exam using hook
       if (!currentExam && examId) {
-        try {
-          console.log('Loading exam from exams.json for examId:', examId);
-          const examsResponse = await fetch('/exams/exams.json', {
-            signal: abortController.signal
-          });
-          const examsData = await examsResponse.json();
-          currentExam = examsData.find((e: Exam) => e.id === examId);
+        console.log('Loading exam for examId:', examId);
+        currentExam = findExamById(examId);
 
-          if (!currentExam) {
-            console.error('Exam not found for examId:', examId);
-            navigate('/');
-            return;
-          }
-
-          console.log('Exam loaded from exams.json:', currentExam);
+        if (currentExam) {
+          console.log('Exam loaded:', currentExam);
           setCurrentExam(currentExam);
-        } catch (error: any) {
-          if (error.name === 'AbortError') {
-            console.log('Request was aborted');
-            return;
-          }
-          console.error('Error loading exam from exams.json:', error);
+        } else {
+          console.error('Exam not found for examId:', examId);
           navigate('/');
           return;
         }
@@ -125,31 +112,8 @@ const ExamPage: React.FC = () => {
         setCurrentExam(currentExam);
       }
 
-      // Prevent multiple calls
-      if (hasLoadedRef.current) {
-        console.log('loadExamAndQuestions already called, skipping...');
-        return;
-      }
-
-      console.log('Loading questions for exam:', currentExam.file);
-      hasLoadedRef.current = true;
-
-      try {
-        const response = await fetch(`/${currentExam.file}`, {
-          signal: abortController.signal
-        });
-        const data = await response.json();
-        console.log('Questions loaded successfully:', data.length);
-        setQuestions(data);
-      } catch (error: any) {
-        if (error.name === 'AbortError') {
-          console.log('Request was aborted');
-          return;
-        }
-        console.error('Error loading questions:', error);
-      } finally {
-        setLoading(false);
-      }
+      // Questions are now loaded by useQuestions hook
+      console.log('Exam loaded, questions will be loaded by useQuestions hook');
     };
 
     loadExamAndQuestions();
@@ -157,14 +121,13 @@ const ExamPage: React.FC = () => {
     // Cleanup function to abort request if component unmounts or dependencies change
     return () => {
       abortController.abort();
-      hasLoadedRef.current = false;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [examId, exam?.file, currentExam?.file]);
 
   // Auto-scroll to question when questions are loaded
   useEffect(() => {
-    if (!loading && questions.length > 0 && questionListRef.current) {
+    if (!questionsLoading && questions.length > 0 && questionListRef.current) {
       // Small delay to ensure DOM is ready
       setTimeout(() => {
         if (urlTopicNumber && urlQuestionNumber) {
@@ -183,7 +146,7 @@ const ExamPage: React.FC = () => {
         }
       }, 100);
     }
-  }, [loading, questions, progress.currentTopic, progress.currentQuestion, urlTopicNumber, urlQuestionNumber]);
+  }, [questionsLoading, questions, progress.currentTopic, progress.currentQuestion, urlTopicNumber, urlQuestionNumber]);
 
   const handleAnswer = async (topicNumber: number, questionNumber: number, selectedAnswers: string[]) => {
     const question = questions.find(q => q.topic_number === topicNumber && q.question_number === questionNumber);
@@ -204,7 +167,7 @@ const ExamPage: React.FC = () => {
 
   const handleRandomize = () => {
     const shuffled = [...questions].sort(() => Math.random() - 0.5);
-    setQuestions(shuffled);
+    questionsHook.setQuestions(shuffled);
     updateProgress({
       isRandomized: true,
       currentTopic: 1,
@@ -327,14 +290,32 @@ const ExamPage: React.FC = () => {
     questionListRef.current?.scrollToCurrentQuestion();
   };
 
-  if (loading || progressLoading) {
+  if (questionsLoading || progressLoading) {
     return (
       <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
           <p className="text-gray-600 dark:text-gray-300">
-            {loading ? t('loadingQuestions') : t('loadingProgress')}
+            {questionsLoading ? t('loadingQuestions') : t('loadingProgress')}
           </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (questionsError) {
+    return (
+      <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-red-500 text-6xl mb-4">⚠️</div>
+          <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">{t('errorLoadingQuestions')}</h2>
+          <p className="text-gray-600 dark:text-gray-300 mb-4">{questionsError}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            {t('retry')}
+          </button>
         </div>
       </div>
     );
@@ -369,11 +350,11 @@ const ExamPage: React.FC = () => {
             <div className="flex items-center gap-4">
               {/* ExamResult - Desktop */}
               <div className="hidden sm:block">
-                <ExamResult 
-                  userAnswers={progress.answers} 
-                  totalQuestions={questions.length} 
-                  questions={questions} 
-                  currentTopic={progress.currentTopic} 
+                <ExamResult
+                  userAnswers={progress.answers}
+                  totalQuestions={questions.length}
+                  questions={questions}
+                  currentTopic={progress.currentTopic}
                 />
               </div>
               {/* Action buttons - Desktop */}
@@ -404,12 +385,11 @@ const ExamPage: React.FC = () => {
                   📝 {t('submit')}
                 </button>
               </div>
-              <LanguageToggle />
               <ThemeToggle />
             </div>
           </div>
         </div>
-        
+
         {/* Action buttons and ExamResult row - Mobile */}
         <div className="sm:hidden container mx-auto px-6 py-4 border-t border-gray-200 dark:border-gray-700">
           <div className="flex flex-col gap-4">
@@ -443,11 +423,11 @@ const ExamPage: React.FC = () => {
             </div>
             {/* ExamResult - Mobile */}
             <div className="flex justify-center">
-              <ExamResult 
-                userAnswers={progress.answers} 
-                totalQuestions={questions.length} 
-                questions={questions} 
-                currentTopic={progress.currentTopic} 
+              <ExamResult
+                userAnswers={progress.answers}
+                totalQuestions={questions.length}
+                questions={questions}
+                currentTopic={progress.currentTopic}
               />
             </div>
           </div>

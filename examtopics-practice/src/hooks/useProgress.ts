@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import { dataService } from '../services/dataService';
 import { UserAnswer, UserProgress } from '../types';
-import { apiClient } from '../utils/apiClient';
 import { migrateProgressData } from '../utils/migration';
 
 const STORAGE_KEY = 'exam-progress';
@@ -13,10 +13,16 @@ export const useProgress = (examId?: string) => {
     if (stored) {
       const allProgress = JSON.parse(stored);
       const examProgress = examId ? allProgress[examId] : null;
+      let currentTopic = 1;
       
       if (examProgress) {
+        // Find the maximum topicNumber from all answers
+        const topicNumbers = Object.values(examProgress.answers || {}).map((answer: any) => answer.topicNumber);
+        if (topicNumbers.length > 0) {
+          currentTopic = Math.max(...topicNumbers);
+        }
         // Migrate old format to new format if needed
-        const migratedProgress = migrateProgressData(examProgress);
+        const migratedProgress = migrateProgressData(examProgress, examId || '', currentTopic);
         
         // Convert date strings back to Date objects
         Object.values(migratedProgress.answers).forEach((answer: UserAnswer) => {
@@ -38,26 +44,38 @@ export const useProgress = (examId?: string) => {
 
   const [isLoading, setIsLoading] = useState(false);
 
-  // Load progress from backend if authenticated
+  // Load progress using dataService (offline-first)
   useEffect(() => {
     const loadProgress = async () => {
-      if (isAuthenticated && token && examId) {
+      if (examId) {
         setIsLoading(true);
         try {
-          const response = await apiClient.loadProgress(examId, token);
+          const response = await dataService.loadUserProgress(examId, token || undefined);
 
-          if (response.success && response.data?.progress) {
+          if (response.success && response.data) {
+            // Find the maximum topicNumber from all answers
+            let currentTopic = 1;
+            const examProgress = response.data.progress?.[examId];
+            if (examProgress?.answers) {
+              const topicNumbers = Object.values(examProgress.answers).map((answer: any) => answer.topicNumber);
+              if (topicNumbers.length > 0) {
+                currentTopic = Math.max(...topicNumbers);
+              }
+            }
+            
             // Migrate old format to new format if needed
-            const migratedProgress = migrateProgressData(response.data.progress);
+            const migratedProgress = migrateProgressData(response.data, examId || '', currentTopic);
               
             // Convert date strings back to Date objects
-            Object.values(migratedProgress.answers).forEach((answer: UserAnswer) => {
-              if (answer.answeredAt) answer.answeredAt = new Date(answer.answeredAt);
-            });
+            if (migratedProgress.answers) {
+              Object.values(migratedProgress.answers).forEach((answer: UserAnswer) => {
+                if (answer.answeredAt) answer.answeredAt = new Date(answer.answeredAt);
+              });
+            }
             setProgress(migratedProgress);
           }
         } catch (error) {
-          console.error('Error loading progress from backend:', error);
+          console.error('Error loading progress:', error);
         } finally {
           setIsLoading(false);
         }
@@ -94,55 +112,24 @@ export const useProgress = (examId?: string) => {
       }
     }));
 
-    // Save to backend if authenticated, otherwise to localStorage
-    if (isAuthenticated && token && examId) {
+    // Use dataService for offline-first saving
+    if (examId) {
       try {
-        await apiClient.saveAnswer(
+        const response = await dataService.saveAnswer(
           examId,
           topicNumber,
           questionNumber,
           selectedAnswers,
-          isCorrect, 
-          token,
+          isCorrect,
+          token || undefined
         );
-        console.log('Answer saved to backend');
+        console.log('Answer saved:', response.message);
       } catch (error) {
-        console.error('Error saving answer to backend:', error);
-        // Fallback to localStorage
-        saveAnswerToLocalStorage(topicNumber, questionNumber, selectedAnswers, isCorrect);
+        console.error('Error saving answer:', error);
       }
-    } else {
-      // Save to localStorage if not authenticated
-      saveAnswerToLocalStorage(topicNumber, questionNumber, selectedAnswers, isCorrect);
     }
   };
 
-  const saveAnswerToLocalStorage = (topicNumber: number, questionNumber: number, selectedAnswers: string[], isCorrect: boolean) => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    const allProgress = stored ? JSON.parse(stored) : {};
-    
-    if (!allProgress[examId || '']) {
-      allProgress[examId || ''] = {
-        examId: examId || '',
-        answers: {},
-        markedForTraining: [],
-        currentTopic: 1,
-        currentQuestion: 1,
-        isRandomized: false
-      };
-    }
-    
-    const key = `${topicNumber}-${questionNumber}`;
-    allProgress[examId || ''].answers[key] = {
-      topicNumber,
-      questionNumber,
-      selectedAnswers,
-      isCorrect,
-      answeredAt: new Date()
-    };
-    
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(allProgress));
-  };
 
   const toggleTrainingMark = async (topicNumber: number, questionNumber: number) => {
     const key = `${topicNumber}-${questionNumber}`;
@@ -156,99 +143,44 @@ export const useProgress = (examId?: string) => {
         : [...prev.markedForTraining, key]
     }));
 
-    // Save to backend if authenticated, otherwise to localStorage
-    if (isAuthenticated && token && examId) {
+    // Use dataService for offline-first saving
+    if (examId) {
       try {
-        await apiClient.markForTraining(
+        const response = await dataService.markForTraining(
           examId,
           topicNumber,
           questionNumber,
-          token,
+          token || undefined
         );
-        console.log('Training mark toggled in backend');
+        console.log('Training mark toggled:', response.message);
       } catch (error) {
-        console.error('Error toggling training mark in backend:', error);
-        // Fallback to localStorage
-        saveTrainingMarkToLocalStorage(topicNumber, questionNumber);
+        console.error('Error toggling training mark:', error);
       }
-    } else {
-      // Save to localStorage if not authenticated
-      saveTrainingMarkToLocalStorage(topicNumber, questionNumber);
     }
   };
 
-  const saveTrainingMarkToLocalStorage = (topicNumber: number, questionNumber: number) => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    const allProgress = stored ? JSON.parse(stored) : {};
-    
-    if (!allProgress[examId || '']) {
-      allProgress[examId || ''] = {
-        examId: examId || '',
-        answers: {},
-        markedForTraining: [],
-        currentTopic: 1,
-        currentQuestion: 1,
-        isRandomized: false
-      };
-    }
-    
-    const key = `${topicNumber}-${questionNumber}`;
-    const currentMarkedForTraining = allProgress[examId || ''].markedForTraining || [];
-    
-    if (currentMarkedForTraining.includes(key)) {
-      allProgress[examId || ''].markedForTraining = currentMarkedForTraining.filter((q: string) => q !== key);
-    } else {
-      allProgress[examId || ''].markedForTraining = [...currentMarkedForTraining, key];
-    }
-    
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(allProgress));
-  };
 
   const submitExam = async (score: { totalQuestions: number; correctAnswers: number; accuracy: number }, totalQuestions: number, answeredCount: number) => {
-    if (isAuthenticated && token && examId) {
+    if (examId) {
       try {
-        await apiClient.submitProgress(
+        const response = await dataService.submitProgress(
           examId,
           progress,
           score,
           totalQuestions,
           answeredCount,
-          token,
+          token || undefined
         );
-        console.log('Exam submitted to backend');
+        console.log('Exam submitted:', response.message);
       } catch (error) {
-        console.error('Error submitting exam to backend:', error);
-        // Fallback to localStorage
-        submitExamToLocalStorage(score, totalQuestions, answeredCount);
+        console.error('Error submitting exam:', error);
       }
-    } else {
-      // Save to localStorage if not authenticated
-      submitExamToLocalStorage(score, totalQuestions, answeredCount);
     }
 
     // Reset progress after submission
     resetProgress();
   };
 
-  const submitExamToLocalStorage = (score: { totalQuestions: number; correctAnswers: number; accuracy: number }, totalQuestions: number, answeredCount: number) => {
-    // Save current progress to history
-    const historyKey = `${examId}_history`;
-    const history = JSON.parse(localStorage.getItem(historyKey) || '[]');
-    
-    // Only save necessary data like backend History model
-    const historyEntry = {
-      examId,
-      progress: progress.answers || {},
-      markedForTraining: progress.markedForTraining || [],
-      score,
-      answeredCount,
-      submittedAt: new Date().toISOString()
-    };
-    
-    history.push(historyEntry);
-    localStorage.setItem(historyKey, JSON.stringify(history));
-    console.log('Exam submitted to localStorage history');
-  };
 
   const resetProgress = () => {
     const newProgress: UserProgress = {
@@ -261,18 +193,12 @@ export const useProgress = (examId?: string) => {
     };
     setProgress(newProgress);
 
-    // Reset in backend if authenticated
-    if (isAuthenticated && token && examId) {
-      apiClient.resetProgress(examId, token).catch(error => {
-        console.error('Error resetting progress in backend:', error);
+    // Use dataService for offline-first reset
+    if (examId) {
+      dataService.resetProgress(examId, token || undefined).catch(error => {
+        console.error('Error resetting progress:', error);
       });
     }
-
-    // Reset in localStorage
-    const stored = localStorage.getItem(STORAGE_KEY);
-    const allProgress = stored ? JSON.parse(stored) : {};
-    delete allProgress[examId || ''];
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(allProgress));
   };
 
   const getAllProgress = () => {
@@ -281,42 +207,35 @@ export const useProgress = (examId?: string) => {
   };
 
   const getHistory = async (examId?: string) => {
-    if (isAuthenticated && token) {
-      try {
-        const response = await apiClient.getHistory(examId, token);
-        
-        if (response.success && response.data?.history) {
-          return response.data.history;
-        }
-      } catch (error) {
-        console.error('Error getting history from backend:', error);
+    try {
+      const response = await dataService.getHistory(examId, token || undefined);
+      
+      if (response.success && response.data?.history) {
+        return response.data.history;
       }
+    } catch (error) {
+      console.error('Error getting history:', error);
     }
     
-    // Fallback to localStorage
-    const historyKey = examId ? `${examId}_history` : 'all_history';
-    const stored = localStorage.getItem(historyKey);
-    return stored ? JSON.parse(stored) : [];
+    return [];
   };
 
   const getExamStats = async (examId: string) => {
-    if (isAuthenticated && token) {
-      try {
-        const response = await apiClient.getStats(examId, token);
-        
-        if (response.success && response.data?.stats) {
-          return response.data.stats;
-        }
-      } catch (error) {
-        console.error('Error getting exam stats from backend:', error);
+    try {
+      const response = await dataService.getStats(examId, token || undefined);
+      
+      if (response.success && response.data?.stats) {
+        return response.data.stats;
       }
+    } catch (error) {
+      console.error('Error getting exam stats:', error);
     }
     
     return null;
   };
 
   const clearAllProgress = () => {
-    localStorage.removeItem(STORAGE_KEY);
+    dataService.clearCache();
     setProgress({
       examId: examId || '',
       answers: {},

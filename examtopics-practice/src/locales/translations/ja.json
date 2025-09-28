@@ -48,6 +48,8 @@
   "startExam": "🚀 開始",
   "continueExam": "🔄 続行",
   "practiceExam": "📚 練習",
+  "examsInProgress": "進行中の試験",
+  "availableExams": "利用可能な試験",
   "backToHome": "← ホームに戻る",
   "loadingQuestions": "問題を読み込み中...",
   "loadingExamList": "試験リストを読み込み中...",
@@ -108,5 +110,9 @@
   "bestScore": "最高スコア",
   "worstScore": "最低スコア",
   "examId": "試験ID",
-  "viewHistory": "履歴を表示"
+  "viewHistory": "履歴を表示",
+  "offlineMode": "オフ",
+  "pendingSync": "{{count}}件の同期待ち",
+  "syncing": "同期中...",
+  "syncNow": "今すぐ同期"
 }

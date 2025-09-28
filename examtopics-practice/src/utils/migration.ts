@@ -1,21 +1,23 @@
-import { UserProgress } from '../types';
+import { AllProgressData, UserProgress } from '../types';
 
 // Migration utility to convert old progress format to new format
-export const migrateProgressData = (oldProgress: any): UserProgress => {
+export const migrateProgressData = (oldProgress: AllProgressData, examId: string, currentTopic: number): UserProgress => {
   if (!oldProgress) return oldProgress;
 
+  const progress = oldProgress.progress[examId];
+
   const newProgress: UserProgress = {
-    examId: oldProgress.examId || '',
+    examId: progress.examId || '',
     answers: {},
     markedForTraining: [],
-    currentTopic: oldProgress.currentTopic || 1,
-    currentQuestion: oldProgress.currentQuestion || 1,
-    isRandomized: oldProgress.isRandomized || false
+    currentTopic: currentTopic,
+    currentQuestion: progress.currentQuestion || 1,
+    isRandomized: progress.isRandomized || false
   };
 
   // Migrate answers from old format (number keys) to new format (string keys)
-  if (oldProgress.answers) {
-    Object.entries(oldProgress.answers).forEach(([key, answer]: [string, any]) => {
+  if (progress.answers) {
+    Object.entries(progress.answers).forEach(([key, answer]: [string, any]) => {
       if (answer && typeof answer === 'object') {
         // If answer already has topicNumber, use it
         if (answer.topicNumber !== undefined) {
@@ -46,8 +48,8 @@ export const migrateProgressData = (oldProgress: any): UserProgress => {
   }
 
   // Migrate markedForTraining from number[] to string[]
-  if (oldProgress.markedForTraining && Array.isArray(oldProgress.markedForTraining)) {
-    newProgress.markedForTraining = oldProgress.markedForTraining.map((item: any) => {
+  if (progress.markedForTraining && Array.isArray(progress.markedForTraining)) {
+    newProgress.markedForTraining = progress.markedForTraining.map((item: any) => {
       if (typeof item === 'string') {
         return item; // Already in new format
       } else if (typeof item === 'number') {
@@ -71,7 +73,7 @@ export const migrateLocalStorageData = () => {
       const migratedProgress: Record<string, UserProgress> = {};
 
       Object.entries(allProgress).forEach(([examId, progress]: [string, any]) => {
-        migratedProgress[examId] = migrateProgressData(progress);
+        migratedProgress[examId] = migrateProgressData(progress, examId, 1);
       });
 
       localStorage.setItem(STORAGE_KEY, JSON.stringify(migratedProgress));

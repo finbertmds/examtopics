@@ -1,6 +1,7 @@
 {
   "short_name": "Exam Practice",
   "name": "Exam Practice Platform",
+  "description": "Practice exams with offline support and automatic synchronization",
   "icons": [
     {
       "src": "favicon.ico",
@@ -30,8 +31,23 @@
       "purpose": "maskable"
     }
   ],
-  "start_url": ".",
+  "start_url": "/",
   "display": "standalone",
   "theme_color": "#4F46E5",
-  "background_color": "#ffffff"
+  "background_color": "#ffffff",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "en",
+  "categories": ["education", "productivity"],
+  "screenshots": [
+    {
+      "src": "logo512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "form_factor": "wide"
+    }
+  ],
+  "features": ["offline-support", "background-sync", "push-notifications"],
+  "related_applications": [],
+  "prefer_related_applications": false
 }

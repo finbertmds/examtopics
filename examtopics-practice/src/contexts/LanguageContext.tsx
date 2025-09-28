@@ -4,7 +4,7 @@ import { getTranslation, Language } from '../locales';
 interface LanguageContextType {
   language: Language;
   setLanguage: (lang: Language) => void;
-  t: (key: string) => string;
+  t: (key: string, params?: Record<string, any>) => string;
   availableLanguages: { code: Language; name: string; flag: string }[];
 }
 
@@ -23,12 +23,12 @@ export const LanguageProvider: React.FC<{ children: ReactNode }> = ({ children }
     if (savedLanguage && ['en', 'vi', 'ja'].includes(savedLanguage)) {
       return savedLanguage;
     }
-    
+
     // Try to detect language from browser
     const browserLanguage = navigator.language.toLowerCase();
     if (browserLanguage.startsWith('vi')) return 'vi';
     if (browserLanguage.startsWith('ja')) return 'ja';
-    
+
     // Default to English
     return 'en';
   });
@@ -38,9 +38,9 @@ export const LanguageProvider: React.FC<{ children: ReactNode }> = ({ children }
     localStorage.setItem('language', lang);
   };
 
-           const t = (key: string): string => {
-           return getTranslation(language, key);
-         };
+  const t = (key: string, params?: Record<string, any>): string => {
+    return getTranslation(language, key, params);
+  };
 
   useEffect(() => {
     // Update document title and meta tags when language changes

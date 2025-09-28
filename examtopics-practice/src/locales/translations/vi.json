@@ -48,6 +48,8 @@
   "startExam": "🚀 Bắt đầu",
   "continueExam": "🔄 Tiếp tục",
   "practiceExam": "📚 Luyện tập",
+  "examsInProgress": "Đề thi đang làm",
+  "availableExams": "Đề thi có sẵn",
   "backToHome": "← Quay về trang chủ",
   "loadingQuestions": "Đang tải câu hỏi...",
   "loadingExamList": "Đang tải danh sách đề thi...",
@@ -108,5 +110,9 @@
   "bestScore": "Điểm cao nhất",
   "worstScore": "Điểm thấp nhất",
   "examId": "Mã đề thi",
-  "viewHistory": "Xem lịch sử"
+  "viewHistory": "Xem lịch sử",
+  "offlineMode": "Ngoại tuyến",
+  "pendingSync": "{{count}} thao tác chờ đồng bộ",
+  "syncing": "Đang đồng bộ...",
+  "syncNow": "Đồng bộ ngay"
 }

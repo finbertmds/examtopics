@@ -5,6 +5,7 @@ import './App.css';
 import AuthCallback from './components/AuthCallback';
 import ExamPage from './components/ExamPage';
 import Home from './components/Home';
+import OfflineIndicator from './components/OfflineIndicator';
 import { AuthProvider } from './contexts/AuthContext';
 import { LanguageProvider } from './contexts/LanguageContext';
 import { ThemeProvider, useTheme } from './contexts/ThemeContext';
@@ -12,7 +13,7 @@ import './toast.css';
 
 const ToastContainerWithTheme = () => {
   const { theme } = useTheme();
-  
+
   return (
     <ToastContainer
       position="top-right"
@@ -45,6 +46,7 @@ function App() {
                 <Route path="/auth/callback" element={<AuthCallback />} />
               </Routes>
               <ToastContainerWithTheme />
+              <OfflineIndicator />
             </div>
           </Router>
         </AuthProvider>

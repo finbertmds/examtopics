@@ -73,8 +73,6 @@ export interface HistoryEntry {
   submittedAt: string;
 }
 
-
-
 // Types for API responses
 export interface ApiResponse<T = any> {
   success: boolean;
@@ -86,7 +84,7 @@ export interface ApiResponse<T = any> {
 export interface ProgressData {
   examId: string;
   answers: Record<string, any>;
-  markedForTraining: number[];
+  markedForTraining: string[]; // Changed to string[] to match UserProgress
   currentQuestion: number;
   isRandomized: boolean;
   lastUpdated: string;

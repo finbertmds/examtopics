@@ -49,6 +49,7 @@ class ProgressService {
       
       if (progress) {
         console.log(`Progress loaded for user ${userId}, exam ${examId}`);
+        const result = {};
         // Convert Map to object for JSON serialization
         const progressData = {
           examId: progress.examId,
@@ -58,7 +59,8 @@ class ProgressService {
           isRandomized: progress.isRandomized,
           lastUpdated: progress.updatedAt
         };
-        return progressData;
+        result[examId] = progressData;
+        return result;
       }
       
       return null;

@@ -15,6 +15,14 @@ export const translations: Record<Language, Translations> = {
   ja: jaTranslations as Translations,
 };
 
-export const getTranslation = (language: Language, key: string): string => {
-  return translations[language][key] || key;
+export const getTranslation = (language: Language, key: string, params?: Record<string, any>): string => {
+  let translation = translations[language][key] || key;
+  
+  if (params) {
+    Object.keys(params).forEach(paramKey => {
+      translation = translation.replace(new RegExp(`{{${paramKey}}}`, 'g'), params[paramKey]);
+    });
+  }
+  
+  return translation;
 };

@@ -58,7 +58,7 @@ class GoogleSheetsHelper {
         }
       });
 
-      console.log('Row appended successfully:', response.data);
+      console.log('Row appended successfully');
       return response.data;
     } catch (error) {
       console.error('Failed to append row to Google Sheets:', error.message);

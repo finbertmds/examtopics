@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import { cacheStorage } from '../services/cacheStorage';
 import { User } from '../types';
 import { apiClient } from '../utils/apiClient';
 
@@ -63,18 +64,53 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     loadUser();
   }, [token]);
 
-  const login = () => {
-    localStorage.removeItem('exam-progress');
+  const login = async () => {
+    // Clear all offline data before login
+    try {
+      localStorage.removeItem('exam-progress');
+      await cacheStorage.clearAll();
+      console.log('Cleared offline data before login');
+    } catch (error) {
+      console.error('Error clearing offline data before login:', error);
+    }
+
     // Redirect to Google OAuth
     window.location.href = apiClient.getGoogleAuthUrl();
   };
 
-  const logout = () => {
+  const logout = async () => {
     localStorage.removeItem('auth_token');
     setTokenState(null);
     setUser(null);
 
-    localStorage.removeItem('exam-progress');
+    // Clear all offline data and cache
+    try {
+      // Clear localStorage
+      localStorage.removeItem('exam-progress');
+
+      // Clear cache storage service
+      await cacheStorage.clearAll();
+
+      // Clear all caches
+      if ('caches' in window) {
+        const cacheNames = await caches.keys();
+        await Promise.all(
+          cacheNames.map(cacheName => {
+            console.log('Clearing cache on logout:', cacheName);
+            return caches.delete(cacheName);
+          })
+        );
+        console.log('All caches cleared on logout');
+      }
+
+      // Clear session storage
+      sessionStorage.clear();
+
+      console.log('All offline data cleared on logout');
+    } catch (error) {
+      console.error('Error clearing offline data on logout:', error);
+    }
+
     window.location.reload();
   };
 

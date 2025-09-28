@@ -1,59 +1,37 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import { dataService } from '../services/dataService';
 import { ProgressData } from '../types';
-import { apiClient } from '../utils/apiClient';
 
 export const useAllProgress = () => {
   const { isAuthenticated, token } = useAuth();
   const [allProgress, setAllProgress] = useState<Record<string, ProgressData>>({});
   const [isLoading, setIsLoading] = useState(false);
 
-  // Load all progress from backend if authenticated
+  // Load all progress using dataService (offline-first)
   useEffect(() => {
     const loadAllProgress = async () => {
-      if (isAuthenticated && token) {
-        setIsLoading(true);
-        try {
-          const response = await apiClient.loadAllProgress(token);
+      setIsLoading(true);
+      try {
+        const response = await dataService.loadAllProgress(token || undefined);
+        
+        if (response.success && response.data?.progress) {
+          let progress = response.data.progress;
           
-          if (response.success && response.data?.progress) {
-            let progress = response.data.progress;
-            // Convert date strings back to Date objects
-            Object.values(progress).forEach((examProgress: any) => {
-              if (examProgress.answers) {
-                Object.values(examProgress.answers).forEach((answer: any) => {
-                  if (answer.answeredAt) answer.answeredAt = new Date(answer.answeredAt);
-                });
-              }
-            });
-            setAllProgress(progress);
-          }
-        } catch (error) {
-          console.error('Error loading all progress from backend:', error);
-          // Fallback to localStorage
-          loadFromLocalStorage();
-        } finally {
-          setIsLoading(false);
+          // Convert date strings back to Date objects
+          Object.values(progress).forEach((examProgress: any) => {
+            if (examProgress.answers) {
+              Object.values(examProgress.answers).forEach((answer: any) => {
+                if (answer.answeredAt) answer.answeredAt = new Date(answer.answeredAt);
+              });
+            }
+          });
+          setAllProgress(progress);
         }
-      } else {
-        // Load from localStorage if not authenticated
-        loadFromLocalStorage();
-      }
-    };
-
-    const loadFromLocalStorage = () => {
-      const stored = localStorage.getItem('exam-progress');
-      if (stored) {
-        const localProgress = JSON.parse(stored);
-        // Convert date strings back to Date objects
-        Object.values(localProgress).forEach((examProgress: any) => {
-          if (examProgress.answers) {
-            Object.values(examProgress.answers).forEach((answer: any) => {
-              if (answer.answeredAt) answer.answeredAt = new Date(answer.answeredAt);
-            });
-          }
-        });
-        setAllProgress(localProgress);
+      } catch (error) {
+        console.error('Error loading all progress:', error);
+      } finally {
+        setIsLoading(false);
       }
     };
 

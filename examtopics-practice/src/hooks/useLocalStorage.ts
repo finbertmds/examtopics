@@ -13,7 +13,7 @@ export const useLocalStorage = (examId?: string) => {
       
       if (examProgress) {
         // Migrate old format to new format if needed
-        const migratedProgress = migrateProgressData(examProgress);
+        const migratedProgress = migrateProgressData(examProgress, examId || '', 1);
         
         // Convert date strings back to Date objects
         Object.values(migratedProgress.answers).forEach((answer: any) => {

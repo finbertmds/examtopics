@@ -48,6 +48,8 @@
   "startExam": "🚀 Start",
   "continueExam": "🔄 Continue",
   "practiceExam": "📚 Practice",
+  "examsInProgress": "Exams in Progress",
+  "availableExams": "Available Exams",
   "backToHome": "← Back to Home",
   "loadingQuestions": "Loading questions...",
   "loadingExamList": "Loading exam list...",
@@ -108,5 +110,9 @@
   "bestScore": "Best Score",
   "worstScore": "Worst Score",
   "examId": "Exam ID",
-  "viewHistory": "View History"
+  "viewHistory": "View History",
+  "offlineMode": "OFF",
+  "pendingSync": "{{count}} pending sync",
+  "syncing": "Syncing...",
+  "syncNow": "Sync Now"
 }
