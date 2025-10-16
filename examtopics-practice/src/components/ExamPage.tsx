@@ -357,6 +357,21 @@ const ExamPage: React.FC = () => {
                   currentTopic={progress.currentTopic}
                 />
               </div>
+              <div className="hidden sm:block">
+                {/* Question Progress Card - Desktop */}
+                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-700 rounded-xl border border-blue-200 dark:border-gray-600 shadow-sm transition-all duration-200 hover:shadow-md">
+                  <div className="flex items-center justify-between pl-3 pr-3">
+                    <span className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                      {answeredCount}
+                    </span>
+                    {/* thêm khoảng trắng html entity */}
+                    <span className="text-lg text-gray-500 dark:text-gray-400">&nbsp;/&nbsp;</span>
+                    <span className="text-lg text-gray-600 dark:text-gray-300">
+                      {questions.length}
+                    </span>
+                  </div>
+                </div>
+              </div>
               {/* Action buttons - Desktop */}
               <div className="hidden sm:flex items-center gap-2">
                 <button
@@ -365,6 +380,12 @@ const ExamPage: React.FC = () => {
                   title={t('viewHistory')}
                 >
                   📊 {t('history')}
+                </button>
+                <button
+                  onClick={() => handleFilterChange({ ...filterState, type: 'all' })}
+                  className="px-3 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors text-xs font-medium"
+                >
+                  🌐 {t('all')}
                 </button>
                 <button
                   onClick={() => handleFilterChange({ ...filterState, type: 'training' })}
@@ -421,6 +442,49 @@ const ExamPage: React.FC = () => {
                 📝 {t('submit')}
               </button>
             </div>
+            {/* Question Progress Card - Mobile */}
+            <div className="flex justify-center mb-4">
+              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-700 rounded-xl border border-blue-200 dark:border-gray-600 shadow-sm w-full max-w-sm">
+                <div className="px-4 py-3">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+                      <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                        {t('progress')}
+                      </span>
+                    </div>
+                    <div className="text-right">
+                      <span className="text-xl font-bold text-blue-600 dark:text-blue-400">
+                        {answeredCount}
+                      </span>
+                      <span className="text-base text-gray-500 dark:text-gray-400">/</span>
+                      <span className="text-base text-gray-600 dark:text-gray-300">
+                        {questions.length}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Progress Bar */}
+                  <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2 mb-2">
+                    <div
+                      className="bg-gradient-to-r from-blue-500 to-indigo-500 h-2 rounded-full transition-all duration-300 ease-out"
+                      style={{ width: `${questions.length > 0 ? (answeredCount / questions.length) * 100 : 0}%` }}
+                    ></div>
+                  </div>
+
+                  {/* Progress Percentage */}
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-gray-500 dark:text-gray-400">
+                      {t('answered')}
+                    </span>
+                    <span className="text-xs font-semibold text-blue-600 dark:text-blue-400">
+                      {questions.length > 0 ? Math.round((answeredCount / questions.length) * 100) : 0}%
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             {/* ExamResult - Mobile */}
             <div className="flex justify-center">
               <ExamResult
