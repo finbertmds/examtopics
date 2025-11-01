@@ -15,12 +15,14 @@ interface HistoryModalProps {
 const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose, examId }) => {
   const navigate = useNavigate();
   const { t, language } = useLanguage();
-  const { getHistory, getExamStats } = useProgress(examId || '');
+  const { getHistory, getExamStats, getCompletedExamIds } = useProgress();
   const { exams, findExamById } = useExams();
   const [history, setHistory] = useState<HistoryEntry[]>([]);
   const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<'history' | 'stats'>('history');
+  const [selectedExamForStats, setSelectedExamForStats] = useState<string>(examId || '');
+  const [completedExamIds, setCompletedExamIds] = useState<string[]>([]);
 
   useEffect(() => {
     if (isOpen) {
@@ -29,15 +31,52 @@ const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose, examId }) 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, examId]);
 
+  useEffect(() => {
+    const loadCompletedIds = async () => {
+      if (!examId) {
+        try {
+          const ids = await getCompletedExamIds();
+          setCompletedExamIds(ids);
+          if (ids.length > 0 && !selectedExamForStats) {
+            setSelectedExamForStats(ids[0]);
+          }
+        } catch (error) {
+          console.error('Error loading completed exam IDs:', error);
+        }
+      }
+    };
+    loadCompletedIds();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen, examId]);
+
+  useEffect(() => {
+    const loadStats = async () => {
+      if (activeTab === 'stats' && selectedExamForStats) {
+        setLoading(true);
+        try {
+          const statsData = await getExamStats(selectedExamForStats);
+          setStats(statsData);
+        } catch (error) {
+          console.error('Error loading stats:', error);
+          setStats(null);
+        } finally {
+          setLoading(false);
+        }
+      }
+    };
+    loadStats();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedExamForStats, activeTab]);
+
   const loadData = async () => {
     setLoading(true);
     try {
-      const [historyData, statsData] = await Promise.all([
-        getHistory(examId),
-        examId ? getExamStats(examId) : null
-      ]);
+      const historyData = await getHistory(examId);
       setHistory(historyData || []);
-      setStats(statsData);
+      if (examId && activeTab === 'stats') {
+        const statsData = await getExamStats(examId);
+        setStats(statsData);
+      }
     } catch (error) {
       console.error('Error loading history data:', error);
     } finally {
@@ -122,17 +161,15 @@ const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose, examId }) 
             >
               {t('history')}
             </button>
-            {examId && (
-              <button
-                onClick={() => setActiveTab('stats')}
-                className={`px-6 py-3 text-sm font-medium transition-colors ${activeTab === 'stats'
-                  ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400'
-                  : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
-                  }`}
-              >
-                {t('statistics')}
-              </button>
-            )}
+            <button
+              onClick={() => setActiveTab('stats')}
+              className={`px-6 py-3 text-sm font-medium transition-colors ${activeTab === 'stats'
+                ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400'
+                : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                }`}
+            >
+              {t('statistics')}
+            </button>
           </div>
 
           {/* Content */}
@@ -214,6 +251,22 @@ const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose, examId }) 
               </div>
             ) : (
               <div className="space-y-6">
+                {!examId && completedExamIds.length > 0 && (
+                  <div className="mb-4 flex items-center gap-3">
+                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300 whitespace-nowrap">
+                      {t('selectExam')}:
+                    </label>
+                    <select
+                      value={selectedExamForStats}
+                      onChange={(e) => setSelectedExamForStats(e.target.value)}
+                      className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors"
+                    >
+                      {completedExamIds.map(id => (
+                        <option key={id} value={id}>{getExamDisplayName(id)}</option>
+                      ))}
+                    </select>
+                  </div>
+                )}
                 {stats ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
