@@ -220,6 +220,20 @@ export const useProgress = (examId?: string) => {
     return [];
   };
 
+  const getCompletedExamIds = async (): Promise<string[]> => {
+    try {
+      const response = await dataService.getCompletedExamIds(token || undefined);
+      
+      if (response.success && response.data?.examIds) {
+        return response.data.examIds;
+      }
+    } catch (error) {
+      console.error('Error getting completed exam IDs:', error);
+    }
+    
+    return [];
+  };
+
   const getExamStats = async (examId: string) => {
     try {
       const response = await dataService.getStats(examId, token || undefined);
@@ -256,6 +270,7 @@ export const useProgress = (examId?: string) => {
     resetProgress,
     getAllProgress,
     getHistory,
+    getCompletedExamIds,
     getExamStats,
     clearAllProgress
   };

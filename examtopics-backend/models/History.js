@@ -170,4 +170,15 @@ historySchema.statics.getExamStats = async function(examId) {
   }
 };
 
+// Static method to get completed exam IDs for a user
+historySchema.statics.getCompletedExamIds = async function(userId) {
+  try {
+    const result = await this.distinct('examId', { userId });
+    return result || [];
+  } catch (error) {
+    console.error('Error getting completed exam IDs:', error);
+    throw error;
+  }
+};
+
 module.exports = mongoose.model('History', historySchema);

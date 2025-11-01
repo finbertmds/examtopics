@@ -4,7 +4,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { useAllProgress } from '../hooks/useAllProgress';
 import { useExams } from '../hooks/useExams';
 import { useProgress } from '../hooks/useProgress';
-import { Exam, HistoryEntry } from '../types';
+import { Exam } from '../types';
 import { getExamDescription, getExamName } from '../utils/examUtils';
 import ExamCard from './ExamCard';
 import FloatingButtons from './FloatingButtons';
@@ -19,7 +19,7 @@ const Home: React.FC = () => {
   const [isMobile, setIsMobile] = useState(false);
   const navigate = useNavigate();
   const { getProgressStats } = useAllProgress();
-  const { getHistory } = useProgress();
+  const { getCompletedExamIds } = useProgress();
   const { t, language } = useLanguage();
   const { exams, loading, error } = useExams();
   const [completedExams, setCompletedExams] = useState<string[]>([]);
@@ -38,18 +38,15 @@ const Home: React.FC = () => {
   useEffect(() => {
     const loadCompletedExams = async () => {
       try {
-        const history = await getHistory();
-        if (history && history.length > 0) {
-          // Extract unique examIds from history
-          const uniqueExamIds = Array.from(new Set(history.map((entry: HistoryEntry) => entry.examId)));
-          setCompletedExams(uniqueExamIds);
-        }
+        const examIds = await getCompletedExamIds();
+        setCompletedExams(examIds);
       } catch (error) {
         console.error('Error loading completed exams:', error);
       }
     };
     loadCompletedExams();
-  }, [getHistory]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {

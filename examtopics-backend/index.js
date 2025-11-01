@@ -396,6 +396,27 @@ app.get('/progress/stats/:examId', authenticateToken, async (req, res) => {
   }
 });
 
+// Get completed exam IDs endpoint
+app.get('/progress/completed-exam-ids', authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.userId;
+
+    const examIds = await progressService.getCompletedExamIds(userId);
+    
+    res.json({
+      success: true,
+      examIds
+    });
+  } catch (error) {
+    console.error('Error getting completed exam IDs:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to get completed exam IDs',
+      details: error.message
+    });
+  }
+});
+
 // Report endpoint
 app.post('/report', async (req, res) => {
   try {

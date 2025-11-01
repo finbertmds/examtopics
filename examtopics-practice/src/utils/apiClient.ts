@@ -248,6 +248,12 @@ class ApiClient {
     }, token);
   }
 
+  async getCompletedExamIds(token?: string): Promise<ApiResponse<{ examIds: string[] }>> {
+    return this.fetchWithAuth<{ examIds: string[] }>('/progress/completed-exam-ids', {
+      method: 'GET',
+    }, token);
+  }
+
   // Auth API methods
   async getCurrentUser(token?: string): Promise<ApiResponse<UserData>> {
     return this.fetchWithAuth<UserData>('/auth/me', {

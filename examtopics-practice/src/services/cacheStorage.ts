@@ -302,6 +302,15 @@ class CacheStorage {
     return await this.getItem(key, 'history');
   }
 
+  async setCompletedExamIds(data: string[]): Promise<void> {
+    await this.setItem('completed', { examIds: data }, 'completedExamIds');
+  }
+
+  async getCompletedExamIds(): Promise<string[] | null> {
+    const cached = await this.getItem('completed', 'completedExamIds');
+    return cached?.examIds || null;
+  }
+
   // User methods
   async setCurrentUser(data: UserData): Promise<void> {
     await this.setItem('current', data, 'user');

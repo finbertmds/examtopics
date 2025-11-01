@@ -450,6 +450,50 @@ class DataService {
     }
   }
 
+  async getCompletedExamIds(token?: string): Promise<ApiResponse<{ examIds: string[] }>> {
+    try {
+      // Try to get from cache first
+      const cachedData = await cacheStorage.getCompletedExamIds();
+      
+      if (this.isOnline && token) {
+        try {
+          // Fetch from API
+          const response = await apiClient.getCompletedExamIds(token);
+          
+          if (response.success && response.data?.examIds) {
+            // Update cache with fresh data
+            await cacheStorage.setCompletedExamIds(response.data.examIds);
+            return response;
+          }
+        } catch (error) {
+          console.warn('Failed to fetch from API, using cached data:', error);
+        }
+      }
+      
+      // Return cached data or empty response
+      if (cachedData) {
+        return {
+          success: true,
+          data: { examIds: cachedData },
+          message: this.isOnline ? 'Completed exam IDs loaded from cache' : 'Offline mode - using cached completed exam IDs'
+        };
+      }
+      
+      return {
+        success: false,
+        error: 'No completed exam IDs available',
+        message: 'No cached completed exam IDs found'
+      };
+    } catch (error) {
+      console.error('Error getting completed exam IDs:', error);
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error',
+        message: 'Failed to get completed exam IDs'
+      };
+    }
+  }
+
   async submitReport(reportData: ReportData, token?: string): Promise<ApiResponse> {
     try {
       if (this.isOnline && token) {

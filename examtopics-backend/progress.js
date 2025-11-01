@@ -275,6 +275,16 @@ class ProgressService {
     }
   }
 
+  // Get completed exam IDs for a user
+  async getCompletedExamIds(userId) {
+    try {
+      return await History.getCompletedExamIds(userId);
+    } catch (error) {
+      console.error('Error getting completed exam IDs:', error);
+      throw error;
+    }
+  }
+
   // Reset progress
   async resetProgress(userId, examId) {
     try {
