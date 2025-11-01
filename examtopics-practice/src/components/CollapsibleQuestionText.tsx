@@ -41,23 +41,28 @@ const CollapsibleQuestionText: React.FC<{ text: string, images: string[] }> = ({
       >
         <div dangerouslySetInnerHTML={{ __html: replaceImgPlaceholders(text, images) }} />
       </div>
-      <button
+      <div
         onClick={() => setIsExpanded(!isExpanded)}
-        className="mt-3 text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300 text-sm font-medium flex items-center gap-1 transition-colors hover:bg-indigo-50 dark:hover:bg-indigo-900 px-2 py-1 rounded"
-        aria-label={isExpanded ? t('collapse') : t('expand')}
+        className="mt-3 flex items-center justify-between w-full hover:bg-indigo-50 dark:hover:bg-indigo-900 rounded cursor-pointer transition-colors"
       >
-        {isExpanded ? (
-          <>
-            <span>{t('collapse')}</span>
-            <span className="text-xs">▲</span>
-          </>
-        ) : (
-          <>
-            <span>{t('expand')}</span>
-            <span className="text-xs">▼</span>
-          </>
-        )}
-      </button>
+        <span className="flex-1"></span>
+        <button
+          className="text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300 text-sm font-medium flex items-center gap-1 px-2 py-1"
+          aria-label={isExpanded ? t('collapse') : t('expand')}
+        >
+          {isExpanded ? (
+            <>
+              <span>{t('collapse')}</span>
+              <span className="text-xs">▲</span>
+            </>
+          ) : (
+            <>
+              <span>{t('expand')}</span>
+              <span className="text-xs">▼</span>
+            </>
+          )}
+        </button>
+      </div>
     </div>
   );
 };

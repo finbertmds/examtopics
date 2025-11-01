@@ -375,13 +375,6 @@ const ExamPage: React.FC = () => {
               {/* Action buttons - Desktop */}
               <div className="hidden sm:flex items-center gap-2">
                 <button
-                  onClick={() => setShowHistoryModal(true)}
-                  className="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-xs font-medium"
-                  title={t('viewHistory')}
-                >
-                  📊 {t('history')}
-                </button>
-                <button
                   onClick={() => handleFilterChange({ ...filterState, type: 'all' })}
                   className="px-3 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors text-xs font-medium"
                 >
@@ -398,6 +391,13 @@ const ExamPage: React.FC = () => {
                   className="px-3 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-xs font-medium"
                 >
                   🔀 {t('randomize')}
+                </button>
+                <button
+                  onClick={() => setShowHistoryModal(true)}
+                  className="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-xs font-medium"
+                  title={t('viewHistory')}
+                >
+                  📊 {t('history')}
                 </button>
                 <button
                   onClick={handleSubmit}
@@ -417,13 +417,6 @@ const ExamPage: React.FC = () => {
             {/* Action buttons */}
             <div className="flex items-center justify-center gap-1">
               <button
-                onClick={() => setShowHistoryModal(true)}
-                className="px-2 py-1 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-xs font-medium"
-                title={t('viewHistory')}
-              >
-                📊 {t('history')}
-              </button>
-              <button
                 onClick={() => handleFilterChange({ ...filterState, type: 'training' })}
                 className="px-2 py-1 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors text-xs font-medium"
               >
@@ -434,6 +427,13 @@ const ExamPage: React.FC = () => {
                 className="px-2 py-1 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-xs font-medium"
               >
                 🔀 {t('randomize')}
+              </button>
+              <button
+                onClick={() => setShowHistoryModal(true)}
+                className="px-2 py-1 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-xs font-medium"
+                title={t('viewHistory')}
+              >
+                📊 {t('history')}
               </button>
               <button
                 onClick={handleSubmit}
