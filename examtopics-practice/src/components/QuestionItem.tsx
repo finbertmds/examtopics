@@ -66,6 +66,26 @@ export const QuestionItem: React.FC<QuestionItemProps> = ({
     onAnswer(question.topic_number, question.question_number, newSelectedAnswers);
   };
 
+  const isCorrect = userAnswer?.isCorrect;
+  const isAnswered = !!userAnswer;
+  const correctAnswers = question.suggested_answer.split('').sort();
+
+  // Check if user has selected enough answers for multiple choice questions
+  const hasSelectedEnoughAnswers = question.multiple_choice
+    ? selectedAnswers.length >= correctAnswers.length
+    : selectedAnswers.length > 0;
+
+  // Only show answer if user has selected enough answers or if it's a single choice question
+  const shouldShowAnswer = showAnswer && isAnswered && hasSelectedEnoughAnswers;
+
+  let images: string[] = [];
+  if (question.question_images && question.question_images.length > 0) {
+    images = images.concat(question.question_images)
+  }
+  if (question.answer_images && question.answer_images.length > 0) {
+    images = images.concat(question.answer_images)
+  }
+
   const handleReportSubmit = async (reason: string, comment: string) => {
     try {
       const reportData: ReportData = {
@@ -92,25 +112,62 @@ export const QuestionItem: React.FC<QuestionItemProps> = ({
     }
   };
 
-  const isCorrect = userAnswer?.isCorrect;
-  const isAnswered = !!userAnswer;
-  const correctAnswers = question.suggested_answer.split('').sort();
+  const handleCopyQuestion = async () => {
+    try {
+      let textToCopy = `${t('question')} ${question.question_number} (${t('topic')} ${question.topic_number})\n\n`;
 
-  // Check if user has selected enough answers for multiple choice questions
-  const hasSelectedEnoughAnswers = question.multiple_choice
-    ? selectedAnswers.length >= correctAnswers.length
-    : selectedAnswers.length > 0;
+      // Add question text
+      if (question.question_text) {
+        let cleanText = question.question_text
+          .replaceAll('\n\n\n', '')
+          .replace(/\\u003cbr\/\\u003e/g, '\n')
+          .replaceAll('<br/><br/>', '');
 
-  // Only show answer if user has selected enough answers or if it's a single choice question
-  const shouldShowAnswer = showAnswer && isAnswered && hasSelectedEnoughAnswers;
+        // Replace //IMG// placeholders with [Image] markers
+        cleanText = cleanText.replace(/\/\/IMG\/\//g, `[${t('image')}]`);
 
-  let images: string[] = [];
-  if (question.question_images && question.question_images.length > 0) {
-    images = images.concat(question.question_images)
-  }
-  if (question.answer_images && question.answer_images.length > 0) {
-    images = images.concat(question.answer_images)
-  }
+        // Remove HTML tags
+        cleanText = cleanText.replace(/<\/?[^>]+(>|$)/g, '');
+
+        textToCopy += cleanText + '\n\n';
+      }
+
+      // Add images list
+      if (images.length > 0) {
+        textToCopy += `${t('images')}:\n`;
+        images.forEach((img, index) => {
+          textToCopy += `[${t('image')} ${index + 1}]: ${img}\n`;
+        });
+        textToCopy += '\n';
+      }
+
+      // Add answers
+      if (question.answers) {
+        Object.entries(question.answers).forEach(([key, answer]) => {
+          const cleanAnswer = answer
+            .replace(/\\u003cbr\/\\u003e/g, '\n')
+            .replace(/\/\/IMG\/\//g, `[${t('image')}]`) // Replace image placeholders
+            .replace(/<\/?[^>]+(>|$)/g, ''); // Remove HTML tags
+          textToCopy += `${key}. ${cleanAnswer}\n\n`;
+        });
+      }
+
+      // Add correct answer if available
+      if (shouldShowAnswer) {
+        textToCopy += `${t('suggestedAnswer')} ${question.suggested_answer}\n`;
+        if (question.answer !== question.suggested_answer) {
+          textToCopy += `${t('additionalAnswer')} ${question.answer}\n`;
+        }
+      }
+
+      // Copy to clipboard
+      await navigator.clipboard.writeText(textToCopy);
+      toast.success(t('copiedToClipboard'));
+    } catch (error) {
+      console.error('Failed to copy:', error);
+      toast.error(t('errorCopyQuestion'));
+    }
+  };
 
   const questionText = question.question_text.replaceAll('\n\n\n', '').replace(/\\u003cbr\/\\u003e/g, '<br/>');
   const finalQuestionText = questionText.replaceAll('<br/><br/>', '');
@@ -129,6 +186,13 @@ export const QuestionItem: React.FC<QuestionItemProps> = ({
           {t('question')} {question.question_number} <span className="text-sm font-normal text-gray-500 dark:text-gray-400">({t('topic')} {question.topic_number})</span>
         </h3>
         <div className="flex gap-2">
+          <button
+            onClick={handleCopyQuestion}
+            className="px-2 rounded-full transition-colors bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400 hover:bg-blue-200 dark:hover:bg-blue-800 hover:text-blue-700 dark:hover:text-blue-300"
+            title={t('copyQuestion')}
+          >
+            📋
+          </button>
           <button
             onClick={() => setIsReportModalOpen(true)}
             className="px-2 rounded-full transition-colors bg-red-100 dark:bg-red-900 text-red-600 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-800 hover:text-red-700 dark:hover:text-red-300"

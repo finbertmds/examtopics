@@ -49,6 +49,7 @@
   "continueExam": "🔄 Tiếp tục",
   "practiceExam": "📚 Luyện tập",
   "examsInProgress": "Đề thi đang làm",
+  "completedExams": "Đề thi đã hoàn thành",
   "availableExams": "Đề thi có sẵn",
   "backToHome": "← Quay về trang chủ",
   "loadingQuestions": "Đang tải câu hỏi...",
@@ -103,6 +104,7 @@
   "allHistory": "Tất cả lịch sử",
   "statistics": "Thống kê",
   "noHistoryFound": "Không tìm thấy lịch sử",
+  "submitExamHint": "Nhấp vào nút Submit trên trang đề thi để tạo bản ghi lịch sử. Mỗi lần bạn submit, một bản ghi mới sẽ được thêm vào lịch sử của bạn.",
   "noStatsAvailable": "Không có thống kê",
   "totalSubmissions": "Tổng số lần nộp",
   "averageAccuracy": "Độ chính xác trung bình",
@@ -114,5 +116,10 @@
   "offlineMode": "Ngoại tuyến",
   "pendingSync": "{{count}} thao tác chờ đồng bộ",
   "syncing": "Đang đồng bộ...",
-  "syncNow": "Đồng bộ ngay"
+  "syncNow": "Đồng bộ ngay",
+  "copyQuestion": "Sao chép câu hỏi",
+  "copiedToClipboard": "Đã sao chép!",
+  "errorCopyQuestion": "Không thể sao chép câu hỏi",
+  "images": "Hình ảnh",
+  "image": "Hình ảnh"
 }

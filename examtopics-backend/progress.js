@@ -48,7 +48,6 @@ class ProgressService {
       const progress = await Progress.findByUserAndExam(userId, examId);
       
       if (progress) {
-        console.log(`Progress loaded for user ${userId}, exam ${examId}`);
         const result = {};
         // Convert Map to object for JSON serialization
         const progressData = {

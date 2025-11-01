@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useExams } from '../hooks/useExams';
 import { useProgress } from '../hooks/useProgress';
 import { HistoryEntry } from '../types';
+import { getExamName } from '../utils/examUtils';
+
 interface HistoryModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -9,8 +13,10 @@ interface HistoryModalProps {
 }
 
 const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose, examId }) => {
-  const { t } = useLanguage();
+  const navigate = useNavigate();
+  const { t, language } = useLanguage();
   const { getHistory, getExamStats } = useProgress(examId || '');
+  const { exams, findExamById } = useExams();
   const [history, setHistory] = useState<HistoryEntry[]>([]);
   const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(false);
@@ -59,6 +65,22 @@ const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose, examId }) 
     if (accuracy >= 80) return 'bg-green-100 dark:bg-green-900';
     if (accuracy >= 60) return 'bg-yellow-100 dark:bg-yellow-900';
     return 'bg-red-100 dark:bg-red-900';
+  };
+
+  const getExamDisplayName = (examId: string): string => {
+    const exam = exams.find(e => e.id === examId);
+    if (exam) {
+      return getExamName(exam, language);
+    }
+    return examId; // Fallback to examId if exam not found
+  };
+
+  const handleExamClick = (examIdFromHistory: string) => {
+    const exam = findExamById(examIdFromHistory);
+    if (exam) {
+      navigate(`/exam/${examIdFromHistory}`, { state: { exam } });
+      onClose(); // Close the modal
+    }
   };
 
   if (!isOpen) return null;
@@ -123,8 +145,18 @@ const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose, examId }) 
             ) : activeTab === 'history' ? (
               <div className="space-y-4">
                 {history.length === 0 ? (
-                  <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-                    {t('noHistoryFound')}
+                  <div className="text-center py-8">
+                    <div className="text-gray-500 dark:text-gray-400 mb-3">
+                      {t('noHistoryFound')}
+                    </div>
+                    <div className="inline-block bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 text-left max-w-md">
+                      <div className="flex items-start gap-3">
+                        <div className="text-blue-600 dark:text-blue-400 text-xl flex-shrink-0">💡</div>
+                        <div className="text-sm text-gray-700 dark:text-gray-300">
+                          {t('submitExamHint')}
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 ) : (
                   history.map((entry, index) => (
@@ -146,7 +178,21 @@ const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose, examId }) 
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                      {!examId && (
+                        <div className="mb-3 pb-3 border-b border-gray-200 dark:border-gray-600">
+                          <div className="text-sm">
+                            <span className="text-gray-500 dark:text-gray-400">{t('exam')}:</span>
+                            <button
+                              onClick={() => handleExamClick(entry.examId)}
+                              className="ml-1 font-medium text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 underline cursor-pointer transition-colors"
+                            >
+                              {getExamDisplayName(entry.examId)}
+                            </button>
+                          </div>
+                        </div>
+                      )}
+
+                      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
                         <div>
                           <span className="text-gray-500 dark:text-gray-400">{t('answered')}:</span>
                           <span className="ml-1 font-medium">{entry.answeredCount}</span>
@@ -160,10 +206,6 @@ const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose, examId }) 
                           <span className={`ml-1 font-medium ${getAccuracyColor(entry.score.accuracy)}`}>
                             {entry.score.accuracy}%
                           </span>
-                        </div>
-                        <div>
-                          <span className="text-gray-500 dark:text-gray-400">{t('examId')}:</span>
-                          <span className="ml-1 font-medium">{entry.examId}</span>
                         </div>
                       </div>
                     </div>

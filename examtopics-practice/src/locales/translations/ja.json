@@ -49,6 +49,7 @@
   "continueExam": "🔄 続行",
   "practiceExam": "📚 練習",
   "examsInProgress": "進行中の試験",
+  "completedExams": "完了した試験",
   "availableExams": "利用可能な試験",
   "backToHome": "← ホームに戻る",
   "loadingQuestions": "問題を読み込み中...",
@@ -103,6 +104,7 @@
   "allHistory": "すべての履歴",
   "statistics": "統計",
   "noHistoryFound": "履歴が見つかりません",
+  "submitExamHint": "試験ページの「提出」ボタンをクリックして履歴レコードを作成します。提出するたびに、新しいエントリが履歴に追加されます。",
   "noStatsAvailable": "統計が利用できません",
   "totalSubmissions": "総提出回数",
   "averageAccuracy": "平均精度",
@@ -114,5 +116,10 @@
   "offlineMode": "オフ",
   "pendingSync": "{{count}}件の同期待ち",
   "syncing": "同期中...",
-  "syncNow": "今すぐ同期"
+  "syncNow": "今すぐ同期",
+  "copyQuestion": "問題をコピー",
+  "copiedToClipboard": "クリップボードにコピーしました！",
+  "errorCopyQuestion": "問題のコピーに失敗しました",
+  "images": "画像",
+  "image": "画像"
 }

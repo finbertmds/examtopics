@@ -42,7 +42,7 @@ const ExamCard: React.FC<ExamCardProps> = ({
         >
           {getExamName(exam, language)}
         </h3>
-        <div className="flex flex-col items-end gap-2">
+        <div className="flex flex-row items-center gap-2">
           <span className={`px-2 py-1 rounded-full text-xs font-medium ${getDifficultyColor(exam.difficulty)}`}>
             {exam.difficulty}
           </span>

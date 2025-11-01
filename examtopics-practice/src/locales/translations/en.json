@@ -49,6 +49,7 @@
   "continueExam": "🔄 Continue",
   "practiceExam": "📚 Practice",
   "examsInProgress": "Exams in Progress",
+  "completedExams": "Completed Exams",
   "availableExams": "Available Exams",
   "backToHome": "← Back to Home",
   "loadingQuestions": "Loading questions...",
@@ -103,6 +104,7 @@
   "allHistory": "All History",
   "statistics": "Statistics",
   "noHistoryFound": "No history found",
+  "submitExamHint": "Click the Submit button on the exam page to create a history record. Each time you submit, a new entry will be added to your history.",
   "noStatsAvailable": "No statistics available",
   "totalSubmissions": "Total Submissions",
   "averageAccuracy": "Average Accuracy",
@@ -114,5 +116,10 @@
   "offlineMode": "OFF",
   "pendingSync": "{{count}} pending sync",
   "syncing": "Syncing...",
-  "syncNow": "Sync Now"
+  "syncNow": "Sync Now",
+  "copyQuestion": "Copy Question",
+  "copiedToClipboard": "Copied to clipboard!",
+  "errorCopyQuestion": "Failed to copy question",
+  "images": "Images",
+  "image": "Image"
 }

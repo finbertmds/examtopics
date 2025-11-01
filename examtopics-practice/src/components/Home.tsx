@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useAllProgress } from '../hooks/useAllProgress';
 import { useExams } from '../hooks/useExams';
-import { Exam } from '../types';
+import { useProgress } from '../hooks/useProgress';
+import { Exam, HistoryEntry } from '../types';
 import { getExamDescription, getExamName } from '../utils/examUtils';
 import ExamCard from './ExamCard';
 import FloatingButtons from './FloatingButtons';
@@ -18,8 +19,10 @@ const Home: React.FC = () => {
   const [isMobile, setIsMobile] = useState(false);
   const navigate = useNavigate();
   const { getProgressStats } = useAllProgress();
+  const { getHistory } = useProgress();
   const { t, language } = useLanguage();
   const { exams, loading, error } = useExams();
+  const [completedExams, setCompletedExams] = useState<string[]>([]);
 
 
   useEffect(() => {
@@ -31,6 +34,22 @@ const Home: React.FC = () => {
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
+
+  useEffect(() => {
+    const loadCompletedExams = async () => {
+      try {
+        const history = await getHistory();
+        if (history && history.length > 0) {
+          // Extract unique examIds from history
+          const uniqueExamIds = Array.from(new Set(history.map((entry: HistoryEntry) => entry.examId)));
+          setCompletedExams(uniqueExamIds);
+        }
+      } catch (error) {
+        console.error('Error loading completed exams:', error);
+      }
+    };
+    loadCompletedExams();
+  }, [getHistory]);
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
@@ -244,9 +263,19 @@ const Home: React.FC = () => {
             return progress && progress.totalAnswers > 0;
           });
 
-          const examsWithoutProgress = filteredExams.filter(exam => {
+          // Filter exams that are completed (in history but not currently in progress)
+          const examsCompleted = filteredExams.filter(exam => {
+            const inHistory = completedExams.includes(exam.id);
             const progress = getProgressStats(exam.id);
-            return !progress || progress.totalAnswers === 0;
+            const hasCurrentProgress = progress && progress.totalAnswers > 0;
+            return inHistory && !hasCurrentProgress;
+          });
+
+          const examsWithoutProgress = filteredExams.filter(exam => {
+            const inHistory = completedExams.includes(exam.id);
+            const progress = getProgressStats(exam.id);
+            const hasCurrentProgress = progress && progress.totalAnswers > 0;
+            return !inHistory && (!progress || progress.totalAnswers === 0) && !hasCurrentProgress;
           });
 
           return (
@@ -261,6 +290,32 @@ const Home: React.FC = () => {
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
                     {examsWithProgress.map((exam) => (
+                      <ExamCard
+                        key={exam.id}
+                        exam={exam}
+                        language={language}
+                        isMobile={isMobile}
+                        getProgressStats={getProgressStats}
+                        onExamClick={handleExamClick}
+                        getDifficultyColor={getDifficultyColor}
+                        getCategoryColor={getCategoryColor}
+                        t={t}
+                      />
+                    ))}
+                  </div>
+                </>
+              )}
+
+              {/* Completed Exams */}
+              {examsCompleted.length > 0 && (
+                <>
+                  <div className="mb-6">
+                    <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
+                      ✅ {t('completedExams')} ({examsCompleted.length})
+                    </h2>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                    {examsCompleted.map((exam) => (
                       <ExamCard
                         key={exam.id}
                         exam={exam}
