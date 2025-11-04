@@ -266,9 +266,9 @@ class ProgressService {
   }
 
   // Get exam statistics
-  async getExamStats(examId) {
+  async getExamStats(userId, examId) {
     try {
-      return await History.getExamStats(examId);
+      return await History.getExamStats(userId, examId);
     } catch (error) {
       console.error('Error getting exam stats:', error);
       throw error;

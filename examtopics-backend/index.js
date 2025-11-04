@@ -380,7 +380,7 @@ app.get('/progress/stats/:examId', authenticateToken, async (req, res) => {
     const { examId } = req.params;
     const userId = req.user.userId;
 
-    const stats = await progressService.getExamStats(examId);
+    const stats = await progressService.getExamStats(userId, examId);
     
     res.json({
       success: true,

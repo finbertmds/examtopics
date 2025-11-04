@@ -114,8 +114,8 @@ const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose, examId }) 
     return examId; // Fallback to examId if exam not found
   };
 
-  const handleExamClick = (examIdFromHistory: string) => {
-    const exam = findExamById(examIdFromHistory);
+  const handleExamClick = async (examIdFromHistory: string) => {
+    const exam = await findExamById(examIdFromHistory);
     if (exam) {
       navigate(`/exam/${examIdFromHistory}`, { state: { exam } });
       onClose(); // Close the modal

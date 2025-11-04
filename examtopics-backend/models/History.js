@@ -141,10 +141,10 @@ historySchema.statics.getUserHistory = async function(userId, limit = 50) {
 };
 
 // Static method to get exam statistics
-historySchema.statics.getExamStats = async function(examId) {
+historySchema.statics.getExamStats = async function(userId, examId) {
   try {
     const stats = await this.aggregate([
-      { $match: { examId } },
+      { $match: { userId, examId } },
       {
         $group: {
           _id: null,

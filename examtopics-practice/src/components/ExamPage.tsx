@@ -90,7 +90,7 @@ const ExamPage: React.FC = () => {
       // If no exam in state but we have examId, try to load exam using hook
       if (!currentExam && examId) {
         console.log('Loading exam for examId:', examId);
-        currentExam = findExamById(examId);
+        currentExam = await findExamById(examId);
 
         if (currentExam) {
           console.log('Exam loaded:', currentExam);

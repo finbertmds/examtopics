@@ -7,25 +7,35 @@ export const useExams = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const loadExams = async () => {
-      try {
-        setError(null);
-        const data = await apiClient.getExams();
-        setExams(data);
-      } catch (error) {
-        console.error('Error loading exams:', error);
-        setError(error instanceof Error ? error.message : 'Unknown error');
-      } finally {
-        setLoading(false);
-      }
-    };
+  const loadExams = async () => {
+    try {
+      setError(null);
+      const data = await apiClient.getExams();
+      setExams(data);
+      return data;
+    } catch (error) {
+      console.error('Error loading exams:', error);
+      setError(error instanceof Error ? error.message : 'Unknown error');
+    } finally {
+      setLoading(false);
+    }
+    return [];
+  };
 
+  useEffect(() => {
     loadExams();
   }, []);
 
-  const findExamById = (examId: string): Exam | undefined => {
-    return exams.find(exam => exam.id === examId);
+  const findExamById = async (examId: string): Promise<Exam | undefined> => {
+    if (exams.length === 0) {
+      const data = await loadExams();
+      if (data.length > 0) {
+        return data.find(exam => exam.id === examId);
+      }
+    } else {
+      return exams.find(exam => exam.id === examId);
+    }
+    return undefined;
   };
 
   const refreshExams = async () => {
