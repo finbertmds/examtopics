@@ -417,6 +417,28 @@ app.get('/progress/completed-exam-ids', authenticateToken, async (req, res) => {
   }
 });
 
+// Get daily progress tracking endpoint
+app.get('/progress/daily-tracking', authenticateToken, async (req, res) => {
+  try {
+    const { examId } = req.query;
+    const userId = req.user.userId;
+
+    const dailyProgress = await progressService.getDailyProgress(userId, examId);
+    
+    res.json({
+      success: true,
+      dailyProgress: dailyProgress
+    });
+  } catch (error) {
+    console.error('Error getting daily progress:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to get daily progress',
+      details: error.message
+    });
+  }
+});
+
 // Report endpoint
 app.post('/report', async (req, res) => {
   try {

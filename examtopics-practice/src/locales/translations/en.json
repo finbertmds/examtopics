@@ -122,5 +122,9 @@
   "copiedToClipboard": "Copied to clipboard!",
   "errorCopyQuestion": "Failed to copy question",
   "images": "Images",
-  "image": "Image"
+  "image": "Image",
+  "tracking": "Tracking",
+  "dailyProgress": "Daily Progress",
+  "questionsAnsweredDaily": "Track your daily question answering activity across all exams",
+  "noTrackingData": "No tracking data available"
 }

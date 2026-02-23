@@ -181,4 +181,78 @@ historySchema.statics.getCompletedExamIds = async function(userId) {
   }
 };
 
+// Static method to get daily progress tracking
+historySchema.statics.getDailyProgress = async function(userId, examId) {
+  try {
+    let query = { userId };
+    if (examId) {
+      query.examId = examId;
+    }
+    const history = await this.find(query).lean();
+    
+    // Group by date and count questions answered each day
+    const dailyCounts = {};
+    let totalQuestionsProcessed = 0;
+    
+    history.forEach((entry, index) => {
+      if (entry.progress) {
+        let progressMap = {};
+        
+        // Handle different progress formats
+        if (entry.progress instanceof Map) {
+          progressMap = Object.fromEntries(entry.progress);
+        } else if (entry.progress.toObject) {
+          // Mongoose document with toObject method
+          progressMap = entry.progress.toObject();
+        } else if (typeof entry.progress === 'object' && entry.progress !== null) {
+          // Plain object
+          progressMap = entry.progress;
+        }
+        
+        // Handle case where progressMap might be a Mongoose Map-like object
+        if (progressMap && typeof progressMap === 'object' && !Array.isArray(progressMap)) {
+          const progressValues = Object.values(progressMap);
+          
+          progressValues.forEach((answer, ansIndex) => {
+            if (answer && typeof answer === 'object') {
+              // Handle both direct answeredAt and nested structure
+              const answeredAt = answer.answeredAt || answer.get?.('answeredAt');
+              
+              if (answeredAt) {
+                try {
+                  const dateObj = answeredAt instanceof Date 
+                    ? answeredAt 
+                    : new Date(answeredAt);
+                  
+                  if (!isNaN(dateObj.getTime())) {
+                    const date = dateObj.toISOString().split('T')[0];
+                    dailyCounts[date] = (dailyCounts[date] || 0) + 1;
+                    totalQuestionsProcessed++;
+                  } else {
+                  }
+                } catch (dateError) {
+                }
+              }
+            }
+          });
+        }
+      }
+    });
+    
+    // Convert to array format for frontend
+    const result = Object.keys(dailyCounts)
+      .map(date => ({
+        date,
+        count: dailyCounts[date]
+      }))
+      .sort((a, b) => a.date.localeCompare(b.date));
+    
+    console.log(`[getDailyProgress] Returning ${result.length} days of data`);
+    return result;
+  } catch (error) {
+    console.error('Error getting daily progress:', error);
+    throw error;
+  }
+};
+
 module.exports = mongoose.model('History', historySchema);

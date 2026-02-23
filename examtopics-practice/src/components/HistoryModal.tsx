@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useExams } from '../hooks/useExams';
 import { useProgress } from '../hooks/useProgress';
@@ -15,14 +16,15 @@ interface HistoryModalProps {
 const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose, examId }) => {
   const navigate = useNavigate();
   const { t, language } = useLanguage();
-  const { getHistory, getExamStats, getCompletedExamIds } = useProgress();
+  const { getHistory, getExamStats, getCompletedExamIds, getDailyTracking } = useProgress();
   const { exams, findExamById } = useExams();
   const [history, setHistory] = useState<HistoryEntry[]>([]);
   const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState<'history' | 'stats'>('history');
+  const [activeTab, setActiveTab] = useState<'history' | 'stats' | 'tracking'>('history');
   const [selectedExamForStats, setSelectedExamForStats] = useState<string>(examId || '');
   const [completedExamIds, setCompletedExamIds] = useState<string[]>([]);
+  const [dailyTracking, setDailyTracking] = useState<Array<{ date: string; count: number }>>([]);
 
   useEffect(() => {
     if (isOpen) {
@@ -68,6 +70,37 @@ const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose, examId }) 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedExamForStats, activeTab]);
 
+  useEffect(() => {
+    const loadTracking = async () => {
+      if (activeTab === 'tracking') {
+        setLoading(true);
+        try {
+          const trackingData = await getDailyTracking(examId);
+
+          // Validate and filter data
+          let validData: Array<{ date: string; count: number }> = [];
+          if (Array.isArray(trackingData)) {
+            validData = trackingData.filter((item: any): item is { date: string; count: number } => {
+              const isValid = item && item.date && typeof item.count === 'number';
+              if (!isValid) {
+                console.log('Invalid item:', item);
+              }
+              return isValid;
+            });
+          }
+          setDailyTracking(validData);
+        } catch (error) {
+          console.error('Error loading daily tracking:', error);
+          setDailyTracking([]);
+        } finally {
+          setLoading(false);
+        }
+      }
+    };
+    loadTracking();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeTab]);
+
   const loadData = async () => {
     setLoading(true);
     try {
@@ -91,6 +124,14 @@ const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose, examId }) 
       day: 'numeric',
       hour: '2-digit',
       minute: '2-digit'
+    });
+  };
+
+  const formatChartDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric'
     });
   };
 
@@ -169,6 +210,15 @@ const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose, examId }) 
                 }`}
             >
               {t('statistics')}
+            </button>
+            <button
+              onClick={() => setActiveTab('tracking')}
+              className={`px-6 py-3 text-sm font-medium transition-colors ${activeTab === 'tracking'
+                ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400'
+                : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                }`}
+            >
+              {t('tracking')}
             </button>
           </div>
 
@@ -249,7 +299,7 @@ const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose, examId }) 
                   ))
                 )}
               </div>
-            ) : (
+            ) : activeTab === 'stats' ? (
               <div className="space-y-6">
                 {!examId && completedExamIds.length > 0 && (
                   <div className="mb-4 flex items-center gap-3">
@@ -316,7 +366,81 @@ const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose, examId }) 
                   </div>
                 )}
               </div>
-            )}
+            ) : activeTab === 'tracking' ? (
+              <div className="space-y-6">
+                {loading ? (
+                  <div className="flex items-center justify-center py-8">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                    <span className="ml-2 text-gray-600 dark:text-gray-400">{t('loading')}</span>
+                  </div>
+                ) : dailyTracking.length > 0 ? (
+                  <>
+                    <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg p-4">
+                      <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
+                        {t('dailyProgress')}
+                      </h4>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                        {t('questionsAnsweredDaily')}
+                      </p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                        Days: {dailyTracking.length} | Total {t('questions')}: {dailyTracking.reduce((sum, item) => sum + item.count, 0)}
+                      </p>
+                    </div>
+                    <div className="w-full bg-white dark:bg-gray-800 rounded-lg p-4" style={{ minHeight: '350px' }}>
+                      <ResponsiveContainer width="100%" height={350}>
+                        <LineChart
+                          data={dailyTracking}
+                          margin={{ top: 5, right: 30, left: 20, bottom: 80 }}
+                        >
+                          <CartesianGrid strokeDasharray="3 3" stroke="#374151" className="opacity-30" />
+                          <XAxis
+                            dataKey="date"
+                            stroke="#6B7280"
+                            tick={{ fill: '#6B7280', fontSize: 12 }}
+                            angle={-45}
+                            textAnchor="end"
+                            height={80}
+                            tickFormatter={formatChartDate}
+                          />
+                          <YAxis
+                            stroke="#6B7280"
+                            tick={{ fill: '#6B7280', fontSize: 12 }}
+                            allowDecimals={false}
+                          />
+                          <Tooltip
+                            contentStyle={{
+                              backgroundColor: '#1F2937',
+                              border: '1px solid #374151',
+                              borderRadius: '0.5rem',
+                              color: '#F3F4F6'
+                            }}
+                            labelStyle={{ color: '#9CA3AF', marginBottom: '4px' }}
+                            formatter={(value: any) => [value, t('questionsAnswered')]}
+                            labelFormatter={(label: string) => formatDate(label)}
+                          />
+                          <Legend
+                            wrapperStyle={{ color: '#6B7280', paddingTop: '20px' }}
+                          />
+                          <Line
+                            type="monotone"
+                            dataKey="count"
+                            stroke="#3B82F6"
+                            strokeWidth={2}
+                            dot={{ fill: '#3B82F6', r: 4 }}
+                            activeDot={{ r: 6 }}
+                            name={t('questionsAnswered')}
+                          />
+                        </LineChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </>
+                ) : (
+                  <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                    <div>{t('noTrackingData')}</div>
+                  </div>
+                )}
+              </div>
+            ) : null}
           </div>
         </div>
       </div>

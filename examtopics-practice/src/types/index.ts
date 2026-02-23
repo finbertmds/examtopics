@@ -98,6 +98,13 @@ export interface HistoryData {
   history: HistoryEntry[];
 }
 
+export interface CompletedExamIdsData {
+  examIds: string[];
+}
+export interface DailyTrackingData {
+  dailyProgress: { date: string; count: number }[];
+}
+
 export interface StatsData {
   stats: {
     totalQuestions: number;

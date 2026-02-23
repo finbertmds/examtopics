@@ -1,4 +1,4 @@
-import { AllProgressData, ApiResponse, HistoryData, ReportData, StatsData, UserData, UserProgress } from '../types';
+  import { AllProgressData, ApiResponse, CompletedExamIdsData, DailyTrackingData, HistoryData, ReportData, StatsData, UserData, UserProgress } from '../types';
 import { apiClient } from '../utils/apiClient';
 import { cacheStorage } from './cacheStorage';
 
@@ -450,7 +450,7 @@ class DataService {
     }
   }
 
-  async getCompletedExamIds(token?: string): Promise<ApiResponse<{ examIds: string[] }>> {
+  async getCompletedExamIds(token?: string): Promise<ApiResponse<CompletedExamIdsData>> {
     try {
       // Try to get from cache first
       const cachedData = await cacheStorage.getCompletedExamIds();
@@ -474,7 +474,7 @@ class DataService {
       if (cachedData) {
         return {
           success: true,
-          data: { examIds: cachedData },
+          data: { examIds: cachedData || [] } as CompletedExamIdsData,
           message: this.isOnline ? 'Completed exam IDs loaded from cache' : 'Offline mode - using cached completed exam IDs'
         };
       }
@@ -490,6 +490,36 @@ class DataService {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown error',
         message: 'Failed to get completed exam IDs'
+      };
+    }
+  }
+
+  async getDailyTracking(examId: string, token?: string): Promise<ApiResponse<DailyTrackingData>> {
+    try {
+      if (this.isOnline && token) {
+        try {
+          // Fetch from API
+          const response = await apiClient.getDailyTracking(examId, token);
+          
+          if (response.success && response.data) {
+            return response;
+          }
+        } catch (error) {
+          console.warn('Failed to fetch from API, using cached data:', error);
+        }
+      }
+      
+      return {
+        success: false,
+        error: 'No daily tracking available',
+        message: 'No cached daily tracking found'
+      };
+    } catch (error) {
+      console.error('Error getting daily tracking:', error);
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error',
+        message: 'Failed to get daily tracking'
       };
     }
   }

@@ -201,6 +201,78 @@ progressSchema.statics.safeUpdateProgress = async function(userId, examId, updat
   throw new Error(`Failed to update progress after ${maxRetries} attempts`);
 };
 
+progressSchema.statics.getDailyProgress = async function(userId, examId) {
+  try {
+    let query = { userId };
+    if (examId) {
+      query.examId = examId;
+    }
+    const progress = await this.find(query).lean();
+   // Group by date and count questions answered each day
+   const dailyCounts = {};
+   let totalQuestionsProcessed = 0;
+   
+   progress.forEach((entry, index) => {
+     if (entry.answers) {
+       let progressMap = {};
+       
+       // Handle different answers formats
+       if (entry.answers instanceof Map) {
+         progressMap = Object.fromEntries(entry.answers);
+       } else if (entry.answers.toObject) {
+         // Mongoose document with toObject method
+         progressMap = entry.answers.toObject();
+       } else if (typeof entry.answers === 'object' && entry.answers !== null) {
+         // Plain object
+         progressMap = entry.answers;
+       }
+       
+       // Handle case where progressMap might be a Mongoose Map-like object
+       if (progressMap && typeof progressMap === 'object' && !Array.isArray(progressMap)) {
+         const progressValues = Object.values(progressMap);
+         
+         progressValues.forEach((answer, ansIndex) => {
+           if (answer && typeof answer === 'object') {
+             // Handle both direct answeredAt and nested structure
+             const answeredAt = answer.answeredAt || answer.get?.('answeredAt');
+             
+             if (answeredAt) {
+               try {
+                 const dateObj = answeredAt instanceof Date 
+                   ? answeredAt 
+                   : new Date(answeredAt);
+                 
+                 if (!isNaN(dateObj.getTime())) {
+                   const date = dateObj.toISOString().split('T')[0];
+                   dailyCounts[date] = (dailyCounts[date] || 0) + 1;
+                   totalQuestionsProcessed++;
+                 } else {
+                 }
+               } catch (dateError) {
+               }
+             }
+           }
+         });
+       }
+     }
+   });
+    
+    // Convert to array format for frontend
+    const result = Object.keys(dailyCounts)
+      .map(date => ({
+        date,
+        count: dailyCounts[date]
+      }))
+      .sort((a, b) => a.date.localeCompare(b.date));
+    
+    console.log(`[getDailyProgress from progress] Returning ${result.length} days of data`);
+    return result;
+  } catch (error) {
+    console.error('Error getting daily progress from progress:', error);
+    throw error;
+  }
+};
+
 // Note: Pre-save middleware removed to prevent ParallelSaveError
 // Score calculation is now handled in safeUpdateProgress method
 

@@ -285,6 +285,46 @@ class ProgressService {
     }
   }
 
+  // Get daily progress tracking
+  async getDailyProgress(userId, examId) {
+    try {
+      let historyDailyProgress = await History.getDailyProgress(userId, examId == 'all' ? null : examId);
+      let progressDailyProgress = await Progress.getDailyProgress(userId, examId == 'all' ? null : examId);
+
+      const normalizeDailyProgress = (data) => {
+        if (!data) return [];
+        if (Array.isArray(data)) return data;
+        if (data instanceof Map) {
+          return Array.from(data.entries()).map(([date, count]) => ({ date, count }));
+        }
+        if (typeof data === 'object') {
+          return Object.entries(data).map(([date, count]) => ({ date, count }));
+        }
+        return [];
+      };
+
+      const historyArray = normalizeDailyProgress(historyDailyProgress);
+      const progressArray = normalizeDailyProgress(progressDailyProgress);
+
+      const mergedByDate = new Map();
+
+      for (const { date, count } of [...historyArray, ...progressArray]) {
+        if (!date) continue;
+        const currentCount = mergedByDate.get(date) || 0;
+        mergedByDate.set(date, currentCount + (count || 0));
+      }
+
+      const result = Array.from(mergedByDate.entries())
+        .map(([date, count]) => ({ date, count }))
+        .sort((a, b) => a.date.localeCompare(b.date));
+
+      return result;
+    } catch (error) {
+      console.error('Error getting daily progress:', error);
+      throw error;
+    }
+  }
+
   // Reset progress
   async resetProgress(userId, examId) {
     try {

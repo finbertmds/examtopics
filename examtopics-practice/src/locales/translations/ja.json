@@ -122,5 +122,9 @@
   "copiedToClipboard": "クリップボードにコピーしました！",
   "errorCopyQuestion": "問題のコピーに失敗しました",
   "images": "画像",
-  "image": "画像"
+  "image": "画像",
+  "tracking": "追跡",
+  "dailyProgress": "日次進捗",
+  "questionsAnsweredDaily": "すべての試験にわたる毎日の質問回答活動を追跡",
+  "noTrackingData": "追跡データがありません"
 }

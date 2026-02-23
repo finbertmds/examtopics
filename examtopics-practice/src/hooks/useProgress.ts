@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { dataService } from '../services/dataService';
-import { UserAnswer, UserProgress } from '../types';
+import { DailyTrackingData, UserAnswer, UserProgress } from '../types';
 import { migrateProgressData } from '../utils/migration';
 
 const STORAGE_KEY = 'exam-progress';
@@ -248,6 +248,20 @@ export const useProgress = (examId?: string) => {
     return null;
   };
 
+  const getDailyTracking = async (examId?: string): Promise<DailyTrackingData['dailyProgress'] | []> => {
+    try {
+      const response = await dataService.getDailyTracking(examId || 'all', token || undefined);
+      
+      if (response.success && response.data) {
+        return response.data.dailyProgress;
+      }
+    } catch (error) {
+      console.error('Error getting daily tracking:', error);
+    }
+    
+    return [];
+  };
+
   const clearAllProgress = () => {
     dataService.clearCache();
     setProgress({
@@ -272,6 +286,7 @@ export const useProgress = (examId?: string) => {
     getHistory,
     getCompletedExamIds,
     getExamStats,
+    getDailyTracking,
     clearAllProgress
   };
 };

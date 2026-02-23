@@ -1,6 +1,6 @@
 import { cacheStorage } from '../services/cacheStorage';
 import { networkService } from '../services/networkService';
-import { AllProgressData, ApiResponse, Exam, HistoryData, Question, ReportData, StatsData, UserData, UserProgress } from '../types';
+import { AllProgressData, ApiResponse, CompletedExamIdsData, DailyTrackingData, Exam, HistoryData, Question, ReportData, StatsData, UserData, UserProgress } from '../types';
 import { getBackendUrl } from './backendUrl';
 
 const backendUrl = getBackendUrl();
@@ -248,8 +248,14 @@ class ApiClient {
     }, token);
   }
 
-  async getCompletedExamIds(token?: string): Promise<ApiResponse<{ examIds: string[] }>> {
-    return this.fetchWithAuth<{ examIds: string[] }>('/progress/completed-exam-ids', {
+  async getCompletedExamIds(token?: string): Promise<ApiResponse<CompletedExamIdsData>> {
+    return this.fetchWithAuth<CompletedExamIdsData>('/progress/completed-exam-ids', {
+      method: 'GET',
+    }, token);
+  }
+
+  async getDailyTracking(examId: string, token?: string): Promise<ApiResponse<DailyTrackingData>> {
+    return this.fetchWithAuth<DailyTrackingData>('/progress/daily-tracking?examId=' + examId, {
       method: 'GET',
     }, token);
   }

@@ -122,5 +122,9 @@
   "copiedToClipboard": "Đã sao chép!",
   "errorCopyQuestion": "Không thể sao chép câu hỏi",
   "images": "Hình ảnh",
-  "image": "Hình ảnh"
+  "image": "Hình ảnh",
+  "tracking": "Theo dõi",
+  "dailyProgress": "Tiến độ hàng ngày",
+  "questionsAnsweredDaily": "Theo dõi hoạt động trả lời câu hỏi hàng ngày qua tất cả các đề thi",
+  "noTrackingData": "Không có dữ liệu theo dõi"
 }
