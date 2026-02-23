@@ -210,7 +210,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     for (const mark of marksToUpload) {
       try {
         const [topicNumber, questionNumber] = mark.split('-').map(Number);
-        await apiClient.markForTraining(examId, topicNumber, questionNumber, token);
+        await apiClient.markForTraining(examId, topicNumber, questionNumber, true, token);
         console.log(`Synced training mark ${mark} for exam ${examId}`);
       } catch (error) {
         console.warn(`Failed to sync training mark ${mark}:`, error);

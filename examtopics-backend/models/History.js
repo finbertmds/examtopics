@@ -255,4 +255,8 @@ historySchema.statics.getDailyProgress = async function(userId, examId) {
   }
 };
 
+historySchema.statics.findAllByUserAndExam = function(userId, examId) {
+  return this.find({ userId, examId });
+};
+
 module.exports = mongoose.model('History', historySchema);

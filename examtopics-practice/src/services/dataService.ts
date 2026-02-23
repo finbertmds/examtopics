@@ -237,6 +237,7 @@ class DataService {
     examId: string,
     topicNumber: number,
     questionNumber: number,
+    isMarkedForTraining: boolean,
     token?: string
   ): Promise<ApiResponse> {
     try {
@@ -246,7 +247,7 @@ class DataService {
       if (this.isOnline && token) {
         try {
           // Save to backend
-          const response = await apiClient.markForTraining(examId, topicNumber, questionNumber, token);
+          const response = await apiClient.markForTraining(examId, topicNumber, questionNumber, isMarkedForTraining, token);
           
           if (response.success) {
             return response;
@@ -259,7 +260,7 @@ class DataService {
       // Queue for sync if offline or failed
       if (token) {
         this.addToSyncQueue(async () => {
-          await apiClient.markForTraining(examId, topicNumber, questionNumber, token);
+          await apiClient.markForTraining(examId, topicNumber, questionNumber, isMarkedForTraining, token);
         });
       }
       

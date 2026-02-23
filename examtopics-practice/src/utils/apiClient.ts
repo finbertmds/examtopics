@@ -178,6 +178,7 @@ class ApiClient {
     examId: string,
     topicNumber: number,
     questionNumber: number,
+    isMarkedForTraining: boolean,
     token?: string
   ): Promise<ApiResponse> {
     return this.fetchWithAuth('/progress/training-mark', {
@@ -186,6 +187,7 @@ class ApiClient {
         examId,
         topicNumber,
         questionNumber,
+        isMarkedForTraining,
       }),
     }, token);
   }

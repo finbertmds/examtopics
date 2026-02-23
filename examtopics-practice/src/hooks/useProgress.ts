@@ -133,6 +133,7 @@ export const useProgress = (examId?: string) => {
 
   const toggleTrainingMark = async (topicNumber: number, questionNumber: number) => {
     const key = `${topicNumber}-${questionNumber}`;
+    const prevMarkedForTraining = progress.markedForTraining.includes(key);
     
     // Update local state immediately
     setProgress(prev => ({
@@ -150,6 +151,7 @@ export const useProgress = (examId?: string) => {
           examId,
           topicNumber,
           questionNumber,
+          !prevMarkedForTraining,
           token || undefined
         );
         console.log('Training mark toggled:', response.message);

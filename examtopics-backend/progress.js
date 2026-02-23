@@ -46,14 +46,21 @@ class ProgressService {
   async loadProgress(userId, examId) {
     try {
       const progress = await Progress.findByUserAndExam(userId, examId);
-      
+
+      const historyMarkedForTraining = await History.findAllByUserAndExam(userId, examId);
+      const mergedMarkedForTraining = [
+        ...(progress?.markedForTraining || []),
+        ...historyMarkedForTraining.flatMap(item => item.markedForTraining || [])
+      ];
+      const markedForTraining = Array.from(new Set(mergedMarkedForTraining));
+
       if (progress) {
         const result = {};
         // Convert Map to object for JSON serialization
         const progressData = {
           examId: progress.examId,
           answers: Object.fromEntries(progress.answers),
-          markedForTraining: progress.markedForTraining,
+          markedForTraining: markedForTraining,
           currentQuestion: progress.currentQuestion,
           isRandomized: progress.isRandomized,
           lastUpdated: progress.updatedAt
@@ -164,7 +171,7 @@ class ProgressService {
   }
 
   // Toggle training mark (atomic operation)
-  async toggleTrainingMark(userId, examId, topicNumber, questionNumber) {
+  async toggleTrainingMark(userId, examId, topicNumber, questionNumber, isMarkedForTraining) {
     try {
       const key = `${topicNumber}-${questionNumber}`;
       const progress = await Progress.findOne({ userId, examId });
@@ -172,16 +179,15 @@ class ProgressService {
         throw new Error('Progress not found');
       }
 
-      const index = progress.markedForTraining.indexOf(key);
-      const update = index > -1
-        ? { $pull: { markedForTraining: key } }
-        : { $addToSet: { markedForTraining: key } };
-
       const updatedProgress = await Progress.findOneAndUpdate(
         { userId, examId },
-        update,
+        { $set: { markedForTraining: isMarkedForTraining ? [...progress.markedForTraining, key] : progress.markedForTraining.filter(q => q !== key) } },
         { new: true }
       );
+
+      if (!isMarkedForTraining) {
+        await History.updateMany({ userId, examId }, { $pull: { markedForTraining: key } });
+      }
 
       return updatedProgress;
     } catch (error) {

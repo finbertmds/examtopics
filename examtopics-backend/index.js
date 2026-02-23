@@ -232,7 +232,7 @@ app.post('/progress/answer', authenticateToken, async (req, res) => {
 // Toggle training mark endpoint (atomic operation)
 app.post('/progress/training-mark', authenticateToken, async (req, res) => {
   try {
-    const { examId, topicNumber, questionNumber } = req.body;
+    const { examId, topicNumber, questionNumber, isMarkedForTraining } = req.body;
     const userId = req.user.userId;
 
     if (!examId || !topicNumber || !questionNumber) {
@@ -242,7 +242,7 @@ app.post('/progress/training-mark', authenticateToken, async (req, res) => {
       });
     }
 
-    const progress = await progressService.toggleTrainingMark(userId, examId, topicNumber, questionNumber);
+    const progress = await progressService.toggleTrainingMark(userId, examId, topicNumber, questionNumber, isMarkedForTraining);
     
     res.json({
       success: true,
