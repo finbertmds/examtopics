@@ -20,6 +20,26 @@
     "tags": ["AWS", "Cloud", "Architecture", "Professional"]
   },
   {
+    "id": "bjt-j3",
+    "name": {
+      "en": "BJT Business Japanese Proficiency Test Vocalbulary",
+      "vi": "Kỳ thi Năng lực Tiếng Nhật Thương mại BJT - Từ vựng",
+      "ja": "BJTビジネス日本語能力テスト　語彙"
+    },
+    "slug": "bjt-business-japanese-proficiency-test-vocabulary",
+    "description": {
+      "en": "Assess advanced Japanese communication skills required in business situations",
+      "vi": "Đánh giá kỹ năng giao tiếp tiếng Nhật nâng cao",
+      "ja": "ビジネス場面で必要な高度な日本語コミュニケーション能力を測定します。"
+    },
+    "questionCount": 400,
+    "file": "exams/bjt_vocab.json",
+    "category": "Japanese",
+    "difficulty": "Beginner",
+    "estimatedTime": "320",
+    "tags": ["BJT", "Japanese", "Business"]
+  },
+  {
     "id": "aws-ans-c00",
     "name": {
       "en": "AWS Certified Advanced Networking - Specialty",
