@@ -1834,5 +1834,905 @@
 
 {"topic_number":8,"question_number":49,"title":"BJT Vocabulary Topic 8 Question 49","answers":{"A":"基礎","B":"紀文","C":"期末","D":"厚誼"},"suggested_answer":"C","answer":"C","link":"","multiple_choice":false,"question_text":"今年度の（　　）決算は、大幅な増収が見込まれる。","answer_images":[],"question_images":[]},
 
-{"topic_number":8,"question_number":50,"title":"BJT Vocabulary Topic 8 Question 50","answers":{"A":"起訴","B":"義入","C":"交通","D":"規約"},"suggested_answer":"D","answer":"D","link":"","multiple_choice":false,"question_text":"会員は、（　　）に違反した場合、会員資格を失うことになる。","answer_images":[],"question_images":[]}
+{"topic_number":8,"question_number":50,"title":"BJT Vocabulary Topic 8 Question 50","answers":{"A":"起訴","B":"義入","C":"交通","D":"規約"},"suggested_answer":"D","answer":"D","link":"","multiple_choice":false,"question_text":"会員は、（　　）に違反した場合、会員資格を失うことになる。","answer_images":[],"question_images":[]},
+    {
+      "topic_number": 9,
+      "question_number": 1,
+      "title": "BJT Vocabulary Topic 9 Question 1",
+      "answers": {
+        "A": "脚注",
+        "B": "客注",
+        "C": "格柱",
+        "D": "却柱"
+      },
+      "suggested_answer": "B",
+      "answer": "B",
+      "link": "",
+      "multiple_choice": false,
+      "question_text": "客注対応が遅れないように気をつけてください。",
+      "answer_images": [],
+      "question_images": []
+    },
+    {
+      "topic_number": 9,
+      "question_number": 2,
+      "title": "BJT Vocabulary Topic 9 Question 2",
+      "answers": {
+        "A": "脚立",
+        "B": "却立",
+        "C": "客立",
+        "D": "逆立"
+      },
+      "suggested_answer": "A",
+      "answer": "A",
+      "link": "",
+      "multiple_choice": false,
+      "question_text": "Thang gấp hình chữ A",
+      "answer_images": [],
+      "question_images": []
+    },
+    {
+      "topic_number": 9,
+      "question_number": 3,
+      "title": "BJT Vocabulary Topic 9 Question 3",
+      "answers": {
+        "A": "却上",
+        "B": "却下",
+        "C": "脚下",
+        "D": "脚上"
+      },
+      "suggested_answer": "B",
+      "answer": "B",
+      "link": "",
+      "multiple_choice": false,
+      "question_text": "いくつか企画を提案したけど、部長に全部（　　）された。",
+      "answer_images": [],
+      "question_images": []
+    },
+    {
+      "topic_number": 9,
+      "question_number": 4,
+      "title": "BJT Vocabulary Topic 9 Question 4",
+      "answers": {
+        "A": "キャンペーン",
+        "B": "キャラクター",
+        "C": "キャッシュバック",
+        "D": "キャッシュ"
+      },
+      "suggested_answer": "D",
+      "answer": "D",
+      "link": "",
+      "multiple_choice": false,
+      "question_text": "企画の内容は大体いいですが、（　　）フローがわかるような表も付けてください。",
+      "answer_images": [],
+      "question_images": []
+    },
+    {
+      "topic_number": 9,
+      "question_number": 5,
+      "title": "BJT Vocabulary Topic 9 Question 5",
+      "answers": {
+        "A": "キャッチフレーズ",
+        "B": "キャリア",
+        "C": "キャゼルヌ",
+        "D": "キャノン"
+      },
+      "suggested_answer": "A",
+      "answer": "A",
+      "link": "",
+      "multiple_choice": false,
+      "question_text": "この商品のイメージを決定づけるような、いい（　　）はないかな。",
+      "answer_images": [],
+      "question_images": []
+    },
+    {
+      "topic_number": 9,
+      "question_number": 6,
+      "title": "BJT Vocabulary Topic 9 Question 6",
+      "answers": {
+        "A": "クレジット",
+        "B": "キャパシティー",
+        "C": "コレステロール",
+        "D": "ケルヒャー"
+      },
+      "suggested_answer": "B",
+      "answer": "B",
+      "link": "",
+      "multiple_choice": false,
+      "question_text": "あの会場は、300人くらいの（　　）があるから、今度の講演会にはちょうどいいね。",
+      "answer_images": [],
+      "question_images": []
+    },
+    {
+      "topic_number": 9,
+      "question_number": 7,
+      "title": "BJT Vocabulary Topic 9 Question 7",
+      "answers": {
+        "A": "コンクリート",
+        "B": "セルフケア",
+        "C": "キャビネ",
+        "D": "セルフケア"
+      },
+      "suggested_answer": "C",
+      "answer": "C",
+      "link": "",
+      "multiple_choice": false,
+      "question_text": "Tủ đựng đồ",
+      "answer_images": [],
+      "question_images": []
+    },
+    {
+      "topic_number": 9,
+      "question_number": 8,
+      "title": "BJT Vocabulary Topic 9 Question 8",
+      "answers": {
+        "A": "キャシー",
+        "B": "キャリア",
+        "C": "カルシウム",
+        "D": "レコーダー"
+      },
+      "suggested_answer": "B",
+      "answer": "B",
+      "link": "",
+      "multiple_choice": false,
+      "question_text": "森氏は、ベンチャー企業で（　　）を積み、最近起業した。",
+      "answer_images": [],
+      "question_images": []
+    },
+    {
+      "topic_number": 9,
+      "question_number": 9,
+      "title": "BJT Vocabulary Topic 9 Question 9",
+      "answers": {
+        "A": "キャンセル",
+        "B": "コンクリート",
+        "C": "キャンパス",
+        "D": "コルセット"
+      },
+      "suggested_answer": "A",
+      "answer": "A",
+      "link": "",
+      "multiple_choice": false,
+      "question_text": "ホテルの予約を（　　）した。",
+      "answer_images": [],
+      "question_images": []
+    },
+    {
+      "topic_number": 9,
+      "question_number": 10,
+      "title": "BJT Vocabulary Topic 9 Question 10",
+      "answers": {
+        "A": "セルシオ",
+        "B": "プログラム",
+        "C": "キャンペーン",
+        "D": "ソケット"
+      },
+      "suggested_answer": "C",
+      "answer": "C",
+      "link": "",
+      "multiple_choice": false,
+      "question_text": "新作映画の（　　）でハリウッドスターが来日した。",
+      "answer_images": [],
+      "question_images": []
+    },
+    {
+      "topic_number": 9,
+      "question_number": 11,
+      "title": "BJT Vocabulary Topic 9 Question 11",
+      "answers": {
+        "A": "購入",
+        "B": "経営",
+        "C": "転動",
+        "D": "休暇"
+      },
+      "suggested_answer": "D",
+      "answer": "D",
+      "link": "",
+      "multiple_choice": false,
+      "question_text": "この仕事が終わったら、少し（　　）をとろうと思っています。",
+      "answer_images": [],
+      "question_images": []
+    },
+    {
+      "topic_number": 9,
+      "question_number": 12,
+      "title": "BJT Vocabulary Topic 9 Question 12",
+      "answers": {
+        "A": "営業",
+        "B": "開研",
+        "C": "行動",
+        "D": "休業"
+      },
+      "suggested_answer": "D",
+      "answer": "D",
+      "link": "",
+      "multiple_choice": false,
+      "question_text": "来月９日は、店内改装工事のため、臨時（　　）させていただきます。",
+      "answer_images": [],
+      "question_images": []
+    },
+    {
+      "topic_number": 9,
+      "question_number": 13,
+      "title": "BJT Vocabulary Topic 9 Question 13",
+      "answers": {
+        "A": "休憩",
+        "B": "形影",
+        "C": "知恵",
+        "D": "操作"
+      },
+      "suggested_answer": "A",
+      "answer": "A",
+      "link": "",
+      "multiple_choice": false,
+      "question_text": "適当に（　　）をとってください。",
+      "answer_images": [],
+      "question_images": []
+    },
+    {
+      "topic_number": 9,
+      "question_number": 14,
+      "title": "BJT Vocabulary Topic 9 Question 14",
+      "answers": {
+        "A": "就職",
+        "B": "侵入",
+        "C": "交渉",
+        "D": "休職"
+      },
+      "suggested_answer": "D",
+      "answer": "D",
+      "link": "",
+      "multiple_choice": false,
+      "question_text": "高橋さんは、病気治療のため、半年ほど（　　）していたが、来週から復帰する。",
+      "answer_images": [],
+      "question_images": []
+    },
+    {
+      "topic_number": 9,
+      "question_number": 15,
+      "title": "BJT Vocabulary Topic 9 Question 15",
+      "answers": {
+        "A": "給食",
+        "B": "球形",
+        "C": "求職",
+        "D": "啓修"
+      },
+      "suggested_answer": "C",
+      "answer": "C",
+      "link": "",
+      "multiple_choice": false,
+      "question_text": "失業手当の支給は、求職活動をしている人が対象になります。",
+      "answer_images": [],
+      "question_images": []
+    },
+    {
+      "topic_number": 9,
+      "question_number": 16,
+      "title": "BJT Vocabulary Topic 9 Question 16",
+      "answers": {
+        "A": "休戦",
+        "B": "求人",
+        "C": "休航",
+        "D": "求積"
+      },
+      "suggested_answer": "B",
+      "answer": "B",
+      "link": "",
+      "multiple_choice": false,
+      "question_text": "新聞の（　　）広告を見て伺いましたが、担当の中村様はいらっしゃいますでしょうか。",
+      "answer_images": [],
+      "question_images": []
+    },
+    {
+      "topic_number": 9,
+      "question_number": 17,
+      "title": "BJT Vocabulary Topic 9 Question 17",
+      "answers": {
+        "A": "急性",
+        "B": "急行",
+        "C": "急増",
+        "D": "急激"
+      },
+      "suggested_answer": "C",
+      "answer": "C",
+      "link": "",
+      "multiple_choice": false,
+      "question_text": "インターネットを利用した取引でのトラブルが（　　）している。",
+      "answer_images": [],
+      "question_images": []
+    },
+    {
+      "topic_number": 9,
+      "question_number": 18,
+      "title": "BJT Vocabulary Topic 9 Question 18",
+      "answers": {
+        "A": "急設",
+        "B": "急増",
+        "C": "急行",
+        "D": "急速"
+      },
+      "suggested_answer": "D",
+      "answer": "D",
+      "link": "",
+      "multiple_choice": false,
+      "question_text": "携帯は（　　）に普及し、生活に欠かせないものとなった。",
+      "answer_images": [],
+      "question_images": []
+    },
+    {
+      "topic_number": 9,
+      "question_number": 19,
+      "title": "BJT Vocabulary Topic 9 Question 19",
+      "answers": {
+        "A": "急騰",
+        "B": "拡大",
+        "C": "権藤",
+        "D": "修功"
+      },
+      "suggested_answer": "A",
+      "answer": "A",
+      "link": "",
+      "multiple_choice": false,
+      "question_text": "天候不順の影響で、野菜の価格が（　　）している。",
+      "answer_images": [],
+      "question_images": []
+    },
+    {
+      "topic_number": 9,
+      "question_number": 20,
+      "title": "BJT Vocabulary Topic 9 Question 20",
+      "answers": {
+        "A": "義務",
+        "B": "商務",
+        "C": "刑務",
+        "D": "急務"
+      },
+      "suggested_answer": "D",
+      "answer": "D",
+      "link": "",
+      "multiple_choice": false,
+      "question_text": "オンラインの業務がますます増えていく中、セキュリティ対策が（　　）です。",
+      "answer_images": [],
+      "question_images": []
+    },
+    {
+      "topic_number": 9,
+      "question_number": 21,
+      "title": "BJT Vocabulary Topic 9 Question 21",
+      "answers": {
+        "A": "視入",
+        "B": "名匠",
+        "C": "起用",
+        "D": "考証"
+      },
+      "suggested_answer": "C",
+      "answer": "C",
+      "link": "",
+      "multiple_choice": false,
+      "question_text": "新人を多く（　　）するつもりです。",
+      "answer_images": [],
+      "question_images": []
+    },
+    {
+      "topic_number": 9,
+      "question_number": 22,
+      "title": "BJT Vocabulary Topic 9 Question 22",
+      "answers": {
+        "A": "貿易",
+        "B": "強化",
+        "C": "行政",
+        "D": "連続"
+      },
+      "suggested_answer": "B",
+      "answer": "B",
+      "link": "",
+      "multiple_choice": false,
+      "question_text": "サービス機能を（　　）し、さらに多くの情報を提供。",
+      "answer_images": [],
+      "question_images": []
+    },
+    {
+      "topic_number": 9,
+      "question_number": 23,
+      "title": "BJT Vocabulary Topic 9 Question 23",
+      "answers": {
+        "A": "業界",
+        "B": "企画",
+        "C": "栄養",
+        "D": "改正"
+      },
+      "suggested_answer": "A",
+      "answer": "A",
+      "link": "",
+      "multiple_choice": false,
+      "question_text": "出版（　　）に大きな影響を与えた。",
+      "answer_images": [],
+      "question_images": []
+    },
+    {
+      "topic_number": 9,
+      "question_number": 24,
+      "title": "BJT Vocabulary Topic 9 Question 24",
+      "answers": {
+        "A": "招請",
+        "B": "規定",
+        "C": "協議",
+        "D": "能力"
+      },
+      "suggested_answer": "C",
+      "answer": "C",
+      "link": "",
+      "multiple_choice": false,
+      "question_text": "費用負担方法について一度（　　）する必要がある。",
+      "answer_images": [],
+      "question_images": []
+    },
+    {
+      "topic_number": 9,
+      "question_number": 25,
+      "title": "BJT Vocabulary Topic 9 Question 25",
+      "answers": {
+        "A": "重用",
+        "B": "交渉",
+        "C": "私有",
+        "D": "供給"
+      },
+      "suggested_answer": "D",
+      "answer": "D",
+      "link": "",
+      "multiple_choice": false,
+      "question_text": "電力を安定（　　）するにはコストが必要。",
+      "answer_images": [],
+      "question_images": []
+    },
+    {
+      "topic_number": 9,
+      "question_number": 26,
+      "title": "BJT Vocabulary Topic 9 Question 26",
+      "answers": {
+        "A": "教師",
+        "B": "教皇",
+        "C": "教訓",
+        "D": "教学"
+      },
+      "suggested_answer": "C",
+      "answer": "C",
+      "link": "",
+      "multiple_choice": false,
+      "question_text": "今回の失敗を（　　）として…",
+      "answer_images": [],
+      "question_images": []
+    },
+    {
+      "topic_number": 9,
+      "question_number": 27,
+      "title": "BJT Vocabulary Topic 9 Question 27",
+      "answers": {
+        "A": "強調",
+        "B": "競争",
+        "C": "強行",
+        "D": "競合"
+      },
+      "suggested_answer": "C",
+      "answer": "C",
+      "link": "",
+      "multiple_choice": false,
+      "question_text": "（　　）日程で進めるしかない。",
+      "answer_images": [],
+      "question_images": []
+    },
+    {
+      "topic_number": 9,
+      "question_number": 28,
+      "title": "BJT Vocabulary Topic 9 Question 28",
+      "answers": {
+        "A": "影響",
+        "B": "強硬",
+        "C": "賛成",
+        "D": "経営"
+      },
+      "suggested_answer": "B",
+      "answer": "B",
+      "link": "",
+      "multiple_choice": false,
+      "question_text": "あまり（　　）な態度はとらないで。",
+      "answer_images": [],
+      "question_images": []
+    },
+    {
+      "topic_number": 9,
+      "question_number": 29,
+      "title": "BJT Vocabulary Topic 9 Question 29",
+      "answers": {
+        "A": "競合",
+        "B": "解消",
+        "C": "承継",
+        "D": "中断"
+      },
+      "suggested_answer": "A",
+      "answer": "A",
+      "link": "",
+      "multiple_choice": false,
+      "question_text": "商品と（　　）するのはA社のもの。",
+      "answer_images": [],
+      "question_images": []
+    },
+    {
+      "topic_number": 9,
+      "question_number": 30,
+      "title": "BJT Vocabulary Topic 9 Question 30",
+      "answers": {
+        "A": "協賛",
+        "B": "協働",
+        "C": "共成",
+        "D": "共重"
+      },
+      "suggested_answer": "A",
+      "answer": "A",
+      "link": "",
+      "multiple_choice": false,
+      "question_text": "皆様にご（　　）のお願い。",
+      "answer_images": [],
+      "question_images": []
+    },
+    {
+      "topic_number": 9,
+      "question_number": 31,
+      "title": "BJT Vocabulary Topic 9 Question 31",
+      "answers": {
+        "A": "業務",
+        "B": "業者",
+        "C": "業種",
+        "D": "業商"
+      },
+      "suggested_answer": "B",
+      "answer": "B",
+      "link": "",
+      "multiple_choice": false,
+      "question_text": "引っ越しは（　　）に任せよう。",
+      "answer_images": [],
+      "question_images": []
+    },
+    {
+      "topic_number": 9,
+      "question_number": 32,
+      "title": "BJT Vocabulary Topic 9 Question 32",
+      "answers": {
+        "A": "業種",
+        "B": "経業",
+        "C": "際業",
+        "D": "工業"
+      },
+      "suggested_answer": "A",
+      "answer": "A",
+      "link": "",
+      "multiple_choice": false,
+      "question_text": "（　　）は問わず海外取引の仕事をしたい。",
+      "answer_images": [],
+      "question_images": []
+    },
+    {
+      "topic_number": 9,
+      "question_number": 33,
+      "title": "BJT Vocabulary Topic 9 Question 33",
+      "answers": {
+        "A": "孝子",
+        "B": "京商",
+        "C": "恐縮",
+        "D": "強勢"
+      },
+      "suggested_answer": "C",
+      "answer": "C",
+      "link": "",
+      "multiple_choice": false,
+      "question_text": "遠くからお越しいただき（　　）です。",
+      "answer_images": [],
+      "question_images": []
+    },
+    {
+      "topic_number": 9,
+      "question_number": 34,
+      "title": "BJT Vocabulary Topic 9 Question 34",
+      "answers": {
+        "A": "透修",
+        "B": "強制",
+        "C": "修義",
+        "D": "公証"
+      },
+      "suggested_answer": "B",
+      "answer": "B",
+      "link": "",
+      "multiple_choice": false,
+      "question_text": "休日出勤を（　　）してはいけない。",
+      "answer_images": [],
+      "question_images": []
+    },
+    {
+      "topic_number": 9,
+      "question_number": 35,
+      "title": "BJT Vocabulary Topic 9 Question 35",
+      "answers": {
+        "A": "行政",
+        "B": "奇跡",
+        "C": "厚情",
+        "D": "業績"
+      },
+      "suggested_answer": "D",
+      "answer": "D",
+      "link": "",
+      "multiple_choice": false,
+      "question_text": "しばらく（　　）が良くなる見通しはない。",
+      "answer_images": [],
+      "question_images": []
+    },
+    {
+      "topic_number": 9,
+      "question_number": 36,
+      "title": "BJT Vocabulary Topic 9 Question 36",
+      "answers": {
+        "A": "業績",
+        "B": "強制",
+        "C": "組織",
+        "D": "起草"
+      },
+      "suggested_answer": "A",
+      "answer": "A",
+      "link": "",
+      "multiple_choice": false,
+      "question_text": "今期の（　　）によっては上場も夢ではない。",
+      "answer_images": [],
+      "question_images": []
+    },
+    {
+      "topic_number": 9,
+      "question_number": 37,
+      "title": "BJT Vocabulary Topic 9 Question 37",
+      "answers": {
+        "A": "閑静",
+        "B": "正直",
+        "C": "競争",
+        "D": "伝承"
+      },
+      "suggested_answer": "C",
+      "answer": "C",
+      "link": "",
+      "multiple_choice": false,
+      "question_text": "値下げ（　　）が激しい。",
+      "answer_images": [],
+      "question_images": []
+    },
+    {
+      "topic_number": 9,
+      "question_number": 38,
+      "title": "BJT Vocabulary Topic 9 Question 38",
+      "answers": {
+        "A": "継承",
+        "B": "明植",
+        "C": "協調",
+        "D": "強調"
+      },
+      "suggested_answer": "D",
+      "answer": "D",
+      "link": "",
+      "multiple_choice": false,
+      "question_text": "価格の安さをもっと（　　）した広告。",
+      "answer_images": [],
+      "question_images": []
+    },
+    {
+      "topic_number": 9,
+      "question_number": 39,
+      "title": "BJT Vocabulary Topic 9 Question 39",
+      "answers": {
+        "A": "起用",
+        "B": "協調",
+        "C": "農政",
+        "D": "検討"
+      },
+      "suggested_answer": "B",
+      "answer": "B",
+      "link": "",
+      "multiple_choice": false,
+      "question_text": "チームで行うので（　　）性が求められる。",
+      "answer_images": [],
+      "question_images": []
+    },
+    {
+      "topic_number": 9,
+      "question_number": 40,
+      "title": "BJT Vocabulary Topic 9 Question 40",
+      "answers": {
+        "A": "協定",
+        "B": "協奏",
+        "C": "協同",
+        "D": "協会"
+      },
+      "suggested_answer": "A",
+      "answer": "A",
+      "link": "",
+      "multiple_choice": false,
+      "question_text": "工事（　　）を結んだ。",
+      "answer_images": [],
+      "question_images": []
+    },
+    {
+      "topic_number": 9,
+      "question_number": 41,
+      "title": "BJT Vocabulary Topic 9 Question 41",
+      "answers": {
+        "A": "共生",
+        "B": "共同",
+        "C": "共通",
+        "D": "共有"
+      },
+      "suggested_answer": "B",
+      "answer": "B",
+      "link": "",
+      "multiple_choice": false,
+      "question_text": "この分野で（　　）研究を始めた。",
+      "answer_images": [],
+      "question_images": []
+    },
+    {
+      "topic_number": 9,
+      "question_number": 42,
+      "title": "BJT Vocabulary Topic 9 Question 42",
+      "answers": {
+        "A": "責任",
+        "B": "業務",
+        "C": "講習",
+        "D": "入港"
+      },
+      "suggested_answer": "B",
+      "answer": "B",
+      "link": "",
+      "multiple_choice": false,
+      "question_text": "発送（　　）は外注に。",
+      "answer_images": [],
+      "question_images": []
+    },
+    {
+      "topic_number": 9,
+      "question_number": 43,
+      "title": "BJT Vocabulary Topic 9 Question 43",
+      "answers": {
+        "A": "強手",
+        "B": "季節",
+        "C": "公衆",
+        "D": "共有"
+      },
+      "suggested_answer": "D",
+      "answer": "D",
+      "link": "",
+      "multiple_choice": false,
+      "question_text": "（　　）のファイルに入っています。",
+      "answer_images": [],
+      "question_images": []
+    },
+    {
+      "topic_number": 9,
+      "question_number": 44,
+      "title": "BJT Vocabulary Topic 9 Question 44",
+      "answers": {
+        "A": "供与",
+        "B": "使用",
+        "C": "効用",
+        "D": "商用"
+      },
+      "suggested_answer": "A",
+      "answer": "A",
+      "link": "",
+      "multiple_choice": false,
+      "question_text": "技術（　　）を行うことを発表。",
+      "answer_images": [],
+      "question_images": []
+    },
+    {
+      "topic_number": 9,
+      "question_number": 45,
+      "title": "BJT Vocabulary Topic 9 Question 45",
+      "answers": {
+        "A": "供給",
+        "B": "共用",
+        "C": "共析",
+        "D": "強行"
+      },
+      "suggested_answer": "B",
+      "answer": "B",
+      "link": "",
+      "multiple_choice": false,
+      "question_text": "（　　）パソコンがもう1台必要。",
+      "answer_images": [],
+      "question_images": []
+    },
+    {
+      "topic_number": 9,
+      "question_number": 46,
+      "title": "BJT Vocabulary Topic 9 Question 46",
+      "answers": {
+        "A": "強化",
+        "B": "教科",
+        "C": "協会",
+        "D": "許可"
+      },
+      "suggested_answer": "D",
+      "answer": "D",
+      "link": "",
+      "multiple_choice": false,
+      "question_text": "上司の（　　）が必要です。",
+      "answer_images": [],
+      "question_images": []
+    },
+    {
+      "topic_number": 9,
+      "question_number": 47,
+      "title": "BJT Vocabulary Topic 9 Question 47",
+      "answers": {
+        "A": "巨額",
+        "B": "去就",
+        "C": "許劭",
+        "D": "去名"
+      },
+      "suggested_answer": "A",
+      "answer": "A",
+      "link": "",
+      "multiple_choice": false,
+      "question_text": "（　　）の資金が必要だ。",
+      "answer_images": [],
+      "question_images": []
+    },
+    {
+      "topic_number": 9,
+      "question_number": 48,
+      "title": "BJT Vocabulary Topic 9 Question 48",
+      "answers": {
+        "A": "極性",
+        "B": "極定",
+        "C": "極端",
+        "D": "極真"
+      },
+      "suggested_answer": "C",
+      "answer": "C",
+      "link": "",
+      "multiple_choice": false,
+      "question_text": "（　　）に安いけど使えるかな。",
+      "answer_images": [],
+      "question_images": []
+    },
+    {
+      "topic_number": 9,
+      "question_number": 49,
+      "title": "BJT Vocabulary Topic 9 Question 49",
+      "answers": {
+        "A": "許慎",
+        "B": "拠点",
+        "C": "昇天",
+        "D": "狭小"
+      },
+      "suggested_answer": "B",
+      "answer": "B",
+      "link": "",
+      "multiple_choice": false,
+      "question_text": "そこを（　　）として全国展開。",
+      "answer_images": [],
+      "question_images": []
+    },
+    {
+      "topic_number": 9,
+      "question_number": 50,
+      "title": "BJT Vocabulary Topic 9 Question 50",
+      "answers": {
+        "A": "許容",
+        "B": "許可",
+        "C": "許名",
+        "D": "許税"
+      },
+      "suggested_answer": "A",
+      "answer": "A",
+      "link": "",
+      "multiple_choice": false,
+      "question_text": "（　　）範囲を超えてるよ。",
+      "answer_images": [],
+      "question_images": []
+    }
 ]
