@@ -233,11 +233,11 @@ class ApiClient {
 
   // Static files API methods
   async getExams(): Promise<Exam[]> {
-    return this.fetchStatic<Exam[]>('/exams/exams.json', 'exams');
+    return this.fetchStatic<Exam[]>(`/exams/exams.json?t=${Date.now()}`, 'exams');
   }
 
   async getQuestions(examFile: string): Promise<Question[]> {
-    return this.fetchStatic<Question[]>(`/${examFile}`, `questions_${examFile}`);
+    return this.fetchStatic<Question[]>(`/${examFile}?t=${Date.now()}`, `questions_${examFile}`);
   }
 
   // Report API methods
