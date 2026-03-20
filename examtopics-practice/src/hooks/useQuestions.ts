@@ -1,39 +1,35 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { examApi } from '../services/examApi';
 import { Question } from '../types';
-import { apiClient } from '../utils/apiClient';
 
 export const useQuestions = (examId: string | undefined, examFile: string | undefined) => {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const loadQuestions = async () => {
-      if (!examId || !examFile) {
-        setQuestions([]);
-        setLoading(false);
-        return;
-      }
+  const loadQuestions = async () => {
+    if (!examId) {
+      setQuestions([]);
+      setLoading(false);
+      return;
+    }
 
-      setLoading(true);
-      setError(null);
+    setLoading(true);
+    setError(null);
 
-      try {
-        const data = await apiClient.getQuestions(examFile);
-        setQuestions(data);
-      } catch (error) {
-        console.error('Error loading questions:', error);
-        setError(error instanceof Error ? error.message : 'Unknown error');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadQuestions();
-  }, [examId, examFile]);
+    try {
+      const response = await examApi.getQuestions(examId);
+      setQuestions(response.data);
+    } catch (error) {
+      console.error('Error loading questions:', error);
+      setError(error instanceof Error ? error.message : 'Unknown error');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const refreshQuestions = async () => {
-    if (!examId || !examFile) {
+    if (!examId) {
       return;
     }
 
@@ -46,8 +42,8 @@ export const useQuestions = (examId: string | undefined, examFile: string | unde
     setError(null);
     
     try {
-      const data = await apiClient.getQuestions(examFile);
-      setQuestions(data);
+      const response = await examApi.getQuestions(examId);
+      setQuestions(response.data);
     } catch (error) {
       console.error('Error refreshing questions:', error);
       setError(error instanceof Error ? error.message : 'Unknown error');
@@ -60,6 +56,7 @@ export const useQuestions = (examId: string | undefined, examFile: string | unde
     questions,
     loading,
     error,
+    loadQuestions,
     refreshQuestions,
     setQuestions
   };

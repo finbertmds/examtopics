@@ -1,36 +1,41 @@
 export interface Question {
-  title: string;
-  topic_number: number;
+  _id?: string;
+  examId?: string;
+  title?: string;
+  topic_number?: number;
   question_number: number;
   answers: Record<string, string>;
   suggested_answer: string;
-  answer: string;
-  link: string;
+  answer?: string;
+  link?: string;
   multiple_choice: boolean;
   question_text: string;
-  question_images: string[];
-  answer_images: string[];
+  question_images?: string[];
+  answer_images?: string[];
 }
 
 export interface Exam {
-  id: string;
+  code: string; // Uniquely identifies the exam
+  _id?: string;
   name: string | {
     en: string;
     vi: string;
     ja: string;
   };
-  slug: string;
+  slug?: string;
   description: string | {
     en: string;
     vi: string;
     ja: string;
   };
   questionCount: number;
-  file: string;
+  file?: string;
   category: string;
-  difficulty: 'Beginner' | 'Intermediate' | 'Advanced';
-  estimatedTime: string;
+  difficulty: 'Beginner' | 'Intermediate' | 'Advanced' | string;
+  estimatedTime: string | number;
   tags: string[];
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface UserAnswer {

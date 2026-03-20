@@ -27,7 +27,9 @@ export const FilterBar: React.FC<FilterBarProps> = ({
 
   // Calculate topic distribution from all questions (not just answered ones)
   const topicDistribution = questions.reduce((acc, question) => {
-    acc[question.topic_number] = (acc[question.topic_number] || 0) + 1;
+    if (question.topic_number !== undefined) {
+      acc[question.topic_number] = (acc[question.topic_number] || 0) + 1;
+    }
     return acc;
   }, {} as Record<number, number>);
 

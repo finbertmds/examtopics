@@ -24,7 +24,7 @@ const ExamPage: React.FC = () => {
   const { findExamById } = useExams();
   const [currentExam, setCurrentExam] = useState<Exam | null>(exam);
   const questionsHook = useQuestions(examId, currentExam?.file);
-  const { questions, loading: questionsLoading, error: questionsError } = questionsHook;
+  const { questions, loading: questionsLoading, error: questionsError, loadQuestions } = questionsHook;
 
   const [urlTopicNumber, setUrlTopicNumber] = useState<number | null>(null);
   const [urlQuestionNumber, setUrlQuestionNumber] = useState<number | null>(null);
@@ -46,6 +46,25 @@ const ExamPage: React.FC = () => {
     toggleTrainingMark,
     submitExam,
   } = useProgress(examId);
+
+
+  const isQuestionsLoadedRef = React.useRef(false);
+
+  useEffect(() => {
+    if (isQuestionsLoadedRef.current) return;
+    isQuestionsLoadedRef.current = true;
+
+    const loadQuestionsData = async () => {
+      try {
+        console.log('Loading questions...');
+        await loadQuestions();
+      } catch (error) {
+        console.error('Error loading questions:', error);
+      }
+    };
+    loadQuestionsData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Check for URL parameters and set state accordingly
   useEffect(() => {
@@ -157,12 +176,14 @@ const ExamPage: React.FC = () => {
     const isCorrect = JSON.stringify(correctAnswers) === JSON.stringify(userAnswersSorted);
 
     await saveAnswer(topicNumber, questionNumber, selectedAnswers, isCorrect);
-    const nextQuestion = questions.find(q => q.topic_number === topicNumber && q.question_number === questionNumber + 1);
-    if (isCorrect && nextQuestion) {
-      updateProgress({ currentTopic: topicNumber, currentQuestion: nextQuestion.question_number });
-    } else {
-      updateProgress({ currentTopic: topicNumber, currentQuestion: questionNumber });
-    }
+    // TODO: fix: implement next question logic
+    // const nextQuestion = questions.find(q => q.topic_number === topicNumber && q.question_number === questionNumber + 1);
+    // if (isCorrect && nextQuestion) {
+    //   updateProgress({ currentTopic: topicNumber, currentQuestion: nextQuestion.question_number });
+    // } else {
+    //   updateProgress({ currentTopic: topicNumber, currentQuestion: questionNumber });
+    // }
+    updateProgress({ currentTopic: topicNumber, currentQuestion: questionNumber });
   };
 
   const handleRandomize = () => {
@@ -219,7 +240,7 @@ const ExamPage: React.FC = () => {
   const handleTopicChange = (topicNumber: number | 'all') => {
     if (topicNumber === 'all') {
       // Find the first topic that is not completed
-      const topicNumbers = Array.from(new Set(questions.map(q => q.topic_number))).sort((a, b) => a - b);
+      const topicNumbers = Array.from(new Set(questions.map(q => q.topic_number))).sort((a, b) => (a || 0) - (b || 0));
 
       for (const topicNum of topicNumbers) {
         const topicQuestions = questions.filter(q => q.topic_number === topicNum);

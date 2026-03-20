@@ -8,7 +8,8 @@
     "dev": "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "test:oauth": "node scripts/test-oauth.js",
-    "migrate:progress": "node scripts/migrate-progress.js"
+    "migrate:progress": "node scripts/migrate-progress.js",
+    "migrate:samples": "node scripts/migrate-samples.js"
   },
   "keywords": [
     "express",

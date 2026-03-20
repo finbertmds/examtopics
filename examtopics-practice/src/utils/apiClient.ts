@@ -231,14 +231,8 @@ class ApiClient {
     }, token);
   }
 
-  // Static files API methods
-  async getExams(): Promise<Exam[]> {
-    return this.fetchStatic<Exam[]>(`/exams/exams.json?t=${Date.now()}`, 'exams');
-  }
-
-  async getQuestions(examFile: string): Promise<Question[]> {
-    return this.fetchStatic<Question[]>(`/${examFile}?t=${Date.now()}`, `questions_${examFile}`);
-  }
+  // Migrated endpoint getExams -> examApi.ts
+  // Migrated endpoint getQuestions -> examApi.ts
 
   // Report API methods
   async submitReport(reportData: ReportData, token?: string): Promise<ApiResponse> {

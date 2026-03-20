@@ -1,6 +1,6 @@
-const Progress = require('./models/Progress');
-const History = require('./models/History');
-const Debouncer = require('./utils/debounce');
+const Progress = require('../models/Progress');
+const History = require('../models/History');
+const Debouncer = require('../utils/debounce');
 
 class ProgressService {
   constructor() {
