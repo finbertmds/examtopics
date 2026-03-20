@@ -6,9 +6,13 @@ import { getBackendUrl } from '../utils/backendUrl';
 
 const backendUrl = getBackendUrl();
 
+const getBaseUrl = () => {
+    return backendUrl + '/api'
+};
+
 export const examApi = {
   getExams: async (): Promise<Exam[]> => {
-    const response = await fetch(`${backendUrl}/exams`);
+    const response = await fetch(`${getBaseUrl()}/exams`);
     if (!response.ok) throw new Error('Failed to fetch exams');
     const data = await response.json();
     return (data.exams || []).map((exam: any) => ({
@@ -17,7 +21,7 @@ export const examApi = {
   },
 
   getMyExams: async (token: string): Promise<Exam[]> => {
-    const response = await fetch(`${backendUrl}/exams/me/created`, {
+    const response = await fetch(`${getBaseUrl()}/exams/me/created`, {
       headers: {
         'Authorization': `Bearer ${token}`
       }
@@ -30,21 +34,21 @@ export const examApi = {
   },
 
   getMetadata: async (): Promise<{ categories: string[], tags: string[] }> => {
-    const response = await fetch(`${backendUrl}/exams/metadata/info`);
+    const response = await fetch(`${getBaseUrl()}/exams/metadata/info`);
     if (!response.ok) throw new Error('Failed to fetch metadata');
     const data = await response.json();
     return { categories: data.categories || [], tags: data.tags || [] };
   },
 
   getExam: async (code: string): Promise<Exam> => {
-    const response = await fetch(`${backendUrl}/exams/${code}`);
+    const response = await fetch(`${getBaseUrl()}/exams/${code}`);
     if (!response.ok) throw new Error('Failed to fetch exam');
     const data = await response.json();
     return { ...data.exam, code: data.exam.code || data.exam._id };
   },
 
   getQuestions: async (examCode: string, page = 1, limit = 0): Promise<{ data: Question[], pagination: any }> => {
-    const response = await fetch(`${backendUrl}/questions/${examCode}?page=${page}&limit=${limit}`);
+    const response = await fetch(`${getBaseUrl()}/questions/${examCode}?page=${page}&limit=${limit}`);
     if (!response.ok) throw new Error('Failed to fetch questions');
     const data = await response.json();
     return {
@@ -57,7 +61,7 @@ export const examApi = {
   },
 
   createExam: async (examData: any, token: string): Promise<any> => {
-    const response = await fetch(`${backendUrl}/exams`, {
+    const response = await fetch(`${getBaseUrl()}/exams`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -71,7 +75,7 @@ export const examApi = {
   },
 
   updateExam: async (code: string, examData: any, token: string): Promise<Exam> => {
-    const response = await fetch(`${backendUrl}/exams/${code}`, {
+    const response = await fetch(`${getBaseUrl()}/exams/${code}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -85,7 +89,7 @@ export const examApi = {
   },
 
   deleteExam: async (code: string, token: string): Promise<void> => {
-    const response = await fetch(`${backendUrl}/exams/${code}`, {
+    const response = await fetch(`${getBaseUrl()}/exams/${code}`, {
       method: 'DELETE',
       headers: {
         'Authorization': `Bearer ${token}`
