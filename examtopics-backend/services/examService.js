@@ -151,7 +151,7 @@ class ExamService {
   async getQuestionsByExamCode(examCode, page = 1, limit = 0) {
     const skip = (page - 1) * (limit || 0);
 
-    let query = Question.find({ examId: examCode }).sort({ question_number: 1 });
+    let query = Question.find({ examId: examCode }).sort({ topic_number: 1, question_number: 1 });
     
     if (skip > 0) query = query.skip(skip);
     if (limit > 0) query = query.limit(limit);

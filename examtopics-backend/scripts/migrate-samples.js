@@ -123,7 +123,7 @@ async function migrate() {
       // Update actual question count
       newExam.questionCount = insertedCount;
       await newExam.save();
-      console.log(`\nImport completed for ${newExam._id}`);
+      console.log(`\nImport completed for ${newExam.code} with ${newExam.questionCount} questions`);
     }
 
     console.log('\nMigration fully completed successfully!');
