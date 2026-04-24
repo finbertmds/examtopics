@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { examApi } from '../services/examApi';
 import { Exam } from '../types';
-import { apiClient } from '../utils/apiClient';
 
-export const useExams = () => {
+export const useExams = (options?: { fetchMyExamsOnly?: boolean, token?: string | null }) => {
   const [exams, setExams] = useState<Exam[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -10,7 +10,9 @@ export const useExams = () => {
   const loadExams = async () => {
     try {
       setError(null);
-      const data = await apiClient.getExams();
+      const data = (options?.fetchMyExamsOnly && options?.token) 
+        ? await examApi.getMyExams(options.token) 
+        : await examApi.getExams();
       setExams(data);
       return data;
     } catch (error) {
@@ -22,18 +24,14 @@ export const useExams = () => {
     return [];
   };
 
-  useEffect(() => {
-    loadExams();
-  }, []);
-
   const findExamById = async (examId: string): Promise<Exam | undefined> => {
     if (exams.length === 0) {
       const data = await loadExams();
       if (data.length > 0) {
-        return data.find(exam => exam.id === examId);
+        return data.find(exam => exam.code === examId);
       }
     } else {
-      return exams.find(exam => exam.id === examId);
+      return exams.find(exam => exam.code === examId);
     }
     return undefined;
   };
@@ -48,7 +46,9 @@ export const useExams = () => {
     setError(null);
     
     try {
-      const data = await apiClient.getExams();
+      const data = (options?.fetchMyExamsOnly && options?.token) 
+        ? await examApi.getMyExams(options.token) 
+        : await examApi.getExams();
       setExams(data);
     } catch (error) {
       console.error('Error refreshing exams:', error);
@@ -62,6 +62,7 @@ export const useExams = () => {
     exams,
     loading,
     error,
+    loadExams,
     findExamById,
     refreshExams
   };

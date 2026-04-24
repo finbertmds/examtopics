@@ -34,7 +34,7 @@ export const TrainingList: React.FC<TrainingListProps> = ({
       <h3 className="text-lg font-semibold text-gray-800 mb-4">
         {t('trainingList')} ({trainingQuestions.length})
       </h3>
-      
+
       <div className="space-y-2 max-h-64 overflow-y-auto scrollable-content">
         {trainingQuestions.map((question) => {
           const key = `${question.topic_number}-${question.question_number}`;
@@ -48,16 +48,15 @@ export const TrainingList: React.FC<TrainingListProps> = ({
               className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
             >
               <button
-                onClick={() => onQuestionClick(question.topic_number, question.question_number)}
+                onClick={() => onQuestionClick(question.topic_number!, question.question_number)}
                 className="flex-1 text-left flex items-center gap-3"
               >
                 <span className="font-medium text-gray-800">
                   {t('question')} {question.question_number} <span className="text-sm font-normal text-gray-500">({t('topic')} {question.topic_number})</span>
                 </span>
                 {isAnswered && (
-                  <span className={`flex items-center justify-center px-2 py-1 rounded-full text-xs font-medium ${
-                    isCorrect ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                  }`}>
+                  <span className={`flex items-center justify-center px-2 py-1 rounded-full text-xs font-medium ${isCorrect ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                    }`}>
                     {isCorrect ? '✓' : '✗'}
                   </span>
                 )}
@@ -67,9 +66,9 @@ export const TrainingList: React.FC<TrainingListProps> = ({
                   </span>
                 )}
               </button>
-              
+
               <button
-                onClick={() => onRemoveFromTraining(question.topic_number, question.question_number)}
+                onClick={() => onRemoveFromTraining(question.topic_number!, question.question_number)}
                 className="p-1 text-gray-500 hover:text-red-600 transition-colors"
                 title={t('removeFromTraining')}
               >

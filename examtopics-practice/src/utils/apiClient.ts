@@ -15,19 +15,17 @@ class ApiClient {
 
   // Generic fetch method for static files with caching (no auth required)
   private async fetchStatic<T>(url: string, cacheKey: string, options: RequestInit = {}): Promise<T> {
-    try {
-      // Try to get from cache first
+    // If offline, try to load from cache first
+    if (!networkService.isNetworkOnline()) {
       const cachedData = await cacheStorage.getItem(cacheKey, 'staticFiles');
       if (cachedData) {
-        console.log(`Loaded ${cacheKey} from cache`);
+        console.log(`Loaded ${cacheKey} from cache (offline)`);
         return cachedData as T;
       }
+      throw new Error('Network is offline and no cached data available');
+    }
 
-      // Check network status
-      if (!networkService.isNetworkOnline()) {
-        throw new Error('Network is offline and no cached data available');
-      }
-
+    try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
 
@@ -38,6 +36,7 @@ class ApiClient {
           'Content-Type': 'application/json',
           ...options.headers,
         },
+        cache: 'no-cache',
       });
 
       clearTimeout(timeoutId);
@@ -48,12 +47,19 @@ class ApiClient {
 
       const data = await response.json();
       
-      // Cache the data
+      // Cache the fresh data
       await cacheStorage.setItem(cacheKey, data, 'staticFiles');
       console.log(`Cached ${cacheKey}`);
       
       return data;
     } catch (error) {
+      // On network error, fall back to cached data if available
+      const cachedData = await cacheStorage.getItem(cacheKey, 'staticFiles');
+      if (cachedData) {
+        console.warn(`Using cached ${cacheKey} due to error`, error);
+        return cachedData as T;
+      }
+
       if (error instanceof Error) {
         if (error.name === 'AbortError') {
           throw new Error('Request timeout');
@@ -225,14 +231,8 @@ class ApiClient {
     }, token);
   }
 
-  // Static files API methods
-  async getExams(): Promise<Exam[]> {
-    return this.fetchStatic<Exam[]>('/exams/exams.json', 'exams');
-  }
-
-  async getQuestions(examFile: string): Promise<Question[]> {
-    return this.fetchStatic<Question[]>(`/${examFile}`, `questions_${examFile}`);
-  }
+  // Migrated endpoint getExams -> examApi.ts
+  // Migrated endpoint getQuestions -> examApi.ts
 
   // Report API methods
   async submitReport(reportData: ReportData, token?: string): Promise<ApiResponse> {

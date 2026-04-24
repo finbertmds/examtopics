@@ -63,7 +63,7 @@ export const QuestionItem: React.FC<QuestionItemProps> = ({
     }
 
     setSelectedAnswers(newSelectedAnswers);
-    onAnswer(question.topic_number, question.question_number, newSelectedAnswers);
+    onAnswer(question.topic_number!, question.question_number, newSelectedAnswers);
   };
 
   const isCorrect = userAnswer?.isCorrect;
@@ -89,7 +89,7 @@ export const QuestionItem: React.FC<QuestionItemProps> = ({
   const handleReportSubmit = async (reason: string, comment: string) => {
     try {
       const reportData: ReportData = {
-        topicNumber: question.topic_number,
+        topicNumber: question.topic_number!,
         questionNumber: question.question_number,
         examId: examId,
         reason: reason,
@@ -172,7 +172,6 @@ export const QuestionItem: React.FC<QuestionItemProps> = ({
   const questionText = question.question_text.replaceAll('\n\n\n', '').replace(/\\u003cbr\/\\u003e/g, '<br/>');
   const finalQuestionText = questionText.replaceAll('<br/><br/>', '');
 
-
   return (
     <div
       ref={questionRef}
@@ -201,7 +200,7 @@ export const QuestionItem: React.FC<QuestionItemProps> = ({
             🚨
           </button>
           <button
-            onClick={() => onToggleTraining(question.topic_number, question.question_number)}
+            onClick={() => onToggleTraining(question.topic_number!, question.question_number)}
             className={`px-2 rounded-full transition-colors ${isMarkedForTraining
               ? 'bg-orange-600 text-white hover:bg-orange-700'
               : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-indigo-100 dark:hover:bg-indigo-900 hover:text-indigo-600 dark:hover:text-indigo-400'
@@ -334,7 +333,7 @@ export const QuestionItem: React.FC<QuestionItemProps> = ({
         isOpen={isReportModalOpen}
         onClose={() => setIsReportModalOpen(false)}
         onSubmit={handleReportSubmit}
-        topicNumber={question.topic_number}
+        topicNumber={question.topic_number!}
         questionNumber={question.question_number}
         examId={examId}
       />

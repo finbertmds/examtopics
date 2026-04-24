@@ -22,7 +22,7 @@ const Home: React.FC = () => {
   const { getProgressStats } = useAllProgress();
   const { getCompletedExamIds } = useProgress();
   const { t, language } = useLanguage();
-  const { exams, loading, error } = useExams();
+  const { exams, loading, error, loadExams } = useExams();
   const [completedExams, setCompletedExams] = useState<string[]>([]);
 
 
@@ -36,9 +36,33 @@ const Home: React.FC = () => {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
+  const isExamsLoadedRef = React.useRef(false);
+
   useEffect(() => {
+    if (isExamsLoadedRef.current) return;
+    isExamsLoadedRef.current = true;
+
+    const loadExamsData = async () => {
+      try {
+        console.log('Loading exams...');
+        await loadExams();
+      } catch (error) {
+        console.error('Error loading exams:', error);
+      }
+    };
+    loadExamsData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const isCompletedExamsLoadedRef = React.useRef(false);
+
+  useEffect(() => {
+    if (isCompletedExamsLoadedRef.current) return;
+    isCompletedExamsLoadedRef.current = true;
+
     const loadCompletedExams = async () => {
       try {
+        console.log('Loading completed exams...');
         const examIds = await getCompletedExamIds();
         setCompletedExams(examIds);
       } catch (error) {
@@ -84,8 +108,8 @@ const Home: React.FC = () => {
     const examDescription = getExamDescription(exam, language);
 
     const matchesSearch = examName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      exam.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      exam.slug.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      exam.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      exam.slug?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       exam.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()) ||
         examDescription.toLowerCase().includes(searchTerm.toLowerCase())
       );
@@ -100,8 +124,8 @@ const Home: React.FC = () => {
     return matchesSearch && matchesCategory && matchesDifficulty;
   }).sort((a, b) => {
     // Sort exams with progress first, then by progress percentage (descending)
-    const progressA = getProgressStats(a.id);
-    const progressB = getProgressStats(b.id);
+    const progressA = getProgressStats(a.code);
+    const progressB = getProgressStats(b.code);
 
     const hasProgressA = progressA && progressA.totalAnswers > 0;
     const hasProgressB = progressB && progressB.totalAnswers > 0;
@@ -128,8 +152,8 @@ const Home: React.FC = () => {
 
   const handleExamClick = (exam: Exam, mode: 'exam' | 'practice' = 'exam') => {
     const url = mode === 'practice'
-      ? `/exam/${exam.id}?mode=practice`
-      : `/exam/${exam.id}`;
+      ? `/exam/${exam.code}?mode=practice`
+      : `/exam/${exam.code}`;
     navigate(url, { state: { exam } });
   };
 
@@ -258,21 +282,21 @@ const Home: React.FC = () => {
         {/* Exam Grid */}
         {(() => {
           const examsWithProgress = filteredExams.filter(exam => {
-            const progress = getProgressStats(exam.id);
+            const progress = getProgressStats(exam.code);
             return progress && progress.totalAnswers > 0;
           });
 
           // Filter exams that are completed (in history but not currently in progress)
           const examsCompleted = filteredExams.filter(exam => {
-            const inHistory = completedExams.includes(exam.id);
-            const progress = getProgressStats(exam.id);
+            const inHistory = completedExams.includes(exam.code);
+            const progress = getProgressStats(exam.code);
             const hasCurrentProgress = progress && progress.totalAnswers > 0;
             return inHistory && !hasCurrentProgress;
           });
 
           const examsWithoutProgress = filteredExams.filter(exam => {
-            const inHistory = completedExams.includes(exam.id);
-            const progress = getProgressStats(exam.id);
+            const inHistory = completedExams.includes(exam.code);
+            const progress = getProgressStats(exam.code);
             const hasCurrentProgress = progress && progress.totalAnswers > 0;
             return !inHistory && (!progress || progress.totalAnswers === 0) && !hasCurrentProgress;
           });
@@ -290,7 +314,7 @@ const Home: React.FC = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
                     {examsWithProgress.map((exam) => (
                       <ExamCard
-                        key={exam.id}
+                        key={exam.code}
                         exam={exam}
                         language={language}
                         isMobile={isMobile}
@@ -316,7 +340,7 @@ const Home: React.FC = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
                     {examsCompleted.map((exam) => (
                       <ExamCard
-                        key={exam.id}
+                        key={exam.code}
                         exam={exam}
                         language={language}
                         isMobile={isMobile}
@@ -342,7 +366,7 @@ const Home: React.FC = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {examsWithoutProgress.map((exam) => (
                       <ExamCard
-                        key={exam.id}
+                        key={exam.code}
                         exam={exam}
                         language={language}
                         isMobile={isMobile}

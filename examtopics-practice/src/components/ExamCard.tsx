@@ -24,13 +24,13 @@ const ExamCard: React.FC<ExamCardProps> = ({
   getCategoryColor,
   t
 }) => {
-  const progressStats = getProgressStats(exam.id);
+  const progressStats = getProgressStats(exam.code);
   const hasProgress = progressStats && progressStats.totalAnswers > 0;
   const hasTraining = progressStats && progressStats.markedForTraining > 0;
 
   return (
     <div
-      key={exam.id}
+      key={exam.code}
       onClick={() => onExamClick(exam)}
       className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 hover:shadow-lg transition-all cursor-pointer border border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-500"
     >

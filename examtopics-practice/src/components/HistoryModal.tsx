@@ -153,7 +153,7 @@ const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose, examId }) 
   };
 
   const getExamDisplayName = (examId: string): string => {
-    const exam = exams.find(e => e.id === examId);
+    const exam = exams.find(e => e.code === examId);
     if (exam) {
       return getExamName(exam, language);
     }
