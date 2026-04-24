@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { dataService } from '../services/dataService';
 import { networkService } from '../services/networkService';
+import { toast } from 'react-toastify';
 
 interface OfflineIndicatorProps {
   className?: string;
@@ -38,6 +39,7 @@ export const OfflineIndicator: React.FC<OfflineIndicatorProps> = ({ className = 
         setSyncQueueLength(0);
       } catch (error) {
         console.error('Force sync failed:', error);
+        toast.error('Force sync failed')
       } finally {
         setIsSyncing(false);
       }

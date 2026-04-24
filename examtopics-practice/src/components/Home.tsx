@@ -11,6 +11,7 @@ import FloatingButtons from './FloatingButtons';
 import { LanguageToggle } from './LanguageToggle';
 import { ThemeToggle } from './ThemeToggle';
 import UserMenu from './UserMenu';
+import { toast } from 'react-toastify';
 
 const Home: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -42,6 +43,7 @@ const Home: React.FC = () => {
         setCompletedExams(examIds);
       } catch (error) {
         console.error('Error loading completed exams:', error);
+        toast.error('Error loading completed exams')
       }
     };
     loadCompletedExams();

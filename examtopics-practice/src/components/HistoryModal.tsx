@@ -6,6 +6,7 @@ import { useExams } from '../hooks/useExams';
 import { useProgress } from '../hooks/useProgress';
 import { HistoryEntry } from '../types';
 import { getExamName } from '../utils/examUtils';
+import { toast } from 'react-toastify';
 
 interface HistoryModalProps {
   isOpen: boolean;
@@ -44,6 +45,7 @@ const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose, examId }) 
           }
         } catch (error) {
           console.error('Error loading completed exam IDs:', error);
+          toast.error('Error loading completed exam IDs')
         }
       }
     };
@@ -60,6 +62,7 @@ const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose, examId }) 
           setStats(statsData);
         } catch (error) {
           console.error('Error loading stats:', error);
+          toast.error('Error loading stats')
           setStats(null);
         } finally {
           setLoading(false);
@@ -91,6 +94,7 @@ const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose, examId }) 
           setDailyTracking(validData);
         } catch (error) {
           console.error('Error loading daily tracking:', error);
+          toast.error('Error loading daily tracking')
           setDailyTracking([]);
         } finally {
           setLoading(false);
@@ -112,6 +116,7 @@ const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose, examId }) 
       }
     } catch (error) {
       console.error('Error loading history data:', error);
+      toast.error('Error loading history data')
     } finally {
       setLoading(false);
     }

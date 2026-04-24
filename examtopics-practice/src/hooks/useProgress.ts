@@ -3,6 +3,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { dataService } from '../services/dataService';
 import { DailyTrackingData, UserAnswer, UserProgress } from '../types';
 import { migrateProgressData } from '../utils/migration';
+import { toast } from 'react-toastify';
 
 const STORAGE_KEY = 'exam-progress';
 
@@ -134,15 +135,6 @@ export const useProgress = (examId?: string) => {
   const toggleTrainingMark = async (topicNumber: number, questionNumber: number) => {
     const key = `${topicNumber}-${questionNumber}`;
     const prevMarkedForTraining = progress.markedForTraining.includes(key);
-    
-    // Update local state immediately
-    setProgress(prev => ({
-      ...prev,
-      examId: examId || prev.examId,
-      markedForTraining: prev.markedForTraining.includes(key)
-        ? prev.markedForTraining.filter(q => q !== key)
-        : [...prev.markedForTraining, key]
-    }));
 
     // Use dataService for offline-first saving
     if (examId) {
@@ -154,9 +146,20 @@ export const useProgress = (examId?: string) => {
           !prevMarkedForTraining,
           token || undefined
         );
-        console.log('Training mark toggled:', response.message);
+
+        toast.success(response.message)
+    
+        // Update local state immediately
+        setProgress(prev => ({
+          ...prev,
+          examId: examId || prev.examId,
+          markedForTraining: prev.markedForTraining.includes(key)
+            ? prev.markedForTraining.filter(q => q !== key)
+            : [...prev.markedForTraining, key]
+        }));
       } catch (error) {
         console.error('Error toggling training mark:', error);
+        toast.error('Error toggling training mark');
       }
     }
   };
@@ -174,8 +177,10 @@ export const useProgress = (examId?: string) => {
           token || undefined
         );
         console.log('Exam submitted:', response.message);
+        toast.success(response.message)
       } catch (error) {
         console.error('Error submitting exam:', error);
+        toast.error('Error submitting exam')
       }
     }
 

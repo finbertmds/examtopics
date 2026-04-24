@@ -1,4 +1,5 @@
-  import { AllProgressData, ApiResponse, CompletedExamIdsData, DailyTrackingData, HistoryData, ReportData, StatsData, UserData, UserProgress } from '../types';
+import { toast } from 'react-toastify';
+import { AllProgressData, ApiResponse, CompletedExamIdsData, DailyTrackingData, HistoryData, ReportData, StatsData, UserData, UserProgress } from '../types';
 import { apiClient } from '../utils/apiClient';
 import { cacheStorage } from './cacheStorage';
 
@@ -40,6 +41,7 @@ class DataService {
         await operation();
       } catch (error) {
         console.error('Error processing sync operation:', error);
+        toast.error('Error processing sync operation:' + error);
         // Re-queue failed operations
         this.syncQueue.push(operation);
       }

@@ -2,6 +2,7 @@ import React, { createContext, useCallback, useContext, useEffect, useState } fr
 import { cacheStorage } from '../services/cacheStorage';
 import { User } from '../types';
 import { apiClient } from '../utils/apiClient';
+import { toast } from 'react-toastify';
 
 interface AuthContextType {
   user: User | null;
@@ -154,6 +155,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           await cacheStorage.setProgress(examId, serverResponse.data);
 
         } catch (error) {
+          toast.error(`Error processing exam ${examId}`)
           console.error(`Error processing exam ${examId}:`, error);
         }
       }
@@ -176,6 +178,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       console.log(`Synchronization completed: ${totalSynced} answers uploaded, ${totalSkipped} answers already up-to-date`);
     } catch (error) {
       console.error('Error synchronizing offline data:', error);
+      toast.error(`Error synchronizing offline data`)
     }
   }, []);
 
@@ -275,6 +278,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       console.log('Latest data refresh completed');
     } catch (error) {
       console.error('Error refreshing latest data from server:', error);
+      toast.error(`Error refreshing latest data from server`)
     }
   };
 
