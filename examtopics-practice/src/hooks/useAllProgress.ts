@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { dataService } from '../services/dataService';
 import { ProgressData } from '../types';
+import { toast } from 'react-toastify';
 
 export const useAllProgress = () => {
   const { isAuthenticated, token } = useAuth();
@@ -30,6 +31,7 @@ export const useAllProgress = () => {
         }
       } catch (error) {
         console.error('Error loading all progress:', error);
+        toast.error(`Error loading all progress`)
       } finally {
         setIsLoading(false);
       }
