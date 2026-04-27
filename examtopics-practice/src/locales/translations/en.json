@@ -1,4 +1,6 @@
 {
+  "retry": "Retry",
+  "errorLoadingExams": "Error loading exams. Please try again.",
   "loading": "Loading...",
   "all": "All",
   "search": "Search",

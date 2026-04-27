@@ -1,4 +1,6 @@
 {
+  "retry": "Thử lại",
+  "errorLoadingExams": "Lỗi khi tải đề thi. Vui lòng thử lại.",
   "loading": "Đang tải...",
   "all": "Tất cả",
   "search": "Tìm kiếm",
