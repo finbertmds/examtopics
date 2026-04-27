@@ -314,6 +314,7 @@ const Home: React.FC = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
                     {examsWithProgress.map((exam) => (
                       <ExamCard
+                        type="progress"
                         key={exam.code}
                         exam={exam}
                         language={language}
@@ -340,6 +341,7 @@ const Home: React.FC = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
                     {examsCompleted.map((exam) => (
                       <ExamCard
+                        type="completed"
                         key={exam.code}
                         exam={exam}
                         language={language}
@@ -366,6 +368,7 @@ const Home: React.FC = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {examsWithoutProgress.map((exam) => (
                       <ExamCard
+                        type="available"
                         key={exam.code}
                         exam={exam}
                         language={language}

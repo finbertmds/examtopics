@@ -83,10 +83,16 @@ class ProgressService {
       const result = {};
       
       for (const progress of progressList) {
+        const historyMarkedForTraining = await History.findAllByUserAndExam(userId, progress.examId);
+        const mergedMarkedForTraining = [
+          ...(progress?.markedForTraining || []),
+          ...historyMarkedForTraining.flatMap(item => item.markedForTraining || [])
+        ];
+        const markedForTraining = Array.from(new Set(mergedMarkedForTraining));
         result[progress.examId] = {
           examId: progress.examId,
           answers: Object.fromEntries(progress.answers),
-          markedForTraining: progress.markedForTraining,
+          markedForTraining: markedForTraining,
           currentQuestion: progress.currentQuestion,
           isRandomized: progress.isRandomized,
           lastUpdated: progress.updatedAt,
@@ -179,11 +185,13 @@ class ProgressService {
         throw new Error('Progress not found');
       }
 
-      const updatedProgress = await Progress.findOneAndUpdate(
-        { userId, examId },
-        { $set: { markedForTraining: isMarkedForTraining ? [...progress.markedForTraining, key] : progress.markedForTraining.filter(q => q !== key) } },
-        { new: true }
-      );
+      if (isMarkedForTraining || progress.markedForTraining.includes(key)) {
+        const updatedProgress = await Progress.findOneAndUpdate(
+          { userId, examId },
+          { $set: { markedForTraining: isMarkedForTraining ? [...progress.markedForTraining, key] : progress.markedForTraining.filter(q => q !== key) } },
+          { new: true }
+        );
+      }
 
       if (!isMarkedForTraining) {
         await History.updateMany({ userId, examId }, { $pull: { markedForTraining: key } });
