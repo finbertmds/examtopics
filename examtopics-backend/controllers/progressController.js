@@ -116,12 +116,11 @@ class ProgressController {
         });
       }
 
-      const progress = await progressService.toggleTrainingMark(userId, examId, topicNumber, questionNumber, isMarkedForTraining);
+      await progressService.toggleTrainingMark(userId, examId, topicNumber, questionNumber, isMarkedForTraining);
       
       res.json({
         success: true,
         message: 'Training mark toggled successfully',
-        markedForTraining: progress.markedForTraining
       });
     } catch (error) {
       console.error('Error toggling training mark:', error);

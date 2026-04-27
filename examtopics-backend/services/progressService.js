@@ -186,7 +186,7 @@ class ProgressService {
       }
 
       if (isMarkedForTraining || progress.markedForTraining.includes(key)) {
-        const updatedProgress = await Progress.findOneAndUpdate(
+        await Progress.findOneAndUpdate(
           { userId, examId },
           { $set: { markedForTraining: isMarkedForTraining ? [...progress.markedForTraining, key] : progress.markedForTraining.filter(q => q !== key) } },
           { new: true }
@@ -197,7 +197,6 @@ class ProgressService {
         await History.updateMany({ userId, examId }, { $pull: { markedForTraining: key } });
       }
 
-      return updatedProgress;
     } catch (error) {
       console.error('Error toggling training mark:', error);
       throw error;
