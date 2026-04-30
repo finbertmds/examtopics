@@ -5,6 +5,18 @@ import { getBackendUrl } from './backendUrl';
 
 const backendUrl = getBackendUrl();
 
+class ApiRequestError extends Error {
+  status: number;
+  responseBody: any;
+
+  constructor(message: string, status: number, responseBody?: any) {
+    super(message);
+    this.name = 'ApiRequestError';
+    this.status = status;
+    this.responseBody = responseBody;
+  }
+}
+
 // API Client class for centralized API management
 class ApiClient {
   private baseUrl: string;
@@ -74,7 +86,8 @@ class ApiClient {
   private async fetchWithAuth<T>(
     endpoint: string,
     options: RequestInit = {},
-    token?: string
+    token?: string,
+    retryOnAuthError: boolean = true
   ): Promise<ApiResponse<T>> {
     try {
       // Check network status
@@ -104,8 +117,20 @@ class ApiClient {
 
       clearTimeout(timeoutId);
 
+
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        let errorBody: any = null;
+        try {
+          errorBody = await response.json();
+        } catch (_error) {
+          // Ignore JSON parse errors for non-JSON responses
+        }
+
+        throw new ApiRequestError(
+          errorBody?.error || errorBody?.message || `HTTP error! status: ${response.status}`,
+          response.status,
+          errorBody
+        );
       }
 
       const data = await response.json();
@@ -136,6 +161,20 @@ class ApiClient {
             error: 'Network offline',
             message: 'No internet connection available',
           };
+        }
+
+        if (
+          retryOnAuthError &&
+          token &&
+          error instanceof ApiRequestError &&
+          error.status === 403 &&
+          error.responseBody?.error === 'Invalid or expired token'
+        ) {
+          const refreshedToken = await this.refreshToken(token);
+          if (refreshedToken) {
+            window.dispatchEvent(new CustomEvent('auth-token-refreshed', { detail: refreshedToken }));
+            return this.fetchWithAuth<T>(endpoint, options, refreshedToken, false);
+          }
         }
       }
       
@@ -271,6 +310,32 @@ class ApiClient {
 
   getGoogleAuthUrl(): string {
     return `${this.baseUrl}/auth/google`;
+  }
+
+  private async refreshToken(token: string): Promise<string | null> {
+    try {
+      console.log('Refreshing token...');
+      const response = await fetch(`${this.baseUrl}/auth/refresh`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        return null;
+      }
+
+      const data = await response.json();
+      if (data?.success && data?.token) {
+        return data.token;
+      }
+
+      return null;
+    } catch (_error) {
+      return null;
+    }
   }
 
   // Dynamic response data extraction

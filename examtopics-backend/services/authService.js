@@ -67,6 +67,25 @@ const generateToken = (user) => {
   );
 };
 
+// Refresh access token from an expired but signed token
+const refreshAccessToken = (token) => {
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET, { ignoreExpiration: true });
+    return jwt.sign(
+      {
+        userId: decoded.userId,
+        email: decoded.email,
+        name: decoded.name,
+        picture: decoded.picture || null
+      },
+      JWT_SECRET,
+      { expiresIn: '7d' }
+    );
+  } catch (error) {
+    return null;
+  }
+};
+
 // Verify JWT token middleware
 const authenticateToken = (req, res, next) => {
   const authHeader = req.headers['authorization'];
@@ -109,6 +128,7 @@ const getUserFromToken = (req, res, next) => {
 module.exports = {
   passport,
   generateToken,
+  refreshAccessToken,
   authenticateToken,
   getUserFromToken
 };

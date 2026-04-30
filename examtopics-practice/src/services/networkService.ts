@@ -35,6 +35,8 @@ class NetworkService {
     this.isOnline = true;
     this.notifyListeners(true);
     this.triggerSync();
+    console.log('Dispatching current user changed event');
+    window.dispatchEvent(new CustomEvent('current-user-changed'));
   }
 
   private handleOffline() {

@@ -282,55 +282,85 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  // Load user info when token changes
-  useEffect(() => {
-    const loadUser = async () => {
-      if (token) {
-        try {
-          const response = await apiClient.getCurrentUser(token);
+  const loadUser = async () => {
+    if (token) {
+      try {
+        const response = await apiClient.getCurrentUser(token);
 
-          if (response.success && response.data?.user) {
-            const newUser = response.data.user;
-            const userChanged = hasUserChanged(newUser);
+        if (response.success && response.data?.user) {
+          const newUser = response.data.user;
+          const userChanged = hasUserChanged(newUser);
 
-            setUser(newUser);
-            cacheUser(newUser);
+          setUser(newUser);
+          cacheUser(newUser);
 
-            if (userChanged) {
-              console.log('User has changed, clearing offline data');
-              // User changed, clear all offline data
-              try {
-                localStorage.removeItem('exam-progress');
-                await cacheStorage.clearAll();
-                console.log('Cleared offline data due to user change');
-              } catch (error) {
-                console.error('Error clearing offline data:', error);
-              }
-            } else {
-              console.log('Same user, synchronizing offline data');
-              // Same user, synchronize offline data
-              await syncOfflineData(token);
+          if (userChanged) {
+            console.log('User has changed, clearing offline data');
+            // User changed, clear all offline data
+            try {
+              localStorage.removeItem('exam-progress');
+              await cacheStorage.clearAll();
+              console.log('Cleared offline data due to user change');
+            } catch (error) {
+              console.error('Error clearing offline data:', error);
             }
           } else {
+            console.log('Same user, synchronizing offline data');
+            // Same user, synchronize offline data
+            await syncOfflineData(token);
+          }
+        } else {
+          if (response.error != 'Network offline') {
             // Token is invalid, remove it
             localStorage.removeItem('auth_token');
             setTokenState(null);
             setUser(null);
           }
-        } catch (error) {
-          console.error('Error loading user:', error);
-          localStorage.removeItem('auth_token');
-          setTokenState(null);
-          setUser(null);
         }
-      } else {
+      } catch (error) {
+        console.error('Error loading user:', error);
+        localStorage.removeItem('auth_token');
+        setTokenState(null);
         setUser(null);
       }
-      setIsLoading(false);
-    };
+    } else {
+      setUser(null);
+    }
+    setIsLoading(false);
+  };
 
+  // Load user info when token changes
+  useEffect(() => {
     loadUser();
   }, [token, hasUserChanged, syncOfflineData]);
+
+  useEffect(() => {
+    const handleTokenRefresh = (event: Event) => {
+      const customEvent = event as CustomEvent<string>;
+      if (customEvent.detail) {
+        localStorage.setItem('auth_token', customEvent.detail);
+        setTokenState(customEvent.detail);
+      }
+    };
+
+    window.addEventListener('auth-token-refreshed', handleTokenRefresh as EventListener);
+    return () => {
+      window.removeEventListener('auth-token-refreshed', handleTokenRefresh as EventListener);
+    };
+  }, []);
+
+
+  useEffect(() => {
+    window.addEventListener('current-user-changed', () => {
+      console.log('Current user changed event received');
+      loadUser();
+    });
+    return () => {
+      window.removeEventListener('current-user-changed', () => {
+        console.log('Current user changed event removed');
+      });
+    };
+  }, []);
 
   const login = async () => {
     // Data management will be handled after successful login

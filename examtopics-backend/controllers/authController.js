@@ -1,4 +1,4 @@
-const { generateToken } = require('../services/authService');
+const { generateToken, refreshAccessToken } = require('../services/authService');
 
 class AuthController {
   googleCallback(req, res) {
@@ -32,6 +32,31 @@ class AuthController {
         name: req.user.name,
         picture: req.user.picture || null
       }
+    });
+  }
+
+  refreshToken(req, res) {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+
+    if (!token) {
+      return res.status(401).json({
+        success: false,
+        error: 'Access token required'
+      });
+    }
+
+    const newToken = refreshAccessToken(token);
+    if (!newToken) {
+      return res.status(403).json({
+        success: false,
+        error: 'Invalid token'
+      });
+    }
+
+    return res.json({
+      success: true,
+      token: newToken
     });
   }
 }
