@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
 import { useAuth } from '../contexts/AuthContext';
 import { dataService } from '../services/dataService';
 import { DailyTrackingData, UserAnswer, UserProgress } from '../types';
 import { migrateProgressData } from '../utils/migration';
-import { toast } from 'react-toastify';
 
 const STORAGE_KEY = 'exam-progress';
 
@@ -125,8 +125,13 @@ export const useProgress = (examId?: string) => {
           token || undefined
         );
         console.log('Answer saved:', response.message);
+        if (response.success) {
+          toast.success(response.message);
+        } else {
+          toast.error(response.error || 'Failed to save answer for question ' + questionNumber + ' in topic ' + topicNumber);
+        }
       } catch (error) {
-        console.error('Error saving answer:', error);
+        console.error('Error saving answer for question ' + questionNumber + ' in topic ' + topicNumber + ':', error);
       }
     }
   };
@@ -147,7 +152,11 @@ export const useProgress = (examId?: string) => {
           token || undefined
         );
 
-        toast.success(response.message)
+        if (response.success) {
+          toast.success(response.message);
+        } else {
+          toast.error(response.error || 'Failed to toggle training mark for question ' + questionNumber + ' in topic ' + topicNumber);
+        }
     
         // Update local state immediately
         setProgress(prev => ({
@@ -177,10 +186,14 @@ export const useProgress = (examId?: string) => {
           token || undefined
         );
         console.log('Exam submitted:', response.message);
-        toast.success(response.message)
+        if (response.success) {
+          toast.success(response.message);
+        } else {
+          toast.error(response.error || 'Failed to submit exam ' + examId);
+        }
       } catch (error) {
-        console.error('Error submitting exam:', error);
-        toast.error('Error submitting exam')
+        console.error('Error submitting exam ' + examId + ':', error);
+        toast.error('Error submitting exam ' + examId);
       }
     }
 

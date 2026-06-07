@@ -86,7 +86,7 @@ class ProgressController {
       
       res.json({
         success: true,
-        message: 'Answer saved successfully',
+        message: 'Answer for question ' + questionNumber + ' in topic ' + topicNumber + ' saved successfully',
         progress: {
           examId: progress.examId,
           answers: Object.fromEntries(progress.answers),
@@ -95,10 +95,10 @@ class ProgressController {
         }
       });
     } catch (error) {
-      console.error('Error saving answer:', error);
+      console.error('Error saving answer for question ' + questionNumber + ' in topic ' + topicNumber + ':', error);
       res.status(500).json({
         success: false,
-        error: 'Failed to save answer',
+        error: 'Failed to save answer for question ' + questionNumber + ' in topic ' + topicNumber,
         details: error.message
       });
     }
@@ -120,13 +120,13 @@ class ProgressController {
       
       res.json({
         success: true,
-        message: 'Training mark toggled successfully',
+        message: 'Training mark for question ' + questionNumber + ' in topic ' + topicNumber + ' ' + (isMarkedForTraining ? 'added' : 'removed') + ' successfully',
       });
     } catch (error) {
-      console.error('Error toggling training mark:', error);
+      console.error('Error toggling training mark for question ' + questionNumber + ' in topic ' + topicNumber + ':', error);
       res.status(500).json({
         success: false,
-        error: 'Failed to toggle training mark',
+        error: 'Failed to toggle training mark for question ' + questionNumber + ' in topic ' + topicNumber,
         details: error.message
       });
     }
@@ -156,13 +156,13 @@ class ProgressController {
       
       res.json({
         success: true,
-        message: 'Exam submitted and progress reset successfully'
+        message: 'Exam ' + examId + ' submitted and progress reset successfully'
       });
     } catch (error) {
-      console.error('Error submitting exam:', error);
+      console.error('Error submitting exam ' + examId + ':', error);
       res.status(500).json({
         success: false,
-        error: 'Failed to submit exam',
+        error: 'Failed to submit exam ' + examId,
         details: error.message
       });
     }
