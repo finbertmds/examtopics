@@ -9,7 +9,7 @@ export const useAllProgress = () => {
   const [allProgress, setAllProgress] = useState<Record<string, ProgressData>>({});
   const [isLoading, setIsLoading] = useState(false);
 
-  // Load all progress using dataService (offline-first)
+  // Load all progress from API
   useEffect(() => {
     const loadAllProgress = async () => {
       setIsLoading(true);

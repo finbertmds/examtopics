@@ -5,81 +5,53 @@ import { dataService } from '../services/dataService';
 import { DailyTrackingData, UserAnswer, UserProgress } from '../types';
 import { migrateProgressData } from '../utils/migration';
 
-const STORAGE_KEY = 'exam-progress';
+const createEmptyProgress = (examId: string): UserProgress => ({
+  examId,
+  answers: {},
+  markedForTraining: [],
+  currentTopic: 1,
+  currentQuestion: 1,
+  isRandomized: false,
+});
 
 export const useProgress = (examId?: string) => {
   const { isAuthenticated, token } = useAuth();
-  const [progress, setProgress] = useState<UserProgress>(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      const allProgress = JSON.parse(stored);
-      const examProgress = examId ? allProgress[examId] : null;
-      let currentTopic = 1;
-      
-      if (examProgress) {
-        // Find the maximum topicNumber from all answers
-        const topicNumbers = Object.values(examProgress.answers || {}).map((answer: any) => answer.topicNumber);
-        if (topicNumbers.length > 0) {
-          currentTopic = Math.max(...topicNumbers);
-        }
-        // Migrate old format to new format if needed
-        const migratedProgress = migrateProgressData(examProgress, examId || '', currentTopic);
-        
-        // Convert date strings back to Date objects
-        Object.values(migratedProgress.answers).forEach((answer: UserAnswer) => {
-          if (answer.answeredAt) answer.answeredAt = new Date(answer.answeredAt);
-        });
-        return migratedProgress;
-      }
-    }
-    
-    return {
-      examId: examId || '',
-      answers: {},
-      markedForTraining: [],
-      currentTopic: 1,
-      currentQuestion: 1,
-      isRandomized: false
-    };
-  });
-
+  const [progress, setProgress] = useState<UserProgress>(() => createEmptyProgress(examId || ''));
   const [isLoading, setIsLoading] = useState(false);
 
-  // Load progress using dataService (offline-first)
   useEffect(() => {
     const loadProgress = async () => {
-      if (examId) {
-        setIsLoading(true);
-        try {
-          const response = await dataService.loadUserProgress(examId, token || undefined);
+      if (!examId) return;
 
-          if (response.success && response.data) {
-            // Find the maximum topicNumber from all answers
-            let currentTopic = 1;
-            const examProgress = response.data.progress?.[examId];
-            if (examProgress?.answers) {
-              const topicNumbers = Object.values(examProgress.answers).map((answer: any) => answer.topicNumber);
-              if (topicNumbers.length > 0) {
-                currentTopic = Math.max(...topicNumbers);
-              }
+      setIsLoading(true);
+      try {
+        const response = await dataService.loadUserProgress(examId, token || undefined);
+
+        if (response.success && response.data) {
+          let currentTopic = 1;
+          const examProgress = response.data.progress?.[examId];
+          if (examProgress?.answers) {
+            const topicNumbers = Object.values(examProgress.answers).map((answer: any) => answer.topicNumber);
+            if (topicNumbers.length > 0) {
+              currentTopic = Math.max(...topicNumbers);
             }
-            
-            // Migrate old format to new format if needed
-            const migratedProgress = migrateProgressData(response.data, examId || '', currentTopic);
-              
-            // Convert date strings back to Date objects
-            if (migratedProgress.answers) {
-              Object.values(migratedProgress.answers).forEach((answer: UserAnswer) => {
-                if (answer.answeredAt) answer.answeredAt = new Date(answer.answeredAt);
-              });
-            }
-            setProgress(migratedProgress);
           }
-        } catch (error) {
-          console.error('Error loading progress:', error);
-        } finally {
-          setIsLoading(false);
+
+          const migratedProgress = migrateProgressData(response.data, examId, currentTopic);
+
+          if (migratedProgress.answers) {
+            Object.values(migratedProgress.answers).forEach((answer: UserAnswer) => {
+              if (answer.answeredAt) answer.answeredAt = new Date(answer.answeredAt);
+            });
+          }
+          setProgress(migratedProgress);
+        } else {
+          setProgress(createEmptyProgress(examId));
         }
+      } catch (error) {
+        console.error('Error loading progress:', error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -87,18 +59,17 @@ export const useProgress = (examId?: string) => {
   }, [isAuthenticated, token, examId]);
 
   const updateProgress = (updates: Partial<UserProgress>) => {
-    setProgress(prev => ({
+    setProgress((prev) => ({
       ...prev,
       ...updates,
-      examId: examId || prev.examId
+      examId: examId || prev.examId,
     }));
   };
 
   const saveAnswer = async (topicNumber: number, questionNumber: number, selectedAnswers: string[], isCorrect: boolean) => {
     const key = `${topicNumber}-${questionNumber}`;
-    
-    // Update local state immediately
-    setProgress(prev => ({
+
+    setProgress((prev) => ({
       ...prev,
       examId: examId || prev.examId,
       answers: {
@@ -108,12 +79,11 @@ export const useProgress = (examId?: string) => {
           questionNumber,
           selectedAnswers,
           isCorrect,
-          answeredAt: new Date()
-        }
-      }
+          answeredAt: new Date(),
+        },
+      },
     }));
 
-    // Use dataService for offline-first saving
     if (examId) {
       try {
         const response = await dataService.saveAnswer(
@@ -124,24 +94,21 @@ export const useProgress = (examId?: string) => {
           isCorrect,
           token || undefined
         );
-        console.log('Answer saved:', response.message);
         if (response.success) {
-          toast.success(response.message);
+          toast.success(response.message || 'Answer saved');
         } else {
-          toast.error(response.error || 'Failed to save answer for question ' + questionNumber + ' in topic ' + topicNumber);
+          toast.error(response.error || `Failed to save answer for question ${questionNumber} in topic ${topicNumber}`);
         }
       } catch (error) {
-        console.error('Error saving answer for question ' + questionNumber + ' in topic ' + topicNumber + ':', error);
+        console.error(`Error saving answer for question ${questionNumber} in topic ${topicNumber}:`, error);
       }
     }
   };
-
 
   const toggleTrainingMark = async (topicNumber: number, questionNumber: number) => {
     const key = `${topicNumber}-${questionNumber}`;
     const prevMarkedForTraining = progress.markedForTraining.includes(key);
 
-    // Use dataService for offline-first saving
     if (examId) {
       try {
         const response = await dataService.markForTraining(
@@ -153,18 +120,17 @@ export const useProgress = (examId?: string) => {
         );
 
         if (response.success) {
-          toast.success(response.message);
+          toast.success(response.message || 'Training mark updated');
         } else {
-          toast.error(response.error || 'Failed to toggle training mark for question ' + questionNumber + ' in topic ' + topicNumber);
+          toast.error(response.error || `Failed to toggle training mark for question ${questionNumber} in topic ${topicNumber}`);
         }
-    
-        // Update local state immediately
-        setProgress(prev => ({
+
+        setProgress((prev) => ({
           ...prev,
           examId: examId || prev.examId,
           markedForTraining: prev.markedForTraining.includes(key)
-            ? prev.markedForTraining.filter(q => q !== key)
-            : [...prev.markedForTraining, key]
+            ? prev.markedForTraining.filter((q) => q !== key)
+            : [...prev.markedForTraining, key],
         }));
       } catch (error) {
         console.error('Error toggling training mark:', error);
@@ -173,8 +139,11 @@ export const useProgress = (examId?: string) => {
     }
   };
 
-
-  const submitExam = async (score: { totalQuestions: number; correctAnswers: number; accuracy: number }, totalQuestions: number, answeredCount: number) => {
+  const submitExam = async (
+    score: { totalQuestions: number; correctAnswers: number; accuracy: number },
+    totalQuestions: number,
+    answeredCount: number
+  ) => {
     if (examId) {
       try {
         const response = await dataService.submitProgress(
@@ -185,113 +154,88 @@ export const useProgress = (examId?: string) => {
           answeredCount,
           token || undefined
         );
-        console.log('Exam submitted:', response.message);
         if (response.success) {
-          toast.success(response.message);
+          toast.success(response.message || 'Exam submitted');
         } else {
-          toast.error(response.error || 'Failed to submit exam ' + examId);
+          toast.error(response.error || `Failed to submit exam ${examId}`);
         }
       } catch (error) {
-        console.error('Error submitting exam ' + examId + ':', error);
-        toast.error('Error submitting exam ' + examId);
+        console.error(`Error submitting exam ${examId}:`, error);
+        toast.error(`Error submitting exam ${examId}`);
       }
     }
 
-    // Reset progress after submission
     resetProgress();
   };
 
-
   const resetProgress = () => {
-    const newProgress: UserProgress = {
-      examId: examId || '',
-      answers: {},
-      markedForTraining: [],
-      currentTopic: 1,
-      currentQuestion: 1,
-      isRandomized: false
-    };
-    setProgress(newProgress);
+    setProgress(createEmptyProgress(examId || ''));
 
-    // Use dataService for offline-first reset
     if (examId) {
-      dataService.resetProgress(examId, token || undefined).catch(error => {
+      dataService.resetProgress(examId, token || undefined).catch((error) => {
         console.error('Error resetting progress:', error);
       });
     }
   };
 
-  const getAllProgress = () => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    return stored ? JSON.parse(stored) : {};
-  };
-
-  const getHistory = async (examId?: string) => {
+  const getHistory = async (historyExamId?: string) => {
     try {
-      const response = await dataService.getHistory(examId, token || undefined);
-      
+      const response = await dataService.getHistory(historyExamId, token || undefined);
+
       if (response.success && response.data?.history) {
         return response.data.history;
       }
     } catch (error) {
       console.error('Error getting history:', error);
     }
-    
+
     return [];
   };
 
   const getCompletedExamIds = async (): Promise<string[]> => {
     try {
       const response = await dataService.getCompletedExamIds(token || undefined);
-      
+
       if (response.success && response.data?.examIds) {
         return response.data.examIds;
       }
     } catch (error) {
       console.error('Error getting completed exam IDs:', error);
     }
-    
+
     return [];
   };
 
-  const getExamStats = async (examId: string) => {
+  const getExamStats = async (statsExamId: string) => {
     try {
-      const response = await dataService.getStats(examId, token || undefined);
-      
+      const response = await dataService.getStats(statsExamId, token || undefined);
+
       if (response.success && response.data?.stats) {
         return response.data.stats;
       }
     } catch (error) {
       console.error('Error getting exam stats:', error);
     }
-    
+
     return null;
   };
 
-  const getDailyTracking = async (examId?: string): Promise<DailyTrackingData['dailyProgress'] | []> => {
+  const getDailyTracking = async (trackingExamId?: string): Promise<DailyTrackingData['dailyProgress'] | []> => {
     try {
-      const response = await dataService.getDailyTracking(examId || 'all', token || undefined);
-      
+      const response = await dataService.getDailyTracking(trackingExamId || 'all', token || undefined);
+
       if (response.success && response.data) {
         return response.data.dailyProgress;
       }
     } catch (error) {
       console.error('Error getting daily tracking:', error);
     }
-    
+
     return [];
   };
 
   const clearAllProgress = () => {
-    dataService.clearCache();
-    setProgress({
-      examId: examId || '',
-      answers: {},
-      markedForTraining: [],
-      currentTopic: 1,
-      currentQuestion: 1,
-      isRandomized: false
-    });
+    setProgress(createEmptyProgress(examId || ''));
   };
 
   return {
@@ -302,11 +246,10 @@ export const useProgress = (examId?: string) => {
     toggleTrainingMark,
     submitExam,
     resetProgress,
-    getAllProgress,
     getHistory,
     getCompletedExamIds,
     getExamStats,
     getDailyTracking,
-    clearAllProgress
+    clearAllProgress,
   };
 };
