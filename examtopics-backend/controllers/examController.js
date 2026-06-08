@@ -43,6 +43,23 @@ class ExamController {
     }
   }
 
+  async getQuestionByExamAndNumber(req, res, next) {
+    try {
+      const questionNumber = parseInt(req.params.questionNumber, 10);
+      if (Number.isNaN(questionNumber)) {
+        return res.status(400).json({ success: false, error: 'Invalid question number' });
+      }
+
+      const question = await examService.getQuestionByExamAndNumber(req.params.code, questionNumber);
+      if (!question) {
+        return res.status(404).json({ success: false, error: 'Question not found' });
+      }
+      res.json({ success: true, question });
+    } catch (error) {
+      next(error);
+    }
+  }
+
   async createExam(req, res, next) {
     try {
       // Expecting metadata in `req.body` and questions under `req.body.questions` 
@@ -103,13 +120,38 @@ class ExamController {
         return res.status(400).json({ success: false, error: 'Invalid question number' });
       }
 
-      const { suggested_answer, answer } = req.body;
-      if (suggested_answer === undefined && answer === undefined) {
-        return res.status(400).json({ success: false, message: 'Provide suggested_answer or answer to update' });
+      const {
+        question_text,
+        answers,
+        link,
+        multiple_choice,
+        answer_images,
+        question_images,
+        suggested_answer,
+        answer
+      } = req.body;
+
+      if (
+        question_text === undefined &&
+        answers === undefined &&
+        link === undefined &&
+        multiple_choice === undefined &&
+        answer_images === undefined &&
+        question_images === undefined &&
+        suggested_answer === undefined &&
+        answer === undefined
+      ) {
+        return res.status(400).json({ success: false, message: 'Provide at least one field to update' });
       }
 
       const userId = req.user?.userId;
       const result = await examService.updateExamQuestion(req.params.code, questionNumber, userId, {
+        question_text,
+        answers,
+        link,
+        multiple_choice,
+        answer_images,
+        question_images,
         suggested_answer,
         answer,
       });

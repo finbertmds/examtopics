@@ -11,6 +11,7 @@ router.get('/exams', examController.getAllExams);
 router.get('/exams/metadata/info', examController.getMetadata);
 router.get('/exams/me/created', authenticateToken, examController.getMyExams);
 router.get('/exams/:code', examController.getExamByCode);
+router.get('/questions/:code/:questionNumber', examController.getQuestionByExamAndNumber);
 router.get('/questions/:code', examController.getQuestionsByExamCode);
 
 // Admin-level endpoints (protected by user token)

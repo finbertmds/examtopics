@@ -3,6 +3,7 @@ import { toast } from 'react-toastify';
 import { useAuth } from '../contexts/AuthContext';
 import { useExams } from '../hooks/useExams';
 import { examApi } from '../services/examApi';
+import { Question } from '../types';
 
 const AdminPage: React.FC = () => {
   const { token, isAuthenticated } = useAuth();
@@ -45,6 +46,27 @@ const AdminPage: React.FC = () => {
   const [file, setFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const [questionModalOpen, setQuestionModalOpen] = useState(false);
+  const [questionNumberInput, setQuestionNumberInput] = useState<string>('');
+  const [selectedQuestionExamCode, setSelectedQuestionExamCode] = useState<string | null>(null);
+  const [selectedQuestion, setSelectedQuestion] = useState<Question | null>(null);
+  const [questionFormData, setQuestionFormData] = useState<any>({
+    question_text: '',
+    suggested_answer: '',
+    answer: '',
+    link: '',
+    multiple_choice: false,
+    answers: {},
+    answer_images: [],
+    question_images: [],
+  });
+  const [newAnswerKey, setNewAnswerKey] = useState('');
+  const [newAnswerValue, setNewAnswerValue] = useState('');
+  const [newAnswerImageUrl, setNewAnswerImageUrl] = useState('');
+  const [newQuestionImageUrl, setNewQuestionImageUrl] = useState('');
+  const [isQuestionLoading, setIsQuestionLoading] = useState(false);
+  const [isQuestionSaving, setIsQuestionSaving] = useState(false);
+
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex items-center justify-center">
@@ -64,6 +86,184 @@ const AdminPage: React.FC = () => {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       setFile(e.target.files[0]);
+    }
+  };
+
+  const openQuestionModal = (exam: any) => {
+    setSelectedQuestionExamCode(exam.code);
+    setQuestionNumberInput('');
+    setSelectedQuestion(null);
+    setQuestionFormData({ suggested_answer: '', answer: '' });
+    setQuestionModalOpen(true);
+  };
+
+  const closeQuestionModal = () => {
+    setQuestionModalOpen(false);
+    setSelectedQuestionExamCode(null);
+    setQuestionNumberInput('');
+    setSelectedQuestion(null);
+    setQuestionFormData({ suggested_answer: '', answer: '' });
+    setIsQuestionLoading(false);
+    setIsQuestionSaving(false);
+  };
+
+  const handleQuestionNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setQuestionNumberInput(e.target.value);
+  };
+
+  const handleQuestionFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const target = e.target as HTMLInputElement;
+    const { name, value, type, checked } = target;
+    setQuestionFormData((prev: any) => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value,
+    }));
+  };
+
+  const handleAnswerKeyChange = (oldKey: string, newKey: string) => {
+    setQuestionFormData((prev: any) => {
+      const answers = { ...prev.answers };
+      if (!answers.hasOwnProperty(oldKey) || !newKey) return prev;
+      const value = answers[oldKey];
+      delete answers[oldKey];
+      answers[newKey] = value;
+      return { ...prev, answers };
+    });
+  };
+
+  const handleAnswerValueChange = (key: string, value: string) => {
+    setQuestionFormData((prev: any) => ({
+      ...prev,
+      answers: {
+        ...prev.answers,
+        [key]: value,
+      },
+    }));
+  };
+
+  const removeAnswer = (key: string) => {
+    setQuestionFormData((prev: any) => {
+      const answers = { ...prev.answers };
+      delete answers[key];
+      return { ...prev, answers };
+    });
+  };
+
+  const addAnswer = () => {
+    if (!newAnswerKey.trim() || !newAnswerValue.trim()) {
+      toast.error('Answer key and value are required.');
+      return;
+    }
+    setQuestionFormData((prev: any) => ({
+      ...prev,
+      answers: {
+        ...prev.answers,
+        [newAnswerKey.trim()]: newAnswerValue.trim(),
+      },
+    }));
+    setNewAnswerKey('');
+    setNewAnswerValue('');
+  };
+
+  const removeAnswerImage = (index: number) => {
+    setQuestionFormData((prev: any) => ({
+      ...prev,
+      answer_images: prev.answer_images.filter((_: string, i: number) => i !== index),
+    }));
+  };
+
+  const addAnswerImage = () => {
+    if (!newAnswerImageUrl.trim()) {
+      toast.error('Provide a valid answer image URL.');
+      return;
+    }
+    setQuestionFormData((prev: any) => ({
+      ...prev,
+      answer_images: [...(prev.answer_images || []), newAnswerImageUrl.trim()],
+    }));
+    setNewAnswerImageUrl('');
+  };
+
+  const removeQuestionImage = (index: number) => {
+    setQuestionFormData((prev: any) => ({
+      ...prev,
+      question_images: prev.question_images.filter((_: string, i: number) => i !== index),
+    }));
+  };
+
+  const addQuestionImage = () => {
+    if (!newQuestionImageUrl.trim()) {
+      toast.error('Provide a valid question image URL.');
+      return;
+    }
+    setQuestionFormData((prev: any) => ({
+      ...prev,
+      question_images: [...(prev.question_images || []), newQuestionImageUrl.trim()],
+    }));
+    setNewQuestionImageUrl('');
+  };
+
+  const loadQuestionDetails = async () => {
+    if (!selectedQuestionExamCode) return;
+    const questionNumber = Number(questionNumberInput);
+    if (!questionNumber || questionNumber <= 0) {
+      toast.error('Please enter a valid question number.');
+      return;
+    }
+
+    setIsQuestionLoading(true);
+    try {
+      const question = await examApi.getQuestion(selectedQuestionExamCode, questionNumber);
+      setSelectedQuestion(question);
+      setQuestionFormData({
+        question_text: question.question_text || '',
+        suggested_answer: question.suggested_answer || '',
+        answer: question.answer || '',
+        link: question.link || '',
+        multiple_choice: !!question.multiple_choice,
+        answers: question.answers || {},
+        answer_images: question.answer_images || [],
+        question_images: question.question_images || [],
+      });
+      toast.success('Question details loaded.');
+    } catch (error: any) {
+      console.error('Failed to load question:', error);
+      toast.error(error.message || 'Failed to load question.');
+    } finally {
+      setIsQuestionLoading(false);
+    }
+  };
+
+  const saveQuestionDetails = async () => {
+    if (!token || !selectedQuestionExamCode || !selectedQuestion) {
+      toast.error('Please load a question before saving.');
+      return;
+    }
+
+    setIsQuestionSaving(true);
+    try {
+      const updated = await examApi.updateQuestion(
+        selectedQuestionExamCode,
+        selectedQuestion.question_number,
+        {
+          question_text: questionFormData.question_text,
+          answers: questionFormData.answers,
+          link: questionFormData.link,
+          multiple_choice: questionFormData.multiple_choice,
+          answer_images: questionFormData.answer_images,
+          question_images: questionFormData.question_images,
+          suggested_answer: questionFormData.suggested_answer,
+          answer: questionFormData.answer,
+        },
+        token
+      );
+      setSelectedQuestion(updated);
+      toast.success('Question updated successfully.');
+    } catch (error: any) {
+      console.error('Failed to update question:', error);
+      toast.error(error.message || 'Failed to update question.');
+    } finally {
+      setIsQuestionSaving(false);
     }
   };
 
@@ -195,6 +395,8 @@ const AdminPage: React.FC = () => {
       toast.error('Failed to delete exam.');
     }
   };
+
+  const answerEntries = Object.entries(questionFormData.answers || {}) as [string, string][];
 
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900 transition-colors py-8 px-4">
@@ -443,6 +645,13 @@ const AdminPage: React.FC = () => {
                           </button>
                           <button
                             type="button"
+                            onClick={() => openQuestionModal(exam)}
+                            className="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300 mr-4"
+                          >
+                            Edit Question
+                          </button>
+                          <button
+                            type="button"
                             onClick={() => handleDelete(exam.code)}
                             className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300"
                           >
@@ -458,6 +667,258 @@ const AdminPage: React.FC = () => {
           )}
         </div>
 
+        {questionModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/40 p-4">
+            <div className="w-full max-w-6xl max-h-[90vh] overflow-hidden rounded-2xl bg-white dark:bg-gray-900 shadow-xl">
+              <div className="flex items-center justify-between border-b border-gray-200 dark:border-gray-700 px-6 py-4">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Edit Question</h3>
+                <button
+                  type="button"
+                  onClick={closeQuestionModal}
+                  className="text-gray-500 hover:text-gray-700 dark:text-gray-300"
+                >
+                  Close
+                </button>
+              </div>
+              <div className="space-y-4 overflow-y-auto px-6 py-5 max-h-[calc(90vh-5rem)]">
+                <div className="grid gap-4 md:grid-cols-2">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Exam Code</label>
+                    <input
+                      type="text"
+                      value={selectedQuestionExamCode || ''}
+                      disabled
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Question Number</label>
+                    <input
+                      type="number"
+                      min={1}
+                      value={questionNumberInput}
+                      onChange={handleQuestionNumberChange}
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap gap-3">
+                  <button
+                    type="button"
+                    onClick={loadQuestionDetails}
+                    disabled={isQuestionLoading || !questionNumberInput}
+                    className={`px-4 py-2 rounded-lg text-sm font-medium text-white ${isQuestionLoading || !questionNumberInput ? 'bg-gray-400 cursor-not-allowed' : 'bg-indigo-600 hover:bg-indigo-700'} transition-colors`}
+                  >
+                    {isQuestionLoading ? 'Loading…' : 'Load Question'}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={closeQuestionModal}
+                    className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                  >
+                    Close
+                  </button>
+                </div>
+
+                {selectedQuestion && (
+                  <div className="space-y-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 p-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Question Text</label>
+                      <textarea
+                        name="question_text"
+                        value={questionFormData.question_text}
+                        onChange={handleQuestionFormChange}
+                        rows={5}
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white resize-y"
+                      />
+                    </div>
+
+                    <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-4">
+                      <div className="flex items-center justify-between mb-3">
+                        <p className="text-sm font-semibold text-gray-700 dark:text-gray-100">Answers</p>
+                        <div className="grid gap-2 sm:grid-cols-[1fr_3fr]">
+                          <input
+                            type="text"
+                            placeholder="Key"
+                            value={newAnswerKey}
+                            onChange={e => setNewAnswerKey(e.target.value)}
+                            className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white"
+                          />
+                          <input
+                            type="text"
+                            placeholder="Value"
+                            value={newAnswerValue}
+                            onChange={e => setNewAnswerValue(e.target.value)}
+                            className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white"
+                          />
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={addAnswer}
+                        className="mb-4 inline-flex items-center rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
+                      >
+                        Add Answer
+                      </button>
+                      <div className="space-y-3">
+                        {answerEntries.map(([key, value]) => (
+                          <div key={key} className="grid gap-2 md:grid-cols-[120px_1fr_auto] items-start">
+                            <input
+                              type="text"
+                              value={key}
+                              onChange={e => handleAnswerKeyChange(key, e.target.value)}
+                              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white"
+                            />
+                            <input
+                              type="text"
+                              value={value}
+                              onChange={e => handleAnswerValueChange(key, e.target.value)}
+                              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => removeAnswer(key)}
+                              className="inline-flex items-center justify-center rounded-lg border border-red-300 bg-red-50 px-3 py-2 text-sm font-medium text-red-700 hover:bg-red-100"
+                            >
+                              Remove
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="grid gap-4 md:grid-cols-2">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Suggested Answer</label>
+                        <input
+                          type="text"
+                          name="suggested_answer"
+                          value={questionFormData.suggested_answer}
+                          onChange={handleQuestionFormChange}
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Answer</label>
+                        <input
+                          type="text"
+                          name="answer"
+                          value={questionFormData.answer}
+                          onChange={handleQuestionFormChange}
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid gap-4 md:grid-cols-[4fr_1fr]">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Link</label>
+                        <input
+                          type="text"
+                          name="link"
+                          value={questionFormData.link}
+                          onChange={handleQuestionFormChange}
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                        />
+                      </div>
+                      <div className="flex items-center gap-3 pt-6">
+                        <input
+                          id="multiple_choice"
+                          type="checkbox"
+                          name="multiple_choice"
+                          checked={questionFormData.multiple_choice}
+                          onChange={handleQuestionFormChange}
+                          className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                        />
+                        <label htmlFor="multiple_choice" className="text-sm font-medium text-gray-700 dark:text-gray-300">Multiple Choice</label>
+                      </div>
+                    </div>
+
+                    <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-4">
+                      <p className="text-sm font-semibold text-gray-700 dark:text-gray-100 mb-3">Answer Images</p>
+                      <div className="grid gap-2 sm:grid-cols-[4fr_1fr] mb-3">
+                        <input
+                          type="text"
+                          placeholder="New answer image URL"
+                          value={newAnswerImageUrl}
+                          onChange={e => setNewAnswerImageUrl(e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white"
+                        />
+                        <button
+                          type="button"
+                          onClick={addAnswerImage}
+                          className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
+                        >
+                          Add Image
+                        </button>
+                      </div>
+                      <div className="space-y-2">
+                        {(questionFormData.answer_images || []).map((url: string, index: number) => (
+                          <div key={`${url}-${index}`} className="flex items-center justify-between rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-3 py-2">
+                            <span className="truncate text-sm text-gray-700 dark:text-gray-200">{url}</span>
+                            <button
+                              type="button"
+                              onClick={() => removeAnswerImage(index)}
+                              className="text-sm font-medium text-red-600 hover:text-red-800"
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-4">
+                      <p className="text-sm font-semibold text-gray-700 dark:text-gray-100 mb-3">Question Images</p>
+                      <div className="grid gap-2 sm:grid-cols-[4fr_1fr] mb-3">
+                        <input
+                          type="text"
+                          placeholder="New question image URL"
+                          value={newQuestionImageUrl}
+                          onChange={e => setNewQuestionImageUrl(e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white"
+                        />
+                        <button
+                          type="button"
+                          onClick={addQuestionImage}
+                          className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
+                        >
+                          Add Image
+                        </button>
+                      </div>
+                      <div className="space-y-2">
+                        {(questionFormData.question_images || []).map((url: string, index: number) => (
+                          <div key={`${url}-${index}`} className="flex items-center justify-between rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-3 py-2">
+                            <span className="truncate text-sm text-gray-700 dark:text-gray-200">{url}</span>
+                            <button
+                              type="button"
+                              onClick={() => removeQuestionImage(index)}
+                              className="text-sm font-medium text-red-600 hover:text-red-800"
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="flex justify-end">
+                      <button
+                        type="button"
+                        onClick={saveQuestionDetails}
+                        disabled={isQuestionSaving}
+                        className={`px-4 py-2 rounded-lg text-sm font-medium text-white ${isQuestionSaving ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700'} transition-colors`}
+                      >
+                        {isQuestionSaving ? 'Saving…' : 'Save'}
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

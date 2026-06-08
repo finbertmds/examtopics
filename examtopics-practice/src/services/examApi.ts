@@ -60,6 +60,27 @@ export const examApi = {
     };
   },
 
+  getQuestion: async (examCode: string, questionNumber: number): Promise<Question> => {
+    const response = await fetch(`${getBaseUrl()}/questions/${examCode}/${questionNumber}`);
+    if (!response.ok) throw new Error('Failed to fetch question');
+    const data = await response.json();
+    return { ...data.question, topic_number: data.question.topic_number || 1 };
+  },
+
+  updateQuestion: async (examCode: string, questionNumber: number, updateData: any, token: string): Promise<Question> => {
+    const response = await fetch(`${getBaseUrl()}/exams/${examCode}/questions/${questionNumber}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(updateData)
+    });
+    if (!response.ok) throw new Error('Failed to update question');
+    const data = await response.json();
+    return data.question;
+  },
+
   createExam: async (examData: any, token: string): Promise<any> => {
     const response = await fetch(`${getBaseUrl()}/exams`, {
       method: 'POST',

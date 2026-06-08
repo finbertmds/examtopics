@@ -171,6 +171,10 @@ class ExamService {
     };
   }
 
+  async getQuestionByExamAndNumber(examCode, questionNumber) {
+    return await Question.findOne({ examId: examCode, question_number: questionNumber });
+  }
+
   async updateExamQuestion(code, questionNumber, userId, updateFields) {
     const exam = await Exam.findOne({ code });
     if (!exam) {
@@ -182,6 +186,38 @@ class ExamService {
     }
 
     const allowedUpdates = {};
+    if (updateFields.question_text !== undefined) {
+      allowedUpdates.question_text = updateFields.question_text;
+    }
+    if (updateFields.answers !== undefined) {
+      let answers = updateFields.answers;
+      if (typeof answers === 'string') {
+        try {
+          answers = JSON.parse(answers);
+        } catch (e) {
+          answers = null;
+        }
+      }
+      if (answers && typeof answers === 'object') {
+        allowedUpdates.answers = { ...answers };
+      }
+    }
+    if (updateFields.link !== undefined) {
+      allowedUpdates.link = updateFields.link;
+    }
+    if (updateFields.multiple_choice !== undefined) {
+      allowedUpdates.multiple_choice = updateFields.multiple_choice;
+    }
+    if (updateFields.answer_images !== undefined) {
+      allowedUpdates.answer_images = Array.isArray(updateFields.answer_images)
+        ? updateFields.answer_images
+        : [];
+    }
+    if (updateFields.question_images !== undefined) {
+      allowedUpdates.question_images = Array.isArray(updateFields.question_images)
+        ? updateFields.question_images
+        : [];
+    }
     if (updateFields.suggested_answer !== undefined) {
       allowedUpdates.suggested_answer = updateFields.suggested_answer;
     }
