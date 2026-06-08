@@ -1,6 +1,5 @@
 import { AllProgressData, UserProgress } from '../types';
 
-// Migration utility to convert old progress format to new format
 export const migrateProgressData = (oldProgress: AllProgressData, examId: string, currentTopic: number): UserProgress => {
   if (!oldProgress) return oldProgress;
 
@@ -12,14 +11,12 @@ export const migrateProgressData = (oldProgress: AllProgressData, examId: string
     markedForTraining: [],
     currentTopic: currentTopic,
     currentQuestion: progress.currentQuestion || 1,
-    isRandomized: progress.isRandomized || false
+    isRandomized: progress.isRandomized || false,
   };
 
-  // Migrate answers from old format (number keys) to new format (string keys)
   if (progress.answers) {
     Object.entries(progress.answers).forEach(([key, answer]: [string, any]) => {
       if (answer && typeof answer === 'object') {
-        // If answer already has topicNumber, use it
         if (answer.topicNumber !== undefined) {
           const newKey = `${answer.topicNumber}-${answer.questionNumber}`;
           newProgress.answers[newKey] = {
@@ -27,59 +24,33 @@ export const migrateProgressData = (oldProgress: AllProgressData, examId: string
             questionNumber: answer.questionNumber,
             selectedAnswers: answer.selectedAnswers || [],
             isCorrect: answer.isCorrect || false,
-            answeredAt: answer.answeredAt ? new Date(answer.answeredAt) : new Date()
+            answeredAt: answer.answeredAt ? new Date(answer.answeredAt) : new Date(),
           };
         } else {
-          // Old format - we need to infer topicNumber from question data
-          // For now, we'll use a default topicNumber of 1
-          // This should be updated when we have access to the actual question data
           const questionNumber = parseInt(key);
           const newKey = `1-${questionNumber}`;
           newProgress.answers[newKey] = {
-            topicNumber: 1, // Default topic number
+            topicNumber: 1,
             questionNumber: questionNumber,
             selectedAnswers: answer.selectedAnswers || [],
             isCorrect: answer.isCorrect || false,
-            answeredAt: answer.answeredAt ? new Date(answer.answeredAt) : new Date()
+            answeredAt: answer.answeredAt ? new Date(answer.answeredAt) : new Date(),
           };
         }
       }
     });
   }
 
-  // Migrate markedForTraining from number[] to string[]
   if (progress.markedForTraining && Array.isArray(progress.markedForTraining)) {
     newProgress.markedForTraining = progress.markedForTraining.map((item: any) => {
       if (typeof item === 'string') {
-        return item; // Already in new format
+        return item;
       } else if (typeof item === 'number') {
-        return `1-${item}`; // Convert to new format with default topic number
+        return `1-${item}`;
       }
       return item;
     });
   }
 
   return newProgress;
-};
-
-// Migration utility for localStorage data
-export const migrateLocalStorageData = () => {
-  const STORAGE_KEY = 'exam-progress';
-  const stored = localStorage.getItem(STORAGE_KEY);
-  
-  if (stored) {
-    try {
-      const allProgress = JSON.parse(stored);
-      const migratedProgress: Record<string, UserProgress> = {};
-
-      Object.entries(allProgress).forEach(([examId, progress]: [string, any]) => {
-        migratedProgress[examId] = migrateProgressData(progress, examId, 1);
-      });
-
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(migratedProgress));
-      console.log('Progress data migrated successfully');
-    } catch (error) {
-      console.error('Error migrating progress data:', error);
-    }
-  }
 };

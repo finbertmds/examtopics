@@ -1,6 +1,5 @@
-import { cacheStorage } from '../services/cacheStorage';
 import { networkService } from '../services/networkService';
-import { AllProgressData, ApiResponse, CompletedExamIdsData, DailyTrackingData, Exam, HistoryData, Question, ReportData, StatsData, UserData, UserProgress } from '../types';
+import { AllProgressData, ApiResponse, CompletedExamIdsData, DailyTrackingData, HistoryData, ReportData, StatsData, UserData, UserProgress } from '../types';
 import { getBackendUrl } from './backendUrl';
 
 const backendUrl = getBackendUrl();
@@ -17,7 +16,6 @@ class ApiRequestError extends Error {
   }
 }
 
-// API Client class for centralized API management
 class ApiClient {
   private baseUrl: string;
 
@@ -25,64 +23,6 @@ class ApiClient {
     this.baseUrl = backendUrl;
   }
 
-  // Generic fetch method for static files with caching (no auth required)
-  private async fetchStatic<T>(url: string, cacheKey: string, options: RequestInit = {}): Promise<T> {
-    // If offline, try to load from cache first
-    if (!networkService.isNetworkOnline()) {
-      const cachedData = await cacheStorage.getItem(cacheKey, 'staticFiles');
-      if (cachedData) {
-        console.log(`Loaded ${cacheKey} from cache (offline)`);
-        return cachedData as T;
-      }
-      throw new Error('Network is offline and no cached data available');
-    }
-
-    try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
-
-      const response = await fetch(url, {
-        ...options,
-        signal: controller.signal,
-        headers: {
-          'Content-Type': 'application/json',
-          ...options.headers,
-        },
-        cache: 'no-cache',
-      });
-
-      clearTimeout(timeoutId);
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      
-      // Cache the fresh data
-      await cacheStorage.setItem(cacheKey, data, 'staticFiles');
-      console.log(`Cached ${cacheKey}`);
-      
-      return data;
-    } catch (error) {
-      // On network error, fall back to cached data if available
-      const cachedData = await cacheStorage.getItem(cacheKey, 'staticFiles');
-      if (cachedData) {
-        console.warn(`Using cached ${cacheKey} due to error`, error);
-        return cachedData as T;
-      }
-
-      if (error instanceof Error) {
-        if (error.name === 'AbortError') {
-          throw new Error('Request timeout');
-        }
-        throw error;
-      }
-      throw new Error('Unknown error occurred');
-    }
-  }
-
-  // Generic fetch method with error handling and network awareness
   private async fetchWithAuth<T>(
     endpoint: string,
     options: RequestInit = {},
@@ -90,7 +30,6 @@ class ApiClient {
     retryOnAuthError: boolean = true
   ): Promise<ApiResponse<T>> {
     try {
-      // Check network status
       if (!networkService.isNetworkOnline()) {
         throw new Error('Network is offline');
       }
@@ -105,18 +44,17 @@ class ApiClient {
         (headers as any)['Authorization'] = `Bearer ${token}`;
       }
 
-      // Add timeout for requests
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
 
       const response = await fetch(url, {
         ...options,
         headers,
         signal: controller.signal,
+        cache: 'no-cache',
       });
 
       clearTimeout(timeoutId);
-
 
       if (!response.ok) {
         let errorBody: any = null;
@@ -134,9 +72,8 @@ class ApiClient {
       }
 
       const data = await response.json();
-      // Dynamically extract data from response
       const responseData = this.extractResponseData(data);
-      
+
       return {
         success: data.success,
         data: responseData,
@@ -144,8 +81,7 @@ class ApiClient {
       };
     } catch (error) {
       console.error(`API Error for ${endpoint}:`, error);
-      
-      // Handle specific error types
+
       if (error instanceof Error) {
         if (error.name === 'AbortError') {
           return {
@@ -154,7 +90,7 @@ class ApiClient {
             message: 'Request took too long to complete',
           };
         }
-        
+
         if (error.message === 'Network is offline') {
           return {
             success: false,
@@ -177,7 +113,7 @@ class ApiClient {
           }
         }
       }
-      
+
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown error',
@@ -186,7 +122,6 @@ class ApiClient {
     }
   }
 
-  // Progress API methods
   async loadProgress(examId: string, token?: string): Promise<ApiResponse<AllProgressData>> {
     return this.fetchWithAuth<AllProgressData>(`/progress/load/${examId}`, {
       method: 'GET',
@@ -270,10 +205,6 @@ class ApiClient {
     }, token);
   }
 
-  // Migrated endpoint getExams -> examApi.ts
-  // Migrated endpoint getQuestions -> examApi.ts
-
-  // Report API methods
   async submitReport(reportData: ReportData, token?: string): Promise<ApiResponse> {
     return this.fetchWithAuth('/report', {
       method: 'POST',
@@ -281,7 +212,6 @@ class ApiClient {
     }, token);
   }
 
-  // History API methods
   async getHistory(examId?: string, token?: string): Promise<ApiResponse<HistoryData>> {
     const endpoint = examId ? `/progress/history/${examId}` : '/progress/history';
     return this.fetchWithAuth<HistoryData>(endpoint, {
@@ -301,7 +231,6 @@ class ApiClient {
     }, token);
   }
 
-  // Auth API methods
   async getCurrentUser(token?: string): Promise<ApiResponse<UserData>> {
     return this.fetchWithAuth<UserData>('/auth/me', {
       method: 'GET',
@@ -314,7 +243,6 @@ class ApiClient {
 
   private async refreshToken(token: string): Promise<string | null> {
     try {
-      console.log('Refreshing token...');
       const response = await fetch(`${this.baseUrl}/auth/refresh`, {
         method: 'POST',
         headers: {
@@ -338,15 +266,11 @@ class ApiClient {
     }
   }
 
-  // Dynamic response data extraction
   private extractResponseData(data: any): any {
     const { success, error, message, ...rest } = data;
     return rest;
   }
 }
 
-// Export singleton instance
 export const apiClient = new ApiClient();
-
-// Export class for static methods
 export { ApiClient };
