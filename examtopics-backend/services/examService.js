@@ -170,6 +170,37 @@ class ExamService {
       }
     };
   }
+
+  async updateExamQuestion(code, questionNumber, userId, updateFields) {
+    const exam = await Exam.findOne({ code });
+    if (!exam) {
+      return { error: 'ExamNotFound' };
+    }
+
+    if (!userId || exam.createdBy?.toString() !== userId.toString()) {
+      return { error: 'Forbidden' };
+    }
+
+    const allowedUpdates = {};
+    if (updateFields.suggested_answer !== undefined) {
+      allowedUpdates.suggested_answer = updateFields.suggested_answer;
+    }
+    if (updateFields.answer !== undefined) {
+      allowedUpdates.answer = updateFields.answer;
+    }
+
+    if (Object.keys(allowedUpdates).length === 0) {
+      return { error: 'NoUpdates' };
+    }
+
+    const question = await Question.findOneAndUpdate(
+      { examId: code, question_number: questionNumber },
+      allowedUpdates,
+      { new: true }
+    );
+
+    return question;
+  }
 }
 
 module.exports = new ExamService();

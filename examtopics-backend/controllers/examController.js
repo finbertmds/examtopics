@@ -96,6 +96,46 @@ class ExamController {
     }
   }
 
+  async updateQuestion(req, res, next) {
+    try {
+      const questionNumber = parseInt(req.params.questionNumber, 10);
+      if (Number.isNaN(questionNumber)) {
+        return res.status(400).json({ success: false, error: 'Invalid question number' });
+      }
+
+      const { suggested_answer, answer } = req.body;
+      if (suggested_answer === undefined && answer === undefined) {
+        return res.status(400).json({ success: false, message: 'Provide suggested_answer or answer to update' });
+      }
+
+      const userId = req.user?.userId;
+      const result = await examService.updateExamQuestion(req.params.code, questionNumber, userId, {
+        suggested_answer,
+        answer,
+      });
+
+      if (result && result.error) {
+        if (result.error === 'ExamNotFound') {
+          return res.status(404).json({ success: false, error: 'Exam not found' });
+        }
+        if (result.error === 'Forbidden') {
+          return res.status(403).json({ success: false, error: 'Forbidden' });
+        }
+        if (result.error === 'NoUpdates') {
+          return res.status(400).json({ success: false, error: 'Nothing to update' });
+        }
+      }
+
+      if (!result) {
+        return res.status(404).json({ success: false, error: 'Question not found' });
+      }
+
+      res.json({ success: true, question: result });
+    } catch (error) {
+      next(error);
+    }
+  }
+
   async deleteExam(req, res, next) {
     try {
       const exam = await examService.deleteExam(req.params.code);

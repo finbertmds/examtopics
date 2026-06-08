@@ -5296,8 +5296,8 @@
       "C": "Copy the most recent snapshot from the RDS for MySQL DB instance to eu-west-1. Create a new RDS for MySQL DB instance in eu-west-1 from the snapshot. Configure MySQL logical replication from us-east-1 to eu-west-1. Enable write forwarding on the DB cluster. Deploy the application in eu-wes\u00261. Configure the application to use the RDS for MySQL endpoint in eu-west-1.",
       "D": "Convert the RDS for MySQL DB instance to an Amazon Aurora MySQL DB cluster. Add eu-west-1 as a secondary Region to the DB cluster. Enable write forwarding on the DB cluster. Deploy the application in eu-west-1. Configure the application to use the Aurora MySQL endpoint in eu-west-1."
     },
-    "suggested_answer": "A",
-    "answer": "A",
+    "suggested_answer": "D",
+    "answer": "D",
     "link": "https://www.examtopics.com/discussions/amazon/view/112787-exam-aws-certified-solutions-architect-professional-sap-c02/",
     "multiple_choice": false,
     "question_text": "A company has deployed its database on an Amazon RDS for MySQL DB instance in the us-east-1 Region. The company needs to make its data available to customers in Europe. The customers in Europe must have access to the same data as customers in the United States (US) and will not tolerate high application latency or stale data. The customers in Europe and the customers in the US need to write to the database. Both groups of customers need to see updates from the other group in real time.\n\nWhich solution will meet these requirements?",
