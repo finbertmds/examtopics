@@ -94,9 +94,7 @@ export const useProgress = (examId?: string) => {
           isCorrect,
           token || undefined
         );
-        if (response.success) {
-          toast.success(response.message || 'Answer saved');
-        } else {
+        if (!response.success) {
           toast.error(response.error || `Failed to save answer for question ${questionNumber} in topic ${topicNumber}`);
         }
       } catch (error) {
