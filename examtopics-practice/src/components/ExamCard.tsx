@@ -37,23 +37,23 @@ const ExamCard: React.FC<ExamCardProps> = ({
       className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 hover:shadow-lg transition-all cursor-pointer border border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-500"
     >
       {/* Header */}
-      <div className="flex justify-between items-start mb-4">
+      <div className="flex flex-col items-start mb-4 gap-2">
         <h3
           className="text-xl font-semibold text-gray-800 dark:text-white line-clamp-2 min-h-[3.5rem] transition-colors cursor-help"
           title={getExamName(exam, language)}
         >
           {getExamName(exam, language)}
         </h3>
-        <div className="flex flex-row items-center gap-2">
-          <span
-            className={`px-2 py-1 rounded-full text-xs font-medium ${getDifficultyColor(exam.difficulty)}`}
-          >
-            {exam.difficulty}
-          </span>
+        <div className="flex flex-wrap items-center gap-2">
           <span
             className={`px-2 py-1 rounded-full text-xs font-medium ${getCategoryColor(exam.category)}`}
           >
             {exam.category}
+          </span>
+          <span
+            className={`px-2 py-1 rounded-full text-xs font-medium ${getDifficultyColor(exam.difficulty)}`}
+          >
+            {exam.difficulty}
           </span>
         </div>
       </div>

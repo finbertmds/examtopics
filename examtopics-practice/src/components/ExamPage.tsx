@@ -1,19 +1,19 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import { useLanguage } from '../contexts/LanguageContext';
-import { useExams } from '../hooks/useExams';
-import { useProgress } from '../hooks/useProgress';
-import { useQuestions } from '../hooks/useQuestions';
-import { Exam, FilterState } from '../types';
-import { getExamDescription, getExamName } from '../utils/examUtils';
-import ConfirmModal from './ConfirmModal';
-import ExamResult from './ExamResult';
-import { FilterBar } from './FilterBar';
-import FloatingButtons from './FloatingButtons';
-import HistoryModal from './HistoryModal';
-import { ProgressBar } from './ProgressBar';
-import { QuestionList, QuestionListRef } from './QuestionList';
-import { ThemeToggle } from './ThemeToggle';
+import React, { useEffect, useRef, useState } from "react";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useLanguage } from "../contexts/LanguageContext";
+import { useExams } from "../hooks/useExams";
+import { useProgress } from "../hooks/useProgress";
+import { useQuestions } from "../hooks/useQuestions";
+import { Exam, FilterState } from "../types";
+import { getExamDescription, getExamName } from "../utils/examUtils";
+import ConfirmModal from "./ConfirmModal";
+import ExamResult from "./ExamResult";
+import { FilterBar } from "./FilterBar";
+import FloatingButtons from "./FloatingButtons";
+import HistoryModal from "./HistoryModal";
+import { ProgressBar } from "./ProgressBar";
+import { QuestionList, QuestionListRef } from "./QuestionList";
+import { ThemeToggle } from "./ThemeToggle";
 
 const ExamPage: React.FC = () => {
   const { examId } = useParams<{ examId: string }>();
@@ -24,15 +24,22 @@ const ExamPage: React.FC = () => {
   const { findExamById } = useExams();
   const [currentExam, setCurrentExam] = useState<Exam | null>(exam);
   const questionsHook = useQuestions(examId, currentExam?.file);
-  const { questions, loading: questionsLoading, error: questionsError, loadQuestions } = questionsHook;
+  const {
+    questions,
+    loading: questionsLoading,
+    error: questionsError,
+    loadQuestions,
+  } = questionsHook;
 
   const [urlTopicNumber, setUrlTopicNumber] = useState<number | null>(null);
-  const [urlQuestionNumber, setUrlQuestionNumber] = useState<number | null>(null);
+  const [urlQuestionNumber, setUrlQuestionNumber] = useState<number | null>(
+    null,
+  );
   const [filterState, setFilterState] = useState<FilterState>({
-    type: 'all',
+    type: "all",
     showCorrect: true,
     showIncorrect: true,
-    selectedTopic: 'all'
+    selectedTopic: "all",
   });
   const [showSubmitModal, setShowSubmitModal] = useState(false);
   const [showHistoryModal, setShowHistoryModal] = useState(false);
@@ -47,7 +54,6 @@ const ExamPage: React.FC = () => {
     submitExam,
   } = useProgress(examId);
 
-
   const isQuestionsLoadedRef = React.useRef(false);
 
   useEffect(() => {
@@ -56,10 +62,10 @@ const ExamPage: React.FC = () => {
 
     const loadQuestionsData = async () => {
       try {
-        console.log('Loading questions...');
+        console.log("Loading questions...");
         await loadQuestions();
       } catch (error) {
-        console.error('Error loading questions:', error);
+        console.error("Error loading questions:", error);
       }
     };
     loadQuestionsData();
@@ -69,16 +75,16 @@ const ExamPage: React.FC = () => {
   // Check for URL parameters and set state accordingly
   useEffect(() => {
     const urlParams = new URLSearchParams(location.search);
-    const mode = urlParams.get('mode');
-    const topicNumber = urlParams.get('topicNumber');
-    const questionNumber = urlParams.get('questionNumber');
+    const mode = urlParams.get("mode");
+    const topicNumber = urlParams.get("topicNumber");
+    const questionNumber = urlParams.get("questionNumber");
 
-    if (mode === 'practice') {
-      console.log('Practice mode detected, setting filter to training');
-      setFilterState(prevState => ({
+    if (mode === "practice") {
+      console.log("Practice mode detected, setting filter to training");
+      setFilterState((prevState) => ({
         ...prevState,
-        type: 'training',
-        selectedTopic: 'all'
+        type: "training",
+        selectedTopic: "all",
       }));
     }
 
@@ -88,7 +94,10 @@ const ExamPage: React.FC = () => {
       const questionNum = parseInt(questionNumber);
 
       if (!isNaN(topicNum) && !isNaN(questionNum)) {
-        console.log('URL contains topic and question, will scroll to:', { topicNum, questionNum });
+        console.log("URL contains topic and question, will scroll to:", {
+          topicNum,
+          questionNum,
+        });
         setUrlTopicNumber(topicNum);
         setUrlQuestionNumber(questionNum);
       }
@@ -108,21 +117,21 @@ const ExamPage: React.FC = () => {
 
       // If no exam in state but we have examId, try to load exam using hook
       if (!currentExam && examId) {
-        console.log('Loading exam for examId:', examId);
+        console.log("Loading exam for examId:", examId);
         currentExam = await findExamById(examId);
 
         if (currentExam) {
-          console.log('Exam loaded:', currentExam);
+          console.log("Exam loaded:", currentExam);
           setCurrentExam(currentExam);
         } else {
-          console.error('Exam not found for examId:', examId);
-          navigate('/');
+          console.error("Exam not found for examId:", examId);
+          navigate("/");
           return;
         }
       }
 
       if (!currentExam) {
-        navigate('/');
+        navigate("/");
         return;
       }
 
@@ -132,7 +141,7 @@ const ExamPage: React.FC = () => {
       }
 
       // Questions are now loaded by useQuestions hook
-      console.log('Exam loaded, questions will be loaded by useQuestions hook');
+      console.log("Exam loaded, questions will be loaded by useQuestions hook");
     };
 
     loadExamAndQuestions();
@@ -151,13 +160,18 @@ const ExamPage: React.FC = () => {
       setTimeout(() => {
         if (urlTopicNumber && urlQuestionNumber) {
           // Scroll to URL-specified question
-          const targetElement = document.querySelector(`[data-topic-number="${urlTopicNumber}"][data-question-number="${urlQuestionNumber}"]`);
+          const targetElement = document.querySelector(
+            `[data-topic-number="${urlTopicNumber}"][data-question-number="${urlQuestionNumber}"]`,
+          );
           if (targetElement) {
             targetElement.scrollIntoView({
-              behavior: 'smooth',
-              block: 'center'
+              behavior: "smooth",
+              block: "center",
             });
-            console.log('Scrolled to URL-specified question:', { urlTopicNumber, urlQuestionNumber });
+            console.log("Scrolled to URL-specified question:", {
+              urlTopicNumber,
+              urlQuestionNumber,
+            });
           }
         } else {
           // Scroll to current question from progress
@@ -165,15 +179,30 @@ const ExamPage: React.FC = () => {
         }
       }, 100);
     }
-  }, [questionsLoading, questions, progress.currentTopic, progress.currentQuestion, urlTopicNumber, urlQuestionNumber]);
+  }, [
+    questionsLoading,
+    questions,
+    progress.currentTopic,
+    progress.currentQuestion,
+    urlTopicNumber,
+    urlQuestionNumber,
+  ]);
 
-  const handleAnswer = async (topicNumber: number, questionNumber: number, selectedAnswers: string[]) => {
-    const question = questions.find(q => q.topic_number === topicNumber && q.question_number === questionNumber);
+  const handleAnswer = async (
+    topicNumber: number,
+    questionNumber: number,
+    selectedAnswers: string[],
+  ) => {
+    const question = questions.find(
+      (q) =>
+        q.topic_number === topicNumber && q.question_number === questionNumber,
+    );
     if (!question) return;
 
-    const correctAnswers = question.suggested_answer.split('').sort();
+    const correctAnswers = question.suggested_answer.split("").sort();
     const userAnswersSorted = [...selectedAnswers].sort();
-    const isCorrect = JSON.stringify(correctAnswers) === JSON.stringify(userAnswersSorted);
+    const isCorrect =
+      JSON.stringify(correctAnswers) === JSON.stringify(userAnswersSorted);
 
     await saveAnswer(topicNumber, questionNumber, selectedAnswers, isCorrect);
     // TODO: fix: implement next question logic
@@ -183,7 +212,10 @@ const ExamPage: React.FC = () => {
     // } else {
     //   updateProgress({ currentTopic: topicNumber, currentQuestion: questionNumber });
     // }
-    updateProgress({ currentTopic: topicNumber, currentQuestion: questionNumber });
+    updateProgress({
+      currentTopic: topicNumber,
+      currentQuestion: questionNumber,
+    });
   };
 
   const handleRandomize = () => {
@@ -192,7 +224,7 @@ const ExamPage: React.FC = () => {
     updateProgress({
       isRandomized: true,
       currentTopic: 1,
-      currentQuestion: 1
+      currentQuestion: 1,
     });
   };
 
@@ -202,21 +234,26 @@ const ExamPage: React.FC = () => {
 
   const confirmSubmit = () => {
     const answeredCount = Object.keys(progress.answers).length;
-    const correctCount = Object.values(progress.answers).filter((answer: any) => answer.isCorrect).length;
-    const accuracy = answeredCount > 0 ? Math.round((correctCount / questions.length) * 100) : 0;
+    const correctCount = Object.values(progress.answers).filter(
+      (answer: any) => answer.isCorrect,
+    ).length;
+    const accuracy =
+      answeredCount > 0
+        ? Math.round((correctCount / questions.length) * 100)
+        : 0;
 
     const score = {
       totalQuestions: questions.length,
       correctAnswers: correctCount,
-      accuracy: accuracy
+      accuracy: accuracy,
     };
 
     submitExam(score, questions.length, answeredCount);
     setFilterState({
-      type: 'all',
+      type: "all",
       showCorrect: true,
       showIncorrect: true,
-      selectedTopic: 'all'
+      selectedTopic: "all",
     });
     // Reset current question to 1
     updateProgress({ currentTopic: 1, currentQuestion: 1 });
@@ -225,26 +262,30 @@ const ExamPage: React.FC = () => {
   const handleFilterChange = (newFilterState: FilterState) => {
     // Check if we're changing from training to something else and URL has mode=practice
     const urlParams = new URLSearchParams(location.search);
-    const mode = urlParams.get('mode');
+    const mode = urlParams.get("mode");
 
-    if (newFilterState.type !== 'training' && mode === 'practice') {
+    if (newFilterState.type !== "training" && mode === "practice") {
       // Remove mode parameter from URL
-      urlParams.delete('mode');
-      const newUrl = `${location.pathname}${urlParams.toString() ? '?' + urlParams.toString() : ''}`;
+      urlParams.delete("mode");
+      const newUrl = `${location.pathname}${urlParams.toString() ? "?" + urlParams.toString() : ""}`;
       navigate(newUrl, { replace: true });
     }
 
     setFilterState(newFilterState);
   };
 
-  const handleTopicChange = (topicNumber: number | 'all') => {
-    if (topicNumber === 'all') {
+  const handleTopicChange = (topicNumber: number | "all") => {
+    if (topicNumber === "all") {
       // Find the first topic that is not completed
-      const topicNumbers = Array.from(new Set(questions.map(q => q.topic_number))).sort((a, b) => (a || 0) - (b || 0));
+      const topicNumbers = Array.from(
+        new Set(questions.map((q) => q.topic_number)),
+      ).sort((a, b) => (a || 0) - (b || 0));
 
       for (const topicNum of topicNumbers) {
-        const topicQuestions = questions.filter(q => q.topic_number === topicNum);
-        const answeredQuestionsInTopic = topicQuestions.filter(q => {
+        const topicQuestions = questions.filter(
+          (q) => q.topic_number === topicNum,
+        );
+        const answeredQuestionsInTopic = topicQuestions.filter((q) => {
           const key = `${q.topic_number}-${q.question_number}`;
           return progress.answers[key];
         });
@@ -254,8 +295,9 @@ const ExamPage: React.FC = () => {
           let nextQuestionNumber = 1;
           if (answeredQuestionsInTopic.length > 0) {
             // Find the highest question number that has been answered in this topic
-            const lastAnsweredQuestion = answeredQuestionsInTopic.reduce((prev, current) =>
-              prev.question_number > current.question_number ? prev : current
+            const lastAnsweredQuestion = answeredQuestionsInTopic.reduce(
+              (prev, current) =>
+                prev.question_number > current.question_number ? prev : current,
             );
             nextQuestionNumber = lastAnsweredQuestion.question_number + 1;
           }
@@ -263,7 +305,7 @@ const ExamPage: React.FC = () => {
           // Update current topic and question
           updateProgress({
             currentTopic: topicNum,
-            currentQuestion: nextQuestionNumber
+            currentQuestion: nextQuestionNumber,
           });
           return;
         }
@@ -272,12 +314,14 @@ const ExamPage: React.FC = () => {
       // If all topics are completed, go to the first topic, first question
       updateProgress({
         currentTopic: topicNumbers[0] || 1,
-        currentQuestion: 1
+        currentQuestion: 1,
       });
     } else {
       // Find the last answered question in the selected topic
-      const topicQuestions = questions.filter(q => q.topic_number === topicNumber);
-      const answeredQuestionsInTopic = topicQuestions.filter(q => {
+      const topicQuestions = questions.filter(
+        (q) => q.topic_number === topicNumber,
+      );
+      const answeredQuestionsInTopic = topicQuestions.filter((q) => {
         const key = `${q.topic_number}-${q.question_number}`;
         return progress.answers[key];
       });
@@ -285,8 +329,9 @@ const ExamPage: React.FC = () => {
       let nextQuestionNumber = 1;
       if (answeredQuestionsInTopic.length > 0) {
         // Find the highest question number that has been answered in this topic
-        const lastAnsweredQuestion = answeredQuestionsInTopic.reduce((prev, current) =>
-          prev.question_number > current.question_number ? prev : current
+        const lastAnsweredQuestion = answeredQuestionsInTopic.reduce(
+          (prev, current) =>
+            prev.question_number > current.question_number ? prev : current,
         );
         nextQuestionNumber = lastAnsweredQuestion.question_number + 1;
       }
@@ -294,17 +339,17 @@ const ExamPage: React.FC = () => {
       // Update current topic and question
       updateProgress({
         currentTopic: topicNumber,
-        currentQuestion: nextQuestionNumber
+        currentQuestion: nextQuestionNumber,
       });
     }
   };
 
   const handleBackToHome = () => {
-    navigate('/');
+    navigate("/");
   };
 
   const handleScrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleScrollToCurrentQuestion = () => {
@@ -317,7 +362,7 @@ const ExamPage: React.FC = () => {
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
           <p className="text-gray-600 dark:text-gray-300">
-            {questionsLoading ? t('loadingQuestions') : t('loadingProgress')}
+            {questionsLoading ? t("loadingQuestions") : t("loadingProgress")}
           </p>
         </div>
       </div>
@@ -329,13 +374,17 @@ const ExamPage: React.FC = () => {
       <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex items-center justify-center">
         <div className="text-center">
           <div className="text-red-500 text-6xl mb-4">⚠️</div>
-          <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">{t('errorLoadingQuestions')}</h2>
-          <p className="text-gray-600 dark:text-gray-300 mb-4">{questionsError}</p>
+          <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">
+            {t("errorLoadingQuestions")}
+          </h2>
+          <p className="text-gray-600 dark:text-gray-300 mb-4">
+            {questionsError}
+          </p>
           <button
             onClick={() => window.location.reload()}
             className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
           >
-            {t('retry')}
+            {t("retry")}
           </button>
         </div>
       </div>
@@ -354,18 +403,26 @@ const ExamPage: React.FC = () => {
             <button
               onClick={handleBackToHome}
               className="flex items-center justify-center w-10 h-10 text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 font-medium transition-colors rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20"
-              title={t('backToHome')}
+              title={t("backToHome")}
             >
-              <svg xmlns="http://www.w3.org/2000/svg"
-                fill="none" viewBox="0 0 24 24"
-                strokeWidth={2} stroke="currentColor"
-                style={{ width: "28px", height: "28px" }}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={2}
+                stroke="currentColor"
+                style={{ width: "28px", height: "28px" }}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M15 19l-7-7 7-7"
+                />
               </svg>
             </button>
             <div className="flex items-center gap-4 flex-1 min-w-0">
               <h1 className="text-2xl font-bold text-gray-800 dark:text-white transition-colors truncate">
-                {currentExam ? getExamName(currentExam, language) : ''}
+                {currentExam ? getExamName(currentExam, language) : ""}
               </h1>
             </div>
             <div className="flex items-center gap-4">
@@ -386,7 +443,9 @@ const ExamPage: React.FC = () => {
                       {answeredCount}
                     </span>
                     {/* thêm khoảng trắng html entity */}
-                    <span className="text-lg text-gray-500 dark:text-gray-400">&nbsp;/&nbsp;</span>
+                    <span className="text-lg text-gray-500 dark:text-gray-400">
+                      &nbsp;/&nbsp;
+                    </span>
                     <span className="text-lg text-gray-600 dark:text-gray-300">
                       {questions.length}
                     </span>
@@ -396,35 +455,39 @@ const ExamPage: React.FC = () => {
               {/* Action buttons - Desktop */}
               <div className="hidden sm:flex items-center gap-2">
                 <button
-                  onClick={() => handleFilterChange({ ...filterState, type: 'all' })}
+                  onClick={() =>
+                    handleFilterChange({ ...filterState, type: "all" })
+                  }
                   className="px-3 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors text-xs font-medium"
                 >
-                  🌐 {t('all')}
+                  🌐 {t("all")}
                 </button>
                 <button
-                  onClick={() => handleFilterChange({ ...filterState, type: 'training' })}
+                  onClick={() =>
+                    handleFilterChange({ ...filterState, type: "training" })
+                  }
                   className="px-3 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors text-xs font-medium"
                 >
-                  📚 {t('training')}
+                  📚 {t("training")}
                 </button>
                 <button
                   onClick={handleRandomize}
                   className="px-3 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-xs font-medium"
                 >
-                  🔀 {t('randomize')}
+                  🔀 {t("randomize")}
                 </button>
                 <button
                   onClick={() => setShowHistoryModal(true)}
                   className="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-xs font-medium"
-                  title={t('viewHistory')}
+                  title={t("viewHistory")}
                 >
-                  📊 {t('history')}
+                  📊 {t("history")}
                 </button>
                 <button
                   onClick={handleSubmit}
                   className="px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-xs font-medium"
                 >
-                  📝 {t('submit')}
+                  📝 {t("submit")}
                 </button>
               </div>
               <ThemeToggle />
@@ -438,29 +501,31 @@ const ExamPage: React.FC = () => {
             {/* Action buttons */}
             <div className="flex items-center justify-center gap-1">
               <button
-                onClick={() => handleFilterChange({ ...filterState, type: 'training' })}
+                onClick={() =>
+                  handleFilterChange({ ...filterState, type: "training" })
+                }
                 className="px-2 py-1 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors text-xs font-medium"
               >
-                📚 {t('training')}
+                📚 {t("training")}
               </button>
               <button
                 onClick={handleRandomize}
                 className="px-2 py-1 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-xs font-medium"
               >
-                🔀 {t('randomize')}
+                🔀 {t("randomize")}
               </button>
               <button
                 onClick={() => setShowHistoryModal(true)}
                 className="px-2 py-1 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-xs font-medium"
-                title={t('viewHistory')}
+                title={t("viewHistory")}
               >
-                📊 {t('history')}
+                📊 {t("history")}
               </button>
               <button
                 onClick={handleSubmit}
                 className="px-2 py-1 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-xs font-medium"
               >
-                📝 {t('submit')}
+                📝 {t("submit")}
               </button>
             </div>
             {/* ExamResult + Question Progress - Mobile (single row) */}
@@ -481,7 +546,7 @@ const ExamPage: React.FC = () => {
                       <div className="flex items-center gap-1.5">
                         <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse"></div>
                         <span className="text-[10px] font-medium text-gray-700 dark:text-gray-300">
-                          {t('progress')}
+                          {t("progress")}
                         </span>
                       </div>
                       <div className="text-right">
@@ -494,7 +559,9 @@ const ExamPage: React.FC = () => {
                     <div className="mt-1 w-full bg-gray-200 dark:bg-gray-600 rounded-full h-1">
                       <div
                         className="bg-gradient-to-r from-blue-500 to-indigo-500 h-1 rounded-full transition-all duration-300 ease-out"
-                        style={{ width: `${questions.length > 0 ? (answeredCount / questions.length) * 100 : 0}%` }}
+                        style={{
+                          width: `${questions.length > 0 ? (answeredCount / questions.length) * 100 : 0}%`,
+                        }}
                       ></div>
                     </div>
                   </div>
@@ -515,26 +582,31 @@ const ExamPage: React.FC = () => {
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                   <div className="flex-1 min-w-0">
                     <p className="text-xl text-gray-600 dark:text-gray-300 text-sm transition-colors truncate">
-                      {currentExam ? getExamDescription(currentExam, language) : ''}
+                      {currentExam
+                        ? getExamDescription(currentExam, language)
+                        : ""}
                     </p>
-                    <div className="text-sm mt-3 text-gray-600 dark:text-gray-300 transition-colors">
-                      {currentExam?.questionCount} {t('questions')} • {currentExam?.estimatedTime} {t('minutes')}
+                    <div className="text-sm mt-3 mb-3 text-gray-600 dark:text-gray-300 transition-colors">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span>
+                          {currentExam?.questionCount} {t("questions")} • {currentExam?.estimatedTime} {t("minutes")}
+                        </span>
+                        <span className="px-2 py-1 rounded-full text-xs font-medium bg-orange-100 dark:bg-orange-900 text-orange-800 dark:text-orange-200 transition-colors">
+                          {currentExam?.category}
+                        </span>
+                        <span
+                          className={`px-2 py-1 rounded-full text-xs font-medium ${
+                            currentExam?.difficulty === "Advanced"
+                              ? "bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200"
+                              : currentExam?.difficulty === "Intermediate"
+                                ? "bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200"
+                                : "bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200"
+                          } transition-colors`}
+                        >
+                          {currentExam?.difficulty}
+                        </span>
+                      </div>
                     </div>
-                    <div className="flex flex-wrap gap-2 mt-3">
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${currentExam?.difficulty === 'Advanced' ? 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200' :
-                        currentExam?.difficulty === 'Intermediate' ? 'bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200' :
-                          'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200'
-                        } transition-colors`}>
-                        {currentExam?.difficulty}
-                      </span>
-                      <span className="px-2 py-1 rounded-full text-xs font-medium bg-orange-100 dark:bg-orange-900 text-orange-800 dark:text-orange-200 transition-colors">
-                        {currentExam?.category}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="hidden sm:block text-center sm:text-right flex-shrink-0">
-                    <div className="text-2xl font-bold text-blue-600 dark:text-blue-400 transition-colors">{answeredCount}</div>
-                    <div className="text-sm text-gray-500 dark:text-gray-400 transition-colors">{t('answered')}</div>
                   </div>
                 </div>
               </div>
@@ -549,8 +621,6 @@ const ExamPage: React.FC = () => {
             </div>
           </div>
         </div>
-
-
 
         {/* FilterBar */}
         <div className="mb-4">
@@ -577,7 +647,7 @@ const ExamPage: React.FC = () => {
             currentTopic={progress.currentTopic}
             onAnswer={handleAnswer}
             onToggleTraining={toggleTrainingMark}
-            examId={examId || ''}
+            examId={examId || ""}
           />
         </div>
 
@@ -594,9 +664,9 @@ const ExamPage: React.FC = () => {
         isOpen={showSubmitModal}
         onClose={() => setShowSubmitModal(false)}
         onConfirm={confirmSubmit}
-        title={t('submitExam')}
-        message={t('confirmSubmitExam')}
-        confirmText={t('submit')}
+        title={t("submitExam")}
+        message={t("confirmSubmitExam")}
+        confirmText={t("submit")}
         confirmButtonColor="green"
       />
 
@@ -606,7 +676,6 @@ const ExamPage: React.FC = () => {
         onClose={() => setShowHistoryModal(false)}
         examId={examId}
       />
-
     </div>
   );
 };
