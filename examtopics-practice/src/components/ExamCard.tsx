@@ -59,7 +59,7 @@ const ExamCard: React.FC<ExamCardProps> = ({
       </div>
 
       {/* Description */}
-      <p className="text-gray-600 dark:text-gray-300 text-sm mb-4 line-clamp-3 transition-colors">
+      <p className="text-gray-600 dark:text-gray-300 text-sm mb-4 line-clamp-2 min-h-[3.5rem] transition-colors">
         {getExamDescription(exam, language)}
       </p>
 
