@@ -153,12 +153,12 @@ export const QuestionItem: React.FC<QuestionItemProps> = ({
       }
 
       // Add correct answer if available
-      if (shouldShowAnswer) {
-        textToCopy += `${t('suggestedAnswer')} ${question.suggested_answer}\n`;
-        if (question.answer !== question.suggested_answer) {
-          textToCopy += `${t('additionalAnswer')} ${question.answer}\n`;
-        }
-      }
+      // if (shouldShowAnswer) {
+      //   textToCopy += `${t('suggestedAnswer')} ${question.suggested_answer}\n`;
+      //   if (question.answer !== question.suggested_answer) {
+      //     textToCopy += `${t('additionalAnswer')} ${question.answer}\n`;
+      //   }
+      // }
 
       // Copy to clipboard
       await navigator.clipboard.writeText(textToCopy);
