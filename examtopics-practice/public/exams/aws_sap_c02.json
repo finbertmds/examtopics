@@ -5934,8 +5934,8 @@
       "C": "Create new Amazon DynamoDB tables for the application with on-demand capacity. Use an interface VPC endpoint for DynamoDB to connect to the DynamoDB tables.",
       "D": "Create new Amazon DocumentDB (with MongoDB compatibility) tables for the application with Provisioned IOPS volumes. Use the cluster endpoint to connect to Amazon DocumentDB."
     },
-    "suggested_answer": "B",
-    "answer": "B",
+    "suggested_answer": "D",
+    "answer": "D",
     "link": "https://www.examtopics.com/discussions/amazon/view/126754-exam-aws-certified-solutions-architect-professional-sap-c02/",
     "multiple_choice": false,
     "question_text": "A company is migrating a legacy application from an on-premises data center to AWS. The application uses MongoDB as a key-value database. According to the company's technical guidelines, all Amazon EC2 instances must be hosted in a private subnet without an internet connection. In addition, all connectivity between applications and databases must be encrypted. The database must be able to scale based on demand.\n\nWhich solution will meet these requirements?",
@@ -6166,7 +6166,8 @@
     "answers": {
       "A": "Implement cross-account backup with AWS Backup vaults in designated non-production accounts.",
       "B": "Add an SCP that restricts the modification of AWS Backup vaults.",
-      "C": "Implement AWS Backup Vault Lock in compliance mode.\nC. Implement least privilege access for the IAM service role that is assigned to AWS Backup.",
+      "C1": "Implement AWS Backup Vault Lock in compliance mode.",
+      "C2": "Implement least privilege access for the IAM service role that is assigned to AWS Backup.",
       "D": "Configure the backup frequency, lifecycle, and retention period to ensure that at least one backup always exists in the cold tier.",
       "E": "Configure AWS Backup to write all backups to an Amazon S3 bucket in a designated non-production account. Ensure that the S3 bucket has S3 Object Lock enabled."
     },

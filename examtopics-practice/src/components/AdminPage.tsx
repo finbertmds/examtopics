@@ -762,7 +762,7 @@ const AdminPage: React.FC = () => {
                         Add Answer
                       </button>
                       <div className="space-y-3">
-                        {answerEntries.map(([key, value]) => (
+                        {answerEntries.sort(([keyA], [keyB]) => keyA.localeCompare(keyB)).map(([key, value]) => (
                           <div key={key} className="grid gap-2 md:grid-cols-[120px_1fr_auto] items-start">
                             <input
                               type="text"

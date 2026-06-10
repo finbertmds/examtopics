@@ -228,7 +228,7 @@ export const QuestionItem: React.FC<QuestionItemProps> = ({
       {
         question.answers && (
           <div className="space-y-3 mb-4">
-            {Object.entries(question.answers).map(([key, answer], answerIndex) => {
+            {Object.entries(question.answers).sort(([keyA], [keyB]) => keyA.localeCompare(keyB)).map(([key, answer], answerIndex) => {
               const isSelected = selectedAnswers.includes(key);
               const isCorrectAnswer = correctAnswers.includes(key);
               const showCorrectness = shouldShowAnswer;
