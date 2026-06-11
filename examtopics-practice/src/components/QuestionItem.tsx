@@ -68,7 +68,9 @@ export const QuestionItem: React.FC<QuestionItemProps> = ({
 
   const isCorrect = userAnswer?.isCorrect;
   const isAnswered = !!userAnswer;
-  const correctAnswers = question.suggested_answer.split('').sort();
+  const correctAnswers = question.suggested_answer.includes('_')
+    ? question.suggested_answer.split('_').filter(Boolean).sort()
+    : question.suggested_answer.split('').sort();
 
   // Check if user has selected enough answers for multiple choice questions
   const hasSelectedEnoughAnswers = question.multiple_choice
