@@ -85,26 +85,26 @@ const AdminPage: React.FC = () => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as Node;
       const isOutsideAllHints =
-        !hintButtonRefs.current.answer &&
-        !hintButtonRefs.current.answers &&
-        !hintButtonRefs.current.answerField &&
-        !hintPopupRefs.current.answer &&
-        !hintPopupRefs.current.answers &&
-        !hintPopupRefs.current.answerField;
+        !hintButtonRefs.current?.answer &&
+        !hintButtonRefs.current?.answers &&
+        !hintButtonRefs.current?.answerField &&
+        !hintPopupRefs.current?.answer &&
+        !hintPopupRefs.current?.answers &&
+        !hintPopupRefs.current?.answerField;
 
       if (isOutsideAllHints) return;
 
       const clickedInsideAnswerHint =
-        (hintButtonRefs.current.answer !== null && hintButtonRefs.current.answer.contains(target)) ||
-        (hintPopupRefs.current.answer !== null && hintPopupRefs.current.answer.contains(target));
+        (hintButtonRefs.current && hintButtonRefs.current.answer && hintButtonRefs.current.answer.contains(target)) ||
+        (hintPopupRefs.current && hintPopupRefs.current.answer && hintPopupRefs.current.answer.contains(target));
 
       const clickedInsideAnswersHint =
-        (hintButtonRefs.current.answers !== null && hintButtonRefs.current.answers.contains(target)) ||
-        (hintPopupRefs.current.answers !== null && hintPopupRefs.current.answers.contains(target));
+        (hintButtonRefs.current && hintButtonRefs.current.answers && hintButtonRefs.current.answers.contains(target)) ||
+        (hintPopupRefs.current && hintPopupRefs.current.answers && hintPopupRefs.current.answers.contains(target));
 
       const clickedInsideAnswerFieldHint =
-        (hintButtonRefs.current.answerField !== null && hintButtonRefs.current.answerField.contains(target)) ||
-        (hintPopupRefs.current.answerField !== null && hintPopupRefs.current.answerField.contains(target));
+        (hintButtonRefs.current && hintButtonRefs.current.answerField && hintButtonRefs.current.answerField.contains(target)) ||
+        (hintPopupRefs.current && hintPopupRefs.current.answerField && hintPopupRefs.current.answerField.contains(target));
 
       if (clickedInsideAnswerHint || clickedInsideAnswersHint || clickedInsideAnswerFieldHint) {
         return;
@@ -1000,40 +1000,6 @@ const AdminPage: React.FC = () => {
                     </div>
 
                     <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-4">
-                      <p className="text-sm font-semibold text-gray-700 dark:text-gray-100 mb-3">{t('answerImages')}</p>
-                      <div className="grid gap-2 sm:grid-cols-[4fr_1fr] mb-3">
-                        <input
-                          type="text"
-                          placeholder={t('newAnswerImageUrl')}
-                          value={newAnswerImageUrl}
-                          onChange={e => setNewAnswerImageUrl(e.target.value)}
-                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white"
-                        />
-                        <button
-                          type="button"
-                          onClick={addAnswerImage}
-                          className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
-                        >
-                          {t('addImage')}
-                        </button>
-                      </div>
-                      <div className="space-y-2">
-                        {(questionFormData.answer_images || []).map((url: string, index: number) => (
-                          <div key={`${url}-${index}`} className="flex items-center justify-between rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-3 py-2">
-                            <span className="truncate text-sm text-gray-700 dark:text-gray-200">{url}</span>
-                            <button
-                              type="button"
-                              onClick={() => removeAnswerImage(index)}
-                              className="text-sm font-medium text-red-600 hover:text-red-800"
-                            >
-                              {t('delete')}
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-4">
                       <p className="text-sm font-semibold text-gray-700 dark:text-gray-100 mb-3">{t('questionImages')}</p>
                       <div className="grid gap-2 sm:grid-cols-[4fr_1fr] mb-3">
                         <input
@@ -1058,6 +1024,40 @@ const AdminPage: React.FC = () => {
                             <button
                               type="button"
                               onClick={() => removeQuestionImage(index)}
+                              className="text-sm font-medium text-red-600 hover:text-red-800"
+                            >
+                              {t('delete')}
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-4">
+                      <p className="text-sm font-semibold text-gray-700 dark:text-gray-100 mb-3">{t('answerImages')}</p>
+                      <div className="grid gap-2 sm:grid-cols-[4fr_1fr] mb-3">
+                        <input
+                          type="text"
+                          placeholder={t('newAnswerImageUrl')}
+                          value={newAnswerImageUrl}
+                          onChange={e => setNewAnswerImageUrl(e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white"
+                        />
+                        <button
+                          type="button"
+                          onClick={addAnswerImage}
+                          className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
+                        >
+                          {t('addImage')}
+                        </button>
+                      </div>
+                      <div className="space-y-2">
+                        {(questionFormData.answer_images || []).map((url: string, index: number) => (
+                          <div key={`${url}-${index}`} className="flex items-center justify-between rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-3 py-2">
+                            <span className="truncate text-sm text-gray-700 dark:text-gray-200">{url}</span>
+                            <button
+                              type="button"
+                              onClick={() => removeAnswerImage(index)}
                               className="text-sm font-medium text-red-600 hover:text-red-800"
                             >
                               {t('delete')}

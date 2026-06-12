@@ -114,9 +114,26 @@ export const QuestionItem: React.FC<QuestionItemProps> = ({
     }
   };
 
+  const replaceImagePlaceholdersWithMarkers = (text: string, imageIndexRef?: { current: number }) => {
+    if (!text) return text;
+
+    if (!imageIndexRef) {
+      let imageIndex = 1;
+      return text.replace(/\/\/IMG\/\//g, () => `[${t('image')} ${imageIndex++}]`);
+    }
+
+    return text.replace(/\/\/IMG\/\//g, () => {
+      const marker = `[${t('image')} ${imageIndexRef?.current}]`;
+      imageIndexRef && imageIndexRef.current++;
+
+      return marker;
+    });
+  };
+
   const handleCopyQuestion = async () => {
     try {
       let textToCopy = `${t('question')} ${question.question_number} (${t('topic')} ${question.topic_number})\n\n`;
+      const imageIndexRef = { current: 1 };
 
       // Add question text
       if (question.question_text) {
@@ -125,8 +142,8 @@ export const QuestionItem: React.FC<QuestionItemProps> = ({
           .replace(/\\u003cbr\/\\u003e/g, '\n')
           .replaceAll('<br/><br/>', '');
 
-        // Replace //IMG// placeholders with [Image] markers
-        cleanText = cleanText.replace(/\/\/IMG\/\//g, `[${t('image')}]`);
+        // Replace //IMG// placeholders with numbered [Image 1], [Image 2] markers
+        cleanText = replaceImagePlaceholdersWithMarkers(cleanText, imageIndexRef);
 
         // Remove HTML tags
         cleanText = cleanText.replace(/<\/?[^>]+(>|$)/g, '');
@@ -148,9 +165,9 @@ export const QuestionItem: React.FC<QuestionItemProps> = ({
         Object.entries(question.answers).forEach(([key, answer]) => {
           const cleanAnswer = answer
             .replace(/\\u003cbr\/\\u003e/g, '\n')
-            .replace(/\/\/IMG\/\//g, `[${t('image')}]`) // Replace image placeholders
             .replace(/<\/?[^>]+(>|$)/g, ''); // Remove HTML tags
-          textToCopy += `${key}. ${cleanAnswer}\n\n`;
+
+          textToCopy += `${key}. ${replaceImagePlaceholdersWithMarkers(cleanAnswer, imageIndexRef)}\n\n`;
         });
       }
 
