@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useExams } from '../hooks/useExams';
 import { useProgress } from '../hooks/useProgress';
 import { HistoryEntry } from '../types';
 import { getExamName } from '../utils/examUtils';
-import { toast } from 'react-toastify';
 
 interface HistoryModalProps {
   isOpen: boolean;
@@ -171,7 +171,7 @@ const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose, examId }) 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto">
+    <div className="fixed inset-0 z-50 overflow-y-auto overflow-x-hidden">
       <div className="flex min-h-screen items-center justify-center p-4">
         {/* Backdrop */}
         <div
@@ -228,7 +228,7 @@ const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose, examId }) 
           </div>
 
           {/* Content */}
-          <div className="p-6 max-h-96 overflow-y-auto">
+          <div className="p-6 max-h-120 overflow-y-auto overflow-x-hidden">
             {loading ? (
               <div className="flex items-center justify-center py-8">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
@@ -391,11 +391,11 @@ const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose, examId }) 
                         Days: {dailyTracking.length} | Total {t('questions')}: {dailyTracking.reduce((sum, item) => sum + item.count, 0)}
                       </p>
                     </div>
-                    <div className="w-full bg-white dark:bg-gray-800 rounded-lg p-4" style={{ minHeight: '350px' }}>
+                    <div className="w-full overflow-hidden bg-white dark:bg-gray-800 rounded-lg p-4" style={{ minHeight: '350px' }}>
                       <ResponsiveContainer width="100%" height={350}>
                         <LineChart
                           data={dailyTracking}
-                          margin={{ top: 5, right: 30, left: 20, bottom: 80 }}
+                          margin={{ top: 10, right: 30, left: 20, bottom: 10 }}
                         >
                           <CartesianGrid strokeDasharray="3 3" stroke="#374151" className="opacity-30" />
                           <XAxis
@@ -413,6 +413,7 @@ const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose, examId }) 
                             allowDecimals={false}
                           />
                           <Tooltip
+                            isAnimationActive={false}
                             contentStyle={{
                               backgroundColor: '#1F2937',
                               border: '1px solid #374151',
