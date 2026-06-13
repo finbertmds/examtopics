@@ -310,4 +310,16 @@ examtopics-backend/
 
 ## License
 
+## Backup
+```bash
+# encrypt
+brew install gnupg
+tar -czf db.tar.gz ./db
+gpg --symmetric --cipher-algo AES256 db.tar.gz
+
+# decrupt
+gpg --decrypt db.tar.gz.gpg > db.tar.gz
+tar -xzf db.tar.gz
+```
+
 MIT
