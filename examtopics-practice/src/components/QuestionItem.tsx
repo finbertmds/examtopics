@@ -49,18 +49,12 @@ export const QuestionItem: React.FC<QuestionItemProps> = ({
     setSelectedAnswers(userAnswer?.selectedAnswers || []);
   }, [userAnswer?.selectedAnswers]);
 
-  const handleAnswerChange = (answerKey: string, checked: boolean) => {
+  const handleAnswerChange = () => {
     let newSelectedAnswers: string[];
 
-    if (question.multiple_choice) {
-      if (checked) {
-        newSelectedAnswers = [...selectedAnswers, answerKey];
-      } else {
-        newSelectedAnswers = selectedAnswers.filter(a => a !== answerKey);
-      }
-    } else {
-      newSelectedAnswers = checked ? [answerKey] : [];
-    }
+    // get all input checked for this question
+    const inputs = document.querySelectorAll<HTMLInputElement>(`input[name="question-${question.topic_number}-${question.question_number}"]:checked`);
+    newSelectedAnswers = Array.from(inputs).map(input => input.value);
 
     setSelectedAnswers(newSelectedAnswers);
     onAnswer(question.topic_number!, question.question_number, newSelectedAnswers);
@@ -288,7 +282,7 @@ export const QuestionItem: React.FC<QuestionItemProps> = ({
                     name={`question-${question.topic_number}-${question.question_number}`}
                     value={key}
                     checked={isSelected}
-                    onChange={(e) => handleAnswerChange(key, e.target.checked)}
+                    onChange={(e) => handleAnswerChange()}
                     className="mt-1"
                   // disabled={isAnswered}
                   />

@@ -199,7 +199,11 @@ class ExamService {
         }
       }
       if (answers && typeof answers === 'object') {
-        allowedUpdates.answers = { ...answers };
+        let sanitizedAnswers = Object.entries(answers).sort(([a], [b]) => a.localeCompare(b)).reduce((acc, [key, value]) => {
+          acc[key] = value;
+          return acc;
+        }, {});
+        allowedUpdates.answers = { ...sanitizedAnswers };
       }
     }
     if (updateFields.link !== undefined) {

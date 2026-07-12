@@ -201,8 +201,6 @@ const ExamPage: React.FC = () => {
 
     const correctAnswers = question.suggested_answer.split("").sort();
 
-    if (question.multiple_choice && selectedAnswers.length !== correctAnswers.length) return;
-    
     const userAnswersSorted = [...selectedAnswers].sort();
     const isCorrect =
       JSON.stringify(correctAnswers) === JSON.stringify(userAnswersSorted);
