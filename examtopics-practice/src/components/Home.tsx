@@ -4,7 +4,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { useAllProgress } from '../hooks/useAllProgress';
 import { useExams } from '../hooks/useExams';
 import { useProgress } from '../hooks/useProgress';
-import { Exam } from '../types';
+import { Exam, FilterType } from '../types';
 import { getExamDescription, getExamName } from '../utils/examUtils';
 import ExamCard from './ExamCard';
 import FloatingButtons from './FloatingButtons';
@@ -150,10 +150,10 @@ const Home: React.FC = () => {
   const categories = ['all', ...Array.from(new Set(exams.map(exam => exam.category)))];
   const difficulties = ['all', t('beginner'), t('intermediate'), t('advanced')];
 
-  const handleExamClick = (exam: Exam, mode: 'exam' | 'practice' = 'exam') => {
-    const url = mode === 'practice'
-      ? `/exam/${exam.code}?mode=practice`
-      : `/exam/${exam.code}`;
+  const handleExamClick = (exam: Exam, mode: FilterType = 'all') => {
+    const url = mode === 'all'
+      ? `/exam/${exam.code}`
+      : `/exam/${exam.code}?mode=${mode}`;
     navigate(url, { state: { exam } });
   };
 

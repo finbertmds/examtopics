@@ -4,7 +4,7 @@ import { useLanguage } from "../contexts/LanguageContext";
 import { useExams } from "../hooks/useExams";
 import { useProgress } from "../hooks/useProgress";
 import { useQuestions } from "../hooks/useQuestions";
-import { Exam, FilterState } from "../types";
+import { Exam, FilterState, FilterType } from "../types";
 import { getExamDescription, getExamName } from "../utils/examUtils";
 import ConfirmModal from "./ConfirmModal";
 import ExamResult from "./ExamResult";
@@ -79,11 +79,12 @@ const ExamPage: React.FC = () => {
     const topicNumber = urlParams.get("topicNumber");
     const questionNumber = urlParams.get("questionNumber");
 
-    if (mode === "practice") {
-      console.log("Practice mode detected, setting filter to training");
+    if (mode) {
+      console.log(`Practice mode detected, setting filter to ${mode}`);
+
       setFilterState((prevState) => ({
         ...prevState,
-        type: "training",
+        type: mode as FilterType,
         selectedTopic: "all",
       }));
     }
@@ -263,14 +264,13 @@ const ExamPage: React.FC = () => {
   const handleFilterChange = (newFilterState: FilterState) => {
     // Check if we're changing from training to something else and URL has mode=practice
     const urlParams = new URLSearchParams(location.search);
-    const mode = urlParams.get("mode");
 
-    if (newFilterState.type !== "training" && mode === "practice") {
+    if (newFilterState.type === "all") {
       // Remove mode parameter from URL
       urlParams.delete("mode");
-      const newUrl = `${location.pathname}${urlParams.toString() ? "?" + urlParams.toString() : ""}`;
-      navigate(newUrl, { replace: true });
     }
+    const newUrl = `${location.pathname}${urlParams.toString() ? `?mode=${newFilterState.type}` : ""}`;
+    navigate(newUrl, { replace: true });
 
     setFilterState(newFilterState);
   };

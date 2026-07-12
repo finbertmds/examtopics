@@ -1,6 +1,6 @@
 import React from "react";
 import { Language } from "../locales";
-import { Exam } from "../types";
+import { Exam, FilterType } from "../types";
 import { getExamDescription, getExamName } from "../utils/examUtils";
 
 interface ExamCardProps {
@@ -9,7 +9,7 @@ interface ExamCardProps {
   language: Language;
   isMobile: boolean;
   getProgressStats: (examId: string) => any;
-  onExamClick: (exam: Exam, mode?: "exam" | "practice") => void;
+  onExamClick: (exam: Exam, mode?: FilterType) => void;
   getDifficultyColor: (difficulty: string) => string;
   getCategoryColor: (category: string) => string;
   t: (key: string) => string;
@@ -168,15 +168,15 @@ const ExamCard: React.FC<ExamCardProps> = ({
           </button>
         )}
         {type !== "available" && hasTraining && (
-          // Case 3: Has training - show Practice Exam button
+          // Case 3: Has training - show Training Exam button
           <button
             onClick={(e) => {
               e.stopPropagation();
-              onExamClick(exam, "practice");
+              onExamClick(exam, "training");
             }}
             className="flex-1 py-2 px-4 rounded-lg transition-colors font-medium bg-orange-600 hover:bg-orange-700 text-white"
           >
-            {t("practiceExam")}
+            {t("trainingExam")}
           </button>
         )}
       </div>
