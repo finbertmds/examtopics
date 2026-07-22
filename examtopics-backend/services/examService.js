@@ -19,6 +19,29 @@ class ExamService {
     return await Exam.find({ createdBy: userId }).sort({ createdAt: -1 });
   }
 
+  async exportExamQuestions(code, userId) {
+    const exam = await Exam.findOne({ code });
+    if (!exam) return { error: 'ExamNotFound' };
+    if (!userId || exam.createdBy?.toString() !== userId.toString()) {
+      return { error: 'Forbidden' };
+    }
+
+    const questions = await Question.find({ examId: code }).sort({ topic_number: 1, question_number: 1 });
+    return questions.map((question) => ({
+      topic_number: question.topic_number || 1,
+      question_number: question.question_number,
+      title: question.title || '',
+      answers: question.answers || {},
+      suggested_answer: question.suggested_answer || '',
+      answer: question.answer || '',
+      link: question.link || '',
+      multiple_choice: !!question.multiple_choice,
+      question_text: question.question_text || '',
+      answer_images: question.answer_images || [],
+      question_images: question.question_images || [],
+    }));
+  }
+
   async getTags() {
     const tags = await Exam.distinct('tags');
     return tags.filter(Boolean);

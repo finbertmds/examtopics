@@ -448,6 +448,28 @@ const AdminPage: React.FC = () => {
     }
   };
 
+  const handleDownloadExam = async (exam: any) => {
+    if (!token) {
+      toast.error(t('authenticationErrorPleaseLoginAgain'));
+      return;
+    }
+
+    try {
+      const blob = await examApi.downloadExam(exam.code, token);
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `${String(exam.code).replace(/[^a-z0-9._-]/gi, '_')}.json`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+    } catch (error: any) {
+      console.error('Failed to download exam:', error);
+      toast.error(error.message || t('failedToDownloadExam'));
+    }
+  };
+
   const answerEntries = Object.entries(questionFormData.answers || {}) as [string, string][];
 
   return (
@@ -721,6 +743,13 @@ const AdminPage: React.FC = () => {
                             className="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300 mr-4"
                           >
                             {t('editQuestion')}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleDownloadExam(exam)}
+                            className="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300 mr-4"
+                          >
+                            {t('downloadExam')}
                           </button>
                           <button
                             type="button"

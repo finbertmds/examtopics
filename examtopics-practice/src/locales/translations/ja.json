@@ -158,6 +158,8 @@
   "actions": "操作",
   "edit": "編集",
   "editQuestion": "問題を編集",
+  "downloadExam": "試験をダウンロード",
+  "failedToDownloadExam": "試験のダウンロードに失敗しました。",
   "delete": "削除",
   "editQuestionModalTitle": "問題を編集",
   "close": "閉じる",

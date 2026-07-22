@@ -4,6 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { Question, ReportData, UserAnswer } from '../types';
 import { apiClient } from '../utils/apiClient';
+import { getCorrectAnswers } from '../utils/getCorrectAnswers';
 import { replaceImgPlaceholders } from '../utils/replaceImgPlaceholders';
 import CollapsibleQuestionText from './CollapsibleQuestionText';
 import ReportModal from './ReportModal';
@@ -62,9 +63,7 @@ export const QuestionItem: React.FC<QuestionItemProps> = ({
 
   const isCorrect = userAnswer?.isCorrect;
   const isAnswered = !!userAnswer;
-  const correctAnswers = question.suggested_answer.includes('_')
-    ? question.suggested_answer.split('_').filter(Boolean).sort()
-    : question.suggested_answer.split('').sort();
+  const correctAnswers = getCorrectAnswers(question.suggested_answer);
 
   // Check if user has selected enough answers for multiple choice questions
   const hasSelectedEnoughAnswers = question.multiple_choice

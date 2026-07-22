@@ -21,7 +21,7 @@ export const useProgress = (examId?: string) => {
 
   useEffect(() => {
     const loadProgress = async () => {
-      if (!examId) return;
+      if (!examId || !token) return;
 
       setIsLoading(true);
       try {
@@ -84,7 +84,7 @@ export const useProgress = (examId?: string) => {
       },
     }));
 
-    if (examId) {
+    if (examId && token) {
       try {
         const response = await dataService.saveAnswer(
           examId,
@@ -96,6 +96,8 @@ export const useProgress = (examId?: string) => {
         );
         if (!response.success) {
           toast.error(response.error || `Failed to save answer for question ${questionNumber} in topic ${topicNumber}`);
+        } else {
+          toast.success(response.message || 'Answer saved');
         }
       } catch (error) {
         console.error(`Error saving answer for question ${questionNumber} in topic ${topicNumber}:`, error);
@@ -107,7 +109,7 @@ export const useProgress = (examId?: string) => {
     const key = `${topicNumber}-${questionNumber}`;
     const prevMarkedForTraining = progress.markedForTraining.includes(key);
 
-    if (examId) {
+    if (examId && token) {
       try {
         const response = await dataService.markForTraining(
           examId,
@@ -142,7 +144,7 @@ export const useProgress = (examId?: string) => {
     totalQuestions: number,
     answeredCount: number
   ) => {
-    if (examId) {
+    if (examId && token) {
       try {
         const response = await dataService.submitProgress(
           examId,
@@ -169,7 +171,7 @@ export const useProgress = (examId?: string) => {
   const resetProgress = () => {
     setProgress(createEmptyProgress(examId || ''));
 
-    if (examId) {
+    if (examId && token) {
       dataService.resetProgress(examId, token || undefined).catch((error) => {
         console.error('Error resetting progress:', error);
       });

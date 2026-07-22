@@ -10,6 +10,7 @@ const { authenticateToken } = require('../services/authService');
 router.get('/exams', examController.getAllExams);
 router.get('/exams/metadata/info', examController.getMetadata);
 router.get('/exams/me/created', authenticateToken, examController.getMyExams);
+router.get('/exams/:code/export', authenticateToken, examController.exportExam);
 router.get('/exams/:code', examController.getExamByCode);
 router.get('/questions/:code/:questionNumber', examController.getQuestionByExamAndNumber);
 router.get('/questions/:code', examController.getQuestionsByExamCode);

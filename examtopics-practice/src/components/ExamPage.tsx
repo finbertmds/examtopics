@@ -14,6 +14,7 @@ import HistoryModal from "./HistoryModal";
 import { ProgressBar } from "./ProgressBar";
 import { QuestionList, QuestionListRef } from "./QuestionList";
 import { ThemeToggle } from "./ThemeToggle";
+import { getCorrectAnswers } from "../utils/getCorrectAnswers";
 
 const ExamPage: React.FC = () => {
   const { examId } = useParams<{ examId: string }>();
@@ -200,9 +201,12 @@ const ExamPage: React.FC = () => {
     );
     if (!question) return;
 
-    const correctAnswers = question.suggested_answer.split("").sort();
+    const correctAnswers = getCorrectAnswers(question.suggested_answer).sort();
 
     const userAnswersSorted = [...selectedAnswers].sort();
+    
+    if (question.multiple_choice && userAnswersSorted.length !== correctAnswers.length) return;
+    
     const isCorrect =
       JSON.stringify(correctAnswers) === JSON.stringify(userAnswersSorted);
 

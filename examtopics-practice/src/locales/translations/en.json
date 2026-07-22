@@ -158,6 +158,8 @@
   "actions": "Actions",
   "edit": "Edit",
   "editQuestion": "Edit Question",
+  "downloadExam": "Download Exam",
+  "failedToDownloadExam": "Failed to download exam.",
   "delete": "Delete",
   "editQuestionModalTitle": "Edit Question",
   "close": "Close",

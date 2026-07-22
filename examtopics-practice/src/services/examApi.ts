@@ -60,6 +60,19 @@ export const examApi = {
     };
   },
 
+  downloadExam: async (examCode: string, token: string): Promise<Blob> => {
+    const response = await fetch(`${getBaseUrl()}/exams/${examCode}/export`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    if (!response.ok) {
+      const data = await response.json().catch(() => ({}));
+      throw new Error(data.error || data.message || 'Failed to download exam');
+    }
+    return response.blob();
+  },
+
   getQuestion: async (examCode: string, questionNumber: number): Promise<Question> => {
     const response = await fetch(`${getBaseUrl()}/questions/${examCode}/${questionNumber}`);
     if (!response.ok) throw new Error('Failed to fetch question');

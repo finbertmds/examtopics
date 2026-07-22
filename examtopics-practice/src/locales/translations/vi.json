@@ -158,6 +158,8 @@
   "actions": "Hành động",
   "edit": "Chỉnh sửa",
   "editQuestion": "Chỉnh sửa câu hỏi",
+  "downloadExam": "Tải đề thi",
+  "failedToDownloadExam": "Không thể tải đề thi.",
   "delete": "Xóa",
   "editQuestionModalTitle": "Chỉnh sửa câu hỏi",
   "close": "Đóng",

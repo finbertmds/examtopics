@@ -43,6 +43,25 @@ class ExamController {
     }
   }
 
+  async exportExam(req, res, next) {
+    try {
+      const result = await examService.exportExamQuestions(req.params.code, req.user?.userId);
+      if (result && result.error === 'ExamNotFound') {
+        return res.status(404).json({ success: false, error: 'Exam not found' });
+      }
+      if (result && result.error === 'Forbidden') {
+        return res.status(403).json({ success: false, error: 'Forbidden' });
+      }
+
+      const filename = `${String(req.params.code).replace(/[^a-z0-9._-]/gi, '_')}.json`;
+      res.setHeader('Content-Type', 'application/json; charset=utf-8');
+      res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+      res.send(JSON.stringify(result, null, 2));
+    } catch (error) {
+      next(error);
+    }
+  }
+
   async getQuestionByExamAndNumber(req, res, next) {
     try {
       const questionNumber = parseInt(req.params.questionNumber, 10);
