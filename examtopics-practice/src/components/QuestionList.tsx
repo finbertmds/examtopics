@@ -119,6 +119,8 @@ export const QuestionList = forwardRef<QuestionListRef, QuestionListProps>(({
             onToggleTraining={onToggleTraining}
             isMarkedForTraining={isMarkedForTraining}
             showAnswer={filterState.showCorrect || filterState.showIncorrect}
+            showCorrect={filterState.showCorrect}
+            showIncorrect={filterState.showIncorrect}
             isCurrentQuestion={isCurrentQuestion}
             examId={examId}
           />

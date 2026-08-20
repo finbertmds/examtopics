@@ -16,6 +16,8 @@ interface QuestionItemProps {
   onToggleTraining: (topicNumber: number, questionNumber: number) => void;
   isMarkedForTraining: boolean;
   showAnswer: boolean;
+  showCorrect: boolean;
+  showIncorrect: boolean;
   isCurrentQuestion: boolean;
   examId: string;
 }
@@ -27,6 +29,8 @@ export const QuestionItem: React.FC<QuestionItemProps> = ({
   onToggleTraining,
   isMarkedForTraining,
   showAnswer,
+  showCorrect,
+  showIncorrect,
   isCurrentQuestion,
   examId
 }) => {
@@ -243,7 +247,6 @@ export const QuestionItem: React.FC<QuestionItemProps> = ({
             {Object.entries(question.answers).sort(([keyA], [keyB]) => keyA.localeCompare(keyB)).map(([key, answer], answerIndex) => {
               const isSelected = selectedAnswers.includes(key);
               const isCorrectAnswer = correctAnswers.includes(key);
-              const showCorrectness = shouldShowAnswer;
 
               // Đếm số lượng placeholder //IMG// trong question_text
               const questionPlaceholderCount = (question.question_text.match(/\/\/IMG\/\//g) || []).length;
@@ -262,19 +265,18 @@ export const QuestionItem: React.FC<QuestionItemProps> = ({
               // Lấy hình ảnh cho answer này
               const answerImages = images.slice(startIndex, startIndex + placeholderCount);
 
+              // Determine the border color class based on the answer's correctness and selection state
+              let borderColorClass = 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500';
+              if (showCorrect && shouldShowAnswer && isCorrectAnswer) {
+                borderColorClass = 'border-green-300 bg-green-50 dark:bg-green-900';
+              } else if (isSelected && showIncorrect && shouldShowAnswer && !isCorrectAnswer) {
+                borderColorClass = 'border-red-300 bg-red-50 dark:bg-red-900';
+              }
+
               return (
                 <label
                   key={key}
-                  className={`flex items-start gap-3 p-3 rounded-lg border-2 cursor-pointer transition-all overflow-hidden ${isSelected
-                    ? showCorrectness
-                      ? isCorrectAnswer
-                        ? 'border-green-500 bg-green-50 dark:bg-green-900'
-                        : 'border-red-500 bg-red-50 dark:bg-red-900'
-                      : 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900'
-                    : showCorrectness && isCorrectAnswer
-                      ? 'border-green-300 bg-green-50 dark:bg-green-900'
-                      : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
-                    }`}
+                  className={`flex items-start gap-3 p-3 rounded-lg border-2 cursor-pointer transition-all overflow-hidden ${borderColorClass}`}
                 >
                   <input
                     type={question.multiple_choice ? 'checkbox' : 'radio'}
@@ -288,7 +290,7 @@ export const QuestionItem: React.FC<QuestionItemProps> = ({
                   <div className="flex-1 min-w-0">
                     <span className="font-medium text-gray-700 dark:text-gray-300 mr-2">{key}.</span>
                     <span className="text-gray-800 dark:text-gray-200 break-words" dangerouslySetInnerHTML={{ __html: replaceImgPlaceholders(answer, answerImages) }} />
-                    {showCorrectness && isCorrectAnswer && (
+                    {showCorrect && shouldShowAnswer && isCorrectAnswer && (
                       <span className="ml-2 text-green-600 dark:text-green-400 font-medium">✓ {t('correct')}</span>
                     )}
                   </div>
