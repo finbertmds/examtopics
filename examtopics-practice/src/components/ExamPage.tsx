@@ -225,7 +225,22 @@ const ExamPage: React.FC = () => {
   };
 
   const handleRandomize = () => {
-    const shuffled = [...questions].sort(() => Math.random() - 0.5);
+    const unansweredQuestions = questions.filter(
+      (question) =>
+        !progress.answers[`${question.topic_number}-${question.question_number}`],
+    );
+    const answeredQuestions = questions.filter(
+      (question) =>
+        progress.answers[`${question.topic_number}-${question.question_number}`],
+    );
+
+    const shuffleQuestions = (questionsToShuffle: typeof questions) =>
+      [...questionsToShuffle].sort(() => Math.random() - 0.5);
+
+    const shuffled = [
+      ...shuffleQuestions(unansweredQuestions),
+      ...shuffleQuestions(answeredQuestions),
+    ];
     questionsHook.setQuestions(shuffled);
     updateProgress({
       isRandomized: true,
