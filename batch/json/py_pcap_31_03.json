@@ -1,0 +1,1082 @@
+[
+  {
+    "title": "Examtopics PCAP 31 03_8 question #2",
+    "header": "Assuming that the math module has been successfully imported, which of the following expressions evaluate to True? (Choose two.)",
+    "content": "",
+    "questions": [
+      "**A:** math.ceil(2.5) == math.trunc(2.5)\n\n**B:** math.ceil(2.5) \u003c math.floor(2.5)\n\n**C:** math.floor(2.5) == math.trunc(2.5)\n\n**D:** math.hypot(3,4) == math.sqrt(25)\n\n"
+    ],
+    "answer": "CD",
+    "timestamp": "2024-07-12 12:15:00",
+    "question_link": "https://www.examtopics.com/discussions/python-institute/view/143776-exam-pcap-31-03-topic-1-question-41-discussion/",
+    "comments": "[Dave304409] Selected Answer: CD is correct [DKAT2023] Selected Answer: CD C and D are corrects"
+  },
+  {
+    "title": "Examtopics PCAP 31 03_8 question #4",
+    "header": "With regards to the directory structure below, select the proper forms of the directives in order to import module_b. (Choose two.)\n\n//IMG//",
+    "content": "https://img.examtopics.com/pcap-31-03/image24.png",
+    "questions": [
+      "**A:** import module_b\n\n**B:** import pypack.upper.module_b\n\n**C:** from pypack.upper import module_b\n\n**D:** import upper.module_b\n\n"
+    ],
+    "answer": "BC",
+    "timestamp": "2024-07-12 12:16:00",
+    "question_link": "https://www.examtopics.com/discussions/python-institute/view/143777-exam-pcap-31-03-topic-1-question-42-discussion/",
+    "comments": "[Dave304409] Selected Answer: BC is correct [DKAT2023] Selected Answer: BC B and C are corrects"
+  },
+  {
+    "title": "Examtopics PCAP 31 03_8 question #5",
+    "header": "What is the expected output of the following code?\n\nimport sys\n\nb1 type (dir(sys)) is str\nb2 type (sys.path[-1]) is str\nprint (b1 and b2)",
+    "content": "",
+    "questions": [
+      "**A:** True\n\n**B:** False\n\n**C:** 0\n\n**D:** None\n\n"
+    ],
+    "answer": "B",
+    "timestamp": "2024-07-12 12:17:00",
+    "question_link": "https://www.examtopics.com/discussions/python-institute/view/143778-exam-pcap-31-03-topic-1-question-43-discussion/",
+    "comments": "[DKAT2023] Selected Answer: B b1 type(dir(sys)) is list not str, so False and True = True"
+  },
+  {
+    "title": "Examtopics PCAP 31 03_8 question #6",
+    "header": "What is the expected behavior of the following code?\n\n//IMG//",
+    "content": "https://img.examtopics.com/pcap-31-03/image25.png",
+    "questions": [
+      "**A:** it outputs 3\n\n**B:** the code is erroneous and it will not execute\n\n**C:** it outputs 2\n\n**D:** it outputs 1\n\n"
+    ],
+    "answer": "D",
+    "timestamp": "2024-07-12 12:28:00",
+    "question_link": "https://www.examtopics.com/discussions/python-institute/view/143780-exam-pcap-31-03-topic-1-question-44-discussion/",
+    "comments": "[rahulgcp87] Selected Answer: D I have tried in IDE and it returns 1. second try block should have been shown to the right. The correct answer is D [jaycosmo_23] Selected Answer: D assertion exception is raised the second generic except block catches it m=1 [jarun2024] Ans: B [JeyTlenJey] Selected Answer: D If you move try: section to the right it returns 1 [Dave304409] Selected Answer: B is correct [DKAT2023] Selected Answer: B assert m !=0 , but m==0 , so an AssertionError will raise"
+  },
+  {
+    "title": "Examtopics PCAP 31 03_8 question #7",
+    "header": "What is the expected behavior of the following code?\n\n//IMG//",
+    "content": "https://img.examtopics.com/pcap-31-03/image26.png",
+    "questions": [
+      "**A:** the code is erroneous and it will not execute\n\n**B:** it outputs 1\n\n**C:** it outputs 3\n\n**D:** it outputs 2\n\n"
+    ],
+    "answer": "A",
+    "timestamp": "2024-07-12 12:36:00",
+    "question_link": "https://www.examtopics.com/discussions/python-institute/view/143781-exam-pcap-31-03-topic-1-question-45-discussion/",
+    "comments": "[jaycosmo_23] Selected Answer: C After catching the exception in the first except block, n is set to 3. Final Output: The program prints the value of n, which is 3. [jarun2024] Ans: A [JeyTlenJey] Selected Answer: A SyntaxError: default 'except:' must be last [Dave304409] Selected Answer: A is correct because the except statement must come at the end [DKAT2023] Selected Answer: D D is correct"
+  },
+  {
+    "title": "Examtopics PCAP 31 03_3 question #9",
+    "header": "Which of the following statements are true? (Choose two.)",
+    "content": "",
+    "questions": [
+      "**A:** an escape sequence can be recognized by the / sign put in front of it\n\n**B:** ASCII is a subset of UNICODE\n\n**C:** II in ASCII stands for Internal Information\n\n**D:** a code point is a number assigned to a given character\n\n"
+    ],
+    "answer": "BD",
+    "timestamp": "2024-06-05 20:57:00",
+    "question_link": "https://www.examtopics.com/discussions/python-institute/view/141959-exam-pcap-31-03-topic-1-question-19-discussion/",
+    "comments": "[Dave304409] Selected Answer: BD is correct [DKAT2023] B and D are correct [FasterN8] Selected Answer: BD BD I say. [kstr] BD A:BACKSLASH C: II is Information Interchange"
+  },
+  {
+    "title": "Examtopics PCAP 31 03_3 question #10",
+    "header": "What is the expected output of the following code?\nimport sys\nimport math\nb1 = type(dir(math)) is list\nb2 = type(sys.path) is list\nprint(b1 and b2)",
+    "content": "",
+    "questions": [
+      "**A:** None\n\n**B:** True\n\n**C:** 0\n\n**D:** False\n\n"
+    ],
+    "answer": "B",
+    "timestamp": "2024-05-17 05:23:00",
+    "question_link": "https://www.examtopics.com/discussions/python-institute/view/140772-exam-pcap-31-03-topic-1-question-2-discussion/",
+    "comments": "[earawiran] Selected Answer: B import sys import math b1 = type(dir(math)) is list b2 = type(sys.path) is list print(b1 and b2) True [thewoodsii81] Selected Answer: B sys.path return a list of the system paths. and is a logical operator. since both b1 and b2 are True then it returns true [jarun2024] ANS: B [Dave304409] Selected Answer: B is correct [DKAT2023] B True [a4129fd] B is the right one: True [Nikhil_Durgesh] Correct Answer : B import sys import math b1 = type(dir(math)) is list b2 = type(sys.path) is list print(b1 and b2) Output : True"
+  },
+  {
+    "title": "Examtopics PCAP 31 03_3 question #12",
+    "header": "A property that stores information about a given class’s super-classes is named:",
+    "content": "",
+    "questions": [
+      "**A:** __bases__\n\n**B:** __super__\n\n**C:** __upper__\n\n**D:** __ancestors__\n\n"
+    ],
+    "answer": "A",
+    "timestamp": "2024-06-29 20:17:00",
+    "question_link": "https://www.examtopics.com/discussions/python-institute/view/143074-exam-pcap-31-03-topic-1-question-20-discussion/",
+    "comments": "[Dave304409] Selected Answer: A is correct [DKAT2023] A is correct"
+  },
+  {
+    "title": "Examtopics PCAP 31 03_3 question #13",
+    "header": "Assuming that the code below has been executed successfully, which of the following expressions evaluate to True? (Choose two.)\n//IMG//",
+    "content": "https://img.examtopics.com/pcap-31-03/image11.png",
+    "questions": [
+      "**A:** 'var' in Class.__dict__\n\n**B:** 'data' in Object.__dict\n\n**C:** len(Class.__dict__) == 1\n\n**D:** 'data' in Class.__dict__\n\n"
+    ],
+    "answer": "AD",
+    "timestamp": "2024-06-29 20:33:00",
+    "question_link": "https://www.examtopics.com/discussions/python-institute/view/143075-exam-pcap-31-03-topic-1-question-21-discussion/",
+    "comments": "[Dave304409] Selected Answer: AD is correct [DKAT2023] A and D are corrects"
+  },
+  {
+    "title": "Examtopics PCAP 31 03_3 question #14",
+    "header": "What is the expected behavior of the following code?\n//IMG//",
+    "content": "https://img.examtopics.com/pcap-31-03/image12.png",
+    "questions": [
+      "**A:** it outputs 1\n\n**B:** it outputs 0\n\n**C:** it raises an exception\n\n**D:** it outputs 2\n\n"
+    ],
+    "answer": "A",
+    "timestamp": "2024-06-05 21:02:00",
+    "question_link": "https://www.examtopics.com/discussions/python-institute/view/141960-exam-pcap-31-03-topic-1-question-22-discussion/",
+    "comments": "[kostadiv] Selected Answer: A A is correct [kostadiv] Selected Answer: A a.doit(): Calls doit on the instance a of Sub_A. Since Sub_A overrides make, a.make() returns 1. b.doit(): Calls doit on the instance b of Sub_B. Since Sub_B does not override make, b.make() returns 0 (inherited from Super). [Horsefeathers] Selected Answer: A A is correct, verified in JupyterLab. [Dave304409] A is correct class Super: def make(self): return 0 def doit(self): return self.make() class Sub_A(Super): def make(self): return 1 class Sub_B(Super): pass a = Sub_A() b = Sub_B () print(a.doit() + b.doit()) [DKAT2023] A is the correct"
+  },
+  {
+    "title": "Examtopics PCAP 31 03_17 question #1",
+    "header": "What is the expected behavior of the following code?\n\nthe_list = \"1,2 3.split()\nthe_string = ''.join(the_list)\nprint(the_string.isdigit())",
+    "content": "",
+    "questions": [
+      "**A:** it outputs False\n\n**B:** it outputs True\n\n**C:** it outputs nothing\n\n**D:** it raises an exception\n\n"
+    ],
+    "answer": "D",
+    "timestamp": "2024-11-26 05:16:00",
+    "question_link": "https://www.examtopics.com/discussions/python-institute/view/152033-exam-pcap-31-03-topic-1-question-85-discussion/",
+    "comments": "[rahulgcp87] Selected Answer: D closing quote is missing, hence raises exception [jaycosmo_23] Selected Answer: A \u003e\u003e\u003e the_list = \"1,2 3\".split() \u003e\u003e\u003e the_string = ''.join(the_list) \u003e\u003e\u003e print(the_string.isdigit()) False [flthymcnsty] Selected Answer: D Explanation: The code contains a syntax error: \"1,2 3.split() is not a valid Python statement. There is a missing closing quote for the string and a misplaced method call (split()). This will raise a SyntaxError at runtime. The correct answer is: D. it raises an exception"
+  },
+  {
+    "title": "Examtopics PCAP 31 03_17 question #3",
+    "header": "Which of the following snippets will execute without raising any unhandled exceptions? (Choose two.)",
+    "content": "",
+    "questions": [
+      "**A:** \n\n**B:** \n\n**C:** \n\n**D:** \n\n"
+    ],
+    "answer": "BC",
+    "timestamp": "2024-11-25 04:23:00",
+    "question_link": "https://www.examtopics.com/discussions/python-institute/view/151936-exam-pcap-31-03-topic-1-question-86-discussion/",
+    "comments": "[kostadiv] Selected Answer: AD A and D will execute without raising any unhandled exceptions [flthymcnsty] Selected Answer: BC A returns: File \"\u003cstring\u003e\", line 6, in \u003cmodule\u003e ValueError: invalid literal for int() with base 10: '' B returns 0.0 C. returns 0.0 D returns: File \"\u003cstring\u003e\", line 2, in \u003cmodule\u003e ValueError: could not convert string to float: 'lel'"
+  },
+  {
+    "title": "Examtopics PCAP 31 03_17 question #8",
+    "header": "Python module named pymod.py contains a variable named pyvar.\n\nWhich of the following snippets will let you access the variable? (Choose two.)",
+    "content": "",
+    "questions": [
+      "**A:** from pymod import *\npyvar = 1\n\n**B:** import pyvar from pymod\npyvar = 1\n\n**C:** from pymod import pyvar\npyvar()\n\n**D:** import pymod\npymod.pyvar = 1\n\n"
+    ],
+    "answer": "AD",
+    "timestamp": "2024-11-26 05:18:00",
+    "question_link": "https://www.examtopics.com/discussions/python-institute/view/152034-exam-pcap-31-03-topic-1-question-87-discussion/",
+    "comments": "[flthymcnsty] Selected Answer: AD Explanation: The correct answers are: A: from pymod import * pyvar = 1 from pymod import * imports all names (variables, functions, etc.) defined in the pymod module into the current namespace, including pyvar. After importing, you can access or modify pyvar directly. Note: Overwriting pyvar with pyvar = 1 will replace its value with 1 in the current namespace. D: import pymod pymod. pyvar = 1 import pymod imports the entire pymod module. You can then access pyvar as pymod.pyvar. Assigning pymod.pyvar = 1 modifies the value of pyvar within the pymod module’s namespace."
+  },
+  {
+    "title": "Examtopics PCAP 31 03_17 question #19",
+    "header": "What is the expected behavior of the following code?\n\n//IMG//",
+    "content": "https://img.examtopics.com/pcap-31-03/image48.png",
+    "questions": [
+      "**A:** it outputs 2\n\n**B:** it outputs 3\n\n**C:** the code is erroneous and it will not execute\n\n**D:** it outputs 1\n\n"
+    ],
+    "answer": "D",
+    "timestamp": "2024-11-26 05:19:00",
+    "question_link": "https://www.examtopics.com/discussions/python-institute/view/152035-exam-pcap-31-03-topic-1-question-88-discussion/",
+    "comments": "[flthymcnsty] Selected Answer: D Explanation: Step-by-Step Breakdown: s = ‘2A': s is assigned the string '2A', which is not a valid base-10 integer. int(s): When int(s) is called, Python attempts to convert '2A' to an integer in base 10. This raises a ValueError because '2A' is not a valid base-10 number. except Blocks: The try block has three except clauses, but none of them explicitly handle a ValueError. Here’s what happens: except TypeError: Skipped, because the error is not a TypeError. except LookupError: Skipped, because the error is not a LookupError. except: This is a catch-all block that handles all exceptions not explicitly handled by earlier except clauses. Since ValueError is not caught by the first two blocks, it is caught here. n = 1: The catch-all except block is executed, assigning 1 to n. print(n): Finally, n is printed, which outputs 1. The correct answer is: D. it outputs 1"
+  },
+  {
+    "title": "Examtopics PCAP 31 03_17 question #22",
+    "header": "Which of the following expressions evaluate to True? (Choose two.)",
+    "content": "",
+    "questions": [
+      "**A:** 'in not' in 'not'\n\n**B:** 'a' not in 'ABC'.lower()\n\n**C:** 'not' not in 'in'\n\n**D:** 't'.upper() in 'Thames'\n\n"
+    ],
+    "answer": "CD",
+    "timestamp": "2024-11-06 04:21:00",
+    "question_link": "https://www.examtopics.com/discussions/python-institute/view/150832-exam-pcap-31-03-topic-1-question-89-discussion/",
+    "comments": "[flthymcnsty] Selected Answer: CD Explanation: The correct answers are: C. 'not' not in 'in' The string 'not' is not present in ‘in'. The not in operator correctly identifies that 'not' is not a substring of 'in', so this evaluates to True. D. 't'.upper() in 'Thames' 't'.upper() converts 't' to ’T'. The in operator checks if 'T' is a substring of ‘Thames'. 'T' is present as the first character of 'Thames', so this evaluates to True. [KuaciCorn] Selected Answer: CD The answer is CD"
+  },
+  {
+    "title": "Examtopics PCAP 31 03_15 question #15",
+    "header": "Which of the following lines of code will work flawlessly when put independently inside the inc() method in order to make the snippet's output equal to 3? (Choose two.)\n\n//IMG//",
+    "content": "https://img.examtopics.com/pcap-31-03/image42.png",
+    "questions": [
+      "**A:** put(self.prop + val)\n\n**B:** self.put(self.prop + val)\n\n**C:** self.put(self.get() + val)\n\n**D:** self.put(get() + val)\n\n"
+    ],
+    "answer": "BC",
+    "timestamp": "2024-11-26 05:08:00",
+    "question_link": "https://www.examtopics.com/discussions/python-institute/view/152026-exam-pcap-31-03-topic-1-question-76-discussion/",
+    "comments": "[flthymcnsty] Selected Answer: BC Explanation: Step-by-Step Breakdown: Initialization: When Object = MyClass() is created, the __init__ method increments MyClass.Var to 1 and sets self.prop = 1. Object.inc(2): The inc() method takes val as an argument, and one of the provided options will be inserted to modify self.prop to 3. print(Object.get()): Calls Object.get() to return self.prop. To get the output 3, the inc() method must increment self.prop by val (2 in this case). The correct answers are: B. self.put(self.prop \u0026#43; val) self.put() is a method of MyClass that updates self.prop. self.prop \u0026#43; val calculates 1 \u0026#43; 2 = 3 and assigns it to self.prop. C. self.put(self.get() \u0026#43; val) self.get() returns the current value of self.prop, which is 1. self.get() \u0026#43; val calculates 1 \u0026#43; 2 = 3. self.put(3) assigns 3 to self.prop."
+  },
+  {
+    "title": "Examtopics PCAP 31 03_15 question #17",
+    "header": "Which of the following lambda function definitions are correct? (Choose two.)",
+    "content": "",
+    "questions": [
+      "**A:** lambda lambda: lambda * lambda\n\n**B:** lambda x : def fun(x): return x\n\n**C:** lambda : 3.1415\n\n**D:** lambda x : None\n\n"
+    ],
+    "answer": "CD",
+    "timestamp": "2024-11-26 05:10:00",
+    "question_link": "https://www.examtopics.com/discussions/python-institute/view/152027-exam-pcap-31-03-topic-1-question-77-discussion/",
+    "comments": "[flthymcnsty] Selected Answer: CD Explanation: A lambda function in Python is an anonymous function that can have zero or more arguments but must consist of a single expression. The correct answers are: C. lambda : 3.1415 This is a valid lambda function with no arguments (lambda :) that always returns 3.1415. D. lambda x : None This is a valid lambda function that takes one argument (x) and always returns None. The incorrect answers are: A. lambda lambda: lambda * lambda The syntax is invalid because lambda is a reserved keyword in Python and cannot be used as a variable name. This will result in a SyntaxError. B. lambda x : def fun(x): return x The syntax is invalid because lambda functions cannot contain statements like def. This will result in a SyntaxError."
+  },
+  {
+    "title": "Examtopics PCAP 31 03_15 question #21",
+    "header": "What is true about Object-Oriented Programming in Python? (Choose two.)",
+    "content": "",
+    "questions": [
+      "**A:** the same class can be used many times to build a number of objects\n\n**B:** each object of the same class can have a different set of methods\n\n**C:** if a real-life object can be described with a set of adjectives they may reflect a Python object method\n\n**D:** a subclass is usually more specialized than its superclass\n\n"
+    ],
+    "answer": "AD",
+    "timestamp": "2024-11-26 05:11:00",
+    "question_link": "https://www.examtopics.com/discussions/python-institute/view/152028-exam-pcap-31-03-topic-1-question-78-discussion/",
+    "comments": "[flthymcnsty] Selected Answer: AD Explanation: The correct answers are: A: the same class can be used many times to build a number of objects A class acts as a blueprint in Python. Multiple objects (instances) can be created from the same class, each having its own state and data. D: a subclass is usually more specialized than its superclass In object-oriented programming, a subclass inherits from a superclass and adds more specific functionality or overrides behavior."
+  },
+  {
+    "title": "Examtopics PCAP 31 03_15 question #23",
+    "header": "What is the expected output of the following code?\n\nimport sys\nimport math\n\nb1 = type(dir(math)[01]) is str\nb2 = type(sys.path[-1]) is str\nprint(b1 and b2)",
+    "content": "",
+    "questions": [
+      "**A:** None\n\n**B:** True\n\n**C:** 0\n\n**D:** False\n\n"
+    ],
+    "answer": "B",
+    "timestamp": "2024-11-25 02:38:00",
+    "question_link": "https://www.examtopics.com/discussions/python-institute/view/151930-exam-pcap-31-03-topic-1-question-79-discussion/",
+    "comments": "[flthymcnsty] Selected Answer: B This will output nothing since it results in a Syntax error due to the 01: SyntaxError: leading zeros in decimal integer literals are not permitted; use an 0o prefix for octal integers It will be B True if the 01 is corrected to just 0 or just 1"
+  },
+  {
+    "title": "Examtopics PCAP 31 03_15 question #26",
+    "header": "Which of the following snippets will execute without raising any unhandled exceptions? (Choose two.)",
+    "content": "",
+    "questions": [
+      "**A:** \n\n**B:** \n\n**C:** \n\n**D:** \n\n"
+    ],
+    "answer": "AB",
+    "timestamp": "2024-05-28 14:53:00",
+    "question_link": "https://www.examtopics.com/discussions/python-institute/view/141435-exam-pcap-31-03-topic-1-question-8-discussion/",
+    "comments": "[herrmann69] Selected Answer: AB A and B are correct. C will throw a NameError D will throw a ZeroDivisionError [Dave304409] A and B are correct. [DKAT2023] A and B are correct [Nikhil_Durgesh] A and B are correct. Because, C will throw a NameError D will throw a ZeroDivisionError [kstr] A and B try it try: print(-1/1) except: print(0/1) else: print(1/1) B. try: x = 1 except: x = x + 1 else: x = x + 1 [a4129fd] Selected Answer: AB B works well in my IDE"
+  },
+  {
+    "title": "Examtopics PCAP 31 03_2 question #16",
+    "header": "What is the expected behavior of the following code?\n//IMG//",
+    "content": "https://img.examtopics.com/pcap-31-03/image10.png",
+    "questions": [
+      "**A:** it outputs 3\n\n**B:** it outputs 'None'\n\n**C:** it outputs 0\n\n**D:** it raises an exception\n\n"
+    ],
+    "answer": "A",
+    "timestamp": "2024-06-05 20:49:00",
+    "question_link": "https://www.examtopics.com/discussions/python-institute/view/141957-exam-pcap-31-03-topic-1-question-14-discussion/",
+    "comments": "[iemi] Selected Answer: A python can convert the float into a string and will go through each character (18 chars) [thewoodsii81] Selected Answer: A the correct answer is A as explained by prior comments [jarun2024] Step 1: When we divide 1/3 and the output will be 0.3333333333333333 Step 2: storying the values in dummy list Step 3: print(dummy[-1]) will print the last value of the list Ans : A. it outputs 3 [jarun2024] Step 1: When we divide 1/3 and the output will be 0.3333333333333333 Step 2: storying the values in dummy list Step 3: print(dummy[-1]) will print the last value of the list Ans: 3 [Dave304409] A is correct [DKAT2023] A is correct [kstr] Correct answer is A string = str(1/3) dummy = '' for character in string: dummy = dummy + character print (dummy [-1])"
+  },
+  {
+    "title": "Examtopics PCAP 31 03_2 question #18",
+    "header": "What is the expected behavior of the following code?\nthe_list = \"alpha;beta;gamma\".split(\";\")\nthe_string = ''.join(the_list)\nprint(the_string.isalpha())",
+    "content": "",
+    "questions": [
+      "**A:** it outputs True\n\n**B:** it outputs False\n\n**C:** it outputs nothing\n\n**D:** it raises an exception\n\n"
+    ],
+    "answer": "A",
+    "timestamp": "2024-06-28 22:54:00",
+    "question_link": "https://www.examtopics.com/discussions/python-institute/view/143033-exam-pcap-31-03-topic-1-question-15-discussion/",
+    "comments": "[jarun2024] ANS: A [eskimolight] The Output should be TRUE - So Option A is the right. Both my IDE and ChatGPT gives the same answer. [Dave304409] D is correct [DKAT2023] D is the correct , the_string = \".join(the_list) should be : the_string = \"\".join(the_list) so it raises an exception"
+  },
+  {
+    "title": "Examtopics PCAP 31 03_2 question #20",
+    "header": "Which of the following invocations are valid? (Choose two.)",
+    "content": "",
+    "questions": [
+      "**A:** sort(\"python\")\n\n**B:** \"python\".find(\"\")\n\n**C:** \"python\".sort()\n\n**D:** sorted(\"python\")\n\n"
+    ],
+    "answer": "BD",
+    "timestamp": "2024-05-28 15:06:00",
+    "question_link": "https://www.examtopics.com/discussions/python-institute/view/141437-exam-pcap-31-03-topic-1-question-16-discussion/",
+    "comments": "[Aziz1121] Selected Answer: BD B,D is correct [Dave304409] B, D is correct [DKAT2023] B and D are corrects. Sort for list not string [a4129fd] Selected Answer: BD BD are the right ones"
+  },
+  {
+    "title": "Examtopics PCAP 31 03_2 question #24",
+    "header": "Which of the following expressions evaluate to True? (Choose two.)",
+    "content": "",
+    "questions": [
+      "**A:** 'in' in 'in'\n\n**B:** 'in' in 'Thames'\n\n**C:** 'in not' in 'not'\n\n**D:** 't'.upper() in 'Thames'\n\n"
+    ],
+    "answer": "AD",
+    "timestamp": "2024-07-02 20:23:00",
+    "question_link": "https://www.examtopics.com/discussions/python-institute/view/143204-exam-pcap-31-03-topic-1-question-17-discussion/",
+    "comments": "[jarun2024] Ans: A \u0026 D [Dave304409] A, D is correct"
+  },
+  {
+    "title": "Examtopics PCAP 31 03_2 question #27",
+    "header": "Assuming that the snippet below has been executed successfully, which of the following expressions will evaluate to True? (Choose two.) string = 'python'[::2] string = string[-1] + string[-2]",
+    "content": "",
+    "questions": [
+      "**A:** len(string) == 3\n\n**B:** string[0] == 'o'\n\n**C:** string[0] == string[-1]\n\n**D:** string is None\n\n"
+    ],
+    "answer": "B",
+    "timestamp": "2024-06-05 20:53:00",
+    "question_link": "https://www.examtopics.com/discussions/python-institute/view/141958-exam-pcap-31-03-topic-1-question-18-discussion/",
+    "comments": "[Horsefeathers] Selected Answer: B Only B is correct: string = 'python'[::2] string = string[-1] + string[-2] print(len(string) == 3) print(string[0] == 'o') print(string[0] == string[-1]) print(string is None) False True False False [jarun2024] Ans : A \u0026 B [Dave304409] A, B is correct string = 'python'[::2] print(string) pto R: print(len(string) == 3 ) string = string[-1] + string[-2] print(string) ot print(string[0] == 'o' ) [DKAT2023] B is the correct [kstr] Sorry only B: string = 'python'[::2] string = string[-1] + string[-2] print(len(string) == 3 ) print(string[0] == 'o' ) print( string[0] == string[-1] ) print( string is None) [kstr] Only C is True string = 'python'[::2] string = string[-1] + string[-2] print(len(string) == 3 ) print(string[0] == 'o' ) print( string[0] == string[-1] ) print( string is None)"
+  },
+  {
+    "title": "Examtopics PCAP 31 03_1 question #11",
+    "header": "What is true about Python packages? (Choose two.)",
+    "content": "",
+    "questions": [
+      "**A:** a code designed to initialize a package’s state should be placed inside a file named init.py\n\n**B:** a package’s contents can be stored and distributed as an mp3 file\n\n**C:** __pycache__ is a folder that stores semi-compiled Python modules\n\n**D:** the sys.path variable is a list of strings\n\n"
+    ],
+    "answer": "CD",
+    "timestamp": "2024-05-28 15:24:00",
+    "question_link": "https://www.examtopics.com/discussions/python-institute/view/141439-exam-pcap-31-03-topic-1-question-1-discussion/",
+    "comments": "[Horsefeathers] Selected Answer: CD Agree with the others. The answer A has an incorrect file name (missing the underscores). [thewoodsii81] Selected Answer: AC Besides the oversight of the naming issue for A this would be correct. D is wrong because sys.path is a variable and not a package [SMMTechie] C \u0026 D since init.py is not correct. _init_.py is the proper name. Google \"init.py vs __init__.py\" for confirmation. [jarun2024] ANS: A\u0026D [DKAT2023] sorry, only C and D are corrects , for A the correct file name is _init_.py not init.py [DKAT2023] A, C and D [Damon54] A C e D are correct !! [surendrapattipati] A. a code designed to initialize a package’s state should be placed inside a file named init.py"
+  },
+  {
+    "title": "Examtopics PCAP 31 03_1 question #25",
+    "header": "What is true about the following snippet? (Choose two.)\n//IMG//",
+    "content": "https://img.examtopics.com/pcap-31-03/image8.png",
+    "questions": [
+      "**A:** the string what a pity will be seen\n\n**B:** the string it's nice to see you will be seen\n\n**C:** the code will raise an unhandled exception\n\n**D:** the string I feel fine will be seen\n\n"
+    ],
+    "answer": "BD",
+    "timestamp": "2024-06-05 20:38:00",
+    "question_link": "https://www.examtopics.com/discussions/python-institute/view/141954-exam-pcap-31-03-topic-1-question-10-discussion/",
+    "comments": "[DKAT2023] Selected Answer: BD first D will see , after B will see [Dave304409] Selected Answer: AB is correct [Dave304409] A, D is correct [DKAT2023] A and D are corrects [kstr] AD CODE: class E(Exception): def __init__(self, message): self.message = message def __str__(self): return \"It's nice to see you\" try: print(\"I feel fine\") raise Exception(\"what a pity\") except Exception as e: print(e) else: print(\"the show must go on\")"
+  },
+  {
+    "title": "Examtopics PCAP 31 03_1 question #29",
+    "header": "What is the expected behavior of the following code?\n//IMG//",
+    "content": "https://img.examtopics.com/pcap-31-03/image9.png",
+    "questions": [
+      "**A:** it outputs error\n\n**B:** it outputs\n\n**C:** the code is erroneous and it will not execute\n\n**D:** it outputs list assignment index out of range\n\n"
+    ],
+    "answer": "D",
+    "timestamp": "2024-06-05 20:39:00",
+    "question_link": "https://www.examtopics.com/discussions/python-institute/view/141955-exam-pcap-31-03-topic-1-question-11-discussion/",
+    "comments": "[IshanKarpe] Selected Answer: D BaseExecption is expressing it simply so its D [eskimolight] The Answer is D [JeyTlenJey] D is correct [Dave304409] D is correct [DKAT2023] D is the correct [kstr] D tested: my_list = [1, 2, 3] try: my_list[3] = my_list[2] except BaseException as error: print(error)"
+  },
+  {
+    "title": "Examtopics PCAP 31 03_1 question #31",
+    "header": "Which of the following expressions evaluate to True? (Choose two.)",
+    "content": "",
+    "questions": [
+      "**A:** ord(\"0\") - ord(\"9\") == 10\n\n**B:** len(\"''\") == 2\n\n**C:** chr(ord('z') - 1) == 'y'\n\n**D:** len(''1234'') == 4\n\n"
+    ],
+    "answer": "CD",
+    "timestamp": "2024-05-30 16:41:00",
+    "question_link": "https://www.examtopics.com/discussions/python-institute/view/141609-exam-pcap-31-03-topic-1-question-12-discussion/",
+    "comments": "[momo_0] Selected Answer: BC Tested them, BCD are true [dune0] Selected Answer: BC A is False, since ord(\"0\") = 48 and ord(\"9\") = 57, so 48-57 = -9, therefore != 10 B \u0026 C are correct: B has a string containing 2 single quotation marks, therefore a length of 2 C is correct since: ord(\"z\") = 122, 122 -1 = 121, chr(121) = \"y\" D seems correct, but if we pay close attention, the code is erroneous. There are no double quotation marks, there are 2 single quotation marks on each side, making the code snipped erroneous. [jarun2024] Correct Ans: B \u0026 C \u003e\u003e\u003e print(len(\"''\") == 2) True \u003e\u003e\u003e print( chr(ord('z') - 1) == 'y') True [jarun2024] Ans : C \u0026 D [eskimolight] B, C D = All the 3 are correct. [Dave304409] C, D is correct [DKAT2023] C and D are corrects [kstr] BCD are TRUE TESTED: print(ord(\"0\") - ord(\"9\") == 10) print(len(\"''\")== 2) print(chr(ord('z') - 1) == 'y') print(len(\"1234\") == 4) [a4129fd] Selected Answer: CD As tested in my IDE"
+  },
+  {
+    "title": "Examtopics PCAP 31 03_1 question #33",
+    "header": "Which of the following expressions evaluate to True? (Choose two.)",
+    "content": "",
+    "questions": [
+      "**A:** 'xYz'.lower() \u003e 'XY'\n\n**B:** '8'+'8' ! = 2 * '8'\n\n**C:** float ('3.14') == str('3.' + '14')\n\n**D:** 121 + 1 == int('1' + 2 * '2')\n\n"
+    ],
+    "answer": "AD",
+    "timestamp": "2024-05-28 14:59:00",
+    "question_link": "https://www.examtopics.com/discussions/python-institute/view/141436-exam-pcap-31-03-topic-1-question-13-discussion/",
+    "comments": "[thewoodsii81] Selected Answer: AD B is incorrect since '8' + '8' = '88' and 2*'8' = '88. to say they aren't equal is false [Dave304409] A, D is correct [DKAT2023] A and D are corrects [kstr] AD: print( 'xYz'.lower() \u003e 'XY' ) print('8'+'8' != 2 * '8' ) print( float ('3.14') == str('3.' + '14') ) print( 121 + 1 == int('1' + 2 * '2') ) [a4129fd] Selected Answer: AD AD are the right ones, as validated in my IDE"
+  },
+  {
+    "title": "Examtopics PCAP 31 03_18 question #28",
+    "header": "What is the expected behavior of the following code?\n//IMG//",
+    "content": "https://img.examtopics.com/pcap-31-03/image7.png",
+    "questions": [
+      "**A:** it outputs 3\n\n**B:** it outputs 1\n\n**C:** it outputs 2\n\n**D:** the code is erroneous and it will not execute\n\n"
+    ],
+    "answer": "A",
+    "timestamp": "2024-06-14 19:57:00",
+    "question_link": "https://www.examtopics.com/discussions/python-institute/view/142536-exam-pcap-31-03-topic-1-question-9-discussion/",
+    "comments": "[FasterN8] Tested, A is correct. The raise keyword here does not raise a generic exception. \"When we do not give any exception class name with the raise keyword, it reraises the exception that last occurred.\" So that line in the function re-raises the ArithmeticError a second time. [eskimolight] Confirmed it's Output 3 [Dave304409] Selected Answer: A is correct [DKAT2023] A is correct"
+  },
+  {
+    "title": "Examtopics PCAP 31 03_18 question #30",
+    "header": "What is the expected behavior of the following code?\n\n//IMG//",
+    "content": "https://img.examtopics.com/pcap-31-03/image49.png",
+    "questions": [
+      "**A:** it outputs 0\n\n**B:** it outputs 1\n\n**C:** it raises an exception\n\n**D:** it outputs 2\n\n"
+    ],
+    "answer": "C",
+    "timestamp": "2024-11-26 05:23:00",
+    "question_link": "https://www.examtopics.com/discussions/python-institute/view/152036-exam-pcap-31-03-topic-1-question-90-discussion/",
+    "comments": "[flthymcnsty] Selected Answer: C Explanation: Step-by-Step Breakdown: Class Definitions: Super: Super defines two methods: make(self) is an empty method (pass). doit(self) calls self.make(). Sub_A: Sub_A inherits from Super and overrides the make(self) method to return 1. Sub_B: Sub_B inherits from Super but does not override the make(self) method, so it uses the unimplemented make method from Super. Object Instantiation and Method Calls: a = Sub_A() and b = Sub_B(): Creates an instance of each respectively. a.doit(): Calls doit() on the Sub_A instance. Inside doit(), it calls self.make(), which resolves to Sub_A.make(). This method returns 1. b.doit(): Calls doit() on the Sub_B instance. Inside doit(), it calls self.make(). Since Sub_B does not override make(), the call resolves to Super.make(), which is not implemented (pass). This causes Super.make() to implicitly return None. In Python, adding an integer (1) to None is invalid and raises a TypeError. The correct answer is: C. it raises an exception"
+  },
+  {
+    "title": "Examtopics PCAP 31 03_18 question #32",
+    "header": "What is the expected behavior of the following code?\n\n//IMG//",
+    "content": "https://img.examtopics.com/pcap-31-03/image50.png",
+    "questions": [
+      "**A:** outputs list assignment index out of range\n\n**B:** it outputs None\n\n**C:** it outputs 'tuple' object does not support item assignment\n\n**D:** the code is erroneous and it will not execute\n\n"
+    ],
+    "answer": "C",
+    "timestamp": "2024-11-26 05:24:00",
+    "question_link": "https://www.examtopics.com/discussions/python-institute/view/152037-exam-pcap-31-03-topic-1-question-91-discussion/",
+    "comments": "[flthymcnsty] Selected Answer: C Explanation: Step-by-Step Breakdown: Defining the Tuple: my_tuple = (1, 2, 3) creates an immutable tuple with elements (1, 2, 3). Attempt to Modify the Tuple: my_tuple[3] = my_tuple[2] tries to assign a value to the 4th index (index 3) of the tuple. Tuples in Python are immutable, meaning you cannot modify their elements after creation. Attempting to assign a value to any element of a tuple raises a TypeError with the message: 'tuple' object does not support item assignment. try...except...else Handling: The try block raises a TypeError. The except Exception block catches the TypeError, as Exception is a base class for all exceptions. The exception object (exception) is assigned to x. print(x) Outputs: When printed, it outputs 'tuple' object does not support item assignment. The correct answer is: C. it outputs 'tuple' object does not support item assignment"
+  },
+  {
+    "title": "Examtopics PCAP 31 03_18 question #34",
+    "header": "What is the expected behavior of the following code?\n\n//IMG//",
+    "content": "https://img.examtopics.com/pcap-31-03/image51.png",
+    "questions": [
+      "**A:** False lower\n\n**B:** False upper\n\n**C:** True upper\n\n**D:** True lower\n\n"
+    ],
+    "answer": "B",
+    "timestamp": "2024-11-07 16:35:00",
+    "question_link": "https://www.examtopics.com/discussions/python-institute/view/150947-exam-pcap-31-03-topic-1-question-92-discussion/",
+    "comments": "[flthymcnsty] Selected Answer: B Explanation: Step-by-Step Breakdown: Class Definitions: Upper: Defines a method that returns the string ‘upper'. Lower: Inherits from Upper and overrides the method to return the string ‘lower'. Creating an Object: Object = Upper() creates an instance of the Upper class. Object is an instance of Upper, not Lower. isinstance(Object, Lower): The isinstance function checks if Object is an instance of the Lower class or any of its subclasses.Since Object is explicitly an instance of Upper, and Upper is not a subclass of Lower, this evaluates to False. Object.method(): Object.method() calls the method defined in the Upper class because Object is an instance of Upper. This method returns ‘upper'. print Statement: The first part of the print statement outputs False (from isinstance). The second part outputs upper (from Object.method()). The end=' ' ensures the two outputs are on the same line, separated by a space. The correct answer is: B. False upper [purush1048] B is the Correct answer, tested in IDE"
+  },
+  {
+    "title": "Examtopics PCAP 31 03_18 question #35",
+    "header": "With regards to the directory structure below, select the proper forms of the directives in order to import module_a. (Choose two.)\n\n//IMG//",
+    "content": "https://img.examtopics.com/pcap-31-03/image52.png",
+    "questions": [
+      "**A:** import pypack.module_a\n\n**B:** import module_a from pypack\n\n**C:** import module_a\n\n**D:** from pypack import module_a\n\n"
+    ],
+    "answer": "AD",
+    "timestamp": "2024-11-26 05:27:00",
+    "question_link": "https://www.examtopics.com/discussions/python-institute/view/152038-exam-pcap-31-03-topic-1-question-93-discussion/",
+    "comments": "[Yethi_Consulting56] The future of UI automation testing is evolving with emerging technologies and practices. AI-driven automation is revolutionizing test creation and maintenance by identifying patterns and self-healing flaky tests. Codeless testing platforms are lowering the entry barrier, enabling non-technical team members to contribute. Cloud-based testing solutions are gaining popularity, offering scalability and cross-browser/device coverage. Shift-left testing ensures bugs are caught earlier, integrating seamlessly with Agile workflows. Additionally, hyper-automation combines tools and technologies to optimize testing processes end-to-end. These trends promise faster, smarter, and more efficient UI testing, empowering teams to deliver seamless user experiences in increasingly complex applications. [flthymcnsty] Selected Answer: AD Explanation: The correct answers are: A. import pypack.module_a If pypack is a package, this import is valid. It allows you to explicitly access module_a from the pypack package. D. from pypack import module_a If pypack is a package, this is valid syntax to import module_a from the pypack package."
+  },
+  {
+    "title": "Examtopics PCAP 31 03_16 question #36",
+    "header": "Which of the following statements are true? (Choose two.)",
+    "content": "",
+    "questions": [
+      "**A:** a code point is a point inside the code when execution stops immediately\n\n**B:** UTF-8 is one of the ways of representing UNICODE code points\n\n**C:** ASCII is the name of a character coding standard\n\n**D:** an escape sequence can be recognized by the # sign put in front of it\n\n"
+    ],
+    "answer": "BC",
+    "timestamp": "2024-11-26 05:12:00",
+    "question_link": "https://www.examtopics.com/discussions/python-institute/view/152029-exam-pcap-31-03-topic-1-question-80-discussion/",
+    "comments": "[flthymcnsty] Selected Answer: BC Explanation: The correct answers are: B. UTF-8 is one of the ways of representing UNICODE code points UTF-8 is a widely used encoding scheme that represents Unicode code points as sequences of 1 to 4 bytes. Example: The Unicode code point U+0041 (the letter 'A') is represented in UTF-8 as 0x41. The code point U+1F600 (the 😀 emoji) is represented in UTF-8 as 0xF0 0x9F 0x98 0x80. C. ASCII is the name of a character coding standard ASCII (American Standard Code for Information Interchange) is a character encoding standard. It assigns numeric values to 128 characters, including letters, digits, punctuation marks, and control characters. Example: 'A' in ASCII has the value 65. 'a' in ASCII has the value 97."
+  },
+  {
+    "title": "Examtopics PCAP 31 03_16 question #37",
+    "header": "What is true about Python class constructors? (Choose two.)",
+    "content": "",
+    "questions": [
+      "**A:** the constructor is a method named __init__\n\n**B:** there can be more than one constructor in a Python class\n\n**C:** the constructor must return a value other than None\n\n**D:** the constructor must have at least one parameter\n\n"
+    ],
+    "answer": "AD",
+    "timestamp": "2024-11-26 05:14:00",
+    "question_link": "https://www.examtopics.com/discussions/python-institute/view/152030-exam-pcap-31-03-topic-1-question-81-discussion/",
+    "comments": "[flthymcnsty] Selected Answer: AD Explanation: The correct answers are: A. the constructor is a method named __init__ In Python, the constructor method is always named __init__. It is automatically called when a new instance of a class is created. Example: class Example: def __init__(self, value): self.value = value obj = Example(10) # Automatically calls __init__ D. the constructor must have at least one parameter The __init__ method must have at least one parameter, typically self, which refers to the instance being created."
+  },
+  {
+    "title": "Examtopics PCAP 31 03_16 question #38",
+    "header": "Which of the following invocations are valid? (Choose two.)",
+    "content": "",
+    "questions": [
+      "**A:** \"python\".index(\"th\")\n\n**B:** rfind(\"python\",\"r\")\n\n**C:** \"python\".sort()\n\n**D:** sorted(\"python\")\n\n"
+    ],
+    "answer": "AD",
+    "timestamp": "2024-11-26 05:14:00",
+    "question_link": "https://www.examtopics.com/discussions/python-institute/view/152031-exam-pcap-31-03-topic-1-question-82-discussion/",
+    "comments": "[flthymcnsty] Selected Answer: AD Explanation: The correct answers are: A. \"python\".index(\"th\") The index() method is used to find the starting index of a substring within a string. \"python\".index(\"th\") returns 2, as the substring \"th\" starts at index 2 in the string “python\". Example: result = “python\".index(\"th\") print(result) # Outputs: 2 D. sorted(\"python\") The sorted() function returns a new sorted list containing the characters of the string \"python\" in alphabetical order. Example: result = sorted(\"python\") print(result) # Outputs: ['h', 'n', 'o', 'p', 't', 'y']"
+  },
+  {
+    "title": "Examtopics PCAP 31 03_16 question #39",
+    "header": "Which of the following invocations are valid? (Choose two.)",
+    "content": "",
+    "questions": [
+      "**A:** 'python'.sorted()\n\n**B:** \"python\".rindex(\"th\")\n\n**C:** sort(\"python\")\n\n**D:** \"python\".find(\"\")\n\n"
+    ],
+    "answer": "BD",
+    "timestamp": "2024-11-26 05:15:00",
+    "question_link": "https://www.examtopics.com/discussions/python-institute/view/152032-exam-pcap-31-03-topic-1-question-83-discussion/",
+    "comments": "[flthymcnsty] Selected Answer: BD Explanation: The correct answers are: B. \"python\".rindex(\"th\") The rindex() method finds the last occurrence of a substring in a string and returns its starting index. If the substring is not found, it raises a ValueError. Example: result = \"python\".rindex(\"th\") print(result) # Outputs: 2 D. \"python\".find(\"\") The find() method returns the lowest index where the specified substring is found. An empty string (\"\") is always considered present in any string, starting at index 0. Example: result = \"python\".find(\"\") print(result) # Outputs: 0"
+  },
+  {
+    "title": "Examtopics PCAP 31 03_16 question #40",
+    "header": "Assuming that the code below has been placed inside a file named code.py and executed successfully, which of the following expressions evaluate to True? (Choose two.)\n\n//IMG//",
+    "content": "https://img.examtopics.com/pcap-31-03/image43.png",
+    "questions": [
+      "**A:** ClassA.__module__ == '_main_'\n\n**B:** len(ClassB.__bases__) == 2\n\n**C:** __name__ == '__ main__'\n\n**D:** str(Object) == 'Object'\n\n"
+    ],
+    "answer": "AC",
+    "timestamp": "2024-11-25 04:04:00",
+    "question_link": "https://www.examtopics.com/discussions/python-institute/view/151934-exam-pcap-31-03-topic-1-question-84-discussion/",
+    "comments": "[flthymcnsty] Selected Answer: AC A is technically invalid as is because iot is '_main_' and not '__main_', however if corrected, A \u0026 C are correct."
+  },
+  {
+    "title": "Examtopics PCAP 31 03_9 question #41",
+    "header": "What is the expected behavior of the following code?\n\n//IMG//",
+    "content": "https://img.examtopics.com/pcap-31-03/image27.png",
+    "questions": [
+      "**A:** it outputs\n\n**B:** the code is erroneous and it will not execute\n\n**C:** it outputs\n\n**D:** it outputs\n\n"
+    ],
+    "answer": "B",
+    "timestamp": "2024-07-12 14:00:00",
+    "question_link": "https://www.examtopics.com/discussions/python-institute/view/143788-exam-pcap-31-03-topic-1-question-46-discussion/",
+    "comments": "[JeyTlenJey] Selected Answer: B SyntaxError: ':' expected after dictionary key [DKAT2023] Selected Answer: B d= {'1' : '1','2','3'} should be : d= {'1' : '1', '2' : '3' }"
+  },
+  {
+    "title": "Examtopics PCAP 31 03_9 question #42",
+    "header": "Which of the following expressions evaluate to True? (Choose two.)",
+    "content": "",
+    "questions": [
+      "**A:** '1' + '1' + '1' \u003c '1' * 3'\n\n**B:** 121 + 1 != '1' + 2 * '2'\n\n**C:** 'AbC'.lower() \u003c 'AB'\n\n**D:** '3.14' != str(3.1415)\n\n"
+    ],
+    "answer": "BD",
+    "timestamp": "2024-07-12 14:02:00",
+    "question_link": "https://www.examtopics.com/discussions/python-institute/view/143789-exam-pcap-31-03-topic-1-question-47-discussion/",
+    "comments": "[Dave304409] Selected Answer: BD is correct [DKAT2023] Selected Answer: BD B and D are corrects"
+  },
+  {
+    "title": "Examtopics PCAP 31 03_9 question #43",
+    "header": "What is the expected behavior of the following code?\n\nthe_string = ',,'.join(('alpha', 'omega'))\nthe_list = the_string.split(',')\nprint(',' in the list)",
+    "content": "",
+    "questions": [
+      "**A:** it outputs False\n\n**B:** it raises an exception\n\n**C:** it outputs True\n\n**D:** it outputs nothing\n\n"
+    ],
+    "answer": "B",
+    "timestamp": "2024-07-12 14:05:00",
+    "question_link": "https://www.examtopics.com/discussions/python-institute/view/143790-exam-pcap-31-03-topic-1-question-48-discussion/",
+    "comments": "[jaycosmo_23] Selected Answer: A The expression checks if the string ',' exists as an element in the list. However, ',' is not an element in ['alpha', '', 'omega']. Therefore, the expression evaluates to False. [JeyTlenJey] Selected Answer: B print(',' in the list) SyntaxError: invalid syntax. [kstr] B the answer [DKAT2023] Selected Answer: B print(',' in the list) should be : print(',' in the_list)"
+  },
+  {
+    "title": "Examtopics PCAP 31 03_9 question #44",
+    "header": "What is the expected behavior of the following code?\n\n//IMG//",
+    "content": "https://img.examtopics.com/pcap-31-03/image28.png",
+    "questions": [
+      "**A:** it outputs 123\n\n**B:** it raises an exception\n\n**C:** it outputs 6\n\n**D:** it outputs 321\n\n"
+    ],
+    "answer": "C",
+    "timestamp": "2024-07-12 14:09:00",
+    "question_link": "https://www.examtopics.com/discussions/python-institute/view/143791-exam-pcap-31-03-topic-1-question-49-discussion/",
+    "comments": "[Dave304409] Selected Answer: C is correct [DKAT2023] Selected Answer: C C is correct"
+  },
+  {
+    "title": "Examtopics PCAP 31 03_9 question #45",
+    "header": "With regards to the directory structure below, select the proper forms of the directives in order to import module_c. (Choose two.)\n//IMG//",
+    "content": "https://img.examtopics.com/pcap-31-03/image1.png",
+    "questions": [
+      "**A:** from pypack.upper.lower import module_c\n\n**B:** import pypack.upper.lower.module_c\n\n**C:** import upper.module_c\n\n**D:** import upper.lower.module_c\n\n"
+    ],
+    "answer": "AB",
+    "timestamp": "2024-06-04 11:30:00",
+    "question_link": "https://www.examtopics.com/discussions/python-institute/view/141877-exam-pcap-31-03-topic-1-question-5-discussion/",
+    "comments": "[herrmann69] Selected Answer: AB A and B are correct. from pypack.upper.lower import module_c import import pypack.upper.lower.module_c C is missing \"lower\" between \"upper\" and \"module_c\" D is missing \"pypack\" as the parent of \"upper\" [thewoodsii81] Selected Answer: AB see hermann69 comment [Dave304409] Selected Answer: AB is correct [DKAT2023] A and B"
+  },
+  {
+    "title": "Examtopics PCAP 31 03_13 question #46",
+    "header": "Which of the following statements are true? (Choose two.)",
+    "content": "",
+    "questions": [
+      "**A:** if open()'s second argument is 'r', the file must exist or open will fail\n\n**B:** the second open() argument describes the open mode and defaults to 'w'\n\n**C:** if open()'s second argument is 'w' and the invocation succeeds, the previous file's content is lost\n\n**D:** closing an opened file is performed by the closefile() function\n\n"
+    ],
+    "answer": "AC",
+    "timestamp": "2024-07-12 18:00:00",
+    "question_link": "https://www.examtopics.com/discussions/python-institute/view/143818-exam-pcap-31-03-topic-1-question-64-discussion/",
+    "comments": "[Dave304409] Selected Answer: AC is correct [JeyTlenJey] Selected Answer: AC Correct: A, C [kstr] AC tested [DKAT2023] Selected Answer: AC A and C are correct"
+  },
+  {
+    "title": "Examtopics PCAP 31 03_13 question #47",
+    "header": "What is the expected output of the following code if existing_file is the name of a file located inside the working directory?\n\n//IMG//",
+    "content": "https://img.examtopics.com/pcap-31-03/image38.png",
+    "questions": [
+      "**A:** 1 2 3\n\n**B:** 1 2\n\n**C:** 1 3\n\n**D:** 2 3\n\n"
+    ],
+    "answer": "C",
+    "timestamp": "2024-07-12 18:03:00",
+    "question_link": "https://www.examtopics.com/discussions/python-institute/view/143819-exam-pcap-31-03-topic-1-question-65-discussion/",
+    "comments": "[Dave304409] Selected Answer: C is correct [DKAT2023] Selected Answer: C C is correct"
+  },
+  {
+    "title": "Examtopics PCAP 31 03_13 question #48",
+    "header": "Assuming that the following code has been executed successfully, select the expressions which evaluate to True. (Choose two.)\n\n//IMG//",
+    "content": "https://img.examtopics.com/pcap-31-03/image39.png",
+    "questions": [
+      "**A:** a(2) == 4\n\n**B:** a is not None\n\n**C:** b(1) == 4\n\n**D:** a == b\n\n"
+    ],
+    "answer": "AB",
+    "timestamp": "2024-07-12 18:07:00",
+    "question_link": "https://www.examtopics.com/discussions/python-institute/view/143823-exam-pcap-31-03-topic-1-question-66-discussion/",
+    "comments": "[JeyTlenJey] Selected Answer: AB Correct : A, B print(\"A.\", a(2) == 4) #True print(\"B.\", a is not None) #True print(\"C.\", b(1) == 4) #False print(\"D.\", a == b) #False [DKAT2023] Selected Answer: AB A and B are corrects"
+  },
+  {
+    "title": "Examtopics PCAP 31 03_13 question #49",
+    "header": "Which of the following lambda definitions are correct? (Choose two.)",
+    "content": "",
+    "questions": [
+      "**A:** lambda(x,y) = x//y - x%y\n\n**B:** lambda x,y: return x//y - x%y\n\n**C:** lambda x,y: (x,y)\n\n**D:** lambda x,y: x//y - x%y\n\n"
+    ],
+    "answer": "CD",
+    "timestamp": "2024-07-12 18:12:00",
+    "question_link": "https://www.examtopics.com/discussions/python-institute/view/143824-exam-pcap-31-03-topic-1-question-67-discussion/",
+    "comments": "[jarun2024] A. lambda(x,y) = x//y - x%y ------ \u003e SyntaxError: Lambda expression parameters cannot be parenthesized B. lambda x,y: return x//y - x%y ----\u003e Lambda function not returning the values. So C \u0026 D is the correct expression. C. lambda x,y: (x,y) D. lambda x,y: x//y - x%y [Dave304409] Selected Answer: CD is correct [DKAT2023] Selected Answer: CD C and D are correct"
+  },
+  {
+    "title": "Examtopics PCAP 31 03_13 question #50",
+    "header": "What is the expected output of the following snippet?\n\n//IMG//",
+    "content": "https://img.examtopics.com/pcap-31-03/image40.png",
+    "questions": [
+      "**A:** False upper\n\n**B:** True upper\n\n**C:** False lower\n\n**D:** True lower\n\n"
+    ],
+    "answer": "A",
+    "timestamp": "2024-11-20 23:45:00",
+    "question_link": "https://www.examtopics.com/discussions/python-institute/view/151733-exam-pcap-31-03-topic-1-question-68-discussion/",
+    "comments": "[7b27843] A: False upper"
+  },
+  {
+    "title": "Examtopics PCAP 31 03_4 question #51",
+    "header": "Assuming that the code below has been placed inside a file named code.py and executed successfully, which of the following expressions evaluate to True? (Choose two.)\n//IMG//",
+    "content": "https://img.examtopics.com/pcap-31-03/image13.png",
+    "questions": [
+      "**A:** str(Object) = 'Object'\n\n**B:** __name__ == '__main__'\n\n**C:** len(ClassB.__bases__) == 1\n\n**D:** ClassA.__module__ == 'ClassA'\n\n"
+    ],
+    "answer": "BC",
+    "timestamp": "2024-06-29 21:13:00",
+    "question_link": "https://www.examtopics.com/discussions/python-institute/view/143076-exam-pcap-31-03-topic-1-question-23-discussion/",
+    "comments": "[jarun2024] Ans: B \u0026 C -- Tested in the IDE [Dave304409] Selected Answer: BC is correct [DKAT2023] B and C are corrects"
+  },
+  {
+    "title": "Examtopics PCAP 31 03_4 question #52",
+    "header": "Assuming that the following inheritance set is in force, which of the following classes are declared properly? (Choose two.)\n//IMG//",
+    "content": "https://img.examtopics.com/pcap-31-03/image14.png",
+    "questions": [
+      "**A:** class Class_3(A,C): pass\n\n**B:** class Class_2(B,C): pass\n\n**C:** class Class_4(A,B): pass\n\n**D:** class Class_1(C,B): pass\n\n"
+    ],
+    "answer": "BD",
+    "timestamp": "2024-06-29 21:28:00",
+    "question_link": "https://www.examtopics.com/discussions/python-institute/view/143077-exam-pcap-31-03-topic-1-question-24-discussion/",
+    "comments": "[DKAT2023] B and D are corrects [tosravan] Selected Answer: AB Class Class_3 inherits from A and C Class Class_2 inherits from B and C next 2 are repeated [Horsefeathers] Selected Answer: BD DKAT is right. It's about Method Resolution Order. [Dave304409] Selected Answer: BC is correct"
+  },
+  {
+    "title": "Examtopics PCAP 31 03_4 question #53",
+    "header": "Assuming that the following piece of code has been executed successfully, which of the expressions evaluate to True? (Choose two.)\n//IMG//",
+    "content": "https://img.examtopics.com/pcap-31-03/image15.png",
+    "questions": [
+      "**A:** A.VarA == 1\n\n**B:** isinstance(obj_b,A)\n\n**C:** B.VarA == 1\n\n**D:** obj_a is obj_aa\n\n"
+    ],
+    "answer": "AB",
+    "timestamp": "2024-06-29 21:48:00",
+    "question_link": "https://www.examtopics.com/discussions/python-institute/view/143078-exam-pcap-31-03-topic-1-question-25-discussion/",
+    "comments": "[Dave304409] Selected Answer: AB is correct [DKAT2023] A and B are corrects"
+  },
+  {
+    "title": "Examtopics PCAP 31 03_4 question #54",
+    "header": "What is the expected output of the following snippet?\n//IMG//",
+    "content": "https://img.examtopics.com/pcap-31-03/image16.png",
+    "questions": [
+      "**A:** False upper\n\n**B:** True upper\n\n**C:** False lower\n\n**D:** True lower\n\n"
+    ],
+    "answer": "B",
+    "timestamp": "2024-06-29 21:50:00",
+    "question_link": "https://www.examtopics.com/discussions/python-institute/view/143079-exam-pcap-31-03-topic-1-question-26-discussion/",
+    "comments": "[Dave304409] Selected Answer: B is correct [DKAT2023] B is correct"
+  },
+  {
+    "title": "Examtopics PCAP 31 03_4 question #55",
+    "header": "Which of the following lines of code will work flawlessly when put independently inside the add_new() method in order to make the snippet’s output equal to [0, 1, 1]? (Choose two.)\n//IMG//",
+    "content": "https://img.examtopics.com/pcap-31-03/image17.png",
+    "questions": [
+      "**A:** self.put(self.store[1])\n\n**B:** self.put(self.get()[-1])\n\n**C:** self.put(store[1])\n\n**D:** put(self.store[1])\n\n"
+    ],
+    "answer": "AB",
+    "timestamp": "2024-06-29 22:03:00",
+    "question_link": "https://www.examtopics.com/discussions/python-institute/view/143080-exam-pcap-31-03-topic-1-question-27-discussion/",
+    "comments": "[Dave304409] Selected Answer: AB is correct [DKAT2023] A and B are corrects"
+  },
+  {
+    "title": "Examtopics PCAP 31 03_6 question #56",
+    "header": "What is the expected output of the following code?\nmyli = range (-2,2)\nm = list(filter(lambda x: True if abs(x) \u003c 1 else False, myli)) print(len(m))",
+    "content": "",
+    "questions": [
+      "**A:** 4\n\n**B:** 1\n\n**C:** an exception is raised\n\n**D:** 16\n\n"
+    ],
+    "answer": "B",
+    "timestamp": "2024-07-01 18:22:00",
+    "question_link": "https://www.examtopics.com/discussions/python-institute/view/143138-exam-pcap-31-03-topic-1-question-32-discussion/",
+    "comments": "[Esteban08] myli = range(-2,2) m = list(filter(lambda x: True if abs(x) \u003c 1 else False, myli)) print(len(m)) [Dave304409] Selected Answer: B is correct [DKAT2023] B is correct"
+  },
+  {
+    "title": "Examtopics PCAP 31 03_6 question #57",
+    "header": "What is true about lambda functions? (Choose two.)",
+    "content": "",
+    "questions": [
+      "**A:** they are called anonymous functions\n\n**B:** they cannot return the None value as a result\n\n**C:** they must contain the return keyword\n\n**D:** they must have a non-zero number of parameters\n\n"
+    ],
+    "answer": "AD",
+    "timestamp": "2024-07-01 20:54:00",
+    "question_link": "https://www.examtopics.com/discussions/python-institute/view/143145-exam-pcap-31-03-topic-1-question-33-discussion/",
+    "comments": "[JeyTlenJey] x = lambda : 10 print(x()) # returns 10 - it can have any number of argument , zero included y = lambda x: None print(y(1)) # returns None A is correct :( [Dave304409] Selected Answer: AD is correct [DKAT2023] A and D are corrects"
+  },
+  {
+    "title": "Examtopics PCAP 31 03_6 question #58",
+    "header": "What is the expected behavior of the following code?\nx =3 % 1\ny = 1 if x \u003e 0 else 0\nprint(y)",
+    "content": "",
+    "questions": [
+      "**A:** the code is erroneus and it will not execute\n\n**B:** it outputs 1\n\n**C:** it outputs 0\n\n**D:** it outputs -1\n\n"
+    ],
+    "answer": "C",
+    "timestamp": "2024-05-30 17:08:00",
+    "question_link": "https://www.examtopics.com/discussions/python-institute/view/141610-exam-pcap-31-03-topic-1-question-34-discussion/",
+    "comments": "[JeyTlenJey] Selected Answer: C x = 3 % 1 #0 y = 1 if x \u003e 0 else 0 #0 print(x,y) #0 0 [Dave304409] Selected Answer: C is correct [DKAT2023] C is correct [a4129fd] Selected Answer: C As tested in my IDE"
+  },
+  {
+    "title": "Examtopics PCAP 31 03_6 question #59",
+    "header": "What is the expected output of the following code if the file named zero_length_existing_file is a zero-length file located inside the working directory?\n//IMG//",
+    "content": "https://img.examtopics.com/pcap-31-03/image20.png",
+    "questions": [
+      "**A:** 2\n\n**B:** -1\n\n**C:** an errno value corresponding to file not found\n\n**D:** 0\n\n"
+    ],
+    "answer": "D",
+    "timestamp": "2024-07-01 18:37:00",
+    "question_link": "https://www.examtopics.com/discussions/python-institute/view/143140-exam-pcap-31-03-topic-1-question-35-discussion/",
+    "comments": "[kostadiv] Selected Answer: A try: f = open('test.txt','rt') d = f.readline() print(len(d)) f.close() except IOError: print(-1) [eskimolight] I thought it should be -1 [Dave304409] Selected Answer: D is correct [DKAT2023] D is correct"
+  },
+  {
+    "title": "Examtopics PCAP 31 03_6 question #60",
+    "header": "What is the expected output of the following code?\n//IMG//",
+    "content": "https://img.examtopics.com/pcap-31-03/image21.png",
+    "questions": [
+      "**A:** an exception is raised\n\n**B:** 1\n\n**C:** 0\n\n**D:** -1\n\n"
+    ],
+    "answer": "D",
+    "timestamp": "2024-05-30 17:16:00",
+    "question_link": "https://www.examtopics.com/discussions/python-institute/view/141611-exam-pcap-31-03-topic-1-question-36-discussion/",
+    "comments": "[Dave304409] Selected Answer: D Correct [DKAT2023] D is correct [a4129fd] Selected Answer: D As tested in my IDE"
+  },
+  {
+    "title": "Examtopics PCAP 31 03_7 question #62",
+    "header": "What is the expected behavior of the following code?\nmy_list = [i for i in range(5)]\nm = [my_list[i] for i in range(4, 0, -1) if my_list[i] % 2 != 0] print(m)",
+    "content": "",
+    "questions": [
+      "**A:** the code is erroneus and it will not execute\n\n**B:** it outputs [4, 2, 0]\n\n**C:** it outputs [3, 1]\n\n**D:** it outputs [1, 3]\n\n"
+    ],
+    "answer": "C",
+    "timestamp": "2024-06-05 21:23:00",
+    "question_link": "https://www.examtopics.com/discussions/python-institute/view/141964-exam-pcap-31-03-topic-1-question-37-discussion/",
+    "comments": "[Dave304409] Selected Answer: C C is correct [DKAT2023] c is correct [b4779c5] it outputs [3,1]"
+  },
+  {
+    "title": "Examtopics PCAP 31 03_7 question #64",
+    "header": "Assuming that the following code has been executed successfully, select the expressions which evaluate to True (Choose two.)\n//IMG//",
+    "content": "https://img.examtopics.com/pcap-31-03/image22.png",
+    "questions": [
+      "**A:** a is not None\n\n**B:** a() == 4\n\n**C:** a != b\n\n**D:** b() == 4\n\n"
+    ],
+    "answer": "AC",
+    "timestamp": "2024-05-30 17:19:00",
+    "question_link": "https://www.examtopics.com/discussions/python-institute/view/141612-exam-pcap-31-03-topic-1-question-38-discussion/",
+    "comments": "[Dave304409] Selected Answer: C C is correct [DKAT2023] A and C are correct [a4129fd] Selected Answer: AC As tested"
+  },
+  {
+    "title": "Examtopics PCAP 31 03_7 question #65",
+    "header": "Which of the following statements are true? (Choose two.)",
+    "content": "",
+    "questions": [
+      "**A:** if invoking open() fails, an exception is raised\n\n**B:** instd, outstd, errstd are the names of pre-opened streams\n\n**C:** open() requires a second argument\n\n**D:** open() is a function which returns an object that represents a physical file\n\n"
+    ],
+    "answer": "AD",
+    "timestamp": "2024-06-26 15:10:00",
+    "question_link": "https://www.examtopics.com/discussions/python-institute/view/142955-exam-pcap-31-03-topic-1-question-39-discussion/",
+    "comments": "[jaycosmo_23] Selected Answer: AD Correct Answers A. If invoking open() fails, an exception is raised D. open() is a function which returns an object that represents a physical file [jarun2024] ANS: A \u0026 D [kino_1994] A second parameter is not necessary because it uses default parameters. See the documentation: https://docs.python.org/3/library/functions.html#open If the mode is not specified, it defaults to 'r'. Therefore, the correct answers are A and D. [Dave304409] A, C is correct [DKAT2023] sorry , A and C are corrects not D, [DKAT2023] A and D are corrects [b4779c5] the correct anserws are AandD"
+  },
+  {
+    "title": "Examtopics PCAP 31 03_7 question #68",
+    "header": "Assuming that the code below has been executed successfully, which of the following expressions will always evaluate to True? (Choose two.) import random v1 = random.random() v2 = random.random()",
+    "content": "",
+    "questions": [
+      "**A:** len(random.sample([1,2,3],1)) \u003e 2\n\n**B:** v1 == v2\n\n**C:** random.choice([1,2,3]) \u003e 0\n\n**D:** v1\u003e1\n\n"
+    ],
+    "answer": "C",
+    "timestamp": "2024-05-19 07:48:00",
+    "question_link": "https://www.examtopics.com/discussions/python-institute/view/140849-exam-pcap-31-03-topic-1-question-4-discussion/",
+    "comments": "[narayanan010] Only option C, `random.choice([1,2,3]) \u003e 0` will return TRUE. All other options are FALSE. [Sharif24] Selected Answer: C import random v1 = random.random() v2 = random.random() print(v1 ==v2) #False print(v1\u003e1) # False print(random.choice(([1,2,3],1))\u003e0) # True [DKAT2023] C is the correct [Nikhil_Durgesh] Option C is correct Explanation: import random v1 = random.random() v2 = random.random() random.choice([1,2,3]) \u003e 0` will return TRUE. All others options will return output as FALSE."
+  },
+  {
+    "title": "Examtopics PCAP 31 03_7 question #72",
+    "header": "What is the expected output of the following code if there is no file named non_existing_file inside the working directory?\n//IMG//",
+    "content": "https://img.examtopics.com/pcap-31-03/image23.png",
+    "questions": [
+      "**A:** 2 2 3\n\n**B:** 2 2\n\n**C:** 1 3\n\n**D:** 1 2 2\n\n"
+    ],
+    "answer": "B",
+    "timestamp": "2024-07-01 19:56:00",
+    "question_link": "https://www.examtopics.com/discussions/python-institute/view/143144-exam-pcap-31-03-topic-1-question-40-discussion/",
+    "comments": "[Horsefeathers] Selected Answer: B The first number is not \"1\" because the try block raises an exception before it reaches the print function. The last number is \"2\" because of the except block and, additionally, the else block not being executed. [DKAT2023] B is correct"
+  },
+  {
+    "title": "Examtopics PCAP 31 03_5 question #61",
+    "header": "What is the expected behavior of the following code?\n//IMG//",
+    "content": "https://img.examtopics.com/pcap-31-03/image18.png",
+    "questions": [
+      "**A:** it raises an exception\n\n**B:** it outputs 2\n\n**C:** it outputs 0\n\n**D:** it outputs 1\n\n"
+    ],
+    "answer": "D",
+    "timestamp": "2024-06-05 21:12:00",
+    "question_link": "https://www.examtopics.com/discussions/python-institute/view/141961-exam-pcap-31-03-topic-1-question-28-discussion/",
+    "comments": "[DKAT2023] Selected Answer: D class. Variable +=1 so that the outputs is 1(D) [Dave304409] Selected Answer: D is correct [DKAT2023] sorry, C is correct [DKAT2023] D is correct"
+  },
+  {
+    "title": "Examtopics PCAP 31 03_5 question #63",
+    "header": "What is true about Object-Oriented Programming in Python? (Choose two.)",
+    "content": "",
+    "questions": [
+      "**A:** encapsulation allows you to hide a whole class inside a package\n\n**B:** a class is a recipe for an object\n\n**C:** each object of the same class can have a different set of properties\n\n**D:** the arrows on a class diagram are always directed from a superclass towards its subclass\n\n"
+    ],
+    "answer": "BC",
+    "timestamp": "2024-06-29 22:30:00",
+    "question_link": "https://www.examtopics.com/discussions/python-institute/view/143084-exam-pcap-31-03-topic-1-question-29-discussion/",
+    "comments": "[jaycosmo_23] Selected Answer: B B. A class is a recipe for an object None of the other options are valid. If rephrased, option C could be correct for clarification (if focusing on unique attribute values per object rather than unique sets of attributes). [kino_1994] I'm not sure about C. Each object of the same class has the same set of properties but can have different values. [Dave304409] Selected Answer: BC is correct [DKAT2023] B and C are corrects"
+  },
+  {
+    "title": "Examtopics PCAP 31 03_5 question #71",
+    "header": "A Python package named pypack includes a module named pymod.py which contains a function named pyfun().\nWhich of the following snippets will let you invoke the function? (Choose two.)",
+    "content": "",
+    "questions": [
+      "**A:** from pypack.pymod import pyfun\npyfun()\n\n**B:** import pypack\npymod.pyfun()\n\n**C:** from pypack import *\npyfun()\n\n**D:** import pypack\nimport pypack.pymod\npypack.pymod.pyfun()\n\n"
+    ],
+    "answer": "AD",
+    "timestamp": "2024-06-28 20:47:00",
+    "question_link": "https://www.examtopics.com/discussions/python-institute/view/143028-exam-pcap-31-03-topic-1-question-3-discussion/",
+    "comments": "[Dave304409] Selected Answer: AD is correct [DKAT2023] A and D"
+  },
+  {
+    "title": "Examtopics PCAP 31 03_5 question #74",
+    "header": "What is true about Python class constructors? (Choose two.)",
+    "content": "",
+    "questions": [
+      "**A:** the constructor’s first parameter identifies an object currently being created\n\n**B:** super-class constructor is invoked implicitly during constructor execution\n\n**C:** the constructor can be invoked directly under strictly defined circumstances\n\n**D:** the constructor cannot use the default values of the parameters\n\n"
+    ],
+    "answer": "AC",
+    "timestamp": "2024-06-29 22:37:00",
+    "question_link": "https://www.examtopics.com/discussions/python-institute/view/143085-exam-pcap-31-03-topic-1-question-30-discussion/",
+    "comments": "[jaycosmo_23] Selected Answer: AC A. The constructor’s first parameter identifies an object currently being created C. The constructor can be invoked directly under strictly defined circumstances [Dave304409] Selected Answer: AB is correct [DKAT2023] A and B are corrects"
+  },
+  {
+    "title": "Examtopics PCAP 31 03_5 question #76",
+    "header": "What is the expected behavior of the following code?\n//IMG//",
+    "content": "https://img.examtopics.com/pcap-31-03/image19.png",
+    "questions": [
+      "**A:** it outputs 6\n\n**B:** it raises an exception\n\n**C:** it outputs 1\n\n**D:** it outputs 3\n\n"
+    ],
+    "answer": "D",
+    "timestamp": "2024-07-03 13:48:00",
+    "question_link": "https://www.examtopics.com/discussions/python-institute/view/143235-exam-pcap-31-03-topic-1-question-31-discussion/",
+    "comments": "[Horsefeathers] Selected Answer: D The answer is D, tested in JupyterLab. [jarun2024] Ans: B --\u003e NameError: name '_Class__Var' is not defined [DKAT2023] B is correct [Dave304409] D is correct"
+  },
+  {
+    "title": "Examtopics PCAP 31 03_10 question #66",
+    "header": "Which of the following expressions evaluate to True? (Choose two.)",
+    "content": "",
+    "questions": [
+      "**A:** 'dcb' not in 'abcde'[::-1]\n\n**B:** 'True' not in 'False'\n\n**C:** str(1-1) in '0123456789'[:2]\n\n**D:** 'phd' in 'alpha'\n\n"
+    ],
+    "answer": "BC",
+    "timestamp": "2024-07-12 16:55:00",
+    "question_link": "https://www.examtopics.com/discussions/python-institute/view/143804-exam-pcap-31-03-topic-1-question-50-discussion/",
+    "comments": "[KuaciCorn] Selected Answer: BC B\u0026C is the correct answer [jarun2024] B\u0026C is the correct answer [JeyTlenJey] Selected Answer: BC print(\"A.\", 'dcb' not in 'abcde'[::-1], \"list:\",'abcde'[::-1]) #False; 'edcba' print(\"B.\", 'True' not in 'False') #True, strings print(\"C.\", str(1-1) in '0123456789'[:2],\"str:\",str(1-1),\"in:\",'0123456789'[:2]) #True '01' print(\"D.\", 'phd' in 'alpha') #False [Dave304409] Selected Answer: BC is correct [kstr] BC CORRECT [DKAT2023] Selected Answer: BC B and C are corrects"
+  },
+  {
+    "title": "Examtopics PCAP 31 03_10 question #67",
+    "header": "Which of the following expressions evaluate to True? (Choose two.)",
+    "content": "",
+    "questions": [
+      "**A:** len(\"\"\"\n\"\"\") \u003e 0\n\n**B:** len('\\'') == 1\n\n**C:** ord(\"z\") - ord(\"Z\") == ord(\"0\")\n\n**D:** chr(ord('a') + 1) == 'B'\n\n"
+    ],
+    "answer": "AB",
+    "timestamp": "2024-07-12 17:11:00",
+    "question_link": "https://www.examtopics.com/discussions/python-institute/view/143805-exam-pcap-31-03-topic-1-question-51-discussion/",
+    "comments": "[JeyTlenJey] Selected Answer: AB A,B correct print(\"A.\",len(\"\"\" \"\"\")\u003e0,len(\"\"\" \"\"\")) #True print(\"B.\", len('\\'') == 1) #True print(\"C.\", ord(\"z\") - ord(\"Z\") == ord(\"0\"), ord(\"z\") , ord(\"Z\") , ord(\"0\")) #False 122 90 48 print(\"D.\", chr(ord('a') + 1) == 'B', chr(ord('a') + 1)) #False, b [Dave304409] Selected Answer: AB is correct [kstr] AB correct tested [DKAT2023] Selected Answer: AB A and B are corrects, C should be : print(ord(\"z\") - ord(\"Z\") == ord(' ')) , D should be : chr(ord('a')+1)='b'"
+  },
+  {
+    "title": "Examtopics PCAP 31 03_10 question #69",
+    "header": "Assuming that the following inheritance set is in force, which of the following classes are declared properly? (Choose two.)\n\n//IMG//",
+    "content": "https://img.examtopics.com/pcap-31-03/image29.png",
+    "questions": [
+      "**A:** class Class_2(A,B): pass\n\n**B:** class Class_3(A,C): pass\n\n**C:** class Class_1(D): pass\n\n**D:** class Class_4(C,B): pass\n\n"
+    ],
+    "answer": "CD",
+    "timestamp": "2024-07-12 17:25:00",
+    "question_link": "https://www.examtopics.com/discussions/python-institute/view/143806-exam-pcap-31-03-topic-1-question-52-discussion/",
+    "comments": "[JeyTlenJey] Correct: C, D #class Class_2(A,B): pass #class Class_3(A,C): pass class Class_1(D): pass class Class_4(C,B): pass #oa = Class2() #TypeError: Cannot create a consistent method resolution order (MRO) for bases A, B #ob = Class_3() #TypeError: Cannot create a consistent method resolution order (MRO) for bases A, C oc = Class_1() od = Class_4() print(\"ok\") [Dave304409] Selected Answer: CD is correct [kstr] CD correct tested [DKAT2023] Selected Answer: CD C and D are corrects"
+  },
+  {
+    "title": "Examtopics PCAP 31 03_10 question #70",
+    "header": "What is the expected behavior of the following code?\n\n//IMG//",
+    "content": "https://img.examtopics.com/pcap-31-03/image30.png",
+    "questions": [
+      "**A:** it outputs 3\n\n**B:** it outputs 2\n\n**C:** it outputs 5\n\n**D:** it raises an exception\n\n"
+    ],
+    "answer": "C",
+    "timestamp": "2024-07-12 17:31:00",
+    "question_link": "https://www.examtopics.com/discussions/python-institute/view/143807-exam-pcap-31-03-topic-1-question-53-discussion/",
+    "comments": "[jarun2024] Ans: C --- Tested in the IDE [JeyTlenJey] Selected Answer: C Correct: C class Class: Var = 0 def __init__(self,var): self.var = var Class.Var += 1 object_1 = Class(1) object_2 = Class(2) print(Class.Var + object_1.var + object_2.var, \"values:\", Class.Var ,object_1.var ,object_2.var) #5, 2 1 2 [Dave304409] Selected Answer: C is correct [DKAT2023] Selected Answer: D Class didn't take argument"
+  },
+  {
+    "title": "Examtopics PCAP 31 03_10 question #75",
+    "header": "What is true about Python class constructors? (Choose two.)",
+    "content": "",
+    "questions": [
+      "**A:** the constructor's first parameter must always be named self\n\n**B:** there can be only one constructor in a Python class\n\n**C:** the constructor cannot be invoked directly under any circumstances\n\n**D:** the constructor cannot return a result other than None\n\n"
+    ],
+    "answer": "AB",
+    "timestamp": "2024-07-12 17:32:00",
+    "question_link": "https://www.examtopics.com/discussions/python-institute/view/143808-exam-pcap-31-03-topic-1-question-54-discussion/",
+    "comments": "[Horsefeathers] Selected Answer: BD Correct answers B \u0026 D. A. is incorrect - the first parameter of __init__ is conventionally named self, but it can be named anything (though it's strongly recommended to use self for readability) C. is incorrect - the constructor (__init__) can be invoked directly, though it's not common; for example, MyClass.__init__(obj, args...) is technically valid but not recommended [kino_1994] I correct my previous answer: option C is also correct. [kino_1994] B and D are correct answers. A) False class MyClass: def __init__(this, value): # Using 'this' instead of 'self' this.value = value obj = MyClass(10) print(obj.value) # Output: 10 B) True class MyClass: def __init__(self): pass def __init__(self, value): self.value = value obj1 = MyClass() # Error obj2 = MyClass(20) print(obj2.value) # Output: 20 C) False class MyClass: def __init__(self, value): self.value = value obj = MyClass.__init__(MyClass, 10) # Error obj = MyClass.__init__(10) # Error D) True class MyClass: def __init__(self, value): self.value = value return \"This will cause an error\" obj = MyClass(10) # This will raise a TypeError: __init__() should return None, not 'str' [kstr] BD the correct answer [DKAT2023] Selected Answer: AB A and B are corrects"
+  },
+  {
+    "title": "Examtopics PCAP 31 03_14 question #74",
+    "header": "What is the expected output of the following code?\n\nmyli = [1, 2, 4]\nm = list(map(lambda x: 2**x, myli))\nprint(m[-1])",
+    "content": "",
+    "questions": [
+      "**A:** 4\n\n**B:** 1\n\n**C:** an exception is raised\n\n**D:** 16\n\n"
+    ],
+    "answer": "D",
+    "timestamp": "2025-01-30 21:34:00",
+    "question_link": "https://www.examtopics.com/discussions/python-institute/view/155727-exam-pcap-31-03-topic-1-question-69-discussion/",
+    "comments": "[zwakenberg] Selected Answer: D List Definition: myli = [1, 2, 4] Mapping with Lambda Function: m = list(map(lambda x: 2**x, myli)) This applies the lambda function lambda x: 2**x to each element in myli. For x = 1, 2**1 = 2 For x = 2, 2**2 = 4 For x = 4, 2**4 = 16 So, m becomes [2, 4, 16]. Accessing the Last Element: print(m[-1]) prints the last element of the list m, which is 16."
+  },
+  {
+    "title": "Examtopics PCAP 31 03_14 question #77",
+    "header": "What is the expected behavior of the following code?\n//IMG//",
+    "content": "https://img.examtopics.com/pcap-31-03/image2.png",
+    "questions": [
+      "**A:** the code is erroneous and it will not execute\n\n**B:** it outputs 1\n\n**C:** it outputs 2\n\n**D:** it outputs 0\n\n"
+    ],
+    "answer": "C",
+    "timestamp": "2024-05-25 09:41:00",
+    "question_link": "https://www.examtopics.com/discussions/python-institute/view/141207-exam-pcap-31-03-topic-1-question-7-discussion/",
+    "comments": "[kino_1994] Are you blind? s is lowercase, not uppercase, throughout the entire code snippet. Therefore, the output is 2. Try yourself: s = '2A' try: n = int(s) except ValueError: n = 2 except ArithmeticError: n = 1 except: n = 0 print(n) [eskimolight] Analysis Variable Name Case Sensitivity: The variable S is defined as '2A', but within the try block, s (lowercase) is used. Since Python is case-sensitive, s is not defined, and this will raise a NameError. Error Handling: The NameError is not explicitly caught by any of the except blocks (ValueError, ArithmeticError). Therefore, the generic except block will catch it. Output: Due to the NameError, the generic except block will execute, and n will be assigned the value 0. Given this information, the expected behavior of the code is: D. it outputs 0 This is because the NameError caused by the case mismatch between S and s will be caught by the generic except block, assigning n the value 0. Additionally, there is a minor formatting issue in the code snippet you provided, which should be corrected for the code to run properly. However, that doesn't change the output in this case. [eskimolight] I feel the output should be 0 so in my opinion the answer should be D [Dave304409] Answer C is correct. Print 2 #Explanation: S = '2A' try: n = int(S) except ValueError: n = 2 except ArithmeticError: n = 1 except: n =0 print(n) [DKAT2023] C is the correct [herrmann69] Selected Answer: C Answer C is correct. It prints 2. Trying to parse \"2A\" to an int will result in an ValueError, which will then set n to 2 in its except branch. No further excepts or assignments to n are done afterwards and n is printed with its value 2. [Nikhil_Durgesh] Option \"D = it outputs 0\" is correct. Explanation: S = '2A' try: n = int(s) except ValueError: n = 2 except ArithmeticError: n = 1 except: n =0 print(n) Returns output 0."
+  },
+  {
+    "title": "Examtopics PCAP 31 03_14 question #78",
+    "header": "What is the expected behavior of the following code?\n\nmy_list = [i for i in range(5)]\nm = [my_list[i] for i in range(5) if my_list[i] % 2 != 0]\nprint(m)",
+    "content": "",
+    "questions": [
+      "**A:** the code is erroneus and it will not execute\n\n**B:** it outputs [0, 2, 4]\n\n**C:** it outputs [0, 1, 2, 3, 4]\n\n**D:** it outputs [1, 3]\n\n"
+    ],
+    "answer": "D",
+    "timestamp": "2025-01-30 21:36:00",
+    "question_link": "https://www.examtopics.com/discussions/python-institute/view/155728-exam-pcap-31-03-topic-1-question-70-discussion/",
+    "comments": "[zwakenberg] Selected Answer: D List Comprehension: my_list = [i for i in range(5)] This creates a list of integers from 0 to 4: [0, 1, 2, 3, 4]. Filtered List Comprehension: m = [my_list[i] for i in range(5) if my_list[i] % 2 != 0] This iterates over the indices 0 to 4 and includes my_list[i] in the new list m only if my_list[i] % 2 != 0 (i.e., the element is odd). The odd elements in my_list are 1 and 3. Output: print(m) prints the list m, which contains the odd elements [1, 3]"
+  },
+  {
+    "title": "Examtopics PCAP 31 03_14 question #79",
+    "header": "Assuming that the following code has been executed successfully, select the expressions which evaluate to True. (Choose two.)\n\n//IMG//",
+    "content": "https://img.examtopics.com/pcap-31-03/image41.png",
+    "questions": [
+      "**A:** a() \u003e 2\n\n**B:** a is not None\n\n**C:** b() \u003e 2\n\n**D:** a is b\n\n"
+    ],
+    "answer": "BC",
+    "timestamp": "2024-11-25 01:41:00",
+    "question_link": "https://www.examtopics.com/discussions/python-institute/view/151922-exam-pcap-31-03-topic-1-question-74-discussion/",
+    "comments": "[zwakenberg] Selected Answer: BC A,B,C are correct in this case var = 1 def f(): global var var += 1 def g(): return var return g a = f() b = f() print(a() \u003e 2) #A, True print(a is not None) #B, True print(b() \u003e 2) #C, True print(a is b) #D, False [rahulgcp87] Selected Answer: BC It depends at what step is a() is executed. If a() is run after invoking b=f(), then both a() and b() return 3 and in that case A,B and C are correct. But if a() is run before invoking b=f(), then a() returns 2 and b() returns 3 and in this case B and C are correct. [flthymcnsty] C is correct in addition to A \u0026 B. Tested"
+  },
+  {
+    "title": "Examtopics PCAP 31 03_14 question #80",
+    "header": "Assuming that the snippet below has been executed successfully, which of the following expressions will evaluate to True? (Choose two.)\n\nstring = 'REPTILE'[:3:]\nstring = string[-1] + string[-2::-1]",
+    "content": "",
+    "questions": [
+      "**A:** len(string) == 3\n\n**B:** string[0] == 'E'\n\n**C:** string[0] \u003c string[-1]\n\n**D:** string is None\n\n"
+    ],
+    "answer": "AC",
+    "timestamp": "2024-11-26 05:00:00",
+    "question_link": "https://www.examtopics.com/discussions/python-institute/view/152025-exam-pcap-31-03-topic-1-question-75-discussion/",
+    "comments": "[flthymcnsty] Selected Answer: AC Explanation Step-by-Step Breakdown string = 'REPTILE'[:3:] The slicing [:3:] takes the first 3 characters of the string ‘REPTILE'. Result: string = 'REP'. string = string[-1] + string[-2::-1] string[-1]: Takes the last character of 'REP', which is ‘P'. string[-2::-1]: Reverses the string up to the second-to-last character: string[-2] is 'E', and string[-2::-1] reverses 'RE' to ‘ER'. Concatenate: 'P' + 'ER' -\u003e string = ‘PER’. The correct answers are: A. len(string) == 3 The length of 'PER' is 3. This evaluates to True. C. string[0] \u003c string[-1] string[0] is 'P' and string[-1] is ‘R'. 'P' \u003c 'R' is True because 'P' comes before 'R' in ASCII order. The incorrect answers are: B. string[0] == 'E' string[0] is 'P', not 'E'. D. string is None string is 'PER', so it is not None."
+  },
+  {
+    "title": "Examtopics PCAP 31 03_12 question #81",
+    "header": "Which one of the platform module functions should be used to determine the underlying platform name?",
+    "content": "",
+    "questions": [
+      "**A:** platform.processor()\n\n**B:** platform.uname()\n\n**C:** platform.python_version()\n\n**D:** platform.platform()\n\n"
+    ],
+    "answer": "D",
+    "timestamp": "2024-06-04 11:34:00",
+    "question_link": "https://www.examtopics.com/discussions/python-institute/view/141878-exam-pcap-31-03-topic-1-question-6-discussion/",
+    "comments": "[thewoodsii81] Selected Answer: D d is the only one that calls platform [Dave304409] Selected Answer: D is correct [DKAT2023] D is the correct [herrmann69] Selected Answer: D Answer D is correct. platform.platform() code: import platform print(platform.processor()) print(platform.uname()) print(platform.python_version()) print(platform.platform()) output: Intel64 Family 6 Model 140 Stepping 1, GenuineIntel uname_result(system='Windows', node='xxx', release='11', version='10.0.22621', machine='AMD64') 3.12.3 Windows-11-10.0.22621-SP0"
+  },
+  {
+    "title": "Examtopics PCAP 31 03_12 question #82",
+    "header": "What is the expected behavior of the following code?\n\n//IMG//",
+    "content": "https://img.examtopics.com/pcap-31-03/image35.png",
+    "questions": [
+      "**A:** it raises an exception\n\n**B:** it outputs 2\n\n**C:** it outputs 3\n\n**D:** it outputs 1\n\n"
+    ],
+    "answer": "C",
+    "timestamp": "2024-07-12 17:55:00",
+    "question_link": "https://www.examtopics.com/discussions/python-institute/view/143814-exam-pcap-31-03-topic-1-question-60-discussion/",
+    "comments": "[Dave304409] Selected Answer: C is correct [JeyTlenJey] Selected Answer: C Correct : C print(a.doit() , b.doit()) #1, 2 print(a.doit() + b.doit()) #3 [DKAT2023] Selected Answer: C C is correct"
+  },
+  {
+    "title": "Examtopics PCAP 31 03_12 question #83",
+    "header": "What is the expected output of the following code if the file named non_zero_length_existing_text_file is a non-zero length file located inside the working directory?\n\n//IMG//",
+    "content": "https://img.examtopics.com/pcap-31-03/image36.png",
+    "questions": [
+      "**A:** an errno value corresponding to file not found\n\n**B:** 1\n\n**C:** 0\n\n**D:** -1\n\n"
+    ],
+    "answer": "B",
+    "timestamp": "2024-07-12 17:56:00",
+    "question_link": "https://www.examtopics.com/discussions/python-institute/view/143815-exam-pcap-31-03-topic-1-question-61-discussion/",
+    "comments": "[JeyTlenJey] Selected Answer: B Correct : B [kstr] Correct answer D. If the file named 'non_zero_length_existing_text_file' is a non-zero length file located inside the working directory, the expected output of the provided code would be the length of the first character read from the file. However, the provided code only reads one character from the file and prints the length of that character. Therefore, the expected output would be 1 regardless of the content of the file. This is because len(d) will always return 1, as d contains a single character read from the file. If the file contains more than one character, only the first character will be read due to f.read(1), but the length of that character (which is always 1) will be printed. The remaining characters in the file will not be processed or printed in this code snippet. [DKAT2023] Selected Answer: B B is correct"
+  },
+  {
+    "title": "Examtopics PCAP 31 03_12 question #84",
+    "header": "What is the expected output of the following code?\n\n//IMG//",
+    "content": "https://img.examtopics.com/pcap-31-03/image37.png",
+    "questions": [
+      "**A:** 3\n\n**B:** 4\n\n**C:** 2\n\n**D:** an exception is raised\n\n"
+    ],
+    "answer": "C",
+    "timestamp": "2024-07-12 17:57:00",
+    "question_link": "https://www.examtopics.com/discussions/python-institute/view/143816-exam-pcap-31-03-topic-1-question-62-discussion/",
+    "comments": "[jarun2024] I have tested. C is the correct answer. [Dave304409] Selected Answer: D SyntaxError: unexpected EOF while parsing [JeyTlenJey] Correct: C print(foo(lambda x: 2*x, lambda x: x//2, 2)) #2 [DKAT2023] Selected Answer: C C is correct"
+  },
+  {
+    "title": "Examtopics PCAP 31 03_12 question #85",
+    "header": "What is the expected output of the following code?\n\nmytu = ('a', 'b', 'c')\nm = tuple(map(lambda x: chr(ord(x) + 1), mytu))\nprint(m[-2])",
+    "content": "",
+    "questions": [
+      "**A:** an exception is raised\n\n**B:** a\n\n**C:** b\n\n**D:** c\n\n"
+    ],
+    "answer": "D",
+    "timestamp": "2024-07-12 17:58:00",
+    "question_link": "https://www.examtopics.com/discussions/python-institute/view/143817-exam-pcap-31-03-topic-1-question-63-discussion/",
+    "comments": "[Dave304409] Selected Answer: D is correct print(m) ('b', 'c', 'd') print(m[-2]) c [JeyTlenJey] Correct : D mytu = ('a','b','c') m = tuple(map(lambda x: chr(ord(x) + 1),mytu)) print(m) #('b','c','d') print(m[-2]) #c [kstr] D right answer [DKAT2023] Selected Answer: D D is the correct"
+  },
+  {
+    "title": "Examtopics PCAP 31 03_11 question #86",
+    "header": "What is true about Object-Oriented Programming in Python? (Choose two.)",
+    "content": "",
+    "questions": [
+      "**A:** an object is a recipe for a class\n\n**B:** the arrows on a class diagram are always directed from a superclass towards its subclass\n\n**C:** encapsulation allows you to protect some data from uncontrolled access\n\n**D:** inheritance is the relation between a superclass and a subclass\n\n"
+    ],
+    "answer": "CD",
+    "timestamp": "2024-07-12 17:36:00",
+    "question_link": "https://www.examtopics.com/discussions/python-institute/view/143809-exam-pcap-31-03-topic-1-question-55-discussion/",
+    "comments": "[Dave304409] Selected Answer: CD is correct [DKAT2023] Selected Answer: CD C and D are correct."
+  },
+  {
+    "title": "Examtopics PCAP 31 03_11 question #87",
+    "header": "Assuming that the code below has been executed successfully, which of the following expressions evaluate to True? (Choose two.)\n\n//IMG//",
+    "content": "https://img.examtopics.com/pcap-31-03/image31.png",
+    "questions": [
+      "**A:** len(Object.__dict__) == 2\n\n**B:** 'var' in Object.__dict__\n\n**C:** 'var' in Class.__dict__\n\n**D:** 'data' in Object.__dict__\n\n"
+    ],
+    "answer": "AB",
+    "timestamp": "2024-07-12 17:40:00",
+    "question_link": "https://www.examtopics.com/discussions/python-institute/view/143810-exam-pcap-31-03-topic-1-question-56-discussion/",
+    "comments": "[Dave304409] Selected Answer: AB is correct, testing in IDE [eskimolight] To me it looks like the answer is A \u0026 B [kstr] Only A is True [DKAT2023] something wrong in the question"
+  },
+  {
+    "title": "Examtopics PCAP 31 03_11 question #88",
+    "header": "Assuming that the code below has been placed inside a file named code.py and executed successfully, which of the following expressions evaluate to True? (Choose two.)\n\n//IMG//",
+    "content": "https://img.examtopics.com/pcap-31-03/image32.png",
+    "questions": [
+      "**A:** len(ClassB.__bases__) == 2\n\n**B:** __name__ == 'code.py'\n\n**C:** str(Object) == 'Object'\n\n**D:** ClassA.__module__ == '__main__'\n\n"
+    ],
+    "answer": "CD",
+    "timestamp": "2024-07-12 17:46:00",
+    "question_link": "https://www.examtopics.com/discussions/python-institute/view/143811-exam-pcap-31-03-topic-1-question-57-discussion/",
+    "comments": "[Dave304409] Selected Answer: CD is correct, test in my IDE [JeyTlenJey] Selected Answer: CD Correct: C, D print(\"A.\", ClassB.__bases__, len(ClassB.__bases__),len(ClassB.__bases__) == 2) #False, it returns 1 as one module is there print(\"B.\", __name__, __name__ == 'code.py') #False, it is: __main__ print(\"C.\", str(Object), str(Object) == 'Object') #True print(\"D.\", ClassA.__module__, ClassA.__module__ == '__main__') #True [DKAT2023] Selected Answer: D only D are correct, C not correct should be : _str_(Object) == 'Object'"
+  },
+  {
+    "title": "Examtopics PCAP 31 03_11 question #89",
+    "header": "Which of the following lines of code will work flawlessly when put independently inside the add_new() method in order to make the snippet's output equal to [0, 1, 2]? (Choose two.)\n\n//IMG//",
+    "content": "https://img.examtopics.com/pcap-31-03/image33.png",
+    "questions": [
+      "**A:** self.queue.append(self.queue[-1] + 1)\n\n**B:** self.queue.append(self.get_last() + 1)\n\n**C:** self.queue.append(get_last() + 1)\n\n**D:** queue.append(self.get_last() + 1)\n\n"
+    ],
+    "answer": "AB",
+    "timestamp": "2024-07-12 17:47:00",
+    "question_link": "https://www.examtopics.com/discussions/python-institute/view/143812-exam-pcap-31-03-topic-1-question-58-discussion/",
+    "comments": "[Dave304409] Selected Answer: AB is correct [JeyTlenJey] Selected Answer: AB Correct: A,B # A. self.queue.append(self.queue[-1] + 1) #True # B. self.queue.append(self.get_last() + 1) #True # C. self.queue.append(get_last() + 1) #False : NameError: name 'get_last' is not defined # D. queue.append(self.get_last() + 1) #False : NameError: name 'queue' is not defined [DKAT2023] Selected Answer: AB A and B are corrects"
+  },
+  {
+    "title": "Examtopics PCAP 31 03_11 question #90",
+    "header": "Assuming that the following piece of code has been executed successfully, which of the expressions evaluate to True? (Choose two.)\n\n//IMG//",
+    "content": "https://img.examtopics.com/pcap-31-03/image34.png",
+    "questions": [
+      "**A:** hasattr(B, 'get')\n\n**B:** isinstance(obj_b,C)\n\n**C:** obj_c.get() == 2\n\n**D:** C._C__VarA == 2\n\n"
+    ],
+    "answer": "AC",
+    "timestamp": "2024-07-12 17:54:00",
+    "question_link": "https://www.examtopics.com/discussions/python-institute/view/143813-exam-pcap-31-03-topic-1-question-59-discussion/",
+    "comments": "[abhijeetf] Selected Answer: AC A \u0026 C is correct answer [jarun2024] A \u0026 C is correct answer [kino_1994] A and C are correct. [JeyTlenJey] To list all attributes: print(dir(A)), a function get is at the end [JeyTlenJey] Selected Answer: AC Correct: A, C print(\"A.\", hasattr(B, 'get')) #True print(\"B.\", isinstance(obj_b,C)) #False print(\"C.\", obj_c.get(), obj_c.get() == 2) #True 2 print(\"D.\", C._C__VarA, C._C__VarA == 2) #False, 3 [DKAT2023] Selected Answer: A sorry , only A is correct [DKAT2023] Selected Answer: AB A and B are corrects"
+  }
+]

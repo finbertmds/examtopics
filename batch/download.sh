@@ -1,10 +1,11 @@
 docker run -it \
   --name examtopics-downloader \
-  ghcr.io/finbertmds/examtopics:latest \
-  -p amazon -s aws-certified-machine-learning-engineer-associate-mla-c01 \
-  -save-links -o output.md -json
-docker cp examtopics-downloader:/app/output.md ./md/aws_mla_c012.md
-docker cp examtopics-downloader:/app/output.json ./json/aws_mla_c012.json
+  ghcr.io/thatonecodes/examtopics-downloader:latest \
+  -p amazon -s scs-c02 \
+  -save-links -type json -o output.md
+
+docker cp examtopics-downloader:/app/output.json ./py_pcap_31_03_2.json
+docker cp examtopics-downloader:/app/output.json ./json/py_pcap_31_03.json
 docker rm examtopics-downloader
 
 # https://www.examtopics.com/exams/amazon/ans-c00/
