@@ -160,10 +160,17 @@ const ExamPage: React.FC = () => {
     if (!questionsLoading && questions.length > 0 && questionListRef.current) {
       // Small delay to ensure DOM is ready
       setTimeout(() => {
-        if (urlTopicNumber && urlQuestionNumber) {
+        let _urlTopicNumber = urlTopicNumber
+          ? urlTopicNumber
+          : progress.currentTopic;
+        let _urlQuestionNumber = urlQuestionNumber
+          ? urlQuestionNumber
+          : progress.currentQuestion;
+
+        if (_urlTopicNumber && _urlQuestionNumber) {
           // Scroll to URL-specified question
           const targetElement = document.querySelector(
-            `[data-topic-number="${urlTopicNumber}"][data-question-number="${urlQuestionNumber}"]`,
+            `[data-topic-number="${_urlTopicNumber}"][data-question-number="${_urlQuestionNumber}"]`,
           );
           if (targetElement) {
             targetElement.scrollIntoView({
@@ -171,8 +178,8 @@ const ExamPage: React.FC = () => {
               block: "center",
             });
             console.log("Scrolled to URL-specified question:", {
-              urlTopicNumber,
-              urlQuestionNumber,
+              _urlTopicNumber,
+              _urlQuestionNumber,
             });
           }
         } else {
@@ -181,14 +188,8 @@ const ExamPage: React.FC = () => {
         }
       }, 100);
     }
-  }, [
-    questionsLoading,
-    questions,
-    progress.currentTopic,
-    progress.currentQuestion,
-    urlTopicNumber,
-    urlQuestionNumber,
-  ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [questionsLoading, questions]);
 
   const handleAnswer = async (
     topicNumber: number,
@@ -204,9 +205,13 @@ const ExamPage: React.FC = () => {
     const correctAnswers = getCorrectAnswers(question.suggested_answer).sort();
 
     const userAnswersSorted = [...selectedAnswers].sort();
-    
-    if (question.multiple_choice && userAnswersSorted.length !== correctAnswers.length) return;
-    
+
+    if (
+      question.multiple_choice &&
+      userAnswersSorted.length !== correctAnswers.length
+    )
+      return;
+
     const isCorrect =
       JSON.stringify(correctAnswers) === JSON.stringify(userAnswersSorted);
 
@@ -218,20 +223,24 @@ const ExamPage: React.FC = () => {
     // } else {
     //   updateProgress({ currentTopic: topicNumber, currentQuestion: questionNumber });
     // }
-    // updateProgress({
-    //   currentTopic: topicNumber,
-    //   currentQuestion: questionNumber,
-    // });
+    updateProgress({
+      currentTopic: topicNumber,
+      currentQuestion: questionNumber,
+    });
   };
 
   const handleRandomize = () => {
     const unansweredQuestions = questions.filter(
       (question) =>
-        !progress.answers[`${question.topic_number}-${question.question_number}`],
+        !progress.answers[
+          `${question.topic_number}-${question.question_number}`
+        ],
     );
     const answeredQuestions = questions.filter(
       (question) =>
-        progress.answers[`${question.topic_number}-${question.question_number}`],
+        progress.answers[
+          `${question.topic_number}-${question.question_number}`
+        ],
     );
 
     const shuffleQuestions = (questionsToShuffle: typeof questions) =>
@@ -242,7 +251,7 @@ const ExamPage: React.FC = () => {
       ...shuffleQuestions(answeredQuestions),
     ];
     questionsHook.setQuestions(shuffled);
-    let questionNumber = shuffled[0].question_number
+    let questionNumber = shuffled[0].question_number;
     updateProgress({
       isRandomized: true,
       currentTopic: 1,
@@ -610,7 +619,8 @@ const ExamPage: React.FC = () => {
                     <div className="text-sm mt-3 mb-3 text-gray-600 dark:text-gray-300 transition-colors">
                       <div className="flex flex-wrap items-center gap-2">
                         <span>
-                          {currentExam?.questionCount} {t("questions")} • {currentExam?.estimatedTime} {t("minutes")}
+                          {currentExam?.questionCount} {t("questions")} •{" "}
+                          {currentExam?.estimatedTime} {t("minutes")}
                         </span>
                         <span className="px-2 py-1 rounded-full text-xs font-medium bg-orange-100 dark:bg-orange-900 text-orange-800 dark:text-orange-200 transition-colors">
                           {currentExam?.category}

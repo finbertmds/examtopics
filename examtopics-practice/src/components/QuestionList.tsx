@@ -81,18 +81,18 @@ export const QuestionList = forwardRef<QuestionListRef, QuestionListProps>(({
 
   const filteredQuestions = getFilteredQuestions();
 
-  // Expose scrollToCurrentQuestion method to parent
-  useImperativeHandle(ref, () => ({
-    scrollToCurrentQuestion: () => {
-      const currentQuestionElement = document.querySelector(`[data-topic-number="${currentTopic}"][data-question-number="${currentQuestion}"]`);
-      if (currentQuestionElement) {
-        currentQuestionElement.scrollIntoView({ 
-          behavior: 'smooth', 
-          block: 'center' 
-        });
-      }
-    }
-  }), [currentQuestion, currentTopic]);
+  // // Expose scrollToCurrentQuestion method to parent
+  // useImperativeHandle(ref, () => ({
+  //   scrollToCurrentQuestion: () => {
+  //     const currentQuestionElement = document.querySelector(`[data-topic-number="${currentTopic}"][data-question-number="${currentQuestion}"]`);
+  //     if (currentQuestionElement) {
+  //       currentQuestionElement.scrollIntoView({ 
+  //         behavior: 'smooth', 
+  //         block: 'center' 
+  //       });
+  //     }
+  //   }
+  // }), [currentQuestion, currentTopic]);
 
   if (filteredQuestions.length === 0) {
     return (
