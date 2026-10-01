@@ -9,6 +9,7 @@ import { Question } from '../types';
 import UserMenu from './UserMenu';
 import { ThemeToggle } from './ThemeToggle';
 import { LanguageToggle } from './LanguageToggle';
+import ConfirmModal from './ConfirmModal';
 
 const AdminPage: React.FC = () => {
   const { token, isAuthenticated } = useAuth();
@@ -17,6 +18,7 @@ const AdminPage: React.FC = () => {
   const { exams, loading: loadingExams, refreshExams } = useExams({ fetchMyExamsOnly: true, token: token || null });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [editingExamCode, setEditingExamCode] = useState<string | null>(null);
+  const [examToDelete, setExamToDelete] = useState<string | null>(null);
 
   const [availableCategories, setAvailableCategories] = useState<string[]>([]);
   const [availableTags, setAvailableTags] = useState<string[]>([]);
@@ -434,17 +436,23 @@ const AdminPage: React.FC = () => {
     }
   };
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = (id: string) => {
     if (!token) return;
-    if (!window.confirm(t('confirmDeleteExam'))) return;
+    setExamToDelete(id);
+  };
+
+  const confirmDeleteExam = async () => {
+    if (!token || !examToDelete) return;
 
     try {
-      await examApi.deleteExam(id, token);
+      await examApi.deleteExam(examToDelete, token);
       toast.success(t('examDeletedSuccessfully'));
       refreshExams();
     } catch (error: any) {
       console.error('Error deleting exam:', error);
       toast.error(t('failedToDeleteExam'));
+    } finally {
+      setExamToDelete(null);
     }
   };
 
@@ -767,6 +775,17 @@ const AdminPage: React.FC = () => {
             </div>
           )}
         </div>
+
+        <ConfirmModal
+          isOpen={!!examToDelete}
+          onClose={() => setExamToDelete(null)}
+          onConfirm={confirmDeleteExam}
+          title={t('delete')}
+          message={t('confirmDeleteExam')}
+          confirmText={t('delete')}
+          cancelText={t('cancel')}
+          confirmButtonColor="red"
+        />
 
         {questionModalOpen && (
           <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/40 p-4">
