@@ -218,10 +218,10 @@ const ExamPage: React.FC = () => {
     // } else {
     //   updateProgress({ currentTopic: topicNumber, currentQuestion: questionNumber });
     // }
-    updateProgress({
-      currentTopic: topicNumber,
-      currentQuestion: questionNumber,
-    });
+    // updateProgress({
+    //   currentTopic: topicNumber,
+    //   currentQuestion: questionNumber,
+    // });
   };
 
   const handleRandomize = () => {
@@ -242,10 +242,11 @@ const ExamPage: React.FC = () => {
       ...shuffleQuestions(answeredQuestions),
     ];
     questionsHook.setQuestions(shuffled);
+    let questionNumber = shuffled[0].question_number
     updateProgress({
       isRandomized: true,
       currentTopic: 1,
-      currentQuestion: 1,
+      currentQuestion: questionNumber,
     });
   };
 
