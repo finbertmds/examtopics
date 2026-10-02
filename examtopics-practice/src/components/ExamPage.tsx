@@ -611,7 +611,7 @@ const ExamPage: React.FC = () => {
               <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 transition-colors">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                   <div className="flex-1 min-w-0">
-                    <p className="text-xl text-gray-600 dark:text-gray-300 text-sm transition-colors truncate">
+                    <p className="block w-full overflow-hidden text-ellipsis whitespace-nowrap text-sm text-gray-600 dark:text-gray-300 transition-colors">
                       {currentExam
                         ? getExamDescription(currentExam, language)
                         : ""}
