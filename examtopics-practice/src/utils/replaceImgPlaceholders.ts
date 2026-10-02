@@ -1,8 +1,17 @@
+const escapeHtmlText = (value: string): string => {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+};
+
 export function replaceImgPlaceholders(
   text: string,
   images: string[]
 ): string {
-  let processedText = text;
+  let processedText = escapeHtmlText(text || '');
 
   const toLocalThenRemoteImgTag = (url: string) => {
     try {
@@ -20,6 +29,11 @@ export function replaceImgPlaceholders(
     return `<img src="${url}" style="max-width:100%; height:auto; margin:10px 0;" />`;
   };
 
+  // Preserve intentional line breaks represented as HTML tags
+  processedText = processedText
+    .replace(/&lt;br\s*\/&gt;/gi, '<br/>')
+    .replace(/&lt;br&gt;/gi, '<br/>');
+
   if (images.length > 0) {
     images.forEach((url) => {
       const imgTag = toLocalThenRemoteImgTag(url);
@@ -28,7 +42,7 @@ export function replaceImgPlaceholders(
   }
 
   // Replace \n with <br/> to display line breaks
-  processedText = processedText.replace(/\n/g, "<br/>");
+  processedText = processedText.replace(/\n/g, '<br/>');
 
   return processedText;
 }
