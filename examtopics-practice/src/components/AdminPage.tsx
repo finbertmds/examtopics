@@ -56,7 +56,7 @@ const AdminPage: React.FC = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [questionModalOpen, setQuestionModalOpen] = useState(false);
-  const [topicNumberInput, setTopicNumberInput] = useState<string>('');
+  const [topicNumberInput, setTopicNumberInput] = useState<string>('1');
   const [questionNumberInput, setQuestionNumberInput] = useState<string>('');
   const [selectedQuestionExamCode, setSelectedQuestionExamCode] = useState<string | null>(null);
   const [selectedQuestion, setSelectedQuestion] = useState<Question | null>(null);
@@ -828,7 +828,6 @@ const AdminPage: React.FC = () => {
                     <input
                       type="number"
                       min={1}
-                      defaultValue={1}
                       value={topicNumberInput}
                       onChange={e => setTopicNumberInput(e.target.value)}
                       className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
@@ -945,11 +944,11 @@ const AdminPage: React.FC = () => {
                               onChange={e => handleAnswerKeyChange(key, e.target.value)}
                               className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white"
                             />
-                            <input
-                              type="text"
+                            <textarea
+                              rows={3}
                               value={value}
                               onChange={e => handleAnswerValueChange(key, e.target.value)}
-                              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white"
+                              className="w-full resize-y px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white"
                             />
                             <button
                               type="button"
