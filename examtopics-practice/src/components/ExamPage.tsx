@@ -16,6 +16,8 @@ import { QuestionList, QuestionListRef } from "./QuestionList";
 import { ThemeToggle } from "./ThemeToggle";
 import { getCorrectAnswers } from "../utils/getCorrectAnswers";
 
+const SHOW_ALL_TOPICS_RESULT = true; // Set to true to show results for all topics, false to show only current topic
+
 const ExamPage: React.FC = () => {
   const { examId } = useParams<{ examId: string }>();
   const navigate = useNavigate();
@@ -463,6 +465,7 @@ const ExamPage: React.FC = () => {
                   totalQuestions={questions.length}
                   questions={questions}
                   currentTopic={progress.currentTopic}
+                  showAllTopics={SHOW_ALL_TOPICS_RESULT}
                 />
               </div>
               <div className="hidden sm:block">
@@ -566,6 +569,7 @@ const ExamPage: React.FC = () => {
                   totalQuestions={questions.length}
                   questions={questions}
                   currentTopic={progress.currentTopic}
+                  showAllTopics={SHOW_ALL_TOPICS_RESULT}
                 />
               </div>
 

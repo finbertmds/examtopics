@@ -7,16 +7,18 @@ interface ExamResultProps {
   totalQuestions: number;
   questions: Question[];
   currentTopic: number;
+  showAllTopics?: boolean;
 }
 
-const ExamResult: React.FC<ExamResultProps> = ({ userAnswers, totalQuestions, questions, currentTopic }) => {
+const ExamResult: React.FC<ExamResultProps> = ({ userAnswers, totalQuestions, questions, currentTopic, showAllTopics = true }) => {
   const { t } = useLanguage();
   
-  // Filter questions by current topic
-  const topicUserAnswers = Object.values(userAnswers).filter(answer => answer.topicNumber === currentTopic);
+  const resultUserAnswers = showAllTopics
+    ? Object.values(userAnswers)
+    : Object.values(userAnswers).filter(answer => answer.topicNumber === currentTopic);
   
-  const answeredCount = topicUserAnswers.length;
-  const correctCount = topicUserAnswers.filter(answer => answer.isCorrect).length;
+  const answeredCount = resultUserAnswers.length;
+  const correctCount = resultUserAnswers.filter(answer => answer.isCorrect).length;
 
   // Calculate accuracy percentage for current topic
   const accuracyPercentage = answeredCount > 0 ? Math.round((correctCount / answeredCount) * 100) : 0;
@@ -41,7 +43,7 @@ const ExamResult: React.FC<ExamResultProps> = ({ userAnswers, totalQuestions, qu
   };
 
   if (answeredCount === 0) {
-    return null; // Don't show if no questions answered in current topic
+    return null;
   }
 
   return (
@@ -49,7 +51,9 @@ const ExamResult: React.FC<ExamResultProps> = ({ userAnswers, totalQuestions, qu
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
-            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{t('result')} ({t('topic')} {currentTopic}):</span>
+            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              {t('result')} ({showAllTopics ? t('allTopics') : `${t('topic')} ${currentTopic}`}):
+            </span>
             <span className={`text-lg font-bold ${getAccuracyColor(accuracyPercentage)}`}>
               {accuracyPercentage}%
             </span>

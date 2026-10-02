@@ -1,4 +1,4 @@
-import { forwardRef, useImperativeHandle } from 'react';
+import { forwardRef } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { FilterState, Question, UserProgress } from '../types';
 import { QuestionItem } from './QuestionItem';
