@@ -56,6 +56,7 @@ const AdminPage: React.FC = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [questionModalOpen, setQuestionModalOpen] = useState(false);
+  const [topicNumberInput, setTopicNumberInput] = useState<string>('');
   const [questionNumberInput, setQuestionNumberInput] = useState<string>('');
   const [selectedQuestionExamCode, setSelectedQuestionExamCode] = useState<string | null>(null);
   const [selectedQuestion, setSelectedQuestion] = useState<Question | null>(null);
@@ -145,6 +146,7 @@ const AdminPage: React.FC = () => {
 
   const openQuestionModal = (exam: any) => {
     setSelectedQuestionExamCode(exam.code);
+    setTopicNumberInput('');
     setQuestionNumberInput('');
     setSelectedQuestion(null);
     setQuestionFormData({ suggested_answer: '', answer: '' });
@@ -154,6 +156,7 @@ const AdminPage: React.FC = () => {
   const closeQuestionModal = () => {
     setQuestionModalOpen(false);
     setSelectedQuestionExamCode(null);
+    setTopicNumberInput('');
     setQuestionNumberInput('');
     setSelectedQuestion(null);
     setQuestionFormData({ suggested_answer: '', answer: '' });
@@ -259,15 +262,16 @@ const AdminPage: React.FC = () => {
 
   const loadQuestionDetails = async () => {
     if (!selectedQuestionExamCode) return;
+    const topicNumber = Number(topicNumberInput);
     const questionNumber = Number(questionNumberInput);
-    if (!questionNumber || questionNumber <= 0) {
+    if (!topicNumber || topicNumber <= 0 || !questionNumber || questionNumber <= 0) {
       toast.error(t('pleaseEnterValidQuestionNumber'));
       return;
     }
 
     setIsQuestionLoading(true);
     try {
-      const question = await examApi.getQuestion(selectedQuestionExamCode, questionNumber);
+      const question = await examApi.getQuestion(selectedQuestionExamCode, topicNumber, questionNumber);
       setSelectedQuestion(question);
       setQuestionFormData({
         question_text: question.question_text || '',
@@ -294,11 +298,19 @@ const AdminPage: React.FC = () => {
       return;
     }
 
+    const topicNumber = Number(topicNumberInput);
+    const questionNumber = Number(questionNumberInput);
+    if (!topicNumber || topicNumber <= 0 || !questionNumber || questionNumber <= 0) {
+      toast.error(t('pleaseEnterValidQuestionNumber'));
+      return;
+    }
+
     setIsQuestionSaving(true);
     try {
       const updated = await examApi.updateQuestion(
         selectedQuestionExamCode,
-        selectedQuestion.question_number,
+        topicNumber,
+        questionNumber,
         {
           question_text: questionFormData.question_text,
           answers: questionFormData.answers,
@@ -801,7 +813,7 @@ const AdminPage: React.FC = () => {
                 </button>
               </div>
               <div className="space-y-4 overflow-y-auto px-6 py-5 max-h-[calc(90vh-5rem)]">
-                <div className="grid gap-4 md:grid-cols-2">
+                <div className="grid gap-4 md:grid-cols-3">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('examCode')}</label>
                     <input
@@ -809,6 +821,17 @@ const AdminPage: React.FC = () => {
                       value={selectedQuestionExamCode || ''}
                       disabled
                       className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('topic')}</label>
+                    <input
+                      type="number"
+                      min={1}
+                      defaultValue={1}
+                      value={topicNumberInput}
+                      onChange={e => setTopicNumberInput(e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                     />
                   </div>
                   <div>

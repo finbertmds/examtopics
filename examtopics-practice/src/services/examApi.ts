@@ -73,21 +73,21 @@ export const examApi = {
     return response.blob();
   },
 
-  getQuestion: async (examCode: string, questionNumber: number): Promise<Question> => {
-    const response = await fetch(`${getBaseUrl()}/questions/${examCode}/${questionNumber}`);
+  getQuestion: async (examCode: string, topicNumber: number, questionNumber: number): Promise<Question> => {
+    const response = await fetch(`${getBaseUrl()}/questions/${examCode}/${questionNumber}?topicNumber=${topicNumber}`);
     if (!response.ok) throw new Error('Failed to fetch question');
     const data = await response.json();
     return { ...data.question, topic_number: data.question.topic_number || 1 };
   },
 
-  updateQuestion: async (examCode: string, questionNumber: number, updateData: any, token: string): Promise<Question> => {
+  updateQuestion: async (examCode: string, topicNumber: number, questionNumber: number, updateData: any, token: string): Promise<Question> => {
     const response = await fetch(`${getBaseUrl()}/exams/${examCode}/questions/${questionNumber}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
       },
-      body: JSON.stringify(updateData)
+      body: JSON.stringify({ ...updateData, topic_number: topicNumber })
     });
     if (!response.ok) throw new Error('Failed to update question');
     const data = await response.json();

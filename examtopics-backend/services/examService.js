@@ -194,11 +194,11 @@ class ExamService {
     };
   }
 
-  async getQuestionByExamAndNumber(examCode, questionNumber) {
-    return await Question.findOne({ examId: examCode, question_number: questionNumber });
+  async getQuestionByExamAndNumber(examCode, topicNumber, questionNumber) {
+    return await Question.findOne({ examId: examCode, topic_number: topicNumber, question_number: questionNumber });
   }
 
-  async updateExamQuestion(code, questionNumber, userId, updateFields) {
+  async updateExamQuestion(code, topicNumber, questionNumber, userId, updateFields) {
     const exam = await Exam.findOne({ code });
     if (!exam) {
       return { error: 'ExamNotFound' };
@@ -257,7 +257,7 @@ class ExamService {
     }
 
     const question = await Question.findOneAndUpdate(
-      { examId: code, question_number: questionNumber },
+      { examId: code, topic_number: topicNumber, question_number: questionNumber },
       allowedUpdates,
       { new: true }
     );

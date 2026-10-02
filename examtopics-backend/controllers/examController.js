@@ -65,11 +65,12 @@ class ExamController {
   async getQuestionByExamAndNumber(req, res, next) {
     try {
       const questionNumber = parseInt(req.params.questionNumber, 10);
-      if (Number.isNaN(questionNumber)) {
-        return res.status(400).json({ success: false, error: 'Invalid question number' });
+      const topicNumber = parseInt(req.query.topicNumber, 10);
+      if (Number.isNaN(questionNumber) || Number.isNaN(topicNumber) || topicNumber < 1) {
+        return res.status(400).json({ success: false, error: 'Valid topic and question numbers are required' });
       }
 
-      const question = await examService.getQuestionByExamAndNumber(req.params.code, questionNumber);
+      const question = await examService.getQuestionByExamAndNumber(req.params.code, topicNumber, questionNumber);
       if (!question) {
         return res.status(404).json({ success: false, error: 'Question not found' });
       }
@@ -135,8 +136,9 @@ class ExamController {
   async updateQuestion(req, res, next) {
     try {
       const questionNumber = parseInt(req.params.questionNumber, 10);
-      if (Number.isNaN(questionNumber)) {
-        return res.status(400).json({ success: false, error: 'Invalid question number' });
+      const topicNumber = Number(req.body.topic_number);
+      if (Number.isNaN(questionNumber) || !Number.isInteger(topicNumber) || topicNumber < 1) {
+        return res.status(400).json({ success: false, error: 'Valid topic and question numbers are required' });
       }
 
       const {
@@ -164,7 +166,7 @@ class ExamController {
       }
 
       const userId = req.user?.userId;
-      const result = await examService.updateExamQuestion(req.params.code, questionNumber, userId, {
+      const result = await examService.updateExamQuestion(req.params.code, topicNumber, questionNumber, userId, {
         question_text,
         answers,
         link,
