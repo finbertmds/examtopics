@@ -90,6 +90,7 @@ class ProgressController {
         progress: {
           examId: progress.examId,
           answers: Object.fromEntries(progress.answers),
+          currentTopic: progress.currentTopic,
           currentQuestion: progress.currentQuestion,
           score: progress.score
         }

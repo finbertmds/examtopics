@@ -1,4 +1,19 @@
-import { AllProgressData, UserProgress } from '../types';
+import { AllProgressData, ProgressData, UserProgress } from '../types';
+
+export const resolveCurrentTopic = (progress?: Partial<ProgressData> | null): number => {
+  const savedCurrentTopic = progress?.currentTopic;
+  if (typeof savedCurrentTopic === 'number' && Number.isInteger(savedCurrentTopic) && savedCurrentTopic > 0) {
+    return savedCurrentTopic;
+  }
+
+  const topicNumbers = Object.values(progress?.answers || {})
+    .map((answer: any) => answer?.topicNumber)
+    .filter((topicNumber: any): topicNumber is number =>
+      typeof topicNumber === 'number' && Number.isInteger(topicNumber) && topicNumber > 0
+    );
+
+  return topicNumbers.length > 0 ? Math.max(...topicNumbers) : 1;
+};
 
 export const migrateProgressData = (oldProgress: AllProgressData, examId: string, currentTopic: number): UserProgress => {
   if (!oldProgress) return oldProgress;

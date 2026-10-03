@@ -90,6 +90,7 @@ export interface ProgressData {
   examId: string;
   answers: Record<string, any>;
   markedForTraining: string[]; // Changed to string[] to match UserProgress
+  currentTopic?: number;
   currentQuestion: number;
   isRandomized: boolean;
   lastUpdated: string;

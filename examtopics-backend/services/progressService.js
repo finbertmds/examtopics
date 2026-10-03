@@ -13,6 +13,7 @@ class ProgressService {
       const updateData = {
         answers: new Map(Object.entries(progressData.answers || {})),
         markedForTraining: progressData.markedForTraining || [],
+        currentTopic: progressData.currentTopic,
         currentQuestion: progressData.currentQuestion || 1,
         isRandomized: progressData.isRandomized || false
       };
@@ -61,6 +62,7 @@ class ProgressService {
           examId: progress.examId,
           answers: Object.fromEntries(progress.answers),
           markedForTraining: markedForTraining,
+          currentTopic: progress.currentTopic,
           currentQuestion: progress.currentQuestion,
           isRandomized: progress.isRandomized,
           lastUpdated: progress.updatedAt
@@ -93,6 +95,7 @@ class ProgressService {
           examId: progress.examId,
           answers: Object.fromEntries(progress.answers),
           markedForTraining: markedForTraining,
+          currentTopic: progress.currentTopic,
           currentQuestion: progress.currentQuestion,
           isRandomized: progress.isRandomized,
           lastUpdated: progress.updatedAt,
@@ -156,6 +159,7 @@ class ProgressService {
               isCorrect,
               answeredAt: new Date()
             },
+            currentTopic: topicNumber,
             currentQuestion: questionNumber + 1
           }
         },
@@ -347,6 +351,7 @@ class ProgressService {
           $set: {
             answers: new Map(),
             markedForTraining: [],
+            currentTopic: 1,
             currentQuestion: 1,
             isRandomized: false,
             score: {

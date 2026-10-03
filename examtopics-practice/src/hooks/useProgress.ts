@@ -3,7 +3,7 @@ import { toast } from 'react-toastify';
 import { useAuth } from '../contexts/AuthContext';
 import { dataService } from '../services/dataService';
 import { DailyTrackingData, UserAnswer, UserProgress } from '../types';
-import { migrateProgressData } from '../utils/migration';
+import { migrateProgressData, resolveCurrentTopic } from '../utils/migration';
 
 const createEmptyProgress = (examId: string): UserProgress => ({
   examId,
@@ -28,14 +28,8 @@ export const useProgress = (examId?: string) => {
         const response = await dataService.loadUserProgress(examId, token || undefined);
 
         if (response.success && response.data) {
-          let currentTopic = 1;
           const examProgress = response.data.progress?.[examId];
-          if (examProgress?.answers) {
-            const topicNumbers = Object.values(examProgress.answers).map((answer: any) => answer.topicNumber);
-            if (topicNumbers.length > 0) {
-              currentTopic = Math.max(...topicNumbers);
-            }
-          }
+          const currentTopic = resolveCurrentTopic(examProgress);
 
           const migratedProgress = migrateProgressData(response.data, examId, currentTopic);
 

@@ -30,6 +30,10 @@ const progressSchema = new mongoose.Schema({
     type: [String], // Changed from [Number] to [String] with format "topicNumber-questionNumber"
     default: []
   },
+  currentTopic: {
+    type: Number,
+    min: 1
+  },
   currentQuestion: {
     type: Number,
     default: 1
@@ -95,6 +99,7 @@ progressSchema.methods.addAnswer = function(topicNumber, questionNumber, selecte
     answeredAt: new Date()
   });
   
+  this.currentTopic = topicNumber;
   this.currentQuestion = questionNumber + 1;
   this.updateScore(); // Update score without saving
   return this;
@@ -114,6 +119,7 @@ progressSchema.methods.toggleTrainingMark = function(topicNumber, questionNumber
 progressSchema.methods.resetProgress = function() {
   this.answers = new Map();
   this.markedForTraining = [];
+  this.currentTopic = 1;
   this.currentQuestion = 1;
   this.isRandomized = false;
   this.completedAt = null;
@@ -163,19 +169,23 @@ progressSchema.statics.safeUpdateProgress = async function(userId, examId, updat
         correctAnswers,
         accuracy
       };
+
+      const updateFields = {
+        answers: Object.fromEntries(answers),
+        markedForTraining: updateData.markedForTraining || [],
+        currentQuestion: updateData.currentQuestion || 1,
+        isRandomized: updateData.isRandomized || false,
+        score: scoreData
+      };
+
+      if (Number.isInteger(updateData.currentTopic) && updateData.currentTopic > 0) {
+        updateFields.currentTopic = updateData.currentTopic;
+      }
       
       // Use findOneAndUpdate for atomic operation
       const progress = await this.findOneAndUpdate(
         { userId, examId },
-        {
-          $set: {
-            answers: Object.fromEntries(answers),
-            markedForTraining: updateData.markedForTraining || [],
-            currentQuestion: updateData.currentQuestion || 1,
-            isRandomized: updateData.isRandomized || false,
-            score: scoreData
-          }
-        },
+        { $set: updateFields },
         {
           new: true,
           upsert: true, // Create if doesn't exist
