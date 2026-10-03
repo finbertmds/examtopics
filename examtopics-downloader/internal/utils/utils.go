@@ -6,6 +6,7 @@ import (
 	"html"
 	"math/rand"
 	"net/http"
+	"net/url"
 	"os"
 	"path"
 	"regexp"
@@ -140,7 +141,13 @@ func GrepStringFromCache(baseString, searchString string) bool {
 }
 
 func AddToBaseUrl(addString string) string {
-	return fmt.Sprintf("https://www.examtopics.com%s", addString)
+	baseURL, _ := url.Parse("https://www.examtopics.com")
+	referenceURL, err := url.Parse(addString)
+	if err != nil {
+		return addString
+	}
+
+	return baseURL.ResolveReference(referenceURL).String()
 }
 
 func CreateRateLimiter(rps float64) *time.Ticker {

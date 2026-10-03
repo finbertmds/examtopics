@@ -10,6 +10,7 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"time"
 
 	"examtopics-downloader/internal/constants"
 	"examtopics-downloader/internal/models"
@@ -46,16 +47,42 @@ func FetchURL(url string, client http.Client) []byte {
 			}
 			return body
 		}
+		retryAfter := resp.Header.Get("Retry-After")
+		statusCode := resp.StatusCode
 		resp.Body.Close()
 
-		if resp.StatusCode != http.StatusServiceUnavailable {
-			log.Printf("request failed with status code: %d", resp.StatusCode)
+		retryable := statusCode == http.StatusTooManyRequests ||
+			statusCode == http.StatusRequestTimeout ||
+			statusCode >= http.StatusInternalServerError
+		if !retryable {
+			log.Printf("request to %s failed with status code: %d", url, statusCode)
 			return nil
+		}
+
+		if delay, ok := parseRetryAfter(retryAfter); ok && delay > backoff {
+			backoff = delay
 		}
 	}
 
 	log.Printf("exhausted retries for URL: %s", url)
 	return nil
+}
+
+func parseRetryAfter(value string) (time.Duration, bool) {
+	if seconds, err := strconv.Atoi(strings.TrimSpace(value)); err == nil && seconds >= 0 {
+		return time.Duration(seconds) * time.Second, true
+	}
+
+	retryAt, err := http.ParseTime(value)
+	if err != nil {
+		return 0, false
+	}
+
+	delay := time.Until(retryAt)
+	if delay < 0 {
+		delay = 0
+	}
+	return delay, true
 }
 
 func ParseHTML(url string, client http.Client) (*goquery.Document, error) {

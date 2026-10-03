@@ -165,7 +165,7 @@ func fetchAllPageLinksConcurrently(providerName, grepStr string, numPages, concu
 
 			<-rateLimiter.C
 
-			url := fmt.Sprintf("https://www.examtopics.com/discussions/%s/%d", providerName, i)
+			url := fmt.Sprintf("https://www.examtopics.com/discussions/%s/%d/", providerName, i)
 
 			var links []string
 			if getAllLinks {

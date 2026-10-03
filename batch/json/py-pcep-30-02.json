@@ -918,16 +918,20 @@
     "title": "Examtopics PCEP 30 02_9 question #67",
     "answers": {
       "A": "None of the above.",
-      "B": "",
-      "C": "",
-      "D": ""
+      "B": "//IMG//",
+      "C": "//IMG//",
+      "D": "//IMG//"
     },
     "suggested_answer": "D",
     "answer": "D",
     "link": "https://www.examtopics.com/discussions/python-institute/view/146098-exam-pcep-30-02-topic-1-question-47-discussion/",
     "multiple_choice": false,
     "question_text": "What snippet would you insert in the line indicated below to print The highest number is 10 and the lowest number is 1. to the monitor?\n//IMG//",
-    "answer_images": [],
+    "answer_images": [
+      "/img/py-pcep-30-02/image91.png",
+      "/img/py-pcep-30-02/image92.png",
+      "/img/py-pcep-30-02/image93.png"
+    ],
     "question_images": [
       "/img/py-pcep-30-02/image90.png"
     ]
@@ -1380,18 +1384,23 @@
     "question_number": 70,
     "title": "Examtopics PCEP 30 02_14 question #13",
     "answers": {
-      "A": "",
-      "B": "",
+      "A": "//IMG//",
+      "B": "//IMG//",
       "C": "None of the above.",
-      "D": "",
-      "E": ""
+      "D": "//IMG//",
+      "E": "//IMG//"
     },
     "suggested_answer": "D",
     "answer": "D",
     "link": "https://www.examtopics.com/discussions/python-institute/view/146118-exam-pcep-30-02-topic-1-question-70-discussion/",
     "multiple_choice": false,
     "question_text": "Consider the following list.\ndata = [1, 5, 10, 19, 55, 30, 55, 99]\nWhich of the code snippets below would produce a new list like the following?\n[1, 5, 10, 99]",
-    "answer_images": [],
+    "answer_images": [
+      "/img/py-pcep-30-02/image139.png",
+      "/img/py-pcep-30-02/image140.png",
+      "/img/py-pcep-30-02/image141.png",
+      "/img/py-pcep-30-02/image142.png"
+    ],
     "question_images": []
   },
   {
@@ -2337,18 +2346,24 @@
     "question_number": 57,
     "title": "Examtopics PCEP 30 02_25 question #311",
     "answers": {
-      "A": "",
-      "B": "",
-      "C": "",
-      "D": "",
-      "E": ""
+      "A": "//IMG//",
+      "B": "//IMG//",
+      "C": "//IMG//",
+      "D": "//IMG//",
+      "E": "//IMG//"
     },
     "suggested_answer": "AD",
     "answer": "AD",
     "link": "https://www.examtopics.com/discussions/python-institute/view/169430-exam-pcep-30-02-topic-2-question-57-discussion/",
     "multiple_choice": true,
     "question_text": "Which of the following code snippets will print True to the monitor? (Choose two.)",
-    "answer_images": [],
+    "answer_images": [
+      "/img/py-pcep-30-02/image244.png",
+      "/img/py-pcep-30-02/image245.png",
+      "/img/py-pcep-30-02/image246.png",
+      "/img/py-pcep-30-02/image247.png",
+      "/img/py-pcep-30-02/image248.png"
+    ],
     "question_images": []
   },
   {
@@ -2457,8 +2472,8 @@
       "C": "FALSE",
       "D": "None of the above."
     },
-    "suggested_answer": "A",
-    "answer": "A",
+    "suggested_answer": "B",
+    "answer": "B",
     "link": "https://www.examtopics.com/discussions/python-institute/view/169436-exam-pcep-30-02-topic-2-question-65-discussion/",
     "multiple_choice": false,
     "question_text": "What is the expected output of the following code?\n//IMG//",
@@ -2477,8 +2492,8 @@
       "C": "2.25",
       "D": "2.0"
     },
-    "suggested_answer": "B",
-    "answer": "B",
+    "suggested_answer": "D",
+    "answer": "D",
     "link": "https://www.examtopics.com/discussions/python-institute/view/151422-exam-pcep-30-02-topic-2-question-67-discussion/",
     "multiple_choice": false,
     "question_text": "What is the expected output of the following code?\nx = 4.5\ny = 2\nprint(x // y)",
@@ -3122,17 +3137,22 @@
     "question_number": 22,
     "title": "Examtopics PCEP 30 02_32 question #191",
     "answers": {
-      "A": "",
-      "B": "",
-      "C": "",
-      "D": ""
+      "A": "//IMG//",
+      "B": "//IMG//",
+      "C": "//IMG//",
+      "D": "//IMG//"
     },
     "suggested_answer": "A",
     "answer": "A",
     "link": "https://www.examtopics.com/discussions/python-institute/view/169482-exam-pcep-30-02-topic-3-question-22-discussion/",
     "multiple_choice": false,
     "question_text": "You execute the following command in the terminal.\npython index.py Hello\nYou want the command to print out Hello.\nWhat has to be inside of index.py?",
-    "answer_images": [],
+    "answer_images": [
+      "/img/py-pcep-30-02/image285.png",
+      "/img/py-pcep-30-02/image286.png",
+      "/img/py-pcep-30-02/image287.png",
+      "/img/py-pcep-30-02/image288.png"
+    ],
     "question_images": []
   },
   {
@@ -3184,8 +3204,8 @@
       "D": "126",
       "E": "The code is erroneous."
     },
-    "suggested_answer": "D",
-    "answer": "D",
+    "suggested_answer": "C",
+    "answer": "C",
     "link": "https://www.examtopics.com/discussions/python-institute/view/169485-exam-pcep-30-02-topic-3-question-25-discussion/",
     "multiple_choice": false,
     "question_text": "You have the following file.\n//IMG//\n\nYou run the file by executing the following command in the terminal. python index.py 42 3\nWhat is the expected output?",
@@ -3277,8 +3297,8 @@
       "C": "The code is erroneous.",
       "D": "python index.py Peter 100 200"
     },
-    "suggested_answer": "C",
-    "answer": "C",
+    "suggested_answer": "B",
+    "answer": "B",
     "link": "https://www.examtopics.com/discussions/python-institute/view/157620-exam-pcep-30-02-topic-3-question-31-discussion/",
     "multiple_choice": false,
     "question_text": "You have the following file.\n//IMG//\n\nYou want the following output: The average score for Peter is 200.00.\nWhich command do you have to execute in the command line?",
@@ -3472,8 +3492,8 @@
       "C": "2",
       "D": "1"
     },
-    "suggested_answer": "A",
-    "answer": "A",
+    "suggested_answer": "C",
+    "answer": "C",
     "link": "https://www.examtopics.com/discussions/python-institute/view/169507-exam-pcep-30-02-topic-3-question-42-discussion/",
     "multiple_choice": false,
     "question_text": "What is the expected output of the following code?\n//IMG//",
