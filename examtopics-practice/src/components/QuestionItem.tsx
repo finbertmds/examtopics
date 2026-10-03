@@ -6,6 +6,7 @@ import { Question, ReportData, UserAnswer } from '../types';
 import { apiClient } from '../utils/apiClient';
 import { getCorrectAnswers } from '../utils/getCorrectAnswers';
 import { replaceImgPlaceholders } from '../utils/replaceImgPlaceholders';
+import { formatTextForClipboard, resolveClipboardUrl } from '../utils/textUtils';
 import CollapsibleQuestionText from './CollapsibleQuestionText';
 import ReportModal from './ReportModal';
 
@@ -136,14 +137,11 @@ export const QuestionItem: React.FC<QuestionItemProps> = ({
       if (question.question_text) {
         let cleanText = question.question_text
           .replaceAll('\n\n\n', '')
-          .replace(/\\u003cbr\/\\u003e/g, '\n')
           .replaceAll('<br/><br/>', '');
+        cleanText = formatTextForClipboard(cleanText);
 
         // Replace //IMG// placeholders with numbered [Image 1], [Image 2] markers
         cleanText = replaceImagePlaceholdersWithMarkers(cleanText, imageIndexRef);
-
-        // Remove HTML tags
-        cleanText = cleanText.replace(/<\/?[^>]+(>|$)/g, '');
 
         textToCopy += cleanText + '\n\n';
       }
@@ -152,7 +150,8 @@ export const QuestionItem: React.FC<QuestionItemProps> = ({
       if (images.length > 0) {
         textToCopy += `${t('images')}:\n`;
         images.forEach((img, index) => {
-          textToCopy += `[${t('image')} ${index + 1}]: ${img}\n`;
+          const imageUrl = resolveClipboardUrl(img, window.location.origin);
+          textToCopy += `[${t('image')} ${index + 1}]: ${imageUrl}\n`;
         });
         textToCopy += '\n';
       }
@@ -160,9 +159,7 @@ export const QuestionItem: React.FC<QuestionItemProps> = ({
       // Add answers
       if (question.answers) {
         Object.entries(question.answers).forEach(([key, answer]) => {
-          const cleanAnswer = answer
-            .replace(/\\u003cbr\/\\u003e/g, '\n')
-            .replace(/<\/?[^>]+(>|$)/g, ''); // Remove HTML tags
+          const cleanAnswer = formatTextForClipboard(answer);
 
           textToCopy += `${key}. ${replaceImagePlaceholdersWithMarkers(cleanAnswer, imageIndexRef)}\n\n`;
         });
