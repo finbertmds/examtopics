@@ -28,7 +28,7 @@ const questionSchema = new mongoose.Schema({
   },
   suggested_answer: {
     type: String,
-    required: true, // "A, B" or "A"
+    default: '', // "A, B" or "A" when the source provides an answer
   },
   answer: {
     type: String, // If not provided, typically same as suggested_answer, otherwise "B"

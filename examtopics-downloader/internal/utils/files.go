@@ -10,10 +10,13 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"regexp"
 	"sort"
 	"strings"
 	"time"
 )
+
+var multipleChoicePromptPattern = regexp.MustCompile(`(?i)\b(?:choose|select)\s+(?:all|two|three|four|five|six|[2-9])\b`)
 
 func writeFile(filename string, content any) {
 	file := CreateFile(filename)
@@ -78,6 +81,14 @@ func SaveLinks(filename string, links []models.QuestionData) {
 func ConvertQuestionDataToJSON(data models.QuestionData, fromCache bool) models.QuestionDataJson {
 	questionNumber := ExtractQuestionNumber(data.Title)
 	topicNumber := ExtractTopicNumber(data.Title)
+	if !fromCache {
+		if headerQuestionNumber := ExtractQuestionNumber(data.Header); headerQuestionNumber > 0 {
+			questionNumber = headerQuestionNumber
+		}
+		if headerTopicNumber := ExtractTopicNumber(data.Header); headerTopicNumber > 0 {
+			topicNumber = headerTopicNumber
+		}
+	}
 
 	if fromCache {
 		multipleChoice := false
@@ -115,6 +126,7 @@ func ConvertQuestionDataToJSON(data models.QuestionData, fromCache bool) models.
 		choices = ConvertQuestionsToMap(data.Questions)
 	}
 	data.RawData.Choices = choices
+	multipleChoice := data.RawData.IsMC || len(data.Answer) > 1 || multipleChoicePromptPattern.MatchString(data.Content)
 
 	return models.QuestionDataJson{
 		TopicNumber:     topicNumber,
@@ -124,7 +136,7 @@ func ConvertQuestionDataToJSON(data models.QuestionData, fromCache bool) models.
 		SuggestedAnswer: data.Answer,
 		Answer:          data.Answer,
 		Link:            data.QuestionLink,
-		MultipleChoice:  len(data.Answer) > 1,
+		MultipleChoice:  multipleChoice,
 		QuestionText:    strings.TrimSpace(data.Content),
 		AnswerImages:    data.AnswerImages,
 		QuestionImages:  data.QuestionImages,

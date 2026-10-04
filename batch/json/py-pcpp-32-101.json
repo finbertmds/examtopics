@@ -3,12 +3,17 @@
     "topic_number": 1,
     "question_number": 1,
     "title": "Exam PCPP-32-101 topic 1 question 1 discussion",
-    "answers": {},
+    "answers": {
+      "A": "Composition extends a class’s capabilities by adding new components and modifying the existing ones",
+      "B": "Composition allows a class to be projected as a container of different classes",
+      "C": "Composition is a concept that promotes code reusability, while Inheritance promotes encapsulation",
+      "D": "Composition is based on the has a relation, so it cannot be used together with inheritance"
+    },
     "suggested_answer": "",
     "answer": "",
     "link": "https://www.examtopics.com/discussions/python-institute/view/121207-exam-pcpp-32-101-topic-1-question-1-discussion/",
     "multiple_choice": false,
-    "question_text": "Select the true statement about composition.<br/>       <br/>A.      Composition extends a class’s capabilities by adding new components and modifying the existing ones<br/>       <br/>B.      Composition allows a class to be projected as a container of different classes<br/>       <br/>C.      Composition is a concept that promotes code reusability, while Inheritance promotes encapsulation<br/>       <br/>D.      Composition is based on the has a relation, so it cannot be used together with inheritance<br/>",
+    "question_text": "Select the true statement about composition.",
     "answer_images": null,
     "question_images": null
   },
@@ -16,117 +21,157 @@
     "topic_number": 1,
     "question_number": 2,
     "title": "Exam PCPP-32-101 topic 1 question 2 discussion",
-    "answers": {},
+    "answers": {
+      "A": "The code is an example of implicitly chained exceptions.",
+      "B": "The code is erroneous as the OwnMath class does not inherit from any Exception type class",
+      "C": "The code is fine and the script execution is not interrupted by any exception.",
+      "D": "The code is an example of explicitly chained exceptions"
+    },
     "suggested_answer": "",
     "answer": "",
     "link": "https://www.examtopics.com/discussions/python-institute/view/114022-exam-pcpp-32-101-topic-1-question-2-discussion/",
     "multiple_choice": false,
-    "question_text": "Analyze the following snippet and select the statement that best describes it.<br/> <br/>       <br/>A.      The code is an example of implicitly chained exceptions.<br/>       <br/>B.      The code is erroneous as the OwnMath class does not inherit from any Exception type class<br/>       <br/>C.      The code is fine and the script execution is not interrupted by any exception.<br/>       <br/>D.      The code is an example of explicitly chained exceptions<br/>",
+    "question_text": "Analyze the following snippet and select the statement that best describes it.\n //IMG//",
     "answer_images": null,
     "question_images": [
-      "/img/pcpp-32-101/image1.png"
+      "https://img.examtopics.com/pcpp-32-101/image1.png"
     ]
   },
   {
     "topic_number": 1,
     "question_number": 3,
     "title": "Exam PCPP-32-101 topic 1 question 3 discussion",
-    "answers": {},
+    "answers": {
+      "A": "self.name is the name of a class variable",
+      "B": "var1 is the name of a global variable",
+      "C": "Excalibur is the value passed to an instance variable",
+      "D": "weapon is the value passed to an instance variable"
+    },
     "suggested_answer": "",
     "answer": "",
     "link": "https://www.examtopics.com/discussions/python-institute/view/124068-exam-pcpp-32-101-topic-1-question-3-discussion/",
     "multiple_choice": false,
-    "question_text": "Analyze the following snippet and select the statement that best describes it.<br/> <br/>       <br/>A.      self.name is the name of a class variable<br/>       <br/>B.      var1 is the name of a global variable<br/>       <br/>C.      Excalibur is the value passed to an instance variable<br/>       <br/>D.      weapon is the value passed to an instance variable<br/>",
+    "question_text": "Analyze the following snippet and select the statement that best describes it.\n //IMG//",
     "answer_images": null,
     "question_images": [
-      "/img/pcpp-32-101/image2.png"
+      "https://img.examtopics.com/pcpp-32-101/image2.png"
     ]
   },
   {
     "topic_number": 1,
     "question_number": 4,
     "title": "Exam PCPP-32-101 topic 1 question 4 discussion",
-    "answers": {},
+    "answers": {
+      "A": "Serialization",
+      "B": "Inheritance",
+      "C": "Encapsulation",
+      "D": "Polymorphism"
+    },
     "suggested_answer": "",
     "answer": "",
     "link": "https://www.examtopics.com/discussions/python-institute/view/124069-exam-pcpp-32-101-topic-1-question-4-discussion/",
     "multiple_choice": false,
-    "question_text": "The following snippet represents one of the OOP pillars. Which one is that?<br/> <br/>       <br/>A.      Serialization<br/>       <br/>B.      Inheritance<br/>       <br/>C.      Encapsulation<br/>       <br/>D.      Polymorphism<br/>",
+    "question_text": "The following snippet represents one of the OOP pillars. Which one is that?\n //IMG//",
     "answer_images": null,
     "question_images": [
-      "/img/pcpp-32-101/image3.png"
+      "https://img.examtopics.com/pcpp-32-101/image3.png"
     ]
   },
   {
     "topic_number": 1,
     "question_number": 5,
     "title": "Exam PCPP-32-101 topic 1 question 5 discussion",
-    "answers": {},
+    "answers": {
+      "A": "It is an example of a decorator that accepts its own arguments.",
+      "B": "It is an example of decorator stacking.",
+      "C": "It is an example of a decorator that can trigger an infinite recursion",
+      "D": "The function is erroneous."
+    },
     "suggested_answer": "",
     "answer": "",
     "link": "https://www.examtopics.com/discussions/python-institute/view/114031-exam-pcpp-32-101-topic-1-question-5-discussion/",
     "multiple_choice": false,
-    "question_text": "Analyze the following function and choose the statement that best describes it.<br/> <br/>       <br/>A.      It is an example of a decorator that accepts its own arguments.<br/>       <br/>B.      It is an example of decorator stacking.<br/>       <br/>C.      It is an example of a decorator that can trigger an infinite recursion<br/>       <br/>D.      The function is erroneous.<br/>",
+    "question_text": "Analyze the following function and choose the statement that best describes it.\n //IMG//",
     "answer_images": null,
     "question_images": [
-      "/img/pcpp-32-101/image4.png"
+      "https://img.examtopics.com/pcpp-32-101/image4.png"
     ]
   },
   {
     "topic_number": 1,
     "question_number": 6,
     "title": "Exam PCPP-32-101 topic 1 question 6 discussion",
-    "answers": {},
+    "answers": {
+      "A": "The code is syntactically correct despite the fact that the names of the function parameters do not follow the naming convention",
+      "B": "The *arg parameter holds a list of unnamed parameters.",
+      "C": "The code is missing a placeholder for unnamed parameters.",
+      "D": "The code is syntactically incorrect - the function should be defined as def f1 (*args, **kwargs):"
+    },
     "suggested_answer": "",
     "answer": "",
     "link": "https://www.examtopics.com/discussions/python-institute/view/111999-exam-pcpp-32-101-topic-1-question-6-discussion/",
     "multiple_choice": false,
-    "question_text": "Analyze the following snippet and select the statement that best describes it.<br/> <br/>       <br/>A.      The code is syntactically correct despite the fact that the names of the function parameters do not follow the naming convention<br/>       <br/>B.      The *arg parameter holds a list of unnamed parameters.<br/>       <br/>C.      The code is missing a placeholder for unnamed parameters.<br/>       <br/>D.      The code is syntactically incorrect - the function should be defined as def f1 (*args, **kwargs):<br/>",
+    "question_text": "Analyze the following snippet and select the statement that best describes it.\n //IMG//",
     "answer_images": null,
     "question_images": [
-      "/img/pcpp-32-101/image5.png"
+      "https://img.examtopics.com/pcpp-32-101/image5.png"
     ]
   },
   {
     "topic_number": 1,
     "question_number": 7,
     "title": "Exam PCPP-32-101 topic 1 question 7 discussion",
-    "answers": {},
+    "answers": {
+      "A": "There is only one initializer, so there is no need for a class method",
+      "B": "The getNumberOfCrosswords() method Should be decorated with @classmethod",
+      "C": "The code is erroneous",
+      "D": "The getNumberOfCrosswords() and isSolved methods should be decorated with @classmethod"
+    },
     "suggested_answer": "",
     "answer": "",
     "link": "https://www.examtopics.com/discussions/python-institute/view/133086-exam-pcpp-32-101-topic-1-question-7-discussion/",
     "multiple_choice": false,
-    "question_text": "Analyze the following snippet and decide whether the code is correct and/or which method should be distinguished as a class method.<br/> <br/>       <br/>A.      There is only one initializer, so there is no need for a class method<br/>       <br/>B.      The getNumberOfCrosswords() method Should be decorated with @classmethod<br/>       <br/>C.      The code is erroneous<br/>       <br/>D.      The getNumberOfCrosswords() and isSolved methods should be decorated with @classmethod<br/>",
+    "question_text": "Analyze the following snippet and decide whether the code is correct and/or which method should be distinguished as a class method.\n //IMG//",
     "answer_images": null,
     "question_images": [
-      "/img/pcpp-32-101/image6.png"
+      "https://img.examtopics.com/pcpp-32-101/image6.png"
     ]
   },
   {
     "topic_number": 1,
     "question_number": 8,
     "title": "Exam PCPP-32-101 topic 1 question 8 discussion",
-    "answers": {},
+    "answers": {
+      "A": "__ne__() is not a built-in special method.",
+      "B": "The code is erroneous",
+      "C": "The code is responsible for the support of the negation operator, e.g. a = - a",
+      "D": "The code is responsible for the support of the inequality operator, i.e. !="
+    },
     "suggested_answer": "",
     "answer": "",
     "link": "https://www.examtopics.com/discussions/python-institute/view/246114-exam-pcpp-32-101-topic-1-question-8-discussion/",
     "multiple_choice": false,
-    "question_text": "Analyze the code and choose the best statement that describes it.<br/> <br/>       <br/>A.      __ne__() is not a built-in special method.<br/>       <br/>B.      The code is erroneous<br/>       <br/>C.      The code is responsible for the support of the negation operator, e.g. a = - a<br/>       <br/>D.      The code is responsible for the support of the inequality operator, i.e. !=<br/>",
+    "question_text": "Analyze the code and choose the best statement that describes it.\n //IMG//",
     "answer_images": null,
     "question_images": [
-      "/img/pcpp-32-101/image7.png"
+      "https://img.examtopics.com/pcpp-32-101/image7.png"
     ]
   },
   {
     "topic_number": 1,
     "question_number": 9,
     "title": "Exam PCPP-32-101 topic 1 question 9 discussion",
-    "answers": {},
+    "answers": {
+      "A": "The == operator",
+      "B": "The isinstance() function",
+      "C": "The id() function",
+      "D": "The is function"
+    },
     "suggested_answer": "",
     "answer": "",
     "link": "https://www.examtopics.com/discussions/python-institute/view/148432-exam-pcpp-32-101-topic-1-question-9-discussion/",
     "multiple_choice": false,
-    "question_text": "Which function or operator should you use to obtain the answer True or False to the question &#34;Do two variables refer to the same object?&#34;<br/>       <br/>A.      The == operator<br/>       <br/>B.      The isinstance() function<br/>       <br/>C.      The id() function<br/>       <br/>D.      The is function<br/>",
+    "question_text": "Which function or operator should you use to obtain the answer True or False to the question \"Do two variables refer to the same object?\"",
     "answer_images": null,
     "question_images": null
   },
@@ -134,12 +179,17 @@
     "topic_number": 1,
     "question_number": 10,
     "title": "Exam PCPP-32-101 topic 1 question 10 discussion",
-    "answers": {},
+    "answers": {
+      "A": "The @property decorator should be defined after the method that is responsible for setting an encapsulated attribute.",
+      "B": "The @property decorator designates a method which is responsible for returning an attribute value.",
+      "C": "The @property decorator marks the method whose name will be used as the name of the instance attribute.",
+      "D": "The @property decorator should be defined before the methods that are responsible for setting and deleting an encapsulated attribute."
+    },
     "suggested_answer": "",
     "answer": "",
     "link": "https://www.examtopics.com/discussions/python-institute/view/114025-exam-pcpp-32-101-topic-1-question-10-discussion/",
     "multiple_choice": false,
-    "question_text": "Which sentence about the @property decorator is false?<br/>       <br/>A.      The @property decorator should be defined after the method that is responsible for setting an encapsulated attribute.<br/>       <br/>B.      The @property decorator designates a method which is responsible for returning an attribute value.<br/>       <br/>C.      The @property decorator marks the method whose name will be used as the name of the instance attribute.<br/>       <br/>D.      The @property decorator should be defined before the methods that are responsible for setting and deleting an encapsulated attribute.<br/>",
+    "question_text": "Which sentence about the @property decorator is false?",
     "answer_images": null,
     "question_images": null
   },
@@ -147,12 +197,17 @@
     "topic_number": 1,
     "question_number": 11,
     "title": "Exam PCPP-32-101 topic 1 question 11 discussion",
-    "answers": {},
+    "answers": {
+      "A": "__name__ is a special attribute, which is inherent for both classes and instances, and it contains information about the class to which a class instance belongs.",
+      "B": "__name__ is a special attribute, which is inherent for both classes and instances, and it contains a dictionary of object attributes.",
+      "C": "__name__ is a special attribute, which is inherent for classes, and it contains information about the class to which a class instance belongs.",
+      "D": "__name__ is a special attribute, which is inherent for classes, and it contains the name of a class."
+    },
     "suggested_answer": "",
     "answer": "",
     "link": "https://www.examtopics.com/discussions/python-institute/view/147916-exam-pcpp-32-101-topic-1-question-11-discussion/",
     "multiple_choice": false,
-    "question_text": "Select the true statement about the __name__ attribute.<br/>       <br/>A.      __name__ is a special attribute, which is inherent for both classes and instances, and it contains information about the class to which a class instance belongs.<br/>       <br/>B.      __name__ is a special attribute, which is inherent for both classes and instances, and it contains a dictionary of object attributes.<br/>       <br/>C.      __name__ is a special attribute, which is inherent for classes, and it contains information about the class to which a class instance belongs.<br/>       <br/>D.      __name__ is a special attribute, which is inherent for classes, and it contains the name of a class.<br/>",
+    "question_text": "Select the true statement about the __name__ attribute.",
     "answer_images": null,
     "question_images": null
   },
@@ -160,12 +215,17 @@
     "topic_number": 1,
     "question_number": 12,
     "title": "Exam PCPP-32-101 topic 1 question 12 discussion",
-    "answers": {},
+    "answers": {
+      "A": "A method that works on the class itself",
+      "B": "A method decorated with the @method trait",
+      "C": "A method that requires no parameters referring to the class itself",
+      "D": "A method that works on class objects that are instantiated"
+    },
     "suggested_answer": "",
     "answer": "",
     "link": "https://www.examtopics.com/discussions/python-institute/view/147918-exam-pcpp-32-101-topic-1-question-12-discussion/",
     "multiple_choice": false,
-    "question_text": "What is a static method?<br/>       <br/>A.      A method that works on the class itself<br/>       <br/>B.      A method decorated with the @method trait<br/>       <br/>C.      A method that requires no parameters referring to the class itself<br/>       <br/>D.      A method that works on class objects that are instantiated<br/>",
+    "question_text": "What is a static method?",
     "answer_images": null,
     "question_images": null
   },
@@ -173,12 +233,17 @@
     "topic_number": 1,
     "question_number": 13,
     "title": "Exam PCPP-32-101 topic 1 question 13 discussion",
-    "answers": {},
+    "answers": {
+      "A": "It is the bottommost type that any object can inherit from.",
+      "B": "It is a built-in method that allows enumeration of composite objects",
+      "C": "It is the topmost type that any class can inherit from.",
+      "D": "It is an object used to instantiate a class."
+    },
     "suggested_answer": "",
     "answer": "",
     "link": "https://www.examtopics.com/discussions/python-institute/view/152745-exam-pcpp-32-101-topic-1-question-13-discussion/",
     "multiple_choice": false,
-    "question_text": "What is true about type in the object-oriented programming sense?<br/>       <br/>A.      It is the bottommost type that any object can inherit from.<br/>       <br/>B.      It is a built-in method that allows enumeration of composite objects<br/>       <br/>C.      It is the topmost type that any class can inherit from.<br/>       <br/>D.      It is an object used to instantiate a class.<br/>",
+    "question_text": "What is true about type in the object-oriented programming sense?",
     "answer_images": null,
     "question_images": null
   },
@@ -186,12 +251,17 @@
     "topic_number": 1,
     "question_number": 14,
     "title": "Exam PCPP-32-101 topic 1 question 14 discussion",
-    "answers": {},
+    "answers": {
+      "A": "It is a process of creating Python objects based on sequences of bytes",
+      "B": "It is a process of assigning unique identifiers to every newly created Python object",
+      "C": "It is another name for the data transmission process",
+      "D": "It is a process of converting the structure of an object into a stream of bytes"
+    },
     "suggested_answer": "",
     "answer": "",
     "link": "https://www.examtopics.com/discussions/python-institute/view/114032-exam-pcpp-32-101-topic-1-question-14-discussion/",
     "multiple_choice": false,
-    "question_text": "What does the term deserialization mean? (Choose the best answer.)<br/>       <br/>A.      It is a process of creating Python objects based on sequences of bytes<br/>       <br/>B.      It is a process of assigning unique identifiers to every newly created Python object<br/>       <br/>C.      It is another name for the data transmission process<br/>       <br/>D.      It is a process of converting the structure of an object into a stream of bytes<br/>",
+    "question_text": "What does the term deserialization mean? (Choose the best answer.)",
     "answer_images": null,
     "question_images": null
   },
@@ -199,12 +269,17 @@
     "topic_number": 1,
     "question_number": 15,
     "title": "Exam PCPP-32-101 topic 1 question 15 discussion",
-    "answers": {},
+    "answers": {
+      "A": "An attribute owned by every exception object",
+      "B": "A special method delivered by the traceback module to retrieve a full list of strings describing the traceback",
+      "C": "An attribute that is added to every object when the traceback module is imported",
+      "D": "An attribute that holds interesting information that is particularly useful when the programmer wants to store exception details in other objects"
+    },
     "suggested_answer": "",
     "answer": "",
     "link": "https://www.examtopics.com/discussions/python-institute/view/148436-exam-pcpp-32-101-topic-1-question-15-discussion/",
-    "multiple_choice": false,
-    "question_text": "What is a __traceback__? (Choose two.)<br/>       <br/>A.      An attribute owned by every exception object<br/>       <br/>B.      A special method delivered by the traceback module to retrieve a full list of strings describing the traceback<br/>       <br/>C.      An attribute that is added to every object when the traceback module is imported<br/>       <br/>D.      An attribute that holds interesting information that is particularly useful when the programmer wants to store exception details in other objects<br/>",
+    "multiple_choice": true,
+    "question_text": "What is a __traceback__? (Choose two.)",
     "answer_images": null,
     "question_images": null
   },
@@ -212,47 +287,62 @@
     "topic_number": 1,
     "question_number": 16,
     "title": "Exam PCPP-32-101 topic 1 question 16 discussion",
-    "answers": {},
+    "answers": {
+      "A": "//IMG//",
+      "B": "//IMG//",
+      "C": "//IMG//",
+      "D": "//IMG//"
+    },
     "suggested_answer": "",
     "answer": "",
     "link": "https://www.examtopics.com/discussions/python-institute/view/114026-exam-pcpp-32-101-topic-1-question-16-discussion/",
-    "multiple_choice": false,
-    "question_text": "Which of the following examples using line breaks and different indentation methods are compliant with PEP 8 recommendations? (Choose two.)<br/>       <br/>A.      <br/>       <br/>B.      <br/>       <br/>C.      <br/>       <br/>D.      <br/>",
+    "multiple_choice": true,
+    "question_text": "Which of the following examples using line breaks and different indentation methods are compliant with PEP 8 recommendations? (Choose two.)",
     "answer_images": null,
     "question_images": [
-      "/img/pcpp-32-101/image8.png",
-      "/img/pcpp-32-101/image9.png",
-      "/img/pcpp-32-101/image10.png",
-      "/img/pcpp-32-101/image11.png"
+      "https://img.examtopics.com/pcpp-32-101/image8.png",
+      "https://img.examtopics.com/pcpp-32-101/image9.png",
+      "https://img.examtopics.com/pcpp-32-101/image10.png",
+      "https://img.examtopics.com/pcpp-32-101/image11.png"
     ]
   },
   {
     "topic_number": 1,
     "question_number": 17,
     "title": "Exam PCPP-32-101 topic 1 question 17 discussion",
-    "answers": {},
+    "answers": {
+      "A": "//IMG//",
+      "B": "//IMG//",
+      "C": "//IMG//",
+      "D": "price = price + 1 # Decrement price by one to compensate for loss."
+    },
     "suggested_answer": "",
     "answer": "",
     "link": "https://www.examtopics.com/discussions/python-institute/view/114027-exam-pcpp-32-101-topic-1-question-17-discussion/",
-    "multiple_choice": false,
-    "question_text": "Look at the following examples of comments and docstrings in Python Select the ones that are useful and compliant with PEP 8 recommendations. (Choose two.)<br/>       <br/>A.      <br/>       <br/>B.      <br/>       <br/>C.      <br/>       <br/>D.      price = price + 1 # Decrement price by one to compensate for loss.<br/>",
+    "multiple_choice": true,
+    "question_text": "Look at the following examples of comments and docstrings in Python Select the ones that are useful and compliant with PEP 8 recommendations. (Choose two.)",
     "answer_images": null,
     "question_images": [
-      "/img/pcpp-32-101/image12.png",
-      "/img/pcpp-32-101/image13.png",
-      "/img/pcpp-32-101/image14.png"
+      "https://img.examtopics.com/pcpp-32-101/image12.png",
+      "https://img.examtopics.com/pcpp-32-101/image13.png",
+      "https://img.examtopics.com/pcpp-32-101/image14.png"
     ]
   },
   {
     "topic_number": 1,
     "question_number": 18,
     "title": "Exam PCPP-32-101 topic 1 question 18 discussion",
-    "answers": {},
+    "answers": {
+      "A": "String literals that occur immediately after another docstring are called attribute docstrings",
+      "B": "Attribute docstrings and Additional docstrings are two types of extra docstrings that can be extracted by software tools",
+      "C": "String literals that occur in places other than the first statement in a module, function, or class definition can act as documentation. They are recognized by the Python bytecode compiler, and are accessible as runtime object attributes.",
+      "D": "String literals that occur immediately after a simple assignment at the top level of a module are called complementary docstrings"
+    },
     "suggested_answer": "",
     "answer": "",
     "link": "https://www.examtopics.com/discussions/python-institute/view/114028-exam-pcpp-32-101-topic-1-question-18-discussion/",
     "multiple_choice": false,
-    "question_text": "Select the true statement related to PEP 257.<br/>       <br/>A.      String literals that occur immediately after another docstring are called attribute docstrings<br/>       <br/>B.      Attribute docstrings and Additional docstrings are two types of extra docstrings that can be extracted by software tools<br/>       <br/>C.      String literals that occur in places other than the first statement in a module, function, or class definition can act as documentation. They are recognized by the Python bytecode compiler, and are accessible as runtime object attributes.<br/>       <br/>D.      String literals that occur immediately after a simple assignment at the top level of a module are called complementary docstrings<br/>",
+    "question_text": "Select the true statement related to PEP 257.",
     "answer_images": null,
     "question_images": null
   },
@@ -260,12 +350,17 @@
     "topic_number": 1,
     "question_number": 19,
     "title": "Exam PCPP-32-101 topic 1 question 19 discussion",
-    "answers": {},
+    "answers": {
+      "A": "You should use the not ... is operator (e.g. if not spam is None:), rather than the is not operator (e.g. if spam is not None:), to increase readability.",
+      "B": "You should make object type comparisons using the isinstance() method (e.g. if isinstance(obj , int):) instead of comparing types directly (e.g. if type(obj) is type(1)).",
+      "C": "You should write code in a way that favors the CPython implementation over PyPy, Cython, and Jython.",
+      "D": "You should not write string literals that rely on significant trailing whitespaces, as they may be visually indistinguishable, and certain editors may trim them."
+    },
     "suggested_answer": "",
     "answer": "",
     "link": "https://www.examtopics.com/discussions/python-institute/view/147920-exam-pcpp-32-101-topic-1-question-19-discussion/",
-    "multiple_choice": false,
-    "question_text": "Select the true statements related to PEP 8 programming recommendations for code writing. (Choose two.)<br/>       <br/>A.      You should use the not ... is operator (e.g. if not spam is None:), rather than the is not operator (e.g. if spam is not None:), to increase readability.<br/>       <br/>B.      You should make object type comparisons using the isinstance() method (e.g. if isinstance(obj , int):) instead of comparing types directly (e.g. if type(obj) is type(1)).<br/>       <br/>C.      You should write code in a way that favors the CPython implementation over PyPy, Cython, and Jython.<br/>       <br/>D.      You should not write string literals that rely on significant trailing whitespaces, as they may be visually indistinguishable, and certain editors may trim them.<br/>",
+    "multiple_choice": true,
+    "question_text": "Select the true statements related to PEP 8 programming recommendations for code writing. (Choose two.)",
     "answer_images": null,
     "question_images": null
   },
@@ -273,12 +368,17 @@
     "topic_number": 1,
     "question_number": 20,
     "title": "Exam PCPP-32-101 topic 1 question 20 discussion",
-    "answers": {},
+    "answers": {
+      "A": "Function and variable names should be lower-case with words separated by underscores.",
+      "B": "You should always use self as the first argument to instance methods, and cls as the first argument to class methods.",
+      "C": "Modules should have short names written in CamelCase.",
+      "D": "Constants should be written in all lower-case letters with words separated by underscores."
+    },
     "suggested_answer": "",
     "answer": "",
     "link": "https://www.examtopics.com/discussions/python-institute/view/114029-exam-pcpp-32-101-topic-1-question-20-discussion/",
-    "multiple_choice": false,
-    "question_text": "Select the true statements related to PEP 8 naming conventions. (Choose two.)<br/>       <br/>A.      Function and variable names should be lower-case with words separated by underscores.<br/>       <br/>B.      You should always use self as the first argument to instance methods, and cls as the first argument to class methods.<br/>       <br/>C.      Modules should have short names written in CamelCase.<br/>       <br/>D.      Constants should be written in all lower-case letters with words separated by underscores.<br/>",
+    "multiple_choice": true,
+    "question_text": "Select the true statements related to PEP 8 naming conventions. (Choose two.)",
     "answer_images": null,
     "question_images": null
   },
@@ -286,12 +386,17 @@
     "topic_number": 1,
     "question_number": 21,
     "title": "Exam PCPP-32-101 topic 1 question 21 discussion",
-    "answers": {},
+    "answers": {
+      "A": "It is recommended that you use line breaks before binary operators to improve code readability",
+      "B": "It is permissible to use line breaks before or after a binary operator, as long as the convention is consistent locally. However, for new code, it is recommended that break lines should be used only after binary operators.",
+      "C": "It is recommended that you use line breaks after binary operators to improve code readability",
+      "D": "There is no specific PEP 8 recommendation related to using line breaks with binary operators"
+    },
     "suggested_answer": "",
     "answer": "",
     "link": "https://www.examtopics.com/discussions/python-institute/view/121027-exam-pcpp-32-101-topic-1-question-21-discussion/",
     "multiple_choice": false,
-    "question_text": "Select the true statement about PEP 8 recommendations related to line breaks and binary operators.<br/>       <br/>A.      It is recommended that you use line breaks before binary operators to improve code readability<br/>       <br/>B.      It is permissible to use line breaks before or after a binary operator, as long as the convention is consistent locally. However, for new code, it is recommended that break lines should be used only after binary operators.<br/>       <br/>C.      It is recommended that you use line breaks after binary operators to improve code readability<br/>       <br/>D.      There is no specific PEP 8 recommendation related to using line breaks with binary operators<br/>",
+    "question_text": "Select the true statement about PEP 8 recommendations related to line breaks and binary operators.",
     "answer_images": null,
     "question_images": null
   },
@@ -299,30 +404,40 @@
     "topic_number": 1,
     "question_number": 22,
     "title": "Exam PCPP-32-101 topic 1 question 22 discussion",
-    "answers": {},
+    "answers": {
+      "A": "No whitespace immediately before the opening parenthesis that starts the list of arguments of a function call:\n //IMG//",
+      "B": "A whitespace immediately before a comma, semicolon, and colon:\n //IMG//",
+      "C": "No whitespace between a trailing comma and a following closing parenthesis:\n //IMG//",
+      "D": "A whitespace immediately after the opening parenthesis that starts indexing or slicing:\n //IMG//"
+    },
     "suggested_answer": "",
     "answer": "",
     "link": "https://www.examtopics.com/discussions/python-institute/view/246121-exam-pcpp-32-101-topic-1-question-22-discussion/",
-    "multiple_choice": false,
-    "question_text": "Look at the following code snippets and decide which ones follow PEP 8 recommendations for whitespaces in expressions and statements. (Choose two.)<br/>       <br/>A.      No whitespace immediately before the opening parenthesis that starts the list of arguments of a function call:<br/> <br/>       <br/>B.      A whitespace immediately before a comma, semicolon, and colon:<br/> <br/>       <br/>C.      No whitespace between a trailing comma and a following closing parenthesis:<br/> <br/>       <br/>D.      A whitespace immediately after the opening parenthesis that starts indexing or slicing:<br/> <br/>",
+    "multiple_choice": true,
+    "question_text": "Look at the following code snippets and decide which ones follow PEP 8 recommendations for whitespaces in expressions and statements. (Choose two.)",
     "answer_images": null,
     "question_images": [
-      "/img/pcpp-32-101/image15.png",
-      "/img/pcpp-32-101/image16.png",
-      "/img/pcpp-32-101/image17.png",
-      "/img/pcpp-32-101/image18.png"
+      "https://img.examtopics.com/pcpp-32-101/image15.png",
+      "https://img.examtopics.com/pcpp-32-101/image16.png",
+      "https://img.examtopics.com/pcpp-32-101/image17.png",
+      "https://img.examtopics.com/pcpp-32-101/image18.png"
     ]
   },
   {
     "topic_number": 1,
     "question_number": 23,
     "title": "Exam PCPP-32-101 topic 1 question 23 discussion",
-    "answers": {},
+    "answers": {
+      "A": "\"accept\" and \"cancel\"",
+      "B": "l and 0",
+      "C": "\"yes\" and \"no\"",
+      "D": "True and False"
+    },
     "suggested_answer": "",
     "answer": "",
     "link": "https://www.examtopics.com/discussions/python-institute/view/148443-exam-pcpp-32-101-topic-1-question-23-discussion/",
     "multiple_choice": false,
-    "question_text": "Which of the following values can be returned by the messagebox.askquestion() method?<br/>       <br/>A.      &#34;accept&#34; and &#34;cancel&#34;<br/>       <br/>B.      l and 0<br/>       <br/>C.      &#34;yes&#34; and &#34;no&#34;<br/>       <br/>D.      True and False<br/>",
+    "question_text": "Which of the following values can be returned by the messagebox.askquestion() method?",
     "answer_images": null,
     "question_images": null
   },
@@ -330,12 +445,17 @@
     "topic_number": 1,
     "question_number": 24,
     "title": "Exam PCPP-32-101 topic 1 question 24 discussion",
-    "answers": {},
+    "answers": {
+      "A": "Some widgets may be invisible",
+      "B": "The window will be expanded",
+      "C": "An exception will be raised",
+      "D": "The widgets will be scaled down to fit the window’s size"
+    },
     "suggested_answer": "",
     "answer": "",
     "link": "https://www.examtopics.com/discussions/python-institute/view/129110-exam-pcpp-32-101-topic-1-question-24-discussion/",
     "multiple_choice": false,
-    "question_text": "What will happen if the main window is too small to fit all its widgets?<br/>       <br/>A.      Some widgets may be invisible<br/>       <br/>B.      The window will be expanded<br/>       <br/>C.      An exception will be raised<br/>       <br/>D.      The widgets will be scaled down to fit the window’s size<br/>",
+    "question_text": "What will happen if the main window is too small to fit all its widgets?",
     "answer_images": null,
     "question_images": null
   },
@@ -343,12 +463,17 @@
     "topic_number": 1,
     "question_number": 25,
     "title": "Exam PCPP-32-101 topic 1 question 25 discussion",
-    "answers": {},
+    "answers": {
+      "A": "It is invoked from within the event's object.",
+      "B": "It is invoked from within a widget’s object",
+      "C": "It needs a widget's object as an argument.",
+      "D": "It needs the event name as an argument"
+    },
     "suggested_answer": "",
     "answer": "",
     "link": "https://www.examtopics.com/discussions/python-institute/view/246127-exam-pcpp-32-101-topic-1-question-25-discussion/",
-    "multiple_choice": false,
-    "question_text": "What is true about the unbind() method? (Choose two.)<br/>       <br/>A.      It is invoked from within the event&#39;s object.<br/>       <br/>B.      It is invoked from within a widget’s object<br/>       <br/>C.      It needs a widget&#39;s object as an argument.<br/>       <br/>D.      It needs the event name as an argument<br/>",
+    "multiple_choice": true,
+    "question_text": "What is true about the unbind() method? (Choose two.)",
     "answer_images": null,
     "question_images": null
   },
@@ -356,12 +481,17 @@
     "topic_number": 1,
     "question_number": 26,
     "title": "Exam PCPP-32-101 topic 1 question 26 discussion",
-    "answers": {},
+    "answers": {
+      "A": "#FFFFFF",
+      "B": "#0000FF",
+      "C": "#FF0000",
+      "D": "#000000"
+    },
     "suggested_answer": "",
     "answer": "",
     "link": "https://www.examtopics.com/discussions/python-institute/view/148449-exam-pcpp-32-101-topic-1-question-26-discussion/",
-    "multiple_choice": false,
-    "question_text": "If purple can be obtained from mixing red and blue, which color codes represent the two ingredients? (Choose two.)<br/>       <br/>A.      #FFFFFF<br/>       <br/>B.      #0000FF<br/>       <br/>C.      #FF0000<br/>       <br/>D.      #000000<br/>",
+    "multiple_choice": true,
+    "question_text": "If purple can be obtained from mixing red and blue, which color codes represent the two ingredients? (Choose two.)",
     "answer_images": null,
     "question_images": null
   },
@@ -369,12 +499,17 @@
     "topic_number": 1,
     "question_number": 27,
     "title": "Exam PCPP-32-101 topic 1 question 27 discussion",
-    "answers": {},
+    "answers": {
+      "A": "It can be used to read widget attributes",
+      "B": "It has the same effect as the config() method",
+      "C": "It can be used to set new values to widget attributes",
+      "D": "It can be replaced with a dictionary-like access manner"
+    },
     "suggested_answer": "",
     "answer": "",
     "link": "https://www.examtopics.com/discussions/python-institute/view/148450-exam-pcpp-32-101-topic-1-question-27-discussion/",
     "multiple_choice": false,
-    "question_text": "What is true about the invocation of the cget() method?<br/>       <br/>A.      It can be used to read widget attributes<br/>       <br/>B.      It has the same effect as the config() method<br/>       <br/>C.      It can be used to set new values to widget attributes<br/>       <br/>D.      It can be replaced with a dictionary-like access manner<br/>",
+    "question_text": "What is true about the invocation of the cget() method?",
     "answer_images": null,
     "question_images": null
   },
@@ -382,12 +517,17 @@
     "topic_number": 1,
     "question_number": 28,
     "title": "Exam PCPP-32-101 topic 1 question 28 discussion",
-    "answers": {},
+    "answers": {
+      "A": "button.ButtonFont('Arial' , '12', 'italic')",
+      "B": "button.setfont(('Arial', '12', 'italic'))",
+      "C": "button=Button(wnd,font=('Arial', '12', 'italic')",
+      "D": "button.config(font=('Arial', '12', 'italic'))"
+    },
     "suggested_answer": "",
     "answer": "",
     "link": "https://www.examtopics.com/discussions/python-institute/view/121031-exam-pcpp-32-101-topic-1-question-28-discussion/",
-    "multiple_choice": false,
-    "question_text": "Which of the following will set the button text’s font to 12 point italics Arial? (Choose two.)<br/>       <br/>A.      button.ButtonFont(&#39;Arial&#39; , &#39;12&#39;, &#39;italic&#39;)<br/>       <br/>B.      button.setfont((&#39;Arial&#39;, &#39;12&#39;, &#39;italic&#39;))<br/>       <br/>C.      button=Button(wnd,font=(&#39;Arial&#39;, &#39;12&#39;, &#39;italic&#39;)<br/>       <br/>D.      button.config(font=(&#39;Arial&#39;, &#39;12&#39;, &#39;italic&#39;))<br/>",
+    "multiple_choice": true,
+    "question_text": "Which of the following will set the button text’s font to 12 point italics Arial? (Choose two.)",
     "answer_images": null,
     "question_images": null
   },
@@ -395,12 +535,17 @@
     "topic_number": 1,
     "question_number": 29,
     "title": "Exam PCPP-32-101 topic 1 question 29 discussion",
-    "answers": {},
+    "answers": {
+      "A": "It can be invoked from any widget",
+      "B": "It can be invoked from the main window widget only",
+      "C": "It is parameterless",
+      "D": "It causes all the widgets to disappear"
+    },
     "suggested_answer": "",
     "answer": "",
     "link": "https://www.examtopics.com/discussions/python-institute/view/246131-exam-pcpp-32-101-topic-1-question-29-discussion/",
-    "multiple_choice": false,
-    "question_text": "What is true about the unbind_all() method? (Choose two.)<br/>       <br/>A.      It can be invoked from any widget<br/>       <br/>B.      It can be invoked from the main window widget only<br/>       <br/>C.      It is parameterless<br/>       <br/>D.      It causes all the widgets to disappear<br/>",
+    "multiple_choice": true,
+    "question_text": "What is true about the unbind_all() method? (Choose two.)",
     "answer_images": null,
     "question_images": null
   },
@@ -408,12 +553,17 @@
     "topic_number": 1,
     "question_number": 30,
     "title": "Exam PCPP-32-101 topic 1 question 30 discussion",
-    "answers": {},
+    "answers": {
+      "A": "w.fixshape()",
+      "B": "w.fixdim()",
+      "C": "w.resizable()",
+      "D": "w.makewindow()"
+    },
     "suggested_answer": "",
     "answer": "",
     "link": "https://www.examtopics.com/discussions/python-institute/view/121032-exam-pcpp-32-101-topic-1-question-30-discussion/",
     "multiple_choice": false,
-    "question_text": "If w is a correctly created main application window, which method would you use to fix both of the main window&#39;s dimensions?<br/>       <br/>A.      w.fixshape()<br/>       <br/>B.      w.fixdim()<br/>       <br/>C.      w.resizable()<br/>       <br/>D.      w.makewindow()<br/>",
+    "question_text": "If w is a correctly created main application window, which method would you use to fix both of the main window's dimensions?",
     "answer_images": null,
     "question_images": null
   },
@@ -421,12 +571,17 @@
     "topic_number": 1,
     "question_number": 36,
     "title": "Exam PCPP-32-101 topic 1 question 36 discussion",
-    "answers": {},
+    "answers": {
+      "A": "names a process in which Python data is turned into a JSON string",
+      "B": "names a process in which a JSON string is turned into Python data",
+      "C": "refers to nothing, because there is no such thing as JSON serialization",
+      "D": "names a process in which a JSON string is remodeled and transformed into a new JSON string"
+    },
     "suggested_answer": "",
     "answer": "",
     "link": "https://www.examtopics.com/discussions/python-institute/view/129111-exam-pcpp-32-101-topic-1-question-36-discussion/",
     "multiple_choice": false,
-    "question_text": "In the JSON processing context, the term serialization:<br/>       <br/>A.      names a process in which Python data is turned into a JSON string<br/>       <br/>B.      names a process in which a JSON string is turned into Python data<br/>       <br/>C.      refers to nothing, because there is no such thing as JSON serialization<br/>       <br/>D.      names a process in which a JSON string is remodeled and transformed into a new JSON string<br/>",
+    "question_text": "In the JSON processing context, the term serialization:",
     "answer_images": null,
     "question_images": null
   },
@@ -434,12 +589,17 @@
     "topic_number": 1,
     "question_number": 41,
     "title": "Exam PCPP-32-101 topic 1 question 41 discussion",
-    "answers": {},
+    "answers": {
+      "A": "debug",
+      "B": "dump",
+      "C": "log",
+      "D": "parse"
+    },
     "suggested_answer": "",
     "answer": "",
     "link": "https://www.examtopics.com/discussions/python-institute/view/130045-exam-pcpp-32-101-topic-1-question-41-discussion/",
     "multiple_choice": false,
-    "question_text": "Which one of the following methods allows you to debug an XML tree in the xml.etree.ElementTree module?<br/>       <br/>A.      debug<br/>       <br/>B.      dump<br/>       <br/>C.      log<br/>       <br/>D.      parse<br/>",
+    "question_text": "Which one of the following methods allows you to debug an XML tree in the xml.etree.ElementTree module?",
     "answer_images": null,
     "question_images": null
   },
@@ -447,12 +607,17 @@
     "topic_number": 1,
     "question_number": 42,
     "title": "Exam PCPP-32-101 topic 1 question 42 discussion",
-    "answers": {},
+    "answers": {
+      "A": "The sqlite3 module provides an interface compliant with the DB-API 2.0",
+      "B": "The special name memory is used to create a database in RAM",
+      "C": "The sqlite3 module does not support transactions.",
+      "D": "The fetchall method returns an empty list when no rows are available."
+    },
     "suggested_answer": "",
     "answer": "",
     "link": "https://www.examtopics.com/discussions/python-institute/view/121035-exam-pcpp-32-101-topic-1-question-42-discussion/",
-    "multiple_choice": false,
-    "question_text": "Select the true statements about the sqlite3 module. (Choose two.)<br/>       <br/>A.      The sqlite3 module provides an interface compliant with the DB-API 2.0<br/>       <br/>B.      The special name memory is used to create a database in RAM<br/>       <br/>C.      The sqlite3 module does not support transactions.<br/>       <br/>D.      The fetchall method returns an empty list when no rows are available.<br/>",
+    "multiple_choice": true,
+    "question_text": "Select the true statements about the sqlite3 module. (Choose two.)",
     "answer_images": null,
     "question_images": null
   },
@@ -460,45 +625,60 @@
     "topic_number": 1,
     "question_number": 43,
     "title": "Exam PCPP-32-101 topic 1 question 43 discussion",
-    "answers": {},
+    "answers": {
+      "A": "Nothing will be displayed",
+      "B": "Loading data...",
+      "C": "Debugging mode has been enabled",
+      "D": "Debugging mode has been enabled\n Loading data..."
+    },
     "suggested_answer": "",
     "answer": "",
     "link": "https://www.examtopics.com/discussions/python-institute/view/121036-exam-pcpp-32-101-topic-1-question-43-discussion/",
     "multiple_choice": false,
-    "question_text": "What is the result of the following code?<br/> <br/>       <br/>A.      Nothing will be displayed<br/>       <br/>B.      Loading data...<br/>       <br/>C.      Debugging mode has been enabled<br/>       <br/>D.      Debugging mode has been enabled<br/> Loading data...<br/>",
+    "question_text": "What is the result of the following code?\n //IMG//",
     "answer_images": null,
     "question_images": [
-      "/img/pcpp-32-101/image19.png"
+      "https://img.examtopics.com/pcpp-32-101/image19.png"
     ]
   },
   {
     "topic_number": 1,
     "question_number": 44,
     "title": "Exam PCPP-32-101 topic 1 question 44 discussion",
-    "answers": {},
+    "answers": {
+      "A": "//IMG//",
+      "B": "//IMG//",
+      "C": "//IMG//",
+      "D": "An exception will be raised"
+    },
     "suggested_answer": "",
     "answer": "",
     "link": "https://www.examtopics.com/discussions/python-institute/view/121038-exam-pcpp-32-101-topic-1-question-44-discussion/",
     "multiple_choice": false,
-    "question_text": "What will be the content of the colors csv file when you run the following code?<br/> <br/>       <br/>A.      <br/>       <br/>B.      <br/>       <br/>C.      <br/>       <br/>D.      An exception will be raised<br/>",
+    "question_text": "What will be the content of the colors csv file when you run the following code?\n //IMG//",
     "answer_images": null,
     "question_images": [
-      "/img/pcpp-32-101/image20.png",
-      "/img/pcpp-32-101/image21.png",
-      "/img/pcpp-32-101/image22.png",
-      "/img/pcpp-32-101/image23.png"
+      "https://img.examtopics.com/pcpp-32-101/image20.png",
+      "https://img.examtopics.com/pcpp-32-101/image21.png",
+      "https://img.examtopics.com/pcpp-32-101/image22.png",
+      "https://img.examtopics.com/pcpp-32-101/image23.png"
     ]
   },
   {
     "topic_number": 1,
     "question_number": 48,
     "title": "Exam PCPP-32-101 topic 1 question 48 discussion",
-    "answers": {},
+    "answers": {
+      "A": "It is a function built into a class that is executed on behalf of the class or an object.",
+      "B": "It is another name for a function - the only difference is that a method cannot be abstract.",
+      "C": "It is a callable variable that is specific only to objects.",
+      "D": "It is another name for a function - the only difference is that a method always returns a value."
+    },
     "suggested_answer": "",
     "answer": "",
     "link": "https://www.examtopics.com/discussions/python-institute/view/331921-exam-pcpp-32-101-topic-1-question-48-discussion/",
     "multiple_choice": false,
-    "question_text": "What is a method?<br/>       <br/>A.      It is a function built into a class that is executed on behalf of the class or an object.<br/>       <br/>B.      It is another name for a function - the only difference is that a method cannot be abstract.<br/>       <br/>C.      It is a callable variable that is specific only to objects.<br/>       <br/>D.      It is another name for a function - the only difference is that a method always returns a value.<br/>",
+    "question_text": "What is a method?",
     "answer_images": null,
     "question_images": null
   },
@@ -506,12 +686,17 @@
     "topic_number": 1,
     "question_number": 67,
     "title": "Exam PCPP-32-101 topic 1 question 67 discussion",
-    "answers": {},
+    "answers": {
+      "A": "The \"-1\" means that it applies to the very first release only.",
+      "B": "It is usually preceded by the \"\u003cbutton-1\u003e\" event.",
+      "C": "It applies to mouse activity.",
+      "D": "It applies to focus changes.\n                 \u003c/button-1\u003e"
+    },
     "suggested_answer": "",
     "answer": "",
     "link": "https://www.examtopics.com/discussions/python-institute/view/331926-exam-pcpp-32-101-topic-1-question-67-discussion/",
-    "multiple_choice": false,
-    "question_text": "What is true about an event designated as &#34;{ButtonRelease-1}&#34;? (Choose two.)<br/>       <br/>A.      The &#34;-1&#34; means that it applies to the very first release only.<br/>       <br/>B.      It is usually preceded by the &#34;<button-1>&#34; event.<br/>       <br/>C.      It applies to mouse activity.<br/>       <br/>D.      It applies to focus changes.<br/>                 </button-1>",
+    "multiple_choice": true,
+    "question_text": "What is true about an event designated as \"{ButtonRelease-1}\"? (Choose two.)",
     "answer_images": null,
     "question_images": null
   },
@@ -519,12 +704,17 @@
     "topic_number": 1,
     "question_number": 75,
     "title": "Exam PCPP-32-101 topic 1 question 75 discussion",
-    "answers": {},
+    "answers": {
+      "A": "SAX is an acronym for \"Simple API for XML\".",
+      "B": "SAX is an interface for event-driven XML document analysis.",
+      "C": "The xml.sax module Is the minimum implementation of the Document Object Model (DOM).",
+      "D": "The xml.etree.ElementTree and xml.dom.minidom modules parse an XML document into a DOM."
+    },
     "suggested_answer": "",
     "answer": "",
     "link": "https://www.examtopics.com/discussions/python-institute/view/305849-exam-pcpp-32-101-topic-1-question-75-discussion/",
-    "multiple_choice": false,
-    "question_text": "Select the true statements about XML modules in the Python standard library. (Choose two.)<br/>       <br/>A.      SAX is an acronym for &#34;Simple API for XML&#34;.<br/>       <br/>B.      SAX is an interface for event-driven XML document analysis.<br/>       <br/>C.      The xml.sax module Is the minimum implementation of the Document Object Model (DOM).<br/>       <br/>D.      The xml.etree.ElementTree and xml.dom.minidom modules parse an XML document into a DOM.<br/>",
+    "multiple_choice": true,
+    "question_text": "Select the true statements about XML modules in the Python standard library. (Choose two.)",
     "answer_images": null,
     "question_images": null
   },
@@ -532,12 +722,17 @@
     "topic_number": 1,
     "question_number": 80,
     "title": "Exam PCPP-32-101 topic 1 question 80 discussion",
-    "answers": {},
+    "answers": {
+      "A": "A DictReader object maps each row to a diet.",
+      "B": "The DictReader method always gets the header from the first line in the file.",
+      "C": "It is possible to create a DictWriter object without specifying a header.",
+      "D": "A reader object maps each row to a list of strings."
+    },
     "suggested_answer": "",
     "answer": "",
     "link": "https://www.examtopics.com/discussions/python-institute/view/305852-exam-pcpp-32-101-topic-1-question-80-discussion/",
-    "multiple_choice": false,
-    "question_text": "Select the correct statements about the csv module. (Choose two.)<br/>       <br/>A.      A DictReader object maps each row to a diet.<br/>       <br/>B.      The DictReader method always gets the header from the first line in the file.<br/>       <br/>C.      It is possible to create a DictWriter object without specifying a header.<br/>       <br/>D.      A reader object maps each row to a list of strings.<br/>",
+    "multiple_choice": true,
+    "question_text": "Select the correct statements about the csv module. (Choose two.)",
     "answer_images": null,
     "question_images": null
   }

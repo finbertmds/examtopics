@@ -1,6 +1,23 @@
 const Exam = require('../models/Exam');
 const Question = require('../models/Question');
 
+const getBulkWriteErrors = (error) => {
+  if (Array.isArray(error.writeErrors)) return error.writeErrors;
+  if (typeof error.result?.getWriteErrors === 'function') {
+    return error.result.getWriteErrors();
+  }
+  return [];
+};
+
+const isDuplicateKeyError = (error) => error?.code === 11000 || error?.err?.code === 11000;
+
+const isOnlyDuplicateKeyError = (error) => {
+  const writeErrors = getBulkWriteErrors(error);
+  return writeErrors.length > 0
+    ? writeErrors.every(isDuplicateKeyError)
+    : isDuplicateKeyError(error);
+};
+
 class ExamService {
   async getAllExams() {
     return await Exam.find().sort({ createdAt: -1 });
@@ -102,12 +119,18 @@ class ExamService {
       });
 
       // Avoid duplicates if a number repeats by ignoring duplicates or inserting what's possible
-      // Using write errors to safely continue if duplicate
       for (let i = 0; i < formattedQuestions.length; i += 50) {
-         const batch = formattedQuestions.slice(i, i + 50);
-         await Question.insertMany(batch, { ordered: false }).catch(err => {
-             console.error(`Error inserting questions for exam ${exam.code}:`, err);
-         });
+        const batch = formattedQuestions.slice(i, i + 50);
+        try {
+          const insertedQuestions = await Question.insertMany(batch, { ordered: false });
+          console.log(`Inserted ${insertedQuestions.length} questions for exam ${exam.code}`);
+        } catch (error) {
+          if (!isOnlyDuplicateKeyError(error)) {
+            console.error(`Error inserting questions for exam ${exam.code}:`, error);
+            throw error;
+          }
+          console.warn(`Skipped duplicate questions for exam ${exam.code}:`, getBulkWriteErrors(error).length);
+        }
       }
     }
 
@@ -154,10 +177,17 @@ class ExamService {
       });
 
       for (let i = 0; i < formattedQuestions.length; i += 50) {
-         const batch = formattedQuestions.slice(i, i + 50);
-         await Question.insertMany(batch, { ordered: false }).catch(err => {
-             console.error(`Error inserting questions for exam ${exam.code}:`, err);
-         });
+        const batch = formattedQuestions.slice(i, i + 50);
+        try {
+          const insertedQuestions = await Question.insertMany(batch, { ordered: false });
+          console.log(`Inserted ${insertedQuestions.length} questions for exam ${exam.code}`);
+        } catch (error) {
+          if (!isOnlyDuplicateKeyError(error)) {
+            console.error(`Error inserting questions for exam ${exam.code}:`, error);
+            throw error;
+          }
+          console.warn(`Skipped duplicate questions for exam ${exam.code}:`, getBulkWriteErrors(error).length);
+        }
       }
     }
 

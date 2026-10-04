@@ -260,7 +260,7 @@ func TimeSince(startTime time.Time) string {
 }
 
 func ExtractQuestionNumber(text string) int {
-	var questionRegex = regexp.MustCompile(`question\s+(\d+)\s+discussion`)
+	var questionRegex = regexp.MustCompile(`(?i)question(?:\s*#:\s*|\s+)(\d+)(?:\s+discussion)?`)
 	matches := questionRegex.FindStringSubmatch(text)
 	if len(matches) > 1 {
 		num, _ := strconv.Atoi(matches[1])
@@ -270,7 +270,7 @@ func ExtractQuestionNumber(text string) int {
 }
 
 func ExtractTopicNumber(text string) int {
-	var topicRegex = regexp.MustCompile(`topic\s+(\d+)\s+question`)
+	var topicRegex = regexp.MustCompile(`(?i)topic(?:\s*#:\s*|\s+)(\d+)(?:\s+question)?`)
 	matches := topicRegex.FindStringSubmatch(text)
 	if len(matches) > 1 {
 		num, _ := strconv.Atoi(matches[1])
@@ -301,15 +301,22 @@ func ConvertQuestionsToMap(options []string) map[string]string {
 ParseChoicesFromQuestionText parse and get map Choices from question_text
 */
 func ParseChoicesFromQuestionText(questionText string) map[string]string {
+	_, choices := ParseQuestionAndChoicesFromText(questionText)
+	return choices
+}
+
+func ParseQuestionAndChoicesFromText(questionText string) (string, map[string]string) {
 	choices := make(map[string]string)
 
 	text := strings.ReplaceAll(questionText, "\r\n", "\n")
-	reSplit := regexp.MustCompile(`(?m)^\s*([A-Z])\.\s*$`)
+	reSplit := regexp.MustCompile(`(?m)^\s*([A-Z])\.\s*`)
 	locs := reSplit.FindAllStringSubmatchIndex(text, -1)
 
 	if len(locs) == 0 {
-		return choices
+		return strings.TrimSpace(text), choices
 	}
+
+	questionText = strings.TrimSpace(text[:locs[0][0]])
 
 	for i := 0; i < len(locs); i++ {
 		key := text[locs[i][2]:locs[i][3]]
@@ -328,5 +335,5 @@ func ParseChoicesFromQuestionText(questionText string) map[string]string {
 		choices[key] = content
 	}
 
-	return choices
+	return questionText, choices
 }

@@ -26,8 +26,10 @@ func getDataFromLink(link string) *models.QuestionData {
 
 	title := utils.CleanText(doc.Find("h1").Text())
 
-	answerText := strings.TrimSpace(doc.Find(".correct-answer").Text())
-	answerImages := utils.ExtractImageLinks(answerText)
+	answerSelection := doc.Find(".correct-answer")
+	answerText := strings.TrimSpace(answerSelection.Text())
+	answerHTML, _ := answerSelection.Html()
+	answerImages := utils.ExtractImageLinks(answerHTML)
 
 	content, err2 := doc.Find("p.card-text").Html()
 	if err2 != nil {
@@ -45,15 +47,19 @@ func getDataFromLink(link string) *models.QuestionData {
 	var rawData models.QuestionJSON
 	if len(allQuestions) == 0 {
 		contentText := utils.ReplaceBrWithNewline(content)
-		choices := utils.ParseChoicesFromQuestionText(contentText)
+		questionText, choices := utils.ParseQuestionAndChoicesFromText(contentText)
+		content = questionText
 		rawData.Choices = choices
+	}
 
-		content = utils.RemoveIMGPlaceholder(content)
+	headerSelection := doc.Find(".discussion-header-container > div").First()
+	if headerSelection.Length() == 0 {
+		headerSelection = doc.Find(".question-discussion-header").First()
 	}
 
 	return &models.QuestionData{
 		Title:          title,
-		Header:         strings.ReplaceAll(strings.TrimSpace(doc.Find(".question-discussion-header").Text()), "\t", ""),
+		Header:         strings.ReplaceAll(strings.TrimSpace(headerSelection.Text()), "\t", ""),
 		Content:        content,
 		Questions:      allQuestions,
 		Answer:         answerText,
