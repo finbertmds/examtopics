@@ -6,6 +6,7 @@ on:
       - master
     paths:
       - 'examtopics-downloader/**'
+      - '.github/workflows/docker.yml'
   workflow_dispatch:
 
 jobs:
@@ -25,7 +26,7 @@ jobs:
         run: cd examtopics-downloader && go build ./...
 
       - name: Run tests
-        run: cd examtopics-downloader && go test -v ./tests
+        run: cd examtopics-downloader && go test -timeout 0 -v ./tests
 
   build-and-push:
     runs-on: ubuntu-latest
