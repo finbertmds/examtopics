@@ -24,6 +24,7 @@ func main() {
 	token := flag.String("t", "", "Optional argument to make cached requests faster to gh api")
 	exportJSON := flag.Bool("json", false, "Export data to JSON format in addition to MD format")
 	flag.Parse()
+	defer reportExhaustedRetries()
 
 	if *examsFlag {
 		exams := fetch.GetProviderExams(*provider)
@@ -31,7 +32,7 @@ func main() {
 		for _, exam := range exams {
 			fmt.Println(utils.AddToBaseUrl(exam))
 		}
-		os.Exit(0)
+		return
 	}
 
 	if *grepStr == "" {
@@ -50,7 +51,7 @@ func main() {
 				utils.WriteJSONData(links, jsonPath, true)
 				fmt.Printf("Successfully saved JSON output to %s.\n", jsonPath)
 			}
-			os.Exit(0)
+			return
 		}
 	}
 
@@ -69,4 +70,22 @@ func main() {
 		utils.WriteJSONData(links, jsonPath, false)
 		fmt.Printf("Successfully saved JSON output to %s.\n", jsonPath)
 	}
+}
+
+func reportExhaustedRetries() {
+	const failedURLsPath = "failed_urls.txt"
+	urls := fetch.GetExhaustedRetryURLs()
+	content := strings.Join(urls, "\n")
+	if len(urls) > 0 {
+		content += "\n"
+	}
+	if err := os.WriteFile(failedURLsPath, []byte(content), 0644); err != nil {
+		log.Printf("Failed to save exhausted retry URLs to %s: %v", failedURLsPath, err)
+	}
+
+	if len(urls) == 0 {
+		log.Printf("No URLs exhausted retries; saved an empty %s", failedURLsPath)
+		return
+	}
+	log.Printf("URLs that exhausted retries (%d), saved to %s:\n%s", len(urls), failedURLsPath, strings.Join(urls, "\n"))
 }

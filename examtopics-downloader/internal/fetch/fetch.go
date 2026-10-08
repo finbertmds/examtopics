@@ -7,6 +7,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"sort"
 	"strconv"
 	"strings"
 	"sync"
@@ -20,6 +21,20 @@ import (
 )
 
 var client = &http.Client{Timeout: constants.HttpTimeout}
+var exhaustedRetryURLsMu sync.Mutex
+var exhaustedRetryURLs = make(map[string]struct{})
+
+func GetExhaustedRetryURLs() []string {
+	exhaustedRetryURLsMu.Lock()
+	defer exhaustedRetryURLsMu.Unlock()
+
+	urls := make([]string, 0, len(exhaustedRetryURLs))
+	for url := range exhaustedRetryURLs {
+		urls = append(urls, url)
+	}
+	sort.Strings(urls)
+	return urls
+}
 
 func FetchURL(url string, client http.Client) []byte {
 	backoff := constants.InitalBackoff
@@ -65,6 +80,9 @@ func FetchURL(url string, client http.Client) []byte {
 	}
 
 	log.Printf("exhausted retries for URL: %s", url)
+	exhaustedRetryURLsMu.Lock()
+	exhaustedRetryURLs[url] = struct{}{}
+	exhaustedRetryURLsMu.Unlock()
 	return nil
 }
 
