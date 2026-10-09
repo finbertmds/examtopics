@@ -240,7 +240,7 @@
     "question_text": "A security engineer is designing an IAM policy to protect AWS API operations. The policy must enforce multi-factor authentication (MFA) for IAM users to access certain services in the AWS production account. Each session must remain valid for only 2 hours. The current version of the IAM policy is as follows:\n//IMG//\n\nWhich combination of conditions must the security engineer add to the IAM policy to meet these requirements? (Choose two.)",
     "answer_images": [],
     "question_images": [
-      "https://img.examtopics.com/aws-certified-security-specialty-scs-c02/image1.png"
+      "/img/aws-scs-c02/image1.png"
     ]
   },
   {
@@ -463,7 +463,7 @@
     "question_text": "While securing the connection between a company’s VPC and its on-premises data center, a security engineer sent a ping command from an on-premises host (IP address 203.0.113.12) to an Amazon EC2 instance (IP address 172.31.16.139). The ping command did not return a response. The flow log in the VPC showed the following:\n//IMG//\n\nWhat action should be performed to allow the ping to work?",
     "answer_images": [],
     "question_images": [
-      "https://img.examtopics.com/aws-certified-security-specialty-scs-c02/image2.png"
+      "/img/aws-scs-c02/image2.png"
     ]
   },
   {
@@ -630,7 +630,7 @@
     "question_text": "A company uses identity federation to authenticate users into an identity account (987654321987) where the users assume an IAM role named IdentityRole. The users then assume an IAM role named JobFunctionRole in the target AWS account (123456789123) to perform their job functions.\nA user is unable to assume the IAM role in the target account. The policy attached to the role in the identity account is:\n//IMG//\n\nWhat should be done to enable the user to assume the appropriate role in the target account?",
     "answer_images": [],
     "question_images": [
-      "https://img.examtopics.com/aws-certified-security-specialty-scs-c02/image3.png"
+      "/img/aws-scs-c02/image3.png"
     ]
   },
   {
@@ -1086,7 +1086,7 @@
     "question_text": "A security engineer logs in to the AWS Lambda console with administrator permissions. The security engineer is trying to view logs in Amazon CloudWatch for a Lambda function that is named myFunction. When the security engineer chooses the option in the Lambda console to view logs in CloudWatch, an \"error loading Log Streams\" message appears.\nThe IAM policy for the Lambda function's execution role contains the following:\n//IMG//\n\nHow should the security engineer correct the error?",
     "answer_images": [],
     "question_images": [
-      "https://img.examtopics.com/aws-certified-security-specialty-scs-c02/image12.png"
+      "/img/aws-scs-c02/image12.png"
     ]
   },
   {
@@ -1806,7 +1806,7 @@
     "question_text": "A security engineer is troubleshooting an AWS Lambda function that is named MyLambdaFunction. The function is encountering an error when the function attempts to read the objects in an Amazon S3 bucket that is named DOC-EXAMPLE-BUCKET. The S3 bucket has the following bucket policy:\n\n//IMG//\n\n\nWhich change should the security engineer make to the policy to ensure that the Lambda function can read the bucket objects?",
     "answer_images": [],
     "question_images": [
-      "https://img.examtopics.com/aws-certified-security-specialty-scs-c02/image17.png"
+      "/img/aws-scs-c02/image17.png"
     ]
   },
   {
@@ -1916,7 +1916,7 @@
     "question_text": "A company has an organization with SCPs in AWS Organizations. The root SCP for the organization is as follows:\n\n//IMG//\n\n\nThe company's developers are members of a group that has an IAM policy that allows access to Amazon Simple Email Service (Amazon SES) by allowing ses:* actions. The account is a child to an OU that has an SCP that allows Amazon SES. The developers are receiving a not-authorized error when they try to access Amazon SES through the AWS Management Console.\n\nWhich change must a security engineer implement so that the developers can access Amazon SES?",
     "answer_images": [],
     "question_images": [
-      "https://img.examtopics.com/aws-certified-security-specialty-scs-c02/image25.png"
+      "/img/aws-scs-c02/image25.png"
     ]
   },
   {
@@ -1991,7 +1991,7 @@
     "question_text": "A security engineer needs to create an Amazon S3 bucket policy to grant least privilege read access to IAM user accounts that are named User1, User2, and User3. These IAM user accounts are members of the AuthorizedPeople IAM group. The security engineer drafts the following S3 bucket policy:\n\n//IMG//\n\n\nWhen the security engineer tries to add the policy to the S3 bucket, the following error message appears: \"Missing required field Principal.\"\n\nThe security engineer is adding a Principal element to the policy. The addition must provide read access to only User1, User2, and User3.\n\nWhich solution meets these requirements?",
     "answer_images": [],
     "question_images": [
-      "https://img.examtopics.com/aws-certified-security-specialty-scs-c02/image26.png"
+      "/img/aws-scs-c02/image26.png"
     ]
   },
   {
@@ -2159,7 +2159,7 @@
     "question_text": "An AWS account administrator created an IAM group and applied the following managed policy to require that each individual user authenticate using multi-factor authentication:\n\n//IMG//\n\n\nAfter implementing the policy, the administrator receives reports that users are unable to perform Amazon EC2 commands using the AWS CLI.\n\nWhat should the administrator do to resolve this problem while still enforcing multi-factor authentication?",
     "answer_images": [],
     "question_images": [
-      "https://img.examtopics.com/aws-certified-security-specialty-scs-c02/image35.png"
+      "/img/aws-scs-c02/image35.png"
     ]
   },
   {
@@ -3977,7 +3977,7 @@
       "A": "SELECT client_ip, client_request FROM logs WHERE client_request LIKE '%/admin%!’ AND server_status = '403’",
       "B": "SELECT client_ip FROM logs WHERE client_request CONTAINS '%/admin%’ AND server_status = '401' GROUP BY client_ip",
       "C": "SELECT DISTINCT (client_ip), client_request, client_id FROM logs WHERE server status = ‘403’ LIMIT 1000",
-      "D": "SELECT DISTINCT (client_ip), client_request FROM logs WHERE user_id \u003c\u003e ‘admin’ AND server_status = ‘401!’"
+      "D": "SELECT DISTINCT (client_ip), client_request FROM logs WHERE user_id <> ‘admin’ AND server_status = ‘401!’"
     },
     "suggested_answer": "A",
     "answer": "A",
@@ -4443,8 +4443,8 @@
     "question_text": "An AWS account includes two S3 buckets: bucket1 and bucket2. The bucket2 does not have a policy defined, but bucket1 has the following bucket policy:\n\n//IMG//\n\n\nIn addition, the same account has an IAM User named “alice”, with the following IAM policy.\n\n//IMG//\n\n\nWhich buckets can user “alice” access?",
     "answer_images": [],
     "question_images": [
-      "https://img.examtopics.com/aws-certified-security-specialty-scs-c02/image44.png",
-      "https://img.examtopics.com/aws-certified-security-specialty-scs-c02/image45.png"
+      "/img/aws-scs-c02/image44.png",
+      "/img/aws-scs-c02/image45.png"
     ]
   },
   {

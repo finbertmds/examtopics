@@ -41,6 +41,7 @@ Tên kỳ thi và tên file là thông tin cấu hình, không phải bằng ch�
    - `"answer": ""`
 5. Nếu schema không có một hoặc cả hai trường này, không tự ý tạo trường hoặc sửa schema. Báo cho người dùng biết và chỉ tiếp tục khi có thể xác định rõ quy tắc tương ứng.
 6. Không sửa câu đã có đáp án, kể cả khi nghi ngờ đáp án hiện tại không đúng.
+7. Sau khi xác định đáp án chắc chắn, tự rà soát mọi câu vẫn còn trống và phân loại lý do chưa điền. Nếu câu bị để trống vì nghi ngờ đáp án/lựa chọn trong đề không đúng, lựa chọn gần đúng có lỗi, có nhiều cách hiểu, hoặc bằng chứng chưa đủ để khẳng định một đáp án, hãy tự điền gợi ý tốt nhất có thể bảo vệ được vào `suggested_answer` và giữ `answer` rỗng; không cần chờ người dùng yêu cầu. Gợi ý phải nêu rõ mức độ không chắc chắn, lỗi của lựa chọn hoặc giả định cần thiết. Nếu không có cơ sở đáng tin cậy để đưa ra bất kỳ gợi ý có ích nào (ví dụ ảnh thiết yếu không truy cập/đọc được và không thể suy ra từ nội dung khác), để cả hai trường rỗng và ghi lý do.
 
 Nếu JSON có schema khác với cấu trúc mặc định trên, hãy báo rõ sự khác biệt. Chỉ mở rộng quy tắc điền đáp án sau khi người dùng đồng ý hoặc yêu cầu hiện tại đã quy định rõ cách xử lý schema đó.
 
@@ -70,6 +71,7 @@ Tìm tất cả câu đủ điều kiện theo schema đã kiểm tra. Với m�
 3. Phân tích từng phương án, đối chiếu tài liệu liên quan và loại trừ phương án sai.
 4. Chọn đáp án tốt nhất có căn cứ.
 5. Chỉ điền khi đủ bằng chứng. Nếu không đủ bằng chứng, giữ nguyên trường đáp án rỗng và ghi lý do.
+6. Sau lượt xác định đáp án, tự rà soát các câu còn trống. Nếu việc giữ trống xuất phát từ nghi ngờ đề/đáp án lựa chọn sai, phương án gần đúng bị lỗi, câu hỏi mơ hồ hoặc chưa đủ căn cứ để khẳng định đáp án, hãy tự đề xuất lựa chọn tốt nhất có thể bảo vệ được vào `suggested_answer` và giữ `answer` rỗng; không cần người dùng yêu cầu bước này. Giá trị `suggested_answer` phải là kết quả chọn theo đúng Answer formatting bên dưới (chữ cái hoặc chuỗi chữ cái từ các lựa chọn hiện có), không phải lời giải thích, lý do, mapping dạng văn xuôi hay cảnh báo. Nếu không có lựa chọn nào hoàn toàn đúng nhưng có thể xác định lựa chọn dự định/gần đúng nhất, ghi nhãn lựa chọn đó; nêu lỗi, giới hạn, mức độ không chắc chắn và phương án đúng trong phần báo cáo/bảng giải thích, không ghi vào trường đáp án. Nếu không thể ánh xạ gợi ý thành nhãn đáp án hợp lệ (ví dụ hotspot không có nhãn) hoặc không có cơ sở để chọn phương án nào, để cả hai trường rỗng và giải thích lý do trong báo cáo.
 
 ### Answer formatting
 
@@ -80,6 +82,7 @@ Tìm tất cả câu đủ điều kiện theo schema đã kiểm tra. Với m�
 - Số chữ cái phải khớp số đáp án mà câu hỏi yêu cầu.
 - Chỉ dùng nhãn có trong trường `answers`.
 - Điền cùng một giá trị vào `suggested_answer` và `answer`.
+- Với mọi câu chưa thể điền đáp án khẳng định nhưng vẫn có thể đề xuất nhãn lựa chọn, chỉ đặt nhãn đó vào `suggested_answer` và giữ `answer` rỗng. `suggested_answer` phải tuân theo cùng quy tắc định dạng chữ cái như câu trả lời thông thường; không đặt lời giải thích, mapping tự do, cảnh báo hoặc văn bản “không có lựa chọn đúng” vào trường này. Đưa giới hạn, lý do, đáp án dự định/đúng nếu khác và độ tin cậy vào báo cáo hoặc bảng gợi ý riêng. Nếu không có nhãn hợp lệ để đề xuất, giữ `suggested_answer` rỗng.
 
 Nếu schema hoặc định dạng đáp án khác, hãy tuân theo schema thực tế và không tự áp dụng các quy tắc trên một cách máy móc.
 
@@ -115,11 +118,11 @@ Tuyệt đối không thay đổi nội dung khác trong file, bao gồm:
 
 Trước khi bàn giao, thực hiện tất cả các kiểm tra sau:
 
-1. **Diff:** so sánh file gốc và file mới ở mức dòng/ký tự. Chỉ giá trị của trường đáp án được phép sửa mới được thay đổi. Không chấp nhận thay đổi nào khác.
-2. **Change count:** xác nhận có đúng hai trường đáp án được cập nhật cho mỗi câu đã điền theo schema mặc định. Nếu công cụ diff gộp các dòng, vẫn phải xác minh phạm vi thay đổi thực tế.
+1. **Diff:** so sánh file gốc và file mới ở mức dòng/ký tự. Chỉ giá trị của trường đáp án được phép sửa theo quy tắc của lần chạy mới mới được thay đổi. Không chấp nhận thay đổi nào khác.
+2. **Change count:** với điền đáp án thông thường, xác nhận có đúng hai trường được cập nhật cho mỗi câu. Với các câu gợi ý-only, xác nhận chỉ `suggested_answer` được cập nhật, `answer` vẫn rỗng ở từng câu đó. Nếu công cụ diff gộp các dòng, vẫn phải xác minh phạm vi thay đổi thực tế.
 3. **JSON validity:** xác nhận file đầu ra parse được như JSON hợp lệ.
-4. **Answer consistency:** xác nhận `suggested_answer` và `answer` giống hệt nhau cho mỗi câu vừa điền, nếu schema có cả hai trường.
-5. **Answer labels/count:** xác nhận nhãn đáp án hợp lệ, số lựa chọn khớp yêu cầu và định dạng single/multiple choice đúng theo schema.
+4. **Answer consistency:** với câu điền đáp án thông thường, xác nhận `suggested_answer` và `answer` giống hệt nhau. Với câu gợi ý-only, xác nhận `suggested_answer` có nội dung và `answer` rỗng.
+5. **Answer labels/count:** xác nhận nhãn đáp án hợp lệ, số lựa chọn khớp yêu cầu và định dạng single/multiple choice đúng theo schema cho cả `answer` và `suggested_answer`. Gợi ý-only cũng phải là chữ cái/chuỗi chữ cái hợp lệ; không dùng văn xuôi trong trường này. Nếu không thể đề xuất nhãn hợp lệ, để trường gợi ý rỗng và giải thích trong báo cáo.
 6. **Untouched data:** xác nhận các câu không đủ bằng chứng, câu đã có đáp án và mọi trường ngoài phạm vi cho phép đều không thay đổi.
 7. **Image audit:** xác nhận không điền câu nào dựa trên ảnh chưa xem được hoặc không đọc rõ.
 8. Nếu bất kỳ kiểm tra nào thất bại, không tuyên bố file đã hợp lệ. Sửa lại và kiểm tra lại; nếu không thể khắc phục, báo rõ vấn đề.
@@ -143,6 +146,7 @@ Mặc định cung cấp:
    - Số trường đáp án đã thay đổi.
    - Kết quả xác thực JSON.
    - Kết quả kiểm tra tính nhất quán đáp án.
+5. Sau khi phân loại mọi câu còn trống, nếu có câu chỉ điền `suggested_answer`, cuối phần trả lời phải có **bảng đáp án gợi ý riêng** gồm `số thứ tự | đáp án gợi ý | tóm tắt lý do`. Cột đáp án gợi ý phải hiển thị đúng nhãn/chuỗi nhãn đã ghi trong JSON; cột lý do mới nêu cảnh báo, độ không chắc chắn, lỗi đề hoặc cơ sở của lựa chọn. Bảng chỉ liệt kê câu có `suggested_answer` khác rỗng và `answer` vẫn rỗng. Các câu còn cả hai trường rỗng phải được liệt kê riêng cùng lý do không thể đề xuất nhãn hợp lệ.
 
 Nếu số câu quá lớn, có thể nhóm phần giải thích theo topic để dễ đọc nhưng vẫn phải liệt kê đầy đủ câu đã xử lý và câu bị bỏ qua. Không bỏ qua câu nào mà không nêu trạng thái.
 
