@@ -34,7 +34,7 @@
     "question_text": "Analyze the following snippet and select the statement that best describes it.\n //IMG//",
     "answer_images": null,
     "question_images": [
-      "https://img.examtopics.com/pcpp-32-101/image1.png"
+      "/img/py-pcpp-32-101/image1.png"
     ]
   },
   {
@@ -54,7 +54,7 @@
     "question_text": "Analyze the following snippet and select the statement that best describes it.\n //IMG//",
     "answer_images": null,
     "question_images": [
-      "https://img.examtopics.com/pcpp-32-101/image2.png"
+      "/img/py-pcpp-32-101/image2.png"
     ]
   },
   {
@@ -74,7 +74,7 @@
     "question_text": "The following snippet represents one of the OOP pillars. Which one is that?\n //IMG//",
     "answer_images": null,
     "question_images": [
-      "https://img.examtopics.com/pcpp-32-101/image3.png"
+      "/img/py-pcpp-32-101/image3.png"
     ]
   },
   {
@@ -94,7 +94,7 @@
     "question_text": "Analyze the following function and choose the statement that best describes it.\n //IMG//",
     "answer_images": null,
     "question_images": [
-      "https://img.examtopics.com/pcpp-32-101/image4.png"
+      "/img/py-pcpp-32-101/image4.png"
     ]
   },
   {
@@ -114,7 +114,7 @@
     "question_text": "Analyze the following snippet and select the statement that best describes it.\n //IMG//",
     "answer_images": null,
     "question_images": [
-      "https://img.examtopics.com/pcpp-32-101/image5.png"
+      "/img/py-pcpp-32-101/image5.png"
     ]
   },
   {
@@ -134,7 +134,7 @@
     "question_text": "Analyze the following snippet and decide whether the code is correct and/or which method should be distinguished as a class method.\n //IMG//",
     "answer_images": null,
     "question_images": [
-      "https://img.examtopics.com/pcpp-32-101/image6.png"
+      "/img/py-pcpp-32-101/image6.png"
     ]
   },
   {
@@ -154,7 +154,7 @@
     "question_text": "Analyze the code and choose the best statement that describes it.\n //IMG//",
     "answer_images": null,
     "question_images": [
-      "https://img.examtopics.com/pcpp-32-101/image7.png"
+      "/img/py-pcpp-32-101/image7.png"
     ]
   },
   {
@@ -299,10 +299,10 @@
     "multiple_choice": true,
     "question_text": "Which of the following examples using line breaks and different indentation methods are compliant with PEP 8 recommendations? (Choose two.)",
     "answer_images": [
-      "https://img.examtopics.com/pcpp-32-101/image8.png",
-      "https://img.examtopics.com/pcpp-32-101/image9.png",
-      "https://img.examtopics.com/pcpp-32-101/image10.png",
-      "https://img.examtopics.com/pcpp-32-101/image11.png"
+      "/img/py-pcpp-32-101/image8.png",
+      "/img/py-pcpp-32-101/image9.png",
+      "/img/py-pcpp-32-101/image10.png",
+      "/img/py-pcpp-32-101/image11.png"
     ],
     "question_images": null
   },
@@ -321,12 +321,12 @@
     "link": "https://www.examtopics.com/discussions/python-institute/view/114027-exam-pcpp-32-101-topic-1-question-17-discussion/",
     "multiple_choice": true,
     "question_text": "Look at the following examples of comments and docstrings in Python Select the ones that are useful and compliant with PEP 8 recommendations. (Choose two.)",
-    "answer_images": null,
-    "question_images": [
-      "https://img.examtopics.com/pcpp-32-101/image12.png",
-      "https://img.examtopics.com/pcpp-32-101/image13.png",
-      "https://img.examtopics.com/pcpp-32-101/image14.png"
-    ]
+    "answer_images": [
+      "/img/py-pcpp-32-101/image12.png",
+      "/img/py-pcpp-32-101/image13.png",
+      "/img/py-pcpp-32-101/image14.png"
+    ],
+    "question_images": null
   },
   {
     "topic_number": 1,
@@ -417,10 +417,10 @@
     "question_text": "Look at the following code snippets and decide which ones follow PEP 8 recommendations for whitespaces in expressions and statements. (Choose two.)",
     "answer_images": null,
     "question_images": [
-      "https://img.examtopics.com/pcpp-32-101/image15.png",
-      "https://img.examtopics.com/pcpp-32-101/image16.png",
-      "https://img.examtopics.com/pcpp-32-101/image17.png",
-      "https://img.examtopics.com/pcpp-32-101/image18.png"
+      "/img/py-pcpp-32-101/image15.png",
+      "/img/py-pcpp-32-101/image16.png",
+      "/img/py-pcpp-32-101/image17.png",
+      "/img/py-pcpp-32-101/image18.png"
     ]
   },
   {
@@ -638,7 +638,7 @@
     "question_text": "What is the result of the following code?\n //IMG//",
     "answer_images": null,
     "question_images": [
-      "https://img.examtopics.com/pcpp-32-101/image19.png"
+      "/img/py-pcpp-32-101/image19.png"
     ]
   },
   {
@@ -656,12 +656,13 @@
     "link": "https://www.examtopics.com/discussions/python-institute/view/121038-exam-pcpp-32-101-topic-1-question-44-discussion/",
     "multiple_choice": false,
     "question_text": "What will be the content of the colors csv file when you run the following code?\n //IMG//",
-    "answer_images": null,
+    "answer_images": [
+      "/img/py-pcpp-32-101/image21.png",
+      "/img/py-pcpp-32-101/image22.png",
+      "/img/py-pcpp-32-101/image23.png"
+    ],
     "question_images": [
-      "https://img.examtopics.com/pcpp-32-101/image20.png",
-      "https://img.examtopics.com/pcpp-32-101/image21.png",
-      "https://img.examtopics.com/pcpp-32-101/image22.png",
-      "https://img.examtopics.com/pcpp-32-101/image23.png"
+      "/img/py-pcpp-32-101/image20.png"
     ]
   },
   {
@@ -688,9 +689,9 @@
     "title": "Exam PCPP-32-101 topic 1 question 67 discussion",
     "answers": {
       "A": "The \"-1\" means that it applies to the very first release only.",
-      "B": "It is usually preceded by the \"\u003cbutton-1\u003e\" event.",
+      "B": "It is usually preceded by the \"<button-1>\" event.",
       "C": "It applies to mouse activity.",
-      "D": "It applies to focus changes.\n                 \u003c/button-1\u003e"
+      "D": "It applies to focus changes.\n                 </button-1>"
     },
     "suggested_answer": "BC",
     "answer": "BC",
