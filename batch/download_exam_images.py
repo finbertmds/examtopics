@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Download images referenced by a converted exam JSON file."""
+"""Download images referenced by one or more converted exam JSON files."""
 
 import argparse
 import json
@@ -108,9 +108,24 @@ def download_images(json_path: Path) -> tuple[int, int, int]:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("json_file", type=Path, help="converted exam JSON file")
+    parser.add_argument(
+        "json_file",
+        type=Path,
+        help="converted exam JSON file or folder containing converted JSON files",
+    )
     args = parser.parse_args()
-    download_images(args.json_file)
+
+    if args.json_file.is_file():
+        json_files = [args.json_file]
+    elif args.json_file.is_dir():
+        json_files = sorted(path for path in args.json_file.glob("*.json") if path.is_file())
+        if not json_files:
+            parser.error(f"No JSON files found in folder: {args.json_file}")
+    else:
+        parser.error(f"Not a file or folder: {args.json_file}")
+
+    for json_file in json_files:
+        download_images(json_file)
 
 
 if __name__ == "__main__":

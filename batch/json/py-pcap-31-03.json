@@ -1020,8 +1020,8 @@
       "C": "the constructor cannot be invoked directly under any circumstances",
       "D": "the constructor cannot return a result other than None"
     },
-    "suggested_answer": "AB",
-    "answer": "AB",
+    "suggested_answer": "BD",
+    "answer": "BD",
     "link": "https://www.examtopics.com/discussions/python-institute/view/143808-exam-pcap-31-03-topic-1-question-54-discussion/",
     "multiple_choice": true,
     "question_text": "What is true about Python class constructors? (Choose two.)",
@@ -1346,11 +1346,11 @@
       "C": "b() > 2",
       "D": "a is b"
     },
-    "suggested_answer": "BC",
-    "answer": "BC",
+    "suggested_answer": "ABC",
+    "answer": "ABC",
     "link": "https://www.examtopics.com/discussions/python-institute/view/151922-exam-pcap-31-03-topic-1-question-74-discussion/",
     "multiple_choice": true,
-    "question_text": "Assuming that the following code has been executed successfully, select the expressions which evaluate to True. (Choose two.)\n\n//IMG//",
+    "question_text": "Assuming that the following code has been executed successfully, select the expressions which evaluate to True. (Choose three.)\n\n//IMG//",
     "answer_images": [],
     "question_images": [
       "/img/py-pcap-31-03/image41.png"
@@ -1563,17 +1563,22 @@
     "question_number": 86,
     "title": "Examtopics PCAP 31 03_17 question #3",
     "answers": {
-      "A": "",
-      "B": "",
-      "C": "",
-      "D": ""
+      "A": "//IMG//",
+      "B": "//IMG//",
+      "C": "//IMG//",
+      "D": "//IMG//"
     },
     "suggested_answer": "BC",
     "answer": "BC",
     "link": "https://www.examtopics.com/discussions/python-institute/view/151936-exam-pcap-31-03-topic-1-question-86-discussion/",
     "multiple_choice": true,
     "question_text": "Which of the following snippets will execute without raising any unhandled exceptions? (Choose two.)",
-    "answer_images": [],
+    "answer_images": [
+      "/img/py-pcap-31-03/image44.png",
+      "/img/py-pcap-31-03/image45.png",
+      "/img/py-pcap-31-03/image46.png",
+      "/img/py-pcap-31-03/image47.png"
+    ],
     "question_images": []
   },
   {

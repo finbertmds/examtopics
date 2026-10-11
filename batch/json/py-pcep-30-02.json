@@ -4514,8 +4514,8 @@
       "C": "its position within the argument list",
       "D": "the argument's name specified along with its value"
     },
-    "suggested_answer": "C",
-    "answer": "C",
+    "suggested_answer": "D",
+    "answer": "D",
     "link": "https://www.examtopics.com/discussions/python-institute/view/169559-exam-pcep-30-02-topic-4-question-51-discussion/",
     "multiple_choice": false,
     "question_text": "The meaning of the keyword parameter is determined by:",
@@ -4660,9 +4660,9 @@
     "question_number": 59,
     "title": "Examtopics PCEP 30 02_49 question #104",
     "answers": {
-      "A": "",
-      "B": "",
-      "C": "",
+      "A": "//IMG//",
+      "B": "//IMG//",
+      "C": "//IMG//",
       "D": "The code is erroneous."
     },
     "suggested_answer": "C",
@@ -4670,7 +4670,11 @@
     "link": "https://www.examtopics.com/discussions/python-institute/view/170187-exam-pcep-30-02-topic-4-question-59-discussion/",
     "multiple_choice": false,
     "question_text": "What is the expected output of the following code?\n//IMG//",
-    "answer_images": [],
+    "answer_images": [
+      "/img/py-pcep-30-02/image418.png",
+      "/img/py-pcep-30-02/image419.png",
+      "/img/py-pcep-30-02/image420.png"
+    ],
     "question_images": [
       "/img/py-pcep-30-02/image417.png"
     ]
@@ -4681,7 +4685,7 @@
     "title": "Examtopics PCEP 30 02_50 question #150",
     "answers": {
       "A": "[4, 4, 4, 4]",
-      "B": "",
+      "B": "//IMG//",
       "C": "[0, 1, 2, 3]",
       "D": "The program will cause an error."
     },
@@ -4690,7 +4694,9 @@
     "link": "https://www.examtopics.com/discussions/python-institute/view/169567-exam-pcep-30-02-topic-4-question-60-discussion/",
     "multiple_choice": false,
     "question_text": "What is the expected output of the following code?\n//IMG//",
-    "answer_images": [],
+    "answer_images": [
+      "/img/py-pcep-30-02/image423.png"
+    ],
     "question_images": [
       "/img/py-pcep-30-02/image422.png"
     ]
@@ -4951,17 +4957,21 @@
     "question_number": 232,
     "title": "Examtopics PCEP 30 02_42 question #164",
     "answers": {
-      "A": "",
-      "B": "",
+      "A": "//IMG//",
+      "B": "//IMG//",
       "C": "None of the above.",
-      "D": ""
+      "D": "//IMG//"
     },
     "suggested_answer": "B",
     "answer": "B",
     "link": "https://www.examtopics.com/discussions/python-institute/view/148066-exam-pcep-30-02-topic-4-question-232-discussion/",
     "multiple_choice": false,
     "question_text": "What is the expected output of the following code?\n//IMG//",
-    "answer_images": [],
+    "answer_images": [
+      "/img/py-pcep-30-02/image372.png",
+      "/img/py-pcep-30-02/image373.png",
+      "/img/py-pcep-30-02/image374.png"
+    ],
     "question_images": [
       "/img/py-pcep-30-02/image371.png"
     ]
@@ -5339,19 +5349,26 @@
     "question_number": 285,
     "title": "Examtopics PCEP 30 02_55 question #205",
     "answers": {
-      "A": "",
-      "B": "",
-      "C": "",
-      "D": "",
-      "E": "",
-      "F": ""
+      "A": "//IMG//",
+      "B": "//IMG//",
+      "C": "//IMG//",
+      "D": "//IMG//",
+      "E": "//IMG//",
+      "F": "//IMG//"
     },
     "suggested_answer": "C",
     "answer": "C",
     "link": "https://www.examtopics.com/discussions/python-institute/view/148110-exam-pcep-30-02-topic-5-question-285-discussion/",
     "multiple_choice": false,
     "question_text": "Which of the following snippets shows the correct way of handling multiple exceptions in a single except clause?",
-    "answer_images": [],
+    "answer_images": [
+      "/img/py-pcep-30-02/image468.png",
+      "/img/py-pcep-30-02/image469.png",
+      "/img/py-pcep-30-02/image470.png",
+      "/img/py-pcep-30-02/image471.png",
+      "/img/py-pcep-30-02/image472.png",
+      "/img/py-pcep-30-02/image473.png"
+    ],
     "question_images": []
   },
   {
@@ -5397,17 +5414,22 @@
     "question_number": 4,
     "title": "Examtopics PCEP 30 02_62 question #295",
     "answers": {
-      "A": "",
-      "B": "",
-      "C": "",
-      "D": ""
+      "A": "//IMG//",
+      "B": "//IMG//",
+      "C": "//IMG//",
+      "D": "//IMG//"
     },
     "suggested_answer": "A",
     "answer": "A",
     "link": "https://www.examtopics.com/discussions/python-institute/view/170354-exam-pcep-30-02-topic-6-question-4-discussion/",
     "multiple_choice": false,
     "question_text": "Consider the following code.\n//IMG//\n\nWhich of the following codes will print the right output?",
-    "answer_images": [],
+    "answer_images": [
+      "/img/py-pcep-30-02/image487.png",
+      "/img/py-pcep-30-02/image488.png",
+      "/img/py-pcep-30-02/image489.png",
+      "/img/py-pcep-30-02/image490.png"
+    ],
     "question_images": [
       "/img/py-pcep-30-02/image486.png"
     ]
@@ -5926,16 +5948,19 @@
     "title": "Examtopics PCEP 30 02_59 question #171",
     "answers": {
       "A": "None of the above.",
-      "B": "",
+      "B": "//IMG//",
       "C": "Both are correct.",
-      "D": ""
+      "D": "//IMG//"
     },
     "suggested_answer": "D",
     "answer": "D",
     "link": "https://www.examtopics.com/discussions/python-institute/view/148112-exam-pcep-30-02-topic-6-question-294-discussion/",
     "multiple_choice": false,
     "question_text": "Consider the following code.\n//IMG//\n\nWhich of the inputs below would produce the specified output?",
-    "answer_images": [],
+    "answer_images": [
+      "/img/py-pcep-30-02/image493.png",
+      "/img/py-pcep-30-02/image494.png"
+    ],
     "question_images": [
       "/img/py-pcep-30-02/image492.png"
     ]
@@ -5950,8 +5975,8 @@
       "C": "None of the above.",
       "D": "<pre>3 4</pre>"
     },
-    "suggested_answer": "C",
-    "answer": "C",
+    "suggested_answer": "A",
+    "answer": "A",
     "link": "https://www.examtopics.com/discussions/python-institute/view/148113-exam-pcep-30-02-topic-6-question-297-discussion/",
     "multiple_choice": false,
     "question_text": "The following code reads two numbers.\nWhich of the following is the correct input for the code?\n//IMG//",
@@ -5987,17 +6012,22 @@
     "question_number": 321,
     "title": "Examtopics PCEP 30 02_60 question #124",
     "answers": {
-      "A": "",
-      "B": "",
-      "C": "",
-      "D": ""
+      "A": "//IMG//",
+      "B": "//IMG//",
+      "C": "//IMG//",
+      "D": "//IMG//"
     },
     "suggested_answer": "BCD",
     "answer": "BCD",
     "link": "https://www.examtopics.com/discussions/python-institute/view/148115-exam-pcep-30-02-topic-6-question-321-discussion/",
     "multiple_choice": true,
     "question_text": "The user enters 123. Which of the following code snippets will print 124 to the monitor? (Choose three.)",
-    "answer_images": [],
+    "answer_images": [
+      "/img/py-pcep-30-02/image533.png",
+      "/img/py-pcep-30-02/image534.png",
+      "/img/py-pcep-30-02/image535.png",
+      "/img/py-pcep-30-02/image536.png"
+    ],
     "question_images": []
   },
   {
@@ -6111,8 +6141,8 @@
       "D": "All three are correct, but Code-1 is preferred.",
       "E": "Code-2 has a syntax error because you cannot have True and False literals in the conditional expression."
     },
-    "suggested_answer": "D",
-    "answer": "D",
+    "suggested_answer": "B",
+    "answer": "B",
     "link": "https://www.examtopics.com/discussions/python-institute/view/151843-exam-pcep-30-02-topic-7-question-13-discussion/",
     "multiple_choice": false,
     "question_text": "Analyze the following code fragments that assign a boolean value to the variable even?\n//IMG//",
@@ -6286,17 +6316,22 @@
     "question_number": 364,
     "title": "Examtopics PCEP 30 02_65 question #100",
     "answers": {
-      "A": "",
-      "B": "",
-      "C": "",
-      "D": ""
+      "A": "//IMG//",
+      "B": "//IMG//",
+      "C": "//IMG//",
+      "D": "//IMG//"
     },
     "suggested_answer": "A",
     "answer": "A",
     "link": "https://www.examtopics.com/discussions/python-institute/view/148121-exam-pcep-30-02-topic-7-question-364-discussion/",
     "multiple_choice": false,
     "question_text": "You are coding a math utility by using Python. You are writing a function to compute roots. The function must meet the following requirements:\n• If a is non-negative, return a ** (1 / b)\n• If a is negative and even, return 'Result is an imaginary number'\n• If a is negaitve and odd, return -(-a) ** (1 / b)\nWhich of the following functions meets the requirements?",
-    "answer_images": [],
+    "answer_images": [
+      "/img/py-pcep-30-02/image647.png",
+      "/img/py-pcep-30-02/image648.png",
+      "/img/py-pcep-30-02/image649.png",
+      "/img/py-pcep-30-02/image650.png"
+    ],
     "question_images": []
   },
   {
@@ -6304,17 +6339,22 @@
     "question_number": 367,
     "title": "Examtopics PCEP 30 02_66 question #193",
     "answers": {
-      "A": "",
-      "B": "",
-      "C": "",
-      "D": ""
+      "A": "//IMG//",
+      "B": "//IMG//",
+      "C": "//IMG//",
+      "D": "//IMG//"
     },
     "suggested_answer": "BD",
     "answer": "BD",
     "link": "https://www.examtopics.com/discussions/python-institute/view/150162-exam-pcep-30-02-topic-7-question-367-discussion/",
     "multiple_choice": true,
     "question_text": "Consider the following code.\n//IMG//\n\n\nWhich of the following code snippets will expand the code, so that 100 will be printed to the monitor? (Choose two.)",
-    "answer_images": [],
+    "answer_images": [
+      "/img/py-pcep-30-02/image658.png",
+      "/img/py-pcep-30-02/image659.png",
+      "/img/py-pcep-30-02/image660.png",
+      "/img/py-pcep-30-02/image661.png"
+    ],
     "question_images": [
       "/img/py-pcep-30-02/image657.png"
     ]
@@ -6324,17 +6364,22 @@
     "question_number": 382,
     "title": "Examtopics PCEP 30 02_66 question #196",
     "answers": {
-      "A": "",
-      "B": "",
-      "C": "",
-      "D": ""
+      "A": "//IMG//",
+      "B": "//IMG//",
+      "C": "//IMG//",
+      "D": "//IMG//"
     },
     "suggested_answer": "B",
     "answer": "B",
     "link": "https://www.examtopics.com/discussions/python-institute/view/148127-exam-pcep-30-02-topic-7-question-382-discussion/",
     "multiple_choice": false,
     "question_text": "Which of the following code snippets will print all prime numbers between 2 and 100 to the monitor?",
-    "answer_images": [],
+    "answer_images": [
+      "/img/py-pcep-30-02/image689.png",
+      "/img/py-pcep-30-02/image690.png",
+      "/img/py-pcep-30-02/image691.png",
+      "/img/py-pcep-30-02/image692.png"
+    ],
     "question_images": []
   },
   {
@@ -6343,7 +6388,7 @@
     "title": "Examtopics PCEP 30 02_66 question #199",
     "answers": {
       "A": "int(the_list[2]) == len(the_list)",
-      "B": "the_list[1] in the list",
+      "B": "the_list[1] in the_list",
       "C": "300 in the_list and the_list[l]",
       "D": "the_list.index(False) == 1"
     },
