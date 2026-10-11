@@ -42,7 +42,8 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
 }));
-app.use(express.json({ limit: '1mb' }));
+// Allow large exam question payloads (1000+ items, optional image URLs)
+app.use(express.json({ limit: '25mb' }));
 
 // Session configuration
 app.use(session({

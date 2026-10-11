@@ -1,5 +1,30 @@
 const examService = require('../services/examService');
 
+/**
+ * Normalize `questions` from request body.
+ * Supports array or JSON string; rejects invalid shapes early for large payloads.
+ */
+function parseQuestionsPayload(questions) {
+  if (questions === undefined || questions === null) {
+    return { questions: null };
+  }
+
+  let parsed = questions;
+  if (typeof questions === 'string') {
+    try {
+      parsed = JSON.parse(questions);
+    } catch (e) {
+      return { error: 'Invalid JSON format in questions array' };
+    }
+  }
+
+  if (!Array.isArray(parsed)) {
+    return { error: 'Questions must be an array' };
+  }
+
+  return { questions: parsed };
+}
+
 class ExamController {
   async getAllExams(req, res, next) {
     try {
@@ -85,14 +110,9 @@ class ExamController {
       // Expecting metadata in `req.body` and questions under `req.body.questions` 
       // where `questions` is an array of question JSON objects
       const { questions, ...examData } = req.body;
-      
-      let parsedQuestions = questions;
-      if (typeof questions === 'string') {
-          try {
-              parsedQuestions = JSON.parse(questions);
-          } catch(e) {
-              return res.status(200).json({ success: false, message: 'Invalid JSON format in questions array' });
-          }
+      const parsed = parseQuestionsPayload(questions);
+      if (parsed.error) {
+        return res.status(200).json({ success: false, message: parsed.error });
       }
 
       if (!examData.name || !examData.description) {
@@ -100,7 +120,7 @@ class ExamController {
       }
 
       const userId = req.user ? req.user.userId : null;
-      const exam = await examService.createExamWithQuestions(examData, parsedQuestions, userId);
+      const exam = await examService.createExamWithQuestions(examData, parsed.questions, userId);
       res.status(201).json({ success: true, exam });
     } catch (error) {
       if (error.code === 'DUPLICATE_EXAM_CODE' || (error.code === 11000 && error.keyPattern && error.keyPattern.code)) {
@@ -116,18 +136,14 @@ class ExamController {
         return res.status(400).json({ success: false, error: 'OwnershipTransferRequired' });
       }
 
+      // Destructure questions out so updateData stays small; large arrays stay referenced once
       const { questions, ...updateData } = req.body;
-      
-      let parsedQuestions = questions;
-      if (typeof questions === 'string') {
-          try {
-              parsedQuestions = JSON.parse(questions);
-          } catch(e) {
-              return res.status(200).json({ success: false, message: 'Invalid JSON format in questions array' });
-          }
+      const parsed = parseQuestionsPayload(questions);
+      if (parsed.error) {
+        return res.status(200).json({ success: false, message: parsed.error });
       }
 
-      const exam = await examService.updateExamWithQuestions(req.params.code, updateData, parsedQuestions);
+      const exam = await examService.updateExamWithQuestions(req.params.code, updateData, parsed.questions);
       if (!exam) {
         return res.status(404).json({ success: false, error: 'Exam not found' });
       }
