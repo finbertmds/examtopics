@@ -73,6 +73,21 @@ export const examApi = {
     return response.blob();
   },
 
+  transferExamOwnership: async (examCode: string, email: string, token: string): Promise<void> => {
+    const response = await fetch(`${getBaseUrl()}/exams/${encodeURIComponent(examCode)}/owner`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ email })
+    });
+    if (!response.ok) {
+      const data = await response.json().catch(() => ({}));
+      throw new Error(data.error || data.message || 'Failed to transfer exam ownership');
+    }
+  },
+
   getQuestion: async (examCode: string, topicNumber: number, questionNumber: number): Promise<Question> => {
     const response = await fetch(`${getBaseUrl()}/questions/${examCode}/${questionNumber}?topicNumber=${topicNumber}`);
     if (!response.ok) throw new Error('Failed to fetch question');

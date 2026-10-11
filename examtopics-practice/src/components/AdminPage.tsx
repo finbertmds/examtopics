@@ -18,10 +18,21 @@ const AdminPage: React.FC = () => {
   const { exams, loading: loadingExams, refreshExams } = useExams({ fetchMyExamsOnly: true, token: token || null });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [editingExamCode, setEditingExamCode] = useState<string | null>(null);
+  const [selectedExamCode, setSelectedExamCode] = useState<string | null>(null);
   const [examToDelete, setExamToDelete] = useState<string | null>(null);
+  const [examToTransfer, setExamToTransfer] = useState<string | null>(null);
+  const [transferEmail, setTransferEmail] = useState('');
+  const [isTransferring, setIsTransferring] = useState(false);
+  const transferEmailInputRef = useRef<HTMLInputElement>(null);
 
   const [availableCategories, setAvailableCategories] = useState<string[]>([]);
   const [availableTags, setAvailableTags] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (examToTransfer) {
+      transferEmailInputRef.current?.focus();
+    }
+  }, [examToTransfer]);
 
   useEffect(() => {
     refreshExams();
@@ -490,6 +501,35 @@ const AdminPage: React.FC = () => {
     }
   };
 
+  const handleTransferExamOwnership = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!token || !examToTransfer) {
+      toast.error(t('authenticationErrorPleaseLoginAgain'));
+      return;
+    }
+
+    setIsTransferring(true);
+    try {
+      await examApi.transferExamOwnership(examToTransfer, transferEmail.trim(), token);
+      toast.success(t('examOwnershipTransferred'));
+      setExamToTransfer(null);
+      setTransferEmail('');
+      refreshExams();
+    } catch (error: any) {
+      console.error('Failed to transfer exam ownership:', error);
+      const errorMessages: Record<string, string> = {
+        ExamNotFound: 'examNotFound',
+        Forbidden: 'ownershipTransferForbidden',
+        UserNotFound: 'userNotFound',
+        AlreadyOwner: 'alreadyExamOwner',
+        InvalidEmail: 'invalidEmail',
+      };
+      toast.error(t(errorMessages[error.message] || 'failedToTransferExamOwnership'));
+    } finally {
+      setIsTransferring(false);
+    }
+  };
+
   const answerEntries = Object.entries(questionFormData.answers || {}) as [string, string][];
 
   return (
@@ -736,7 +776,15 @@ const AdminPage: React.FC = () => {
                   {exams.map((exam) => {
                     const nameStr = typeof exam.name === 'string' ? exam.name : ((exam.name as any)?.en || (exam.name as any)?.vi || t('untitled'));
                     return (
-                      <tr key={exam.code}>
+                      <tr
+                        key={exam.code}
+                        onClick={() => setSelectedExamCode(exam.code)}
+                        className={`cursor-pointer ${
+                          selectedExamCode === exam.code
+                            ? 'bg-blue-100 dark:bg-blue-900/40'
+                            : 'hover:bg-gray-50 dark:hover:bg-gray-800'
+                        }`}
+                      >
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
                           {exam.code}
                         </td>
@@ -773,6 +821,16 @@ const AdminPage: React.FC = () => {
                           </button>
                           <button
                             type="button"
+                            onClick={() => {
+                              setExamToTransfer(exam.code);
+                              setTransferEmail('');
+                            }}
+                            className="text-purple-600 hover:text-purple-900 dark:text-purple-400 dark:hover:text-purple-300 mr-4"
+                          >
+                            {t('transferExamOwnership')}
+                          </button>
+                          <button
+                            type="button"
                             onClick={() => handleDelete(exam.code)}
                             className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300"
                           >
@@ -798,6 +856,63 @@ const AdminPage: React.FC = () => {
           cancelText={t('cancel')}
           confirmButtonColor="red"
         />
+
+        {examToTransfer && (
+          <div className="fixed inset-0 z-50 overflow-y-auto">
+            <div className="flex min-h-screen items-center justify-center p-4">
+              <button
+                type="button"
+                aria-label={t('cancel')}
+                className="fixed inset-0 h-full w-full cursor-default bg-black bg-opacity-50"
+                onClick={() => {
+                  if (!isTransferring) setExamToTransfer(null);
+                }}
+              />
+              <form
+                onSubmit={handleTransferExamOwnership}
+                className="relative w-full max-w-md rounded-lg bg-white p-6 shadow-xl dark:bg-gray-800"
+              >
+                <h3 className="mb-2 text-lg font-medium text-gray-900 dark:text-gray-100">
+                  {t('transferExamOwnershipTitle')}
+                </h3>
+                <p className="mb-4 text-sm text-gray-600 dark:text-gray-300">
+                  {t('transferExamOwnershipMessage')}
+                </p>
+                <label className="mb-5 block">
+                  <span className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-200">
+                    {t('newOwnerEmail')}
+                  </span>
+                  <input
+                    ref={transferEmailInputRef}
+                    type="email"
+                    required
+                    autoComplete="email"
+                    value={transferEmail}
+                    onChange={event => setTransferEmail(event.target.value)}
+                    className="w-full rounded-lg border border-gray-300 bg-gray-50 px-3 py-2 text-gray-900 dark:border-gray-600 dark:bg-gray-900 dark:text-white"
+                  />
+                </label>
+                <div className="flex justify-end gap-3">
+                  <button
+                    type="button"
+                    disabled={isTransferring}
+                    onClick={() => setExamToTransfer(null)}
+                    className="rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-700"
+                  >
+                    {t('cancel')}
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={isTransferring}
+                    className="rounded-md bg-purple-600 px-4 py-2 text-sm font-medium text-white hover:bg-purple-700 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    {isTransferring ? t('transferring') : t('transfer')}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
 
         {questionModalOpen && (
           <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/40 p-4">

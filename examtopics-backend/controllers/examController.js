@@ -112,6 +112,10 @@ class ExamController {
 
   async updateExam(req, res, next) {
     try {
+      if (Object.prototype.hasOwnProperty.call(req.body, 'createdBy')) {
+        return res.status(400).json({ success: false, error: 'OwnershipTransferRequired' });
+      }
+
       const { questions, ...updateData } = req.body;
       
       let parsedQuestions = questions;
@@ -128,6 +132,40 @@ class ExamController {
         return res.status(404).json({ success: false, error: 'Exam not found' });
       }
       res.json({ success: true, exam });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async transferExamOwnership(req, res, next) {
+    try {
+      const email = req.body?.email;
+      if (
+        typeof email !== 'string' ||
+        !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())
+      ) {
+        return res.status(400).json({ success: false, error: 'InvalidEmail' });
+      }
+
+      const result = await examService.transferExamOwnership(
+        req.params.code,
+        req.user?.userId,
+        email
+      );
+      if (result.error === 'ExamNotFound') {
+        return res.status(404).json({ success: false, error: result.error });
+      }
+      if (result.error === 'UserNotFound') {
+        return res.status(404).json({ success: false, error: result.error });
+      }
+      if (result.error === 'Forbidden') {
+        return res.status(403).json({ success: false, error: result.error });
+      }
+      if (result.error === 'AlreadyOwner') {
+        return res.status(400).json({ success: false, error: result.error });
+      }
+
+      res.json({ success: true, exam: result.exam });
     } catch (error) {
       next(error);
     }

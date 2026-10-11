@@ -112,7 +112,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setTokenState(null);
     setUser(null);
     cacheUser(null);
-    window.location.reload();
+    window.location.href = '/';
   };
 
   const setToken = (newToken: string) => {

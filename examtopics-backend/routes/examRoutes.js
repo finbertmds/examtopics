@@ -18,6 +18,7 @@ router.get('/questions/:code', examController.getQuestionsByExamCode);
 // Admin-level endpoints (protected by user token)
 router.post('/exams', authenticateToken, examController.createExam);
 router.put('/exams/:code', authenticateToken, examController.updateExam);
+router.put('/exams/:code/owner', authenticateToken, examController.transferExamOwnership);
 router.put('/exams/:code/questions/:questionNumber', authenticateToken, examController.updateQuestion);
 router.delete('/exams/:code', authenticateToken, examController.deleteExam);
 

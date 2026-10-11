@@ -1,5 +1,6 @@
 const Exam = require('../models/Exam');
 const Question = require('../models/Question');
+const User = require('../models/User');
 
 const getBulkWriteErrors = (error) => {
   if (Array.isArray(error.writeErrors)) return error.writeErrors;
@@ -34,6 +35,29 @@ class ExamService {
 
   async getMyExams(userId) {
     return await Exam.find({ createdBy: userId }).sort({ createdAt: -1 });
+  }
+
+  async transferExamOwnership(code, currentOwnerId, email) {
+    const exam = await Exam.findOne({ code });
+    if (!exam) return { error: 'ExamNotFound' };
+    if (!currentOwnerId || exam.createdBy?.toString() !== currentOwnerId.toString()) {
+      return { error: 'Forbidden' };
+    }
+
+    const newOwner = await User.findByEmail(email.trim().toLowerCase());
+    if (!newOwner) return { error: 'UserNotFound' };
+    if (newOwner._id.toString() === currentOwnerId.toString()) {
+      return { error: 'AlreadyOwner' };
+    }
+
+    const updatedExam = await Exam.findOneAndUpdate(
+      { code, createdBy: currentOwnerId },
+      { $set: { createdBy: newOwner._id } },
+      { new: true }
+    );
+    if (!updatedExam) return { error: 'Forbidden' };
+
+    return { exam: updatedExam };
   }
 
   async exportExamQuestions(code, userId) {
