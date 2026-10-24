@@ -6,8 +6,9 @@ require('dotenv').config();
 
 const connectDB = require('./config/database');
 const sheetsHelper = require('./services/sheetsService');
+const databaseService = require('./services/databaseService');
 const { passport, generateToken, authenticateToken, getUserFromToken } = require('./services/authService');
-const progressService = require('./services/progressService');
+// const progressService = require('./services/progressService');
 const errorHandler = require('./middleware/errorHandler');
 
 const app = express();
@@ -60,18 +61,21 @@ app.use(passport.session());
 // Health check endpoint
 app.get('/health', async (req, res) => {
   try {
-    const sheetsConnected = await sheetsHelper.testConnection();
-    const progressStats = await progressService.getStats();
-    
-    res.json({
-      success: true,
-      status: 'healthy',
+    const [sheetsConnected, mongodbConnected] = await Promise.all([
+      sheetsHelper.testConnection(),
+      databaseService.testConnection(),
+    ]);
+    // const progressStats = await progressService.getStats();
+
+    res.status(mongodbConnected ? 200 : 503).json({
+      success: mongodbConnected,
+      status: mongodbConnected ? 'healthy' : 'unhealthy',
       timestamp: new Date().toISOString(),
       services: {
         googleSheets: sheetsConnected ? 'connected' : 'disconnected',
-        mongodb: 'connected'
+        mongodb: mongodbConnected ? 'connected' : 'disconnected'
       },
-      stats: progressStats
+      // stats: progressStats
     });
   } catch (error) {
     res.status(500).json({

@@ -1,5 +1,9 @@
+const mongoose = require('mongoose');
 const Progress = require('../models/Progress');
 const History = require('../models/History');
+const User = require('../models/User');
+const Exam = require('../models/Exam');
+const Question = require('../models/Question');
 const Debouncer = require('../utils/debounce');
 
 class ProgressService {
@@ -372,25 +376,48 @@ class ProgressService {
     }
   }
 
-  // Get storage stats (for debugging)
+  // Get database-wide document counts and physical storage statistics.
   async getStats() {
-    try {
-      const totalUsers = await Progress.distinct('userId').countDocuments();
-      const totalExams = await Progress.countDocuments();
-      
-      return {
-        totalUsers,
-        totalExams,
-        storageSize: totalExams
-      };
-    } catch (error) {
-      console.error('Error getting stats:', error);
-      return {
-        totalUsers: 0,
-        totalExams: 0,
-        storageSize: 0
-      };
+    const [
+      totalUsers,
+      totalExams,
+      totalQuestions,
+      totalProgressRecords,
+      totalSubmissions,
+    ] = await Promise.all([
+      User.countDocuments(),
+      Exam.countDocuments(),
+      Question.countDocuments(),
+      Progress.countDocuments(),
+      History.countDocuments(),
+    ]);
+
+    let dataSizeBytes = null;
+    let storageSizeBytes = null;
+    let indexSizeBytes = null;
+
+    if (mongoose.connection.readyState === 1 && mongoose.connection.db) {
+      try {
+        const databaseStats = await mongoose.connection.db.command({ dbStats: 1, scale: 1 });
+        dataSizeBytes = databaseStats.dataSize ?? null;
+        storageSizeBytes = databaseStats.storageSize ?? null;
+        indexSizeBytes = databaseStats.indexSize ?? null;
+      } catch (error) {
+        // Some managed MongoDB roles do not grant dbStats. Counts remain authoritative.
+        console.warn('Database size stats unavailable:', error.message);
+      }
     }
+
+    return {
+      totalUsers,
+      totalExams,
+      totalQuestions,
+      totalProgressRecords,
+      totalSubmissions,
+      dataSizeBytes,
+      storageSizeBytes,
+      indexSizeBytes,
+    };
   }
 }
 

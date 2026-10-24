@@ -5,37 +5,46 @@ class GoogleSheetsHelper {
   constructor() {
     this.sheets = null;
     this.sheetId = process.env.GOOGLE_SHEET_ID;
-    this.initialize();
+    this.initializationPromise = null;
+    this.connectionCache = null;
   }
 
   async initialize() {
-    try {
+    if (this.sheets) return this.sheets;
+    if (this.initializationPromise) return this.initializationPromise;
+
+    this.initializationPromise = (async () => {
+      const clientEmail = process.env.GOOGLE_CLIENT_EMAIL;
+      const privateKey = process.env.GOOGLE_PRIVATE_KEY;
+      this.sheetId = process.env.GOOGLE_SHEET_ID;
+
+      if (!this.sheetId || !clientEmail || !privateKey) {
+        throw new Error('Google Sheets credentials are not fully configured');
+      }
+
       const auth = new google.auth.GoogleAuth({
         credentials: {
-          client_email: process.env.GOOGLE_CLIENT_EMAIL,
-          private_key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+          client_email: clientEmail,
+          private_key: privateKey.replace(/\\n/g, '\n'),
         },
         scopes: ['https://www.googleapis.com/auth/spreadsheets'],
       });
+      const authClient = await auth.getClient();
+      this.sheets = google.sheets({ version: 'v4', auth: authClient });
+      return this.sheets;
+    })();
 
-      this.sheets = google.sheets({ version: 'v4', auth });
-      console.log('Google Sheets API initialized successfully');
+    try {
+      return await this.initializationPromise;
     } catch (error) {
-      console.error('Failed to initialize Google Sheets API:', error.message);
+      this.initializationPromise = null;
       throw error;
     }
   }
 
   async appendRow(data) {
-    if (!this.sheets) {
-      throw new Error('Google Sheets API not initialized');
-    }
-
-    if (!this.sheetId) {
-      throw new Error('GOOGLE_SHEET_ID not configured');
-    }
-
     try {
+      const sheets = await this.initialize();
       const timestamp = new Date().toISOString();
       const row = [
         timestamp,
@@ -48,7 +57,7 @@ class GoogleSheetsHelper {
         data.url || ''
       ];
 
-      const response = await this.sheets.spreadsheets.values.append({
+      const response = await sheets.spreadsheets.values.append({
         spreadsheetId: this.sheetId,
         range: 'A:H', // Assuming columns A-H for timestamp, topicNumber, questionNumber, examId, reason, comment, user, url
         valueInputOption: 'RAW',
@@ -66,19 +75,24 @@ class GoogleSheetsHelper {
     }
   }
 
-  async testConnection() {
+  async testConnection({ force = false } = {}) {
+    const now = Date.now();
+    if (!force && this.connectionCache && now - this.connectionCache.checkedAt < 60_000) {
+      return this.connectionCache.connected;
+    }
+
     try {
-      if (!this.sheets || !this.sheetId) {
-        return false;
-      }
-
-      const response = await this.sheets.spreadsheets.get({
-        spreadsheetId: this.sheetId
+      const sheets = await this.initialize();
+      const response = await sheets.spreadsheets.get({
+        spreadsheetId: this.sheetId,
+        fields: 'spreadsheetId',
       });
-
-      return !!response.data;
+      const connected = response.data?.spreadsheetId === this.sheetId;
+      this.connectionCache = { connected, checkedAt: now };
+      return connected;
     } catch (error) {
       console.error('Google Sheets connection test failed:', error.message);
+      this.connectionCache = { connected: false, checkedAt: now };
       return false;
     }
   }
