@@ -94,7 +94,7 @@ app.use('/report', reportRoutes);
 app.use('/api', examRoutes);
 
 // 404 handler
-app.use('*', (req, res) => {
+app.use( (req, res) => {
   res.status(404).json({
     success: false,
     error: 'Endpoint not found'

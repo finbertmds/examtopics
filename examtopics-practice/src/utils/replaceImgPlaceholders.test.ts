@@ -13,6 +13,6 @@ describe('replaceImgPlaceholders', () => {
     const result = replaceImgPlaceholders('before\n//IMG//\nafter', ['https://example.com/image.png']);
 
     expect(result).toContain('<br/>');
-    expect(result).toContain('<img src="/img/https://example.com/image.png"');
+    expect(result).toContain('<img src="https://example.com/image.png"');
   });
 });

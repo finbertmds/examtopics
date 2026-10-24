@@ -422,7 +422,7 @@ const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose, examId }) 
                             }}
                             labelStyle={{ color: '#9CA3AF', marginBottom: '4px' }}
                             formatter={(value: any) => [value, t('questionsAnswered')]}
-                            labelFormatter={(label: string) => formatDate(label)}
+                            labelFormatter={(label) => formatDate(String(label))}
                           />
                           <Legend
                             wrapperStyle={{ color: '#6B7280', paddingTop: '20px' }}

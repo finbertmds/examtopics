@@ -146,11 +146,10 @@ userSchema.statics.findOrCreateUser = async function(googleProfile) {
 };
 
 // Pre-save middleware
-userSchema.pre('save', function(next) {
+userSchema.pre('save', function() {
   if (this.isModified('email')) {
     this.email = this.email.toLowerCase();
   }
-  next();
 });
 
 module.exports = mongoose.model('User', userSchema);

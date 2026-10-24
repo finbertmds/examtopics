@@ -1,3 +1,17 @@
+## Node.js và dependencies
+
+Cả backend và frontend dùng Node.js **26.12.1** (Current). Chạy `nvm install` rồi `nvm use` tại thư mục repo hoặc từng project để chọn đúng phiên bản.
+
+Trong mỗi project, chạy `npm ci` để cài dependencies theo lockfile.
+Frontend dùng Vite, TypeScript 7 và Tailwind CSS 4:
+
+- `npm start`: dev server tại port 3000.
+- `npm run build`: kiểm tra TypeScript và xuất production vào `build/`.
+- `npm test`: chạy Vitest; `npm run test:watch` để theo dõi thay đổi.
+- Biến môi trường `REACT_APP_BACKEND_URL` và `REACT_APP_FRONTEND_URL` tiếp tục được hỗ trợ khi build.
+
+Backend dùng Express 5 và Mongoose 9. Các kiểm tra local dùng database giả lập; cần kiểm tra MongoDB, Google OAuth và Google Sheets trong môi trường staging trước khi triển khai.
+
 # ExamTopics - Comprehensive Exam Practice Platform
 
 Hệ thống toàn diện để tải xuống, quản lý và luyện thi các chứng chỉ AWS và các chứng chỉ IT khác từ ExamTopics. Repository này bao gồm 5 dự án chính hoạt động cùng nhau để tạo ra một nền tảng luyện thi hoàn chỉnh.
