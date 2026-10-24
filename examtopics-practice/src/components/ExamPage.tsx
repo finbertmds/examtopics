@@ -15,6 +15,7 @@ import { ProgressBar } from "./ProgressBar";
 import { QuestionList, QuestionListRef } from "./QuestionList";
 import { ThemeToggle } from "./ThemeToggle";
 import { getCorrectAnswers } from "../utils/getCorrectAnswers";
+import { useAuth } from "../contexts/AuthContext";
 
 const SHOW_ALL_TOPICS_RESULT = true; // Set to true to show results for all topics, false to show only current topic
 
@@ -24,9 +25,10 @@ const ExamPage: React.FC = () => {
   const location = useLocation();
   const exam = location.state?.exam as Exam;
   const { t, language } = useLanguage();
-  const { findExamById } = useExams();
+  const { token } = useAuth();
+  const { findExamById } = useExams({ token });
   const [currentExam, setCurrentExam] = useState<Exam | null>(exam);
-  const questionsHook = useQuestions(examId, currentExam?.file);
+  const questionsHook = useQuestions(examId, currentExam?.file, token);
   const {
     questions,
     loading: questionsLoading,

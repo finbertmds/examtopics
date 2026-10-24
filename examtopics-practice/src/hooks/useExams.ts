@@ -12,7 +12,7 @@ export const useExams = (options?: { fetchMyExamsOnly?: boolean, token?: string 
       setError(null);
       const data = (options?.fetchMyExamsOnly && options?.token) 
         ? await examApi.getMyExams(options.token) 
-        : await examApi.getExams();
+        : await examApi.getExams(options?.token);
       setExams(data);
       return data;
     } catch (error) {
@@ -48,7 +48,7 @@ export const useExams = (options?: { fetchMyExamsOnly?: boolean, token?: string 
     try {
       const data = (options?.fetchMyExamsOnly && options?.token) 
         ? await examApi.getMyExams(options.token) 
-        : await examApi.getExams();
+        : await examApi.getExams(options?.token);
       setExams(data);
     } catch (error) {
       console.error('Error refreshing exams:', error);

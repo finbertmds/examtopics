@@ -38,7 +38,7 @@ const AdminPage: React.FC = () => {
     refreshExams();
     const loadMetadata = async () => {
       try {
-        const metadata = await examApi.getMetadata();
+        const metadata = await examApi.getMetadata(token);
         setAvailableCategories(metadata.categories);
         setAvailableTags(metadata.tags);
       } catch (error) {
@@ -62,6 +62,7 @@ const AdminPage: React.FC = () => {
     difficulty: 'Beginner',
     estimatedTime: 60,
     tags: '',
+    isPublished: false,
   });
   const [file, setFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -146,7 +147,10 @@ const AdminPage: React.FC = () => {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    const nextValue = e.target instanceof HTMLInputElement && e.target.type === 'checkbox'
+      ? e.target.checked
+      : value;
+    setFormData(prev => ({ ...prev, [name]: nextValue }));
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -282,7 +286,7 @@ const AdminPage: React.FC = () => {
 
     setIsQuestionLoading(true);
     try {
-      const question = await examApi.getQuestion(selectedQuestionExamCode, topicNumber, questionNumber);
+      const question = await examApi.getQuestion(selectedQuestionExamCode, topicNumber, questionNumber, token);
       setSelectedQuestion(question);
       setQuestionFormData({
         question_text: question.question_text || '',
@@ -358,6 +362,7 @@ const AdminPage: React.FC = () => {
       difficulty: exam.difficulty || 'Beginner',
       estimatedTime: Number(exam.estimatedTime) || 60,
       tags: exam.tags ? exam.tags.join(', ') : '',
+      isPublished: exam.isPublished !== false,
     });
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -376,6 +381,7 @@ const AdminPage: React.FC = () => {
       difficulty: 'Beginner',
       estimatedTime: 60,
       tags: '',
+      isPublished: false,
     });
     setFile(null);
     if (fileInputRef.current) {
@@ -424,6 +430,7 @@ const AdminPage: React.FC = () => {
         difficulty: formData.difficulty,
         estimatedTime: Number(formData.estimatedTime),
         tags: formData.tags.split(',').map(tag => tag.trim()).filter(Boolean),
+        isPublished: formData.isPublished,
         questions: questionsPayload
       };
 
@@ -444,7 +451,7 @@ const AdminPage: React.FC = () => {
         refreshExams();
 
         // Refresh metadata to get newly added categories/tags
-        const metadata = await examApi.getMetadata();
+        const metadata = await examApi.getMetadata(token);
         setAvailableCategories(metadata.categories);
         setAvailableTags(metadata.tags);
       } else {
@@ -728,6 +735,24 @@ const AdminPage: React.FC = () => {
               <p className="text-xs text-gray-500 mt-1">{t('uploadQuestionsJsonHint')}</p>
             </div>
 
+            <label className="flex items-start gap-3 rounded-lg border border-gray-200 p-4 dark:border-gray-600">
+              <input
+                type="checkbox"
+                name="isPublished"
+                checked={formData.isPublished}
+                onChange={handleInputChange}
+                className="mt-1 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+              />
+              <span>
+                <span className="block text-sm font-medium text-gray-800 dark:text-gray-200">
+                  {t('publishExam')}
+                </span>
+                <span className="mt-1 block text-xs text-gray-500 dark:text-gray-400">
+                  {t('publishExamDescription')}
+                </span>
+              </span>
+            </label>
+
             <div className="flex gap-4">
               <button
                 type="submit"
@@ -776,6 +801,7 @@ const AdminPage: React.FC = () => {
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{t('name')}</th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{t('category')}</th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{t('questions')}</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{t('visibility')}</th>
                     <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{t('actions')}</th>
                   </tr>
                 </thead>
@@ -803,6 +829,15 @@ const AdminPage: React.FC = () => {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                           {exam.questionCount}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm">
+                          <span className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${
+                            exam.isPublished !== false
+                              ? 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300'
+                              : 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300'
+                          }`}>
+                            {exam.isPublished !== false ? t('published') : t('private')}
+                          </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                           <button

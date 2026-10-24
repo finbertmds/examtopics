@@ -41,12 +41,18 @@ const examSchema = new mongoose.Schema({
     type: String,
     required: false,
   },
+  isPublished: {
+    type: Boolean,
+    default: false,
+    index: true,
+  },
 }, {
   timestamps: true, // Automatically manages createdAt and updatedAt
 });
 
 // Create index on name for quick search
 examSchema.index({ name: 1 });
+examSchema.index({ isPublished: 1, createdBy: 1, createdAt: -1 });
 
 const Exam = mongoose.model('Exam', examSchema);
 

@@ -4,6 +4,7 @@ import { toast } from 'react-toastify';
 import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useExams } from '../hooks/useExams';
+import { useAuth } from '../contexts/AuthContext';
 import { useProgress } from '../hooks/useProgress';
 import { HistoryEntry } from '../types';
 import { getExamName } from '../utils/examUtils';
@@ -18,7 +19,8 @@ const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose, examId }) 
   const navigate = useNavigate();
   const { t, language } = useLanguage();
   const { getHistory, getExamStats, getCompletedExamIds, getDailyTracking } = useProgress();
-  const { exams, findExamById } = useExams();
+  const { token } = useAuth();
+  const { exams, findExamById } = useExams({ token });
   const [history, setHistory] = useState<HistoryEntry[]>([]);
   const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(false);

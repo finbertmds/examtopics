@@ -6,6 +6,19 @@ const LARGE_QUESTION_THRESHOLD = 1000;
 const SMALL_BATCH_SIZE = 100;
 const LARGE_BATCH_SIZE = 500;
 
+const getReadableExamFilter = (userId) => {
+  const visibilityFilters = [
+    { isPublished: true },
+    { isPublished: { $exists: false } },
+  ];
+
+  if (userId) {
+    visibilityFilters.push({ createdBy: userId });
+  }
+
+  return { $or: visibilityFilters };
+};
+
 const getBulkWriteErrors = (error) => {
   if (Array.isArray(error.writeErrors)) return error.writeErrors;
   if (typeof error.result?.getWriteErrors === 'function') {
@@ -92,16 +105,16 @@ const insertQuestionsInBatches = async (examCode, questionsArray) => {
 };
 
 class ExamService {
-  async getAllExams() {
-    return await Exam.find().sort({ createdAt: -1 });
+  async getAllExams(userId) {
+    return await Exam.find(getReadableExamFilter(userId)).sort({ createdAt: -1 });
   }
 
-  async getExamByCode(code) {
-    return await Exam.findOne({ code });
+  async getExamByCode(code, userId) {
+    return await Exam.findOne({ code, ...getReadableExamFilter(userId) });
   }
 
-  async getCategories() {
-    const categories = await Exam.distinct('category');
+  async getCategories(userId) {
+    const categories = await Exam.distinct('category', getReadableExamFilter(userId));
     return categories.filter(Boolean);
   }
 
@@ -155,8 +168,8 @@ class ExamService {
     }));
   }
 
-  async getTags() {
-    const tags = await Exam.distinct('tags');
+  async getTags(userId) {
+    const tags = await Exam.distinct('tags', getReadableExamFilter(userId));
     return tags.filter(Boolean);
   }
 
@@ -180,6 +193,7 @@ class ExamService {
       code: examCode,
       questionCount,
       createdBy: userId,
+      isPublished: examData.isPublished === true,
     });
     
     await exam.save();
@@ -191,14 +205,24 @@ class ExamService {
     return exam;
   }
 
-  async updateExamWithQuestions(code, updateData, questionsArray) {
+  async updateExamWithQuestions(code, updateData, questionsArray, userId) {
+    const existingExam = await Exam.findOne({ code });
+    if (!existingExam) return { error: 'ExamNotFound' };
+    if (!userId || existingExam.createdBy?.toString() !== userId.toString()) {
+      return { error: 'Forbidden' };
+    }
+
     const hasQuestions = Array.isArray(questionsArray) && questionsArray.length > 0;
     if (hasQuestions) {
       updateData.questionCount = questionsArray.length;
     }
 
-    const exam = await Exam.findOneAndUpdate({ code }, updateData, { new: true });
-    if (!exam) return null;
+    const exam = await Exam.findOneAndUpdate(
+      { code, createdBy: userId },
+      updateData,
+      { new: true, runValidators: true }
+    );
+    if (!exam) return { error: 'Forbidden' };
 
     if (hasQuestions) {
       // Replace questions: delete first, then insert in adaptive batches
@@ -209,14 +233,23 @@ class ExamService {
     return exam;
   }
 
-  async deleteExam(code) {
-    // Delete all associated questions first
+  async deleteExam(code, userId) {
+    const existingExam = await Exam.findOne({ code });
+    if (!existingExam) return { error: 'ExamNotFound' };
+    if (!userId || existingExam.createdBy?.toString() !== userId.toString()) {
+      return { error: 'Forbidden' };
+    }
+
+    const exam = await Exam.findOneAndDelete({ code, createdBy: userId });
+    if (!exam) return { error: 'Forbidden' };
     await Question.deleteMany({ examId: code });
-    // Delete exam
-    return await Exam.findOneAndDelete({ code });
+    return { exam };
   }
 
-  async getQuestionsByExamCode(examCode, page = 1, limit = 0) {
+  async getQuestionsByExamCode(examCode, page = 1, limit = 0, userId) {
+    const exam = await Exam.findOne({ code: examCode, ...getReadableExamFilter(userId) });
+    if (!exam) return null;
+
     const skip = (page - 1) * (limit || 0);
 
     let query = Question.find({ examId: examCode }).sort({ topic_number: 1, question_number: 1 });
@@ -239,7 +272,9 @@ class ExamService {
     };
   }
 
-  async getQuestionByExamAndNumber(examCode, topicNumber, questionNumber) {
+  async getQuestionByExamAndNumber(examCode, topicNumber, questionNumber, userId) {
+    const exam = await Exam.findOne({ code: examCode, ...getReadableExamFilter(userId) });
+    if (!exam) return null;
     return await Question.findOne({ examId: examCode, topic_number: topicNumber, question_number: questionNumber });
   }
 

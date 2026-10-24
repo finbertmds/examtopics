@@ -12,6 +12,7 @@ import { LanguageToggle } from './LanguageToggle';
 import { ThemeToggle } from './ThemeToggle';
 import UserMenu from './UserMenu';
 import { toast } from 'react-toastify';
+import { useAuth } from '../contexts/AuthContext';
 
 const Home: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -22,7 +23,8 @@ const Home: React.FC = () => {
   const { getProgressStats } = useAllProgress();
   const { getCompletedExamIds } = useProgress();
   const { t, language } = useLanguage();
-  const { exams, loading, error, loadExams } = useExams();
+  const { token } = useAuth();
+  const { exams, loading, error, loadExams } = useExams({ token });
   const [completedExams, setCompletedExams] = useState<string[]>([]);
 
 

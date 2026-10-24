@@ -25,10 +25,37 @@ function parseQuestionsPayload(questions) {
   return { questions: parsed };
 }
 
+const EXAM_FIELDS = [
+  'code',
+  'name',
+  'slug',
+  'file',
+  'description',
+  'category',
+  'difficulty',
+  'estimatedTime',
+  'tags',
+  'isPublished',
+];
+
+function pickExamFields(body, { allowCode = false } = {}) {
+  return EXAM_FIELDS.reduce((result, field) => {
+    if ((allowCode || field !== 'code') && Object.prototype.hasOwnProperty.call(body, field)) {
+      result[field] = body[field];
+    }
+    return result;
+  }, {});
+}
+
+function hasInvalidPublishValue(body) {
+  return Object.prototype.hasOwnProperty.call(body, 'isPublished') &&
+    typeof body.isPublished !== 'boolean';
+}
+
 class ExamController {
   async getAllExams(req, res, next) {
     try {
-      const exams = await examService.getAllExams();
+      const exams = await examService.getAllExams(req.user?.userId);
       res.json({ success: true, count: exams.length, exams });
     } catch (error) {
       next(error);
@@ -37,8 +64,8 @@ class ExamController {
 
   async getMetadata(req, res, next) {
     try {
-      const categories = await examService.getCategories();
-      const tags = await examService.getTags();
+      const categories = await examService.getCategories(req.user?.userId);
+      const tags = await examService.getTags(req.user?.userId);
       res.json({ success: true, categories, tags });
     } catch (error) {
       next(error);
@@ -58,7 +85,7 @@ class ExamController {
 
   async getExamByCode(req, res, next) {
     try {
-      const exam = await examService.getExamByCode(req.params.code);
+      const exam = await examService.getExamByCode(req.params.code, req.user?.userId);
       if (!exam) {
         return res.status(404).json({ success: false, error: 'Exam not found' });
       }
@@ -95,7 +122,12 @@ class ExamController {
         return res.status(400).json({ success: false, error: 'Valid topic and question numbers are required' });
       }
 
-      const question = await examService.getQuestionByExamAndNumber(req.params.code, topicNumber, questionNumber);
+      const question = await examService.getQuestionByExamAndNumber(
+        req.params.code,
+        topicNumber,
+        questionNumber,
+        req.user?.userId
+      );
       if (!question) {
         return res.status(404).json({ success: false, error: 'Question not found' });
       }
@@ -109,12 +141,17 @@ class ExamController {
     try {
       // Expecting metadata in `req.body` and questions under `req.body.questions` 
       // where `questions` is an array of question JSON objects
-      const { questions, ...examData } = req.body;
+      const { questions } = req.body;
       const parsed = parseQuestionsPayload(questions);
       if (parsed.error) {
         return res.status(200).json({ success: false, message: parsed.error });
       }
 
+      if (hasInvalidPublishValue(req.body)) {
+        return res.status(400).json({ success: false, error: 'isPublished must be a boolean' });
+      }
+
+      const examData = pickExamFields(req.body, { allowCode: true });
       if (!examData.name || !examData.description) {
         return res.status(200).json({ success: false, message: 'Name and description are required' });
       }
@@ -132,22 +169,31 @@ class ExamController {
 
   async updateExam(req, res, next) {
     try {
-      if (Object.prototype.hasOwnProperty.call(req.body, 'createdBy')) {
-        return res.status(400).json({ success: false, error: 'OwnershipTransferRequired' });
+      if (hasInvalidPublishValue(req.body)) {
+        return res.status(400).json({ success: false, error: 'isPublished must be a boolean' });
       }
 
       // Destructure questions out so updateData stays small; large arrays stay referenced once
-      const { questions, ...updateData } = req.body;
+      const { questions } = req.body;
+      const updateData = pickExamFields(req.body);
       const parsed = parseQuestionsPayload(questions);
       if (parsed.error) {
         return res.status(200).json({ success: false, message: parsed.error });
       }
 
-      const exam = await examService.updateExamWithQuestions(req.params.code, updateData, parsed.questions);
-      if (!exam) {
+      const result = await examService.updateExamWithQuestions(
+        req.params.code,
+        updateData,
+        parsed.questions,
+        req.user?.userId
+      );
+      if (result?.error === 'ExamNotFound') {
         return res.status(404).json({ success: false, error: 'Exam not found' });
       }
-      res.json({ success: true, exam });
+      if (result?.error === 'Forbidden') {
+        return res.status(403).json({ success: false, error: 'Forbidden' });
+      }
+      res.json({ success: true, exam: result });
     } catch (error) {
       next(error);
     }
@@ -255,9 +301,12 @@ class ExamController {
 
   async deleteExam(req, res, next) {
     try {
-      const exam = await examService.deleteExam(req.params.code);
-      if (!exam) {
+      const result = await examService.deleteExam(req.params.code, req.user?.userId);
+      if (result?.error === 'ExamNotFound') {
         return res.status(404).json({ success: false, error: 'Exam not found' });
+      }
+      if (result?.error === 'Forbidden') {
+        return res.status(403).json({ success: false, error: 'Forbidden' });
       }
       res.json({ success: true, message: 'Exam deleted successfully' });
     } catch (error) {
@@ -270,7 +319,15 @@ class ExamController {
       const page = parseInt(req.query.page) || 1;
       const limit = req.query.limit !== undefined ? parseInt(req.query.limit) : 0; // Default 0 means return all
       
-      const result = await examService.getQuestionsByExamCode(req.params.code, page, limit);
+      const result = await examService.getQuestionsByExamCode(
+        req.params.code,
+        page,
+        limit,
+        req.user?.userId
+      );
+      if (!result) {
+        return res.status(404).json({ success: false, error: 'Exam not found' });
+      }
       res.json({ success: true, ...result });
     } catch (error) {
       next(error);

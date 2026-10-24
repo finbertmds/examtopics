@@ -2,7 +2,11 @@ import { useState } from 'react';
 import { examApi } from '../services/examApi';
 import { Question } from '../types';
 
-export const useQuestions = (examId: string | undefined, examFile: string | undefined) => {
+export const useQuestions = (
+  examId: string | undefined,
+  examFile: string | undefined,
+  token?: string | null
+) => {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -18,7 +22,7 @@ export const useQuestions = (examId: string | undefined, examFile: string | unde
     setError(null);
 
     try {
-      const response = await examApi.getQuestions(examId);
+      const response = await examApi.getQuestions(examId, 1, 0, token);
       setQuestions(response.data);
     } catch (error) {
       console.error('Error loading questions:', error);
@@ -42,7 +46,7 @@ export const useQuestions = (examId: string | undefined, examFile: string | unde
     setError(null);
     
     try {
-      const response = await examApi.getQuestions(examId);
+      const response = await examApi.getQuestions(examId, 1, 0, token);
       setQuestions(response.data);
     } catch (error) {
       console.error('Error refreshing questions:', error);

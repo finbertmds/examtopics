@@ -10,9 +10,20 @@ const getBaseUrl = () => {
     return backendUrl + '/api'
 };
 
+const getAuthHeaders = (token?: string | null): HeadersInit => token
+  ? { 'Authorization': `Bearer ${token}` }
+  : {};
+
+const getApiError = async (response: Response, fallback: string): Promise<Error> => {
+  const data = await response.json().catch(() => ({}));
+  return new Error(data.error || data.message || fallback);
+};
+
 export const examApi = {
-  getExams: async (): Promise<Exam[]> => {
-    const response = await fetch(`${getBaseUrl()}/exams`);
+  getExams: async (token?: string | null): Promise<Exam[]> => {
+    const response = await fetch(`${getBaseUrl()}/exams`, {
+      headers: getAuthHeaders(token),
+    });
     if (!response.ok) throw new Error('Failed to fetch exams');
     const data = await response.json();
     return (data.exams || []).map((exam: any) => ({
@@ -33,23 +44,29 @@ export const examApi = {
     }));
   },
 
-  getMetadata: async (): Promise<{ categories: string[], tags: string[] }> => {
-    const response = await fetch(`${getBaseUrl()}/exams/metadata/info`);
+  getMetadata: async (token?: string | null): Promise<{ categories: string[], tags: string[] }> => {
+    const response = await fetch(`${getBaseUrl()}/exams/metadata/info`, {
+      headers: getAuthHeaders(token),
+    });
     if (!response.ok) throw new Error('Failed to fetch metadata');
     const data = await response.json();
     return { categories: data.categories || [], tags: data.tags || [] };
   },
 
-  getExam: async (code: string): Promise<Exam> => {
-    const response = await fetch(`${getBaseUrl()}/exams/${code}`);
-    if (!response.ok) throw new Error('Failed to fetch exam');
+  getExam: async (code: string, token?: string | null): Promise<Exam> => {
+    const response = await fetch(`${getBaseUrl()}/exams/${code}`, {
+      headers: getAuthHeaders(token),
+    });
+    if (!response.ok) throw await getApiError(response, 'Failed to fetch exam');
     const data = await response.json();
     return { ...data.exam, code: data.exam.code || data.exam._id };
   },
 
-  getQuestions: async (examCode: string, page = 1, limit = 0): Promise<{ data: Question[], pagination: any }> => {
-    const response = await fetch(`${getBaseUrl()}/questions/${examCode}?page=${page}&limit=${limit}`);
-    if (!response.ok) throw new Error('Failed to fetch questions');
+  getQuestions: async (examCode: string, page = 1, limit = 0, token?: string | null): Promise<{ data: Question[], pagination: any }> => {
+    const response = await fetch(`${getBaseUrl()}/questions/${examCode}?page=${page}&limit=${limit}`, {
+      headers: getAuthHeaders(token),
+    });
+    if (!response.ok) throw await getApiError(response, 'Failed to fetch questions');
     const data = await response.json();
     return {
       ...data,
@@ -88,9 +105,11 @@ export const examApi = {
     }
   },
 
-  getQuestion: async (examCode: string, topicNumber: number, questionNumber: number): Promise<Question> => {
-    const response = await fetch(`${getBaseUrl()}/questions/${examCode}/${questionNumber}?topicNumber=${topicNumber}`);
-    if (!response.ok) throw new Error('Failed to fetch question');
+  getQuestion: async (examCode: string, topicNumber: number, questionNumber: number, token?: string | null): Promise<Question> => {
+    const response = await fetch(`${getBaseUrl()}/questions/${examCode}/${questionNumber}?topicNumber=${topicNumber}`, {
+      headers: getAuthHeaders(token),
+    });
+    if (!response.ok) throw await getApiError(response, 'Failed to fetch question');
     const data = await response.json();
     return { ...data.question, topic_number: data.question.topic_number || 1 };
   },

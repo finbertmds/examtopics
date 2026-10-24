@@ -259,6 +259,16 @@ Render sẽ tự động build và deploy service. URL sẽ có dạng:
 
 ## Testing
 
+### Exam visibility migration
+
+New exams are private until their owner publishes them. After deploying the backend visibility support, migrate existing exams once so they remain public:
+
+```bash
+npm run migrate:exam-visibility
+```
+
+The migration only updates exams where `isPublished` is missing, reports the matched and modified counts, and is safe to run more than once.
+
 ### Test với curl:
 
 ```bash

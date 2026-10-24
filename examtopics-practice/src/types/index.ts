@@ -34,6 +34,8 @@ export interface Exam {
   difficulty: 'Beginner' | 'Intermediate' | 'Advanced' | string;
   estimatedTime: string | number;
   tags: string[];
+  isPublished?: boolean;
+  createdBy?: string;
   createdAt?: string;
   updatedAt?: string;
 }
