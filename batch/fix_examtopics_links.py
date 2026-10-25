@@ -10,6 +10,7 @@ import argparse
 import base64
 from collections import Counter
 import copy
+from email.utils import parsedate_to_datetime
 import hashlib
 import json
 import os
@@ -149,14 +150,30 @@ def unwrap_link(href, base='https://www.examtopics.com/'):
 
 
 def page_matches(soup, item):
-    """Đúng heading exam/topic/question VÀ 20 từ đầu của nội dung câu hỏi."""
+    """Đúng heading và phần nội dung câu hỏi, không đọc nhầm phần bình luận."""
     headings = [normalize_text(tag.get_text(' ', strip=True)) for tag in soup.select('h1, title')]
     if normalize_text(item.get('title')) not in headings:
         return False
-    # Chỉ kiểm tra phần trước comments, tránh nhận nhầm câu hỏi trong bình luận.
-    text = soup.get_text(' ', strip=True)
-    text = re.split(r'\b(?:Comments|Show Suggested Answer)\b', text, maxsplit=1, flags=re.I)[0]
     prefix = normalize_text(clean_text(item.get('question_text')))
+    if not prefix:
+        return False
+    bodies = soup.select('.question-body .card-text') or soup.select('.question-body')
+    for body in bodies:
+        text = normalize_text(body.get_text(' ', strip=True))
+        if text != prefix and not text.startswith(prefix + ' '):
+            continue
+        # Với câu ngắn, đối chiếu toàn bộ câu ngay đầu khối question-body.
+        if len(prefix.split()) >= 4:
+            return True
+        answers = item.get('answers') or {}
+        if isinstance(answers, dict) and sum(bool(normalize_text(a)) and normalize_text(a) in text
+                                             for a in answers.values() if isinstance(a, str)) >= 2:
+            return True
+    if bodies:
+        return False
+    # HTML cũ/đã lưu: chỉ tách ở dòng tiêu đề, không tách từ 'comments' giữa câu.
+    text = soup.get_text('\n', strip=True)
+    text = re.split(r'(?im)^\s*(?:Comments\b|Show Suggested Answer\b)', text, maxsplit=1)[0]
     return len(prefix.split()) >= 10 and prefix in normalize_text(text)
 
 
@@ -222,57 +239,133 @@ def atomic_json(path, data):
             temp.unlink()
 
 
+class RateLimitExceeded(RuntimeError):
+    def __init__(self, url, retry_at, attempts):
+        self.url, self.retry_at, self.attempts = url, retry_at, attempts
+        super().__init__(f'HTTP 429 từ {urlsplit(url).netloc} sau {attempts} lượt yêu cầu')
+
+
+def retry_after_seconds(value, now):
+    """Retry-After có thể là số giây hoặc ngày HTTP, không chỉ là số nguyên."""
+    try:
+        return max(0.0, float(value))
+    except (TypeError, ValueError):
+        try:
+            return max(0.0, parsedate_to_datetime(value).timestamp() - now)
+        except (TypeError, ValueError, OverflowError):
+            return 0.0
+
+
 class Client:
-    def __init__(self, cache_path, delay=3.0, timeout=20, offline=False, refresh=False):
+    def __init__(self, cache_path, delay=3.0, timeout=20, offline=False, refresh=False,
+                 retries=3, backoff=60.0, wait_on_rate_limit=False):
         self.cache_path = Path(cache_path)
         self.delay, self.timeout, self.offline, self.refresh = delay, timeout, offline, refresh
+        self.retries, self.backoff = retries, backoff
+        self.wait_on_rate_limit = wait_on_rate_limit
+        self.skipped_hosts = set()
+        self.disabled_engines = set()
         self.cache = json.loads(self.cache_path.read_text()) if self.cache_path.exists() else {}
+        self.host_states = self.cache.setdefault('__hosts__', {})
         self.session = requests.Session()
         self.session.headers['User-Agent'] = 'Mozilla/5.0 (compatible; ExamTopicsLinkVerifier/2.0)'
-        self.last_request = 0.0
-        self.cooldowns = {}
+        self.last_requests = {}
 
-    def get(self, url):
+    def wait_for_host(self, host, wait_on_rate_limit=True):
+        state = self.host_states.get(host, {})
+        remaining = max(0.0, state.get('retry_at', 0) - time.time())
+        if remaining:
+            print(f'    HTTP 429: nghỉ {remaining:.0f}s cho {host} rồi thử lại; Ctrl-C để lưu và dừng.', flush=True)
+        while state.get('retry_at', 0) > time.time():
+            time.sleep(min(10, state['retry_at'] - time.time()))
+        interval = max(self.delay, state.get('interval', 0)) if wait_on_rate_limit else self.delay
+        if host in self.last_requests:
+            remaining = interval - (time.monotonic() - self.last_requests[host])
+            while remaining > 0:
+                step = min(10, remaining)
+                time.sleep(step)
+                remaining = interval - (time.monotonic() - self.last_requests[host])
+
+    def get(self, url, wait_on_rate_limit=None):
+        wait_on_rate_limit = self.wait_on_rate_limit if wait_on_rate_limit is None else wait_on_rate_limit
         cached = self.cache.get(url)
         cache_ttl = 60 if cached and (cached.get('error') or cached.get('status') != 200) else 86400
         if cached and not self.refresh and (self.offline or time.time() - cached.get('time', 0) < cache_ttl):
             if cached.get('status') == 200 and cached.get('error') == 'blocked_or_challenge' and not is_blocked(200, cached.get('html', '')):
                 cached = dict(cached, error='')
-            return cached
+            # Cache 429 là lệnh chờ, không phải kết quả kiểm tra của câu hỏi.
+            if self.offline or cached.get('status') != 429:
+                return cached
         if self.offline:
             return {'status': None, 'url': url, 'html': '', 'error': 'offline_cache_miss'}
         host = urlsplit(url).netloc
-        if time.monotonic() < self.cooldowns.get(host, 0):
-            return {'status': 429, 'url': url, 'html': '', 'error': 'rate_limit_cooldown'}
-        time.sleep(max(0, self.delay - (time.monotonic() - self.last_request)))
-        self.last_request = time.monotonic()
-        try:
-            # GET thay cho HEAD: cần đọc heading + câu hỏi, không chấp nhận status đơn thuần.
-            with self.session.get(url, timeout=self.timeout) as response:
-                html = response.text
-                entry = {'status': response.status_code, 'url': response.url, 'html': html,
-                         'error': '', 'time': time.time()}
-                if response.status_code == 429:
-                    retry = response.headers.get('Retry-After', '60')
-                    self.cooldowns[host] = time.monotonic() + (int(retry) if retry.isdigit() else 60)
-                if is_blocked(response.status_code, html):
-                    entry['error'] = 'blocked_or_challenge'
-        except requests.RequestException as exc:
-            entry = {'status': None, 'url': url, 'html': '', 'error': type(exc).__name__, 'time': time.time()}
-        self.cache[url] = entry
-        atomic_json(self.cache_path, self.cache)
-        return entry
+        state = self.host_states.setdefault(host, {})
+        if cached and cached.get('status') == 429:
+            retry_at = cached.get('retry_at', cached.get('time', 0) + self.backoff)
+            state['retry_at'] = max(state.get('retry_at', 0), retry_at)
+        if not wait_on_rate_limit and state.get('retry_at', 0) > time.time():
+            if host not in self.skipped_hosts:
+                print(f'    Bỏ qua {host} đang giới hạn tần suất; dùng cache/nguồn khác, không chờ.', flush=True)
+                self.skipped_hosts.add(host)
+            return {'status': 429, 'url': url, 'html': '', 'error': 'host_cooldown_skipped'}
+        history = []
+        for attempt in range(self.retries + 1 if wait_on_rate_limit else 1):
+            self.wait_for_host(host, wait_on_rate_limit)
+            self.last_requests[host] = time.monotonic()
+            retry_header = None
+            try:
+                # Đọc heading + nội dung; HTTP 200 đơn thuần không đủ để xác minh.
+                with self.session.get(url, timeout=self.timeout) as response:
+                    entry = {'status': response.status_code, 'url': response.url, 'html': response.text,
+                             'error': '', 'time': time.time(), 'retry_count': attempt}
+                    retry_header = response.headers.get('Retry-After')
+                    if is_blocked(response.status_code, entry['html']):
+                        entry['error'] = 'blocked_or_challenge'
+            except requests.RequestException as exc:
+                entry = {'status': None, 'url': url, 'html': '', 'error': type(exc).__name__,
+                         'time': time.time(), 'retry_count': attempt}
+            if entry['status'] == 429:
+                # Không thử sớm hơn Retry-After; backoff tăng 60, 120, 240... giây.
+                pause = max(self.backoff * (2 ** attempt), retry_after_seconds(retry_header, time.time()))
+                state['retry_at'] = max(state.get('retry_at', 0), time.time() + pause)
+                state['interval'] = min(60.0, max(5.0, self.delay, state.get('interval', self.delay) * 1.5))
+                entry.update(retry_at=state['retry_at'], retry_after=retry_header)
+                history.append({'http_status': 429, 'retry_at': state['retry_at']})
+            entry['retry_history'] = list(history)
+            self.cache[url] = entry
+            atomic_json(self.cache_path, self.cache)
+            if entry['status'] != 429:
+                return entry
+            if not wait_on_rate_limit:
+                if host not in self.skipped_hosts:
+                    print(f'    Bỏ qua {host} do HTTP 429; dùng cache/nguồn khác, không chờ.', flush=True)
+                    self.skipped_hosts.add(host)
+                return entry
+            if attempt == self.retries:
+                # Dừng batch có checkpoint; không gán 429 giả cho hàng loạt câu sau.
+                raise RateLimitExceeded(url, state['retry_at'], attempt + 1)
+            print(f'    Giới hạn tần suất: sẽ thử lại {attempt + 1}/{self.retries} cho {host}.', flush=True)
 
     def search(self, query, engine):
         templates = {'bing': 'https://www.bing.com/search?q={}&count=20',
                      'google': 'https://www.google.com/search?q={}&num=10',
                      'duckduckgo': 'https://html.duckduckgo.com/html/?q={}'}
         url = templates[engine].format(quote_plus(query))
-        response = self.get(url)
+        cached = self.cache.get(url)
+        # Chỉ tắt nguồn đang lỗi trong phiên chạy; cache 200 của nguồn đó vẫn dùng được.
+        if engine in self.disabled_engines and not (cached and cached.get('status') == 200 and not cached.get('error')):
+            return [], {'engine': engine, 'query': query, 'http_status': None, 'error': 'engine_disabled_this_run'}
+        # Search là nguồn bổ sung: không chặn cả batch để đợi Google/Bing/DDG.
+        response = self.get(url, wait_on_rate_limit=False)
         if response['status'] != 200 or response['error']:
+            if response['status'] in (202, 403, 429) or response['error'] == 'blocked_or_challenge':
+                if engine not in self.disabled_engines:
+                    print(f'    Tắt search {engine} trong phiên này do bị chặn; chuyển nguồn khác.', flush=True)
+                self.disabled_engines.add(engine)
             return [], {'engine': engine, 'query': query, 'http_status': response['status'],
                         'error': response['error'] or 'http_error'}
         return search_results(response['html'], response['url']), None
+
 
 
 class Resolver:
@@ -320,7 +413,9 @@ class Resolver:
                 return None
             tried.add(url)
             response = self.client.get(url)
-            report['attempts'].append({'url': url, 'http_status': response['status'], 'error': response['error']})
+            report['attempts'].append({'url': url, 'http_status': response['status'], 'error': response['error'],
+                                       'retry_count': response.get('retry_count', 0),
+                                       'retry_history': response.get('retry_history', [])})
             if response['status'] != 200 or response['error']:
                 return None
             # Một redirect sang exam khác hoặc trang đăng nhập không xác minh được câu hỏi.
@@ -380,34 +475,77 @@ def fingerprint(item):
     return hashlib.sha256(json.dumps(item, sort_keys=True, ensure_ascii=False).encode()).hexdigest()
 
 
+def default_artifact_paths(input_path):
+    # json/exam.json -> reports/exam.link-report.json và cache/exam.link-cache.json.
+    base = input_path.parent.parent if input_path.parent.name.lower() == 'json' else input_path.parent
+    return (base / 'reports' / (input_path.stem + '.link-report.json'),
+            base / 'cache' / (input_path.stem + '.link-cache.json'))
+
+
 def process_json(args):
     input_path = Path(args.input)
-    output = Path(args.output) if args.output else input_path.with_name(input_path.stem + '_fixed.json')
-    report_path = Path(args.report) if args.report else output.with_suffix('.link-report.json')
-    cache_path = Path(args.cache) if args.cache else input_path.with_suffix('.link-cache.json')
+    output = Path(args.output) if args.output else input_path
+    default_report, default_cache = default_artifact_paths(input_path)
+    report_path = Path(args.report) if args.report else default_report
+    cache_path = Path(args.cache) if args.cache else default_cache
     if len({output.resolve(), report_path.resolve(), cache_path.resolve()}) != 3:
         raise ValueError('Output, report và cache phải là ba file khác nhau.')
     if input_path.resolve() in (report_path.resolve(), cache_path.resolve()):
         raise ValueError('Report/cache không được ghi đè input.')
-    for source in (getattr(args, 'evidence', None), getattr(args, 'only_unresolved', None)):
-        if source and Path(source).resolve() in (output.resolve(), report_path.resolve(), cache_path.resolve()):
-            raise ValueError('Không được ghi đè file evidence/báo cáo nguồn của --only-unresolved.')
+    if args.evidence and Path(args.evidence).resolve() in (output.resolve(), report_path.resolve(), cache_path.resolve()):
+        raise ValueError('Không được ghi đè file evidence.')
+    unresolved_path = None
+    unresolved_rows = None
+    if args.only_unresolved:
+        unresolved_path = (report_path if args.only_unresolved is True
+                           else Path(args.only_unresolved))
+        if unresolved_path.resolve() in (output.resolve(), cache_path.resolve()):
+            raise ValueError('JSON/cache không được ghi đè báo cáo nguồn của --only-unresolved.')
+        if unresolved_path.exists() or args.only_unresolved is not True:
+            unresolved_rows = json.loads(unresolved_path.read_text(encoding='utf-8'))
+            if not isinstance(unresolved_rows, list) or not all(isinstance(r, dict) for r in unresolved_rows):
+                raise ValueError('Báo cáo --only-unresolved phải là list các object.')
+        else:
+            print(f'Chưa có {unresolved_path}; chỉ kiểm tra các link thiếu/sai định dạng.', flush=True)
     data = json.loads(input_path.read_text(encoding='utf-8'))
     original = copy.deepcopy(data)
     items = question_items(data)
     old_items = question_items(original)
     previous = json.loads(report_path.read_text()) if args.resume and report_path.exists() else []
-    saved = {r.get('fingerprint'): r for r in previous if r.get('verification') != 'unverified'}
+    saved = {}
+    for result in previous:
+        if result.get('verification') != 'unverified':
+            for key in (result.get('fingerprint'), result.get('updated_fingerprint')):
+                if key:
+                    saved[key] = result
     evidence = json.loads(Path(args.evidence).read_text()) if args.evidence else []
     if not isinstance(evidence, list) or not all(isinstance(r, dict) for r in evidence):
         raise ValueError('Evidence phải là list các object url/title/snippet/source.')
-    client = Client(cache_path, args.delay, args.timeout, args.offline, args.refresh)
+    client = Client(cache_path, args.delay, args.timeout, args.offline, args.refresh,
+                    retries=getattr(args, 'retries', 3), backoff=getattr(args, 'backoff', 60.0),
+                    wait_on_rate_limit=getattr(args, 'wait_on_rate_limit', False))
     resolver = Resolver(client, args.engines.split(',') if args.engines else (), args.html_dir, evidence)
-    reports = []
+    # Khi đọc và ghi cùng report, giữ cả các câu không được chọn và tiến độ chưa xử lý.
+    same_report = unresolved_rows is not None and unresolved_path.resolve() == report_path.resolve()
+    reports = copy.deepcopy(unresolved_rows) if same_report else []
     previous_questions = set()
     if args.only_unresolved:
-        previous_questions = {(r.get('topic_number'), r.get('question_number')) for r in
-                              json.loads(Path(args.only_unresolved).read_text()) if r.get('status') == 'Không tìm thấy'}
+        if unresolved_rows is not None:
+            previous_questions = {(r.get('topic_number'), r.get('question_number')) for r in unresolved_rows
+                                  if r.get('status') == 'Không tìm thấy'}
+        else:
+            previous_questions = {(q.get('topic_number'), q.get('question_number')) for q in items
+                                  if not matches_url(q.get('link'), q)}
+    # Lưu sẵn những câu đang chờ, để dừng do 429/Ctrl-C vẫn chạy tiếp được bằng --only-unresolved.
+    for index, item in enumerate(items, 1):
+        key = (item.get('topic_number'), item.get('question_number'))
+        if args.only_unresolved and key not in previous_questions:
+            continue
+        if not any((row.get('topic_number'), row.get('question_number')) == key for row in reports):
+            reports.append({'topic_number': key[0], 'question_number': key[1], 'index': index,
+                            'old_link': item.get('link', ''), 'new_link': item.get('link', ''),
+                            'status': 'Không tìm thấy', 'verification': 'unverified',
+                            'source': None, 'reason': 'not_processed', 'attempts': []})
     selected = 0
     try:
         for index, item in enumerate(items, 1):
@@ -417,11 +555,27 @@ def process_json(args):
                 continue
             selected += 1
             key = fingerprint(item)
-            result = saved.get(key) or resolver.resolve(item)
+            try:
+                result = saved.get(key) or resolver.resolve(item)
+            except RateLimitExceeded as exc:
+                row = next(row for row in reports if
+                           (row.get('topic_number'), row.get('question_number')) ==
+                           (item.get('topic_number'), item.get('question_number')))
+                row.update(reason='rate_limited_retry_later', retry_at=exc.retry_at,
+                           attempts=[{'url': exc.url, 'http_status': 429, 'error': 'retry_budget_exhausted',
+                                      'request_count': exc.attempts}])
+                raise
             result = dict(result, fingerprint=key, index=index)
             if result['verification'] != 'unverified':
                 item['link'] = result['new_link']
-            reports.append(result)
+            result['updated_fingerprint'] = fingerprint(item)
+            existing = next((i for i, row in enumerate(reports) if
+                             (row.get('topic_number'), row.get('question_number')) ==
+                             (result['topic_number'], result['question_number'])), None)
+            if existing is None:
+                reports.append(result)
+            else:
+                reports[existing] = result
             print(f"[{index}/{len(items)}] Topic {item.get('topic_number')} câu {item.get('question_number')}: "
                   f"{result['status']} ({result['verification']}; {result['reason']})", flush=True)
             # Checkpoint từng câu; resume chỉ tái dùng kết quả đã xác minh.
@@ -441,28 +595,36 @@ def process_json(args):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('input', help='JSON câu hỏi')
-    parser.add_argument('-o', '--output', help='Mặc định *_fixed.json; có thể đặt trùng input')
-    parser.add_argument('--report', help='Báo cáo JSON riêng')
-    parser.add_argument('--cache', help='Cache HTTP: thành công 24 giờ, lỗi 60 giây')
+    parser.add_argument('-o', '--output', help='Mặc định sửa trực tiếp file input; chỉ tạo file khác khi chỉ định -o')
+    parser.add_argument('--report', help='File báo cáo (mặc định reports/<exam>.link-report.json ngoài thư mục json)')
+    parser.add_argument('--cache', help='File cache (mặc định cache/<exam>.link-cache.json ngoài thư mục json)')
     parser.add_argument('--delay', type=float, default=3.0, help='Khoảng cách tối thiểu giữa request (giây)')
     parser.add_argument('--timeout', type=float, default=20)
-    parser.add_argument('--engines', default='bing,google,duckduckgo', help='Danh sách engine phân cách bởi dấu phẩy; chuỗi rỗng để tắt search')
+    parser.add_argument('--wait-on-rate-limit', action='store_true', help='Cho phép chờ/thử lại 429 khi mở ExamTopics; mặc định bỏ qua nguồn đang giới hạn')
+    parser.add_argument('--retries', type=int, default=3, help='Số lần thử lại khi dùng --wait-on-rate-limit (mặc định 3)')
+    parser.add_argument('--backoff', type=float, default=60.0, help='Thời gian nghỉ ban đầu khi 429, tăng gấp đôi sau mỗi lần thử (giây, mặc định 60)')
+    parser.add_argument('--engines', default='bing,duckduckgo', help='Danh sách engine phân cách bởi dấu phẩy; chuỗi rỗng để tắt search')
     parser.add_argument('--html-dir', help='Thư mục HTML đã lưu từ discussion/trang danh sách')
     parser.add_argument('--evidence', help='JSON list kết quả search: url,title,snippet,source')
-    parser.add_argument('--only-unresolved', help='Chỉ xử lý các câu Không tìm thấy trong báo cáo cũ')
+    parser.add_argument('--only-unresolved', nargs='?', const=True, metavar='REPORT',
+                        help='Chỉ xử lý câu chưa tìm thấy; tự đọc *.link-report.json nếu không truyền REPORT, hoặc chọn link thiếu/sai định dạng khi chưa có báo cáo')
     parser.add_argument('--resume', action='store_true', help='Tái dùng kết quả đã xác minh trong report nếu input của câu chưa đổi')
     parser.add_argument('--refresh', action='store_true', help='Bỏ qua cache HTTP')
     parser.add_argument('--offline', action='store_true', help='Chỉ dùng cache, HTML và evidence đã có')
     parser.add_argument('--limit', type=int, default=0, help='Giới hạn số câu được xử lý; 0 = tất cả')
     args = parser.parse_args()
-    if args.delay < 0 or args.timeout <= 0 or args.limit < 0:
-        parser.error('delay/limit phải >=0; timeout phải >0')
+    if args.delay < 0 or args.timeout <= 0 or args.limit < 0 or args.retries < 0 or args.backoff <= 0:
+        parser.error('delay/limit/retries phải >=0; timeout/backoff phải >0')
     if set(filter(None, args.engines.split(','))) - {'bing', 'google', 'duckduckgo'}:
         parser.error('Engine hỗ trợ: bing,google,duckduckgo')
     if args.offline and args.refresh:
         parser.error('--offline và --refresh không dùng cùng nhau')
     try:
         process_json(args)
+    except RateLimitExceeded as exc:
+        seconds = max(0, exc.retry_at - time.time())
+        print(f'\n{exc}. Đã lưu checkpoint; tạm dừng batch. Chờ ít nhất {seconds:.0f}s rồi chạy lại cùng lệnh với --only-unresolved. Không kết luận các link còn lại bị sai.', file=sys.stderr)
+        return 75
     except KeyboardInterrupt:
         print('\nĐã lưu checkpoint. Chạy lại cùng lệnh với --resume.', file=sys.stderr)
         return 130
