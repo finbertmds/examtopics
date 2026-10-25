@@ -1,1 +1,7 @@
 *.txt
+!requirements-links.txt
+__pycache__/
+*.link-cache.json
+*.link-report.json
+*.link-report.md
+fix_examtopics_links.md
