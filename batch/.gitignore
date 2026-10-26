@@ -1,5 +1,5 @@
 *.txt
-!requirements-links.txt
+!requirements.txt
 __pycache__/
 *.link-cache.json
 *.link-report.json

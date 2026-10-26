@@ -88,6 +88,13 @@ class RateLimitTests(unittest.TestCase):
         client.session.get = Mock(side_effect=responses)
         return client
 
+    def test_current_check_uses_live_response_instead_of_stale_200_cache(self):
+        m.atomic_json(self.cache, {FULL: {'status': 200, 'url': FULL, 'html': html(),
+                                         'error': '', 'time': self.clock.now}})
+        client = self.client([HttpResponse(404)], wait_on_rate_limit=False)
+        self.assertEqual(client.check_current(FULL)['status'], 404)
+        client.session.get.assert_called_once()
+
     def test_default_fast_mode_does_not_wait_or_retry_blocked_host(self):
         client = self.client([HttpResponse(429, '3600')], wait_on_rate_limit=False)
         start = self.clock.now
@@ -242,6 +249,77 @@ class LinkTests(unittest.TestCase):
         self.assertEqual(m.unwrap_link('/url?q=' + m.quote_plus(FULL), 'https://www.google.com/'), FULL)
         self.assertEqual(m.unwrap_link('//duckduckgo.com/l/?uddg=' + m.quote_plus(FULL)), FULL)
 
+    def test_current_active_link_checked_before_replacement(self):
+        client = FakeClient({FULL: response(FULL, html())})
+        item = dict(ITEM, link=FULL)
+        result = m.Resolver(client).resolve(item)
+        self.assertEqual(result['status'], 'Đúng rồi')
+        self.assertEqual(result['old_link_state'], 'active')
+        self.assertEqual(client.calls, [FULL])
+
+    def test_dead_current_link_cleared_before_replacement_request(self):
+        item = copy.deepcopy(ITEM)
+        client = FakeClient()
+        def fetch(url):
+            client.calls.append(url)
+            if url == OLD:
+                return response(OLD, '', 404)
+            self.assertEqual(item['link'], '')
+            return response(FULL, html())
+        client.get = fetch
+        def clear(details):
+            self.assertEqual(details['new_link'], '')
+            item['link'] = ''
+        result = m.Resolver(client).resolve(item, on_clear=clear)
+        self.assertEqual(client.calls, [OLD, FULL])
+        self.assertEqual(result['new_link'], FULL)
+        self.assertEqual(result['clear_reason'], 'http_404')
+
+    def test_404_or_410_without_replacement_stays_empty(self):
+        for code in (404, 410):
+            with self.subTest(code=code):
+                client = FakeClient({OLD: response(OLD, '', code)})
+                result = m.Resolver(client).resolve(ITEM)
+                self.assertEqual(result['new_link'], '')
+                self.assertTrue(result['link_cleared'])
+
+    def test_transient_errors_do_not_clear_current_link(self):
+        for code in (403, 429, 500, None):
+            with self.subTest(code=code):
+                client = FakeClient({OLD: {'status': code, 'url': OLD, 'html': '', 'error': 'blocked_or_network_error'}})
+                result = m.Resolver(client).resolve(ITEM)
+                self.assertEqual(result['new_link'], OLD)
+                self.assertFalse(result.get('link_cleared', False))
+
+    def test_dead_link_not_restored_from_stale_search_evidence(self):
+        item = dict(ITEM, link=FULL)
+        evidence = [{'url': FULL, 'snippet': ITEM['question_text'], 'source': 'stale index'}]
+        client = FakeClient({FULL: response(FULL, '', 404)})
+        result = m.Resolver(client, evidence=evidence).resolve(item)
+        self.assertEqual(result['new_link'], '')
+
+    def test_clear_is_checkpointed_even_when_replacement_search_interrupted(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            src = Path(tmp, 'input.json')
+            m.atomic_json(src, [ITEM])
+            client = FakeClient()
+            def fetch(url):
+                if url == OLD:
+                    return response(OLD, '', 404)
+                self.assertEqual(json.loads(src.read_text())[0]['link'], '')
+                raise KeyboardInterrupt()
+            client.get = fetch
+            args = argparse.Namespace(input=str(src), output=None, report=None, cache=str(Path(tmp, 'cache.json')),
+                resume=False, evidence=None, delay=0, timeout=1, offline=False, refresh=False,
+                engines='', html_dir=None, only_unresolved=None, limit=0)
+            with patch.object(m, 'Client', return_value=client), self.assertRaises(KeyboardInterrupt):
+                m.process_json(args)
+            data = json.loads(src.read_text())[0]
+            self.assertEqual(data, dict(ITEM, link=''))
+            report = json.loads((Path(tmp) / 'reports' / 'input.link-report.json').read_text())[0]
+            self.assertEqual(report['old_link'], OLD)
+            self.assertTrue(report['link_cleared'])
+
     def test_matching_page_canonical(self):
         client = FakeClient({OLD: response(OLD, html())})
         result = m.Resolver(client).resolve(ITEM)
@@ -256,7 +334,7 @@ class LinkTests(unittest.TestCase):
     def test_right_heading_wrong_text_rejected(self):
         wrong = dict(ITEM, question_text='Completely different question body with no relation to Lambda or image thumbnails.')
         client = FakeClient({OLD: response(OLD, html(wrong))})
-        self.assertEqual(m.Resolver(client).resolve(ITEM)['new_link'], OLD)
+        self.assertEqual(m.Resolver(client).resolve(ITEM)['new_link'], '')
 
     def test_prefix_in_comments_does_not_validate(self):
         source = f'<h1>{ITEM["title"]}</h1><p>Different body.</p>Comments {ITEM["question_text"]}'
@@ -288,7 +366,7 @@ class LinkTests(unittest.TestCase):
             client = FakeClient()
             result = m.Resolver(client, html_dir=tmp).resolve(ITEM)
             self.assertEqual(result['verification'], 'saved_html_content')
-            self.assertEqual(client.calls, [])
+            self.assertEqual(client.calls, [OLD])
 
     def test_bad_title_metadata_not_guessed(self):
         item = dict(ITEM, title='Unknown exam')

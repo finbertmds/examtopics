@@ -286,11 +286,11 @@ class Client:
                 time.sleep(step)
                 remaining = interval - (time.monotonic() - self.last_requests[host])
 
-    def get(self, url, wait_on_rate_limit=None):
+    def get(self, url, wait_on_rate_limit=None, fresh=False):
         wait_on_rate_limit = self.wait_on_rate_limit if wait_on_rate_limit is None else wait_on_rate_limit
         cached = self.cache.get(url)
         cache_ttl = 60 if cached and (cached.get('error') or cached.get('status') != 200) else 86400
-        if cached and not self.refresh and (self.offline or time.time() - cached.get('time', 0) < cache_ttl):
+        if cached and (self.offline or not (self.refresh or fresh)) and (self.offline or time.time() - cached.get('time', 0) < cache_ttl):
             if cached.get('status') == 200 and cached.get('error') == 'blocked_or_challenge' and not is_blocked(200, cached.get('html', '')):
                 cached = dict(cached, error='')
             # Cache 429 là lệnh chờ, không phải kết quả kiểm tra của câu hỏi.
@@ -346,6 +346,10 @@ class Client:
                 raise RateLimitExceeded(url, state['retry_at'], attempt + 1)
             print(f'    Giới hạn tần suất: sẽ thử lại {attempt + 1}/{self.retries} cho {host}.', flush=True)
 
+    def check_current(self, url):
+        # Online: kiểm tra hiện tại, không dùng lại cache 200 cũ để kết luận còn active.
+        return self.get(url, fresh=not self.offline)
+
     def search(self, query, engine):
         templates = {'bing': 'https://www.bing.com/search?q={}&count=20',
                      'google': 'https://www.google.com/search?q={}&num=10',
@@ -382,11 +386,23 @@ class Resolver:
                 self.local_links.extend(urls)
         self.evidence = evidence or []
 
-    def resolve(self, item):
+    def resolve(self, item, on_clear=None, previous_link=None):
+        item = copy.deepcopy(item)
         old = item.get('link', '')
         report = {'topic_number': item.get('topic_number'), 'question_number': item.get('question_number'),
                   'old_link': old, 'new_link': old, 'status': 'Không tìm thấy',
                   'verification': 'unverified', 'source': None, 'attempts': []}
+        if not old and previous_link:
+            item['link'] = previous_link
+            report['search_reference_link'] = previous_link
+        invalid_urls = {normalize_link(previous_link)} if not old and previous_link else set()
+
+        def clear_old(reason):
+            report.update(new_link='', old_link_state='invalid', link_cleared=True, clear_reason=reason)
+            invalid_urls.add(normalize_link(old))
+            if on_clear:
+                on_clear(report)
+
         if not identity(item):
             report['reason'] = 'invalid_question_metadata'
             return report
@@ -397,25 +413,19 @@ class Resolver:
                           verification=method, source=source, reason='matched_exam_topic_question_and_text')
             return report
 
-        for soup, urls, source in self.local_pages:
-            if page_matches(soup, item):
-                for url in urls:
-                    if matches_url(url, item):
-                        return accept(url, 'saved_html_content', source)
-        for result in self.evidence:
-            if indexed_match(result, item):
-                return accept(result['url'], 'search_index', result.get('source', 'evidence_file'))
-
         tried = set()
-        def verify(url):
+        def verify(url, current=False):
             url = normalize_link(url)
             if not view_parts(url) or url in tried or len(tried) >= self.max_candidates:
                 return None
             tried.add(url)
-            response = self.client.get(url)
+            response = (self.client.check_current(url) if current and hasattr(self.client, 'check_current')
+                        else self.client.get(url))
             report['attempts'].append({'url': url, 'http_status': response['status'], 'error': response['error'],
                                        'retry_count': response.get('retry_count', 0),
                                        'retry_history': response.get('retry_history', [])})
+            if current and response['status'] in (404, 410):
+                clear_old('http_' + str(response['status']))
             if response['status'] != 200 or response['error']:
                 return None
             # Một redirect sang exam khác hoặc trang đăng nhập không xác minh được câu hỏi.
@@ -424,11 +434,40 @@ class Resolver:
             soup, urls = page_candidates(response['html'], response['url'])
             if not page_matches(soup, item):
                 report['attempts'][-1]['validation'] = 'content_mismatch'
+                if current and (soup.select_one('.question-body') or any(
+                        re.search(r'Exam .+ topic \d+ question \d+ discussion', tag.get_text(' ', strip=True), re.I)
+                        for tag in soup.select('h1'))):
+                    clear_old('wrong_question_content')
                 return None
+            invalid_urls.discard(url)
+            if current:
+                report['old_link_state'] = 'active'
             for candidate in [*urls, normalize_link(response['url']), url]:
-                if matches_url(candidate, item):
+                if candidate not in invalid_urls and matches_url(candidate, item):
                     return accept(candidate, 'page_content', response['url'])
+            if current:
+                return accept(url, 'page_content', response['url'])
             return None
+
+        # Kiểm tra link đang lưu TRƯỚC cache HTML, evidence và các link thay thế.
+        report['old_link_state'] = 'missing' if not old else 'unverified'
+        if old:
+            if not view_parts(old):
+                clear_old('invalid_discussion_url')
+            else:
+                result = verify(old, current=True)
+                if result:
+                    return result
+
+        for soup, urls, source in self.local_pages:
+            if page_matches(soup, item):
+                for url in urls:
+                    if url not in invalid_urls and matches_url(url, item):
+                        return accept(url, 'saved_html_content', source)
+        for result in self.evidence:
+            if result.get('url') not in invalid_urls and indexed_match(result, item):
+                return accept(result['url'], 'search_index', result.get('source', 'evidence_file'))
+
 
         # Link rút gọn có thể trả canonical/og:url; link ghép chỉ là ứng viên.
         candidate = try_build_link_from_existing(item)
@@ -443,7 +482,7 @@ class Resolver:
                 if error:
                     report['attempts'].append(error)
                 for result in results:
-                    if indexed_match(result, item):
+                    if result.get('url') not in invalid_urls and indexed_match(result, item):
                         return accept(result['url'], 'search_index', result['source'])
                     url = result['url']
                     if matches_url(url, item) or extract_view_id(url) == extract_view_id(old) is not None:
@@ -556,7 +595,20 @@ def process_json(args):
             selected += 1
             key = fingerprint(item)
             try:
-                result = saved.get(key) or resolver.resolve(item)
+                def on_clear(details):
+                    item['link'] = ''
+                    row = next(row for row in reports if
+                               (row.get('topic_number'), row.get('question_number')) ==
+                               (item.get('topic_number'), item.get('question_number')))
+                    row.update(details)
+                    atomic_json(output, data)
+                    atomic_json(report_path, reports)
+                previous_row = next((row for row in reports if
+                                     (row.get('topic_number'), row.get('question_number')) ==
+                                     (item.get('topic_number'), item.get('question_number'))), {})
+                reference = previous_row.get('search_reference_link') or previous_row.get('old_link')
+                result = (saved.get(key) if args.offline else None) or resolver.resolve(
+                    item, on_clear=on_clear, previous_link=reference)
             except RateLimitExceeded as exc:
                 row = next(row for row in reports if
                            (row.get('topic_number'), row.get('question_number')) ==
@@ -566,7 +618,7 @@ def process_json(args):
                                       'request_count': exc.attempts}])
                 raise
             result = dict(result, fingerprint=key, index=index)
-            if result['verification'] != 'unverified':
+            if result['verification'] != 'unverified' or result.get('link_cleared'):
                 item['link'] = result['new_link']
             result['updated_fingerprint'] = fingerprint(item)
             existing = next((i for i, row in enumerate(reports) if
@@ -608,7 +660,7 @@ def main():
     parser.add_argument('--evidence', help='JSON list kết quả search: url,title,snippet,source')
     parser.add_argument('--only-unresolved', nargs='?', const=True, metavar='REPORT',
                         help='Chỉ xử lý câu chưa tìm thấy; tự đọc *.link-report.json nếu không truyền REPORT, hoặc chọn link thiếu/sai định dạng khi chưa có báo cáo')
-    parser.add_argument('--resume', action='store_true', help='Tái dùng kết quả đã xác minh trong report nếu input của câu chưa đổi')
+    parser.add_argument('--resume', action='store_true', help='Tiếp tục theo report; online vẫn kiểm tra lại link hiện tại, offline có thể tái dùng kết quả')
     parser.add_argument('--refresh', action='store_true', help='Bỏ qua cache HTTP')
     parser.add_argument('--offline', action='store_true', help='Chỉ dùng cache, HTML và evidence đã có')
     parser.add_argument('--limit', type=int, default=0, help='Giới hạn số câu được xử lý; 0 = tất cả')

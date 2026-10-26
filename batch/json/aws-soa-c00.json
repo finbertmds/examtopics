@@ -919,7 +919,7 @@
     },
     "suggested_answer": "C",
     "answer": "C",
-    "link": "https://www.examtopics.com/discussions/amazon/view/79875-exam-aws-certified-sysops-administrator-associate-topic-1/",
+    "link": "",
     "multiple_choice": false,
     "question_text": "A SysOps administrator is examining the following AWS CloudFormation template:\n//IMG//\n\nWhy will the stack creation fail?",
     "answer_images": [],
