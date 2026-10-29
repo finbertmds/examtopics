@@ -25,7 +25,7 @@
   "noResults": "No results found",
   "tryChangingFilters": "Try changing filters or search keywords",
   "scrollToTop": "Scroll to top",
-  "scrollToCurrentQuestion": "Scroll to current question",
+  "scrollToLastAnsweredQuestion": "Scroll to highest-numbered answered question",
   "showCorrectAnswers": "Show correct answers",
   "showIncorrectAnswers": "Show incorrect answers",
   "selectMoreAnswers": "You need to select",

@@ -25,7 +25,7 @@
   "noResults": "結果が見つかりません",
   "tryChangingFilters": "フィルターまたは検索キーワードを変更してみてください",
   "scrollToTop": "トップにスクロール",
-  "scrollToCurrentQuestion": "現在の問題にスクロール",
+  "scrollToLastAnsweredQuestion": "回答済みの最も番号が大きい問題にスクロール",
   "showCorrectAnswers": "正解を表示",
   "showIncorrectAnswers": "不正解を表示",
   "selectMoreAnswers": "結果を表示するには、さらに",

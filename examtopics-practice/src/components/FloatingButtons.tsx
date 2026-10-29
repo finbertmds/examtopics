@@ -3,14 +3,14 @@ import { useLanguage } from '../contexts/LanguageContext';
 
 interface FloatingButtonsProps {
   onScrollToTop: () => void;
-  onScrollToCurrentQuestion: () => void;
-  hasCurrentQuestion: boolean;
+  onScrollToLastAnsweredQuestion: () => void;
+  hasAnsweredQuestion: boolean;
 }
 
 const FloatingButtons: React.FC<FloatingButtonsProps> = ({
   onScrollToTop,
-  onScrollToCurrentQuestion,
-  hasCurrentQuestion
+  onScrollToLastAnsweredQuestion,
+  hasAnsweredQuestion
 }) => {
   const { t } = useLanguage();
   const [isAtTop, setIsAtTop] = useState(true);
@@ -51,12 +51,12 @@ const FloatingButtons: React.FC<FloatingButtonsProps> = ({
         </button>
       )}
 
-      {/* Scroll to Current Question Button */}
-      {hasCurrentQuestion && (
+      {/* Scroll to Last Answered Question Button */}
+      {hasAnsweredQuestion && (
         <button
-          onClick={onScrollToCurrentQuestion}
+          onClick={onScrollToLastAnsweredQuestion}
           className="w-9 h-9 md:w-12 md:h-12 bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center group"
-          title={t('scrollToCurrentQuestion')}
+          title={t('scrollToLastAnsweredQuestion')}
         >
           <svg
             className="w-5 h-5 md:w-6 md:h-6"

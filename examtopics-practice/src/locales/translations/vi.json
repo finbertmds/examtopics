@@ -25,7 +25,7 @@
   "noResults": "Không tìm thấy kết quả",
   "tryChangingFilters": "Thử thay đổi bộ lọc hoặc từ khóa tìm kiếm",
   "scrollToTop": "Cuộn lên đầu trang",
-  "scrollToCurrentQuestion": "Cuộn đến câu hỏi hiện tại",
+  "scrollToLastAnsweredQuestion": "Cuộn đến câu đã trả lời có số thứ tự lớn nhất",
   "showCorrectAnswers": "Hiển thị đáp án đúng",
   "showIncorrectAnswers": "Hiển thị đáp án sai",
   "selectMoreAnswers": "Bạn cần chọn thêm",

@@ -411,8 +411,8 @@ const Home: React.FC = () => {
       {/* Floating Buttons */}
       <FloatingButtons
         onScrollToTop={handleScrollToTop}
-        onScrollToCurrentQuestion={() => { }}
-        hasCurrentQuestion={false}
+        onScrollToLastAnsweredQuestion={() => { }}
+        hasAnsweredQuestion={false}
       />
     </div>
   );

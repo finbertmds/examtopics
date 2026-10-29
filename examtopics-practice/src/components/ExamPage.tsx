@@ -386,8 +386,30 @@ const ExamPage: React.FC = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const handleScrollToCurrentQuestion = () => {
-    questionListRef.current?.scrollToCurrentQuestion();
+  const lastAnsweredQuestion = questions.reduce<(typeof questions)[number] | undefined>(
+    (latest, question) => {
+      if (!progress.answers[`${question.topic_number}-${question.question_number}`]) {
+        return latest;
+      }
+      return !latest || question.question_number > latest.question_number ||
+        (question.question_number === latest.question_number &&
+          (question.topic_number ?? 0) > (latest.topic_number ?? 0))
+        ? question
+        : latest;
+    },
+    undefined,
+  );
+
+  const handleScrollToLastAnsweredQuestion = () => {
+    if (!lastAnsweredQuestion) return;
+
+    // Make the answered question visible even when the active filters hide it.
+    setFilterState(previous => ({ ...previous, type: "all", selectedTopic: "all" }));
+    setTimeout(() => {
+      document.querySelector(
+        `[data-topic-number="${lastAnsweredQuestion.topic_number}"][data-question-number="${lastAnsweredQuestion.question_number}"]`,
+      )?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, 0);
   };
 
   if (questionsLoading || progressLoading) {
@@ -691,8 +713,8 @@ const ExamPage: React.FC = () => {
         {/* Floating Buttons */}
         <FloatingButtons
           onScrollToTop={handleScrollToTop}
-          onScrollToCurrentQuestion={handleScrollToCurrentQuestion}
-          hasCurrentQuestion={progress.currentQuestion > 0}
+          onScrollToLastAnsweredQuestion={handleScrollToLastAnsweredQuestion}
+          hasAnsweredQuestion={!!lastAnsweredQuestion}
         />
       </div>
 
