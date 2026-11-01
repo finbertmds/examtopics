@@ -1,3 +1,5 @@
+import { scrollToQuestion } from '../utils/scrollToQuestion';
+import { getFilteredQuestions } from '../utils/questionFilters';
 import React, { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useLanguage } from "../contexts/LanguageContext";
@@ -12,7 +14,7 @@ import { FilterBar } from "./FilterBar";
 import FloatingButtons from "./FloatingButtons";
 import HistoryModal from "./HistoryModal";
 import { ProgressBar } from "./ProgressBar";
-import { QuestionList, QuestionListRef } from "./QuestionList";
+import { QuestionList } from "./QuestionList";
 import { ThemeToggle } from "./ThemeToggle";
 import { getCorrectAnswers } from "../utils/getCorrectAnswers";
 import { useAuth } from "../contexts/AuthContext";
@@ -48,7 +50,7 @@ const ExamPage: React.FC = () => {
   });
   const [showSubmitModal, setShowSubmitModal] = useState(false);
   const [showHistoryModal, setShowHistoryModal] = useState(false);
-  const questionListRef = useRef<QuestionListRef>(null);
+  const initialScrollRef = useRef<string | null>(null);
 
   const {
     progress,
@@ -159,41 +161,28 @@ const ExamPage: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [examId, exam?.file, currentExam?.file]);
 
-  // Auto-scroll to question when questions are loaded
+  // Wait for progress and questions, then track image layout changes.
   useEffect(() => {
-    if (!questionsLoading && questions.length > 0 && questionListRef.current) {
-      // Small delay to ensure DOM is ready
-      setTimeout(() => {
-        let _urlTopicNumber = urlTopicNumber
-          ? urlTopicNumber
-          : progress.currentTopic;
-        let _urlQuestionNumber = urlQuestionNumber
-          ? urlQuestionNumber
-          : progress.currentQuestion;
-
-        if (_urlTopicNumber && _urlQuestionNumber) {
-          // Scroll to URL-specified question
-          const targetElement = document.querySelector(
-            `[data-topic-number="${_urlTopicNumber}"][data-question-number="${_urlQuestionNumber}"]`,
-          );
-          if (targetElement) {
-            targetElement.scrollIntoView({
-              behavior: "smooth",
-              block: "center",
-            });
-            console.log("Scrolled to URL-specified question:", {
-              _urlTopicNumber,
-              _urlQuestionNumber,
-            });
-          }
-        } else {
-          // Scroll to current question from progress
-          questionListRef.current?.scrollToCurrentQuestion();
-        }
-      }, 100);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [questionsLoading, questions]);
+    if (questionsLoading || progressLoading || questions.length === 0) return;
+    const navigationKey = JSON.stringify([examId, location.search]);
+    if (initialScrollRef.current === navigationKey) return;
+    const params = new URLSearchParams(location.search);
+    const topic = Number(params.get("topicNumber")) || progress.currentTopic;
+    const question = Number(params.get("questionNumber")) || progress.currentQuestion;
+    const target = document.querySelector(
+      `[data-topic-number="${topic}"][data-question-number="${question}"]`,
+    );
+    if (!target) return;
+    const cancel = scrollToQuestion(target);
+    const frame = requestAnimationFrame(() => {
+      initialScrollRef.current = navigationKey;
+    });
+    return () => {
+      cancelAnimationFrame(frame);
+      cancel();
+    };
+  }, [examId, location.search, questionsLoading, progressLoading, questions,
+    progress.currentTopic, progress.currentQuestion, filterState]);
 
   const handleAnswer = async (
     topicNumber: number,
@@ -386,7 +375,7 @@ const ExamPage: React.FC = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const lastAnsweredQuestion = questions.reduce<(typeof questions)[number] | undefined>(
+  const lastAnsweredQuestion = getFilteredQuestions(questions, progress, filterState).reduce<(typeof questions)[number] | undefined>(
     (latest, question) => {
       if (!progress.answers[`${question.topic_number}-${question.question_number}`]) {
         return latest;
@@ -403,13 +392,9 @@ const ExamPage: React.FC = () => {
   const handleScrollToLastAnsweredQuestion = () => {
     if (!lastAnsweredQuestion) return;
 
-    // Make the answered question visible even when the active filters hide it.
-    setFilterState(previous => ({ ...previous, type: "all", selectedTopic: "all" }));
-    setTimeout(() => {
-      document.querySelector(
-        `[data-topic-number="${lastAnsweredQuestion.topic_number}"][data-question-number="${lastAnsweredQuestion.question_number}"]`,
-      )?.scrollIntoView({ behavior: "smooth", block: "center" });
-    }, 0);
+    document.querySelector(
+      `[data-topic-number="${lastAnsweredQuestion.topic_number}"][data-question-number="${lastAnsweredQuestion.question_number}"]`,
+    )?.scrollIntoView({ behavior: "smooth", block: "center" });
   };
 
   if (questionsLoading || progressLoading) {
@@ -698,7 +683,6 @@ const ExamPage: React.FC = () => {
         {/* QuestionList */}
         <div className="bg-white dark:bg-gray-800">
           <QuestionList
-            ref={questionListRef}
             questions={questions}
             progress={progress}
             filterState={filterState}
