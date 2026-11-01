@@ -4,6 +4,22 @@ Skill giải thích câu hỏi luyện thi chứng chỉ bằng tiếng Việt, 
 
 Phân tích độc lập đáp án, giải thích mọi lựa chọn, phân biệt đáp án dự kiến của đề với kết luận kỹ thuật hiện tại và ưu tiên tài liệu chính thức khi cần xác minh.
 
+## 📦 Tải xuống và cài đặt
+
+**ExamTopics Explainer v1.0.0** — Skill giải thích câu hỏi luyện thi chứng chỉ bằng tiếng Việt, phân tích từng đáp án và tổng hợp kiến thức cần nhớ.
+
+👉 [Tải ExamTopics Explainer v1.0.0 (.zip)](https://github.com/finbertmds/examtopics/releases/download/examtopics-plugin-v1.0.0/examtopics-plugin.zip)
+
+### Cài skill bằng CLI
+
+Chạy lệnh sau trong terminal (cần cài Node.js và npm):
+
+```bash
+npx skills add https://github.com/finbertmds/examtopics/tree/master/plugins/examtopics/skills/examtopics-explainer
+```
+
+Làm theo hướng dẫn của CLI để chọn agent và phạm vi cài đặt. Sau khi cài, mở phiên chat mới để sử dụng skill.
+
 ## Cấu trúc
 
 ```text
