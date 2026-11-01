@@ -187,7 +187,7 @@ progressSchema.statics.safeUpdateProgress = async function(userId, examId, updat
         { userId, examId },
         { $set: updateFields },
         {
-          new: true,
+          returnDocument: 'after',
           upsert: true, // Create if doesn't exist
           runValidators: true,
           setDefaultsOnInsert: true

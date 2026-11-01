@@ -168,7 +168,7 @@ class ProgressService {
           }
         },
         {
-          new: true,
+          returnDocument: 'after',
           upsert: true,
           runValidators: true,
           setDefaultsOnInsert: true
@@ -197,7 +197,7 @@ class ProgressService {
         await Progress.findOneAndUpdate(
           { userId, examId },
           { $set: { markedForTraining: isMarkedForTraining ? [...progress.markedForTraining, key] : progress.markedForTraining.filter(q => q !== key) } },
-          { new: true }
+          { returnDocument: 'after' }
         );
       }
 
@@ -365,7 +365,7 @@ class ProgressService {
             }
           }
         },
-        { new: true }
+        { returnDocument: 'after' }
       );
       
       console.log(`Progress reset for user ${userId}, exam ${examId}`);

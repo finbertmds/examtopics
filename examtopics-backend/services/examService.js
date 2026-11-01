@@ -138,7 +138,7 @@ class ExamService {
     const updatedExam = await Exam.findOneAndUpdate(
       { code, createdBy: currentOwnerId },
       { $set: { createdBy: newOwner._id } },
-      { new: true }
+      { returnDocument: 'after' }
     );
     if (!updatedExam) return { error: 'Forbidden' };
 
@@ -220,7 +220,7 @@ class ExamService {
     const exam = await Exam.findOneAndUpdate(
       { code, createdBy: userId },
       updateData,
-      { new: true, runValidators: true }
+      { returnDocument: 'after', runValidators: true }
     );
     if (!exam) return { error: 'Forbidden' };
 
@@ -339,7 +339,7 @@ class ExamService {
     const question = await Question.findOneAndUpdate(
       { examId: code, topic_number: topicNumber, question_number: questionNumber },
       allowedUpdates,
-      { new: true }
+      { returnDocument: 'after' }
     );
 
     return question;
