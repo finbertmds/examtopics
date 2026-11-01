@@ -1,0 +1,4 @@
+interface:
+  display_name: "ExamTopics Explainer"
+  short_description: "Giải thích câu hỏi chứng chỉ bằng tiếng Việt"
+  default_prompt: "Dùng $examtopics-explainer để phân tích câu hỏi sau bằng tiếng Việt, giải thích từng lựa chọn và trình bày đầy đủ các mục 1-5."

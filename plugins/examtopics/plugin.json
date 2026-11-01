@@ -1,0 +1,26 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "examtopics",
+  "version": "1.0.0",
+  "description": "Giải thích câu hỏi luyện thi chứng chỉ bằng tiếng Việt, phân tích từng lựa chọn và tổng hợp kiến thức cần nhớ.",
+  "author": {
+    "name": "FinbertMDS"
+  },
+  "repository": "https://github.com/FinbertMDS/examtopics",
+  "keywords": [
+    "certification",
+    "exam-preparation",
+    "vietnamese"
+  ],
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "ExamTopics Explainer",
+        "shortDescription": "Giải thích câu hỏi chứng chỉ bằng tiếng Việt",
+        "longDescription": "Phân tích câu hỏi trắc nghiệm luyện thi chứng chỉ, giải thích lý do chọn và loại từng đáp án, tổng hợp kiến thức cần nhớ và mẹo làm bài. Duy trì đầy đủ các mục 1–5 và kiểm chứng thông tin bằng tài liệu chính thức khi cần.",
+        "developerName": "FinbertMDS"
+      }
+    }
+  },
+  "license": "MIT"
+}
