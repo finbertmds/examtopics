@@ -1044,6 +1044,7 @@ const AdminPage: React.FC = () => {
                                   hintButtonRefs.current.answers = el;
                                 }}
                                 type="button"
+                                tabIndex={-1}
                                 onClick={() => setShowAnswersHint(prev => !prev)}
                                 className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-gray-200 text-xs font-semibold text-gray-600 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300"
                                 aria-label={t('helpTooltipLabel')}
@@ -1129,6 +1130,7 @@ const AdminPage: React.FC = () => {
                                 hintButtonRefs.current.answer = el;
                               }}
                               type="button"
+                              tabIndex={-1}
                               onClick={() => setShowAnswerHint(prev => !prev)}
                               className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-gray-200 text-xs font-semibold text-gray-600 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300"
                               aria-label={t('helpTooltipLabel')}
@@ -1169,6 +1171,7 @@ const AdminPage: React.FC = () => {
                                 hintButtonRefs.current.answerField = el;
                               }}
                               type="button"
+                              tabIndex={-1}
                               onClick={() => setShowAnswerFieldHint(prev => !prev)}
                               className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-gray-200 text-xs font-semibold text-gray-600 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300"
                               aria-label={t('helpTooltipLabel')}
