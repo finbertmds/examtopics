@@ -27,7 +27,7 @@ Làm theo hướng dẫn của CLI để chọn agent và phạm vi cài đặt.
 ### Bằng skill-installer trong Codex
 
 ```text
-$skill-installer cài skill từ repo https://github.com/finbertmds/examtopics tại đường dẫn skills/examtopics-explainer
+$skill-installer cài skill từ repo https://github.com/finbertmds/examtopics từ nhánh master tại đường dẫn skills/examtopics-explainer
 ```
 
 Để cài skill điền đáp án, thay đường dẫn bằng `skills/examtopics-retry-dl`.
@@ -84,7 +84,32 @@ skills/
     └── batch.sh
 ```
 
-Các lệnh cài ở trên sử dụng trực tiếp thư mục skill. File `plugin.json` và gói ZIP v1.0.0 từ cấu trúc plugin cũ cần được rà soát, đóng gói lại trước khi phát hành plugin theo cấu trúc mới; chúng không thay thế việc cài từng skill.
+## Đồng bộ và đóng gói plugin
+
+Chạy từ gốc repo (cần Node.js và lệnh `zip`):
+
+```bash
+node scripts/package-examtopics.mjs
+```
+
+Chỉ chỉnh sửa skill tại `skills/examtopics-explainer/`; metadata và phiên bản ở `skills/plugin.json`, giấy phép ở `skills/LICENSE`. Mỗi lần chạy, script kiểm tra nguồn, tạo lại `plugins/examtopics/` và xuất `dist/examtopics-plugin.zip`. File đã xóa ở nguồn cũng được loại khỏi gói mới. Thư mục plugin là đầu ra tự sinh, mọi chỉnh sửa trực tiếp tại đó sẽ bị thay thế.
+
+ZIP chứa một thư mục `examtopics/`, với `plugin.json`, `LICENSE` và `skills/examtopics-explainer/`. Skill điền đáp án và script tải lại câu hỏi không nằm trong plugin này. Các đầu ra được bỏ qua bởi Git; chạy lại lệnh để tái tạo. Gói ZIP cũ ở gốc repo không được cập nhật bởi script.
+
+Lệnh này chỉ tạo gói local; không tự cài hoặc xuất bản plugin vào ChatGPT.
+
+Để tạo gói public draft riêng với metadata và icon sáng/tối:
+
+```bash
+node scripts/package-examtopics.mjs --public
+```
+
+| Chế độ | Nguồn metadata | Thư mục plugin tự sinh | ZIP đầu ra |
+| --- | --- | --- | --- |
+| Thường | `skills/plugin.json` | `plugins/examtopics/` | `dist/examtopics-plugin.zip` |
+| Public | `skills/public-release/plugin.json` | `plugins/examtopics-public/` | `dist/examtopics-public-draft.zip` |
+
+Cả hai chế độ lấy cùng nguồn `skills/examtopics-explainer/`. Với gói public, sửa listing và icon tại [`public-release/`](public-release/README.md), rồi chạy lại lệnh. Dùng ZIP đầu ra để cập nhật qua Plugin Creator hoặc chuẩn bị submission trên Portal; đóng gói không tự cập nhật plugin đã cài hay phát hành công khai.
 
 ## Giấy phép
 

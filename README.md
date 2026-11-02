@@ -18,6 +18,20 @@ Repository gồm ứng dụng luyện thi chứng chỉ IT, API quản lý đề
 
 Các skill nằm trong [`skills/`](skills/README.md): giải thích câu hỏi bằng tiếng Việt và điền đáp án còn thiếu trong JSON. Xem [hướng dẫn cài đặt và sử dụng](skills/README.md).
 
+### Đóng gói skill thành plugin
+
+Chạy từ gốc repo, cần Node.js và lệnh `zip`:
+
+```bash
+# Đồng bộ skill nguồn và tạo gói plugin
+node scripts/package-examtopics.mjs
+
+# Tạo gói public draft có metadata và icon sáng/tối
+node scripts/package-examtopics.mjs --public
+```
+
+Gói thường được xuất ra `dist/examtopics-plugin.zip`; gói public ra `dist/examtopics-public-draft.zip`. Chỉ sửa nguồn trong `skills/`; các thư mục plugin và ZIP được tự tạo lại, không đưa vào Git. Lệnh đóng gói không tự upload hoặc publish lên ChatGPT. Xem [hướng dẫn đóng gói chi tiết](skills/README.md#đồng-bộ-và-đóng-gói-plugin).
+
 ## Luồng dữ liệu
 
 ```text

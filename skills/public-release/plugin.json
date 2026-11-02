@@ -1,0 +1,59 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "examtopics",
+  "version": "1.0.0",
+  "description": "Explain certification practice questions in Vietnamese, evaluate every option, and review key concepts.",
+  "repository": "https://github.com/FinbertMDS/examtopics",
+  "keywords": [
+    "certification",
+    "exam-preparation",
+    "vietnamese"
+  ],
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "ExamTopics Explainer",
+        "shortDescription": "Exam answers in Vietnamese",
+        "longDescription": "Understand IT certification practice questions with clear explanations in Vietnamese. Provide a question and its answer options as text, code, or an image. The skill explains the selected answer, evaluates every option, summarizes key concepts, and offers contextual exam tips. Each response preserves five sections: understanding the question, why the answer is correct, evaluation of all options, knowledge to remember, and exam tips, with an answer and conclusion. It supports programming, cloud, security, DevOps, and AI/ML topics. When host tools are available, it can consult official technical documentation; it identifies uncertainty and distinguishes an exam’s expected answer from current technical behavior. This skills-only plugin has no bundled MCP server, external account connection, or question bank. It is an independent study aid and is not affiliated with ExamTopics or certification providers. Explanations may contain errors and do not guarantee exam results.",
+        "category": "Education & Research",
+        "defaultPrompt": [
+          "Giải thích câu hỏi chứng chỉ này bằng tiếng Việt và phân tích từng lựa chọn.",
+          "Phân tích output của đoạn code trong câu hỏi và giải thích vì sao chọn đáp án đó.",
+          "So sánh các đáp án của câu hỏi cloud này và chỉ ra từ khóa quyết định."
+        ],
+        "logo": "./assets/icon.png",
+        "composerIcon": "./assets/icon.png",
+        "developerName": "FinbertMDS",
+        "logoDark": "./assets/icon-dark.png",
+        "composerIconDark": "./assets/icon-dark.png",
+        "websiteURL": "https://github.com/finbertmds/examtopics",
+        "supportURL": "https://github.com/finbertmds/examtopics/issues",
+        "privacyPolicyURL": "https://www.privacypolicies.com/live/2bcef995-e789-45af-9cae-a641ca29b063",
+        "termsOfServiceURL": "https://www.privacypolicies.com/live/60c30e97-dd0b-4b4c-93f5-c574e4d63ac6"
+      },
+      "review": {
+        "prompts": [
+          "What does this Python code print? values = [10, 20]; print(type(values) is list). A. None B. True C. 0 D. False. Giải thích bằng tiếng Việt.",
+          "Giải thích câu hỏi này: Which AWS service provides object storage? A. Amazon S3 B. Amazon EC2 C. Amazon EBS D. Amazon VPC.",
+          "Đề yêu cầu chọn hai đáp án nhưng tôi chỉ gửi được lựa chọn A. Bạn cần thêm thông tin gì để kết luận?"
+        ],
+        "commerce": false,
+        "commerce_description": "Free to use. No payments or purchases are offered by the plugin."
+      },
+      "publication": {
+        "release_notes": "Initial public package of the Vietnamese certification question explainer. Includes one skill; no MCP server or external account connection.",
+        "translations": {
+          "vi-VN": {
+            "subtitle": "Giải đề thi bằng tiếng Việt",
+            "description": "Giải thích câu hỏi luyện thi chứng chỉ bằng tiếng Việt từ văn bản, code hoặc ảnh. Phân tích từng lựa chọn, tổng hợp kiến thức cần nhớ và mẹo thi. Giữ đủ năm mục giải thích, nêu rõ khi đề mơ hồ hoặc lỗi thời. Có thể đối chiếu tài liệu chính thức khi môi trường cung cấp công cụ. Không kèm bộ đề thi, MCP server hoặc kết nối tài khoản bên ngoài. Đây là công cụ học tập độc lập, không liên kết với ExamTopics hoặc nhà cung cấp chứng chỉ; không bảo đảm kết quả thi."
+          }
+        },
+        "countries": []
+      }
+    }
+  },
+  "license": "MIT",
+  "author": {
+    "name": "FinbertMDS"
+  }
+}

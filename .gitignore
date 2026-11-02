@@ -2,3 +2,7 @@
 # .gitignore
 .DS_Store
 .temp
+# Generated plugin release files
+/plugins/examtopics/
+/plugins/examtopics-public/
+/dist/
