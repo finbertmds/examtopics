@@ -1,6 +1,6 @@
 # ExamTopics
 
-Repository gồm ứng dụng luyện thi chứng chỉ IT, API quản lý đề và tiến độ, các công cụ thu thập/xử lý dữ liệu, cùng plugin giải thích câu hỏi bằng tiếng Việt.
+Repository gồm ứng dụng luyện thi chứng chỉ IT, API quản lý đề và tiến độ, các công cụ thu thập/xử lý dữ liệu, cùng các AI skill hỗ trợ giải thích và bổ sung đáp án.
 
 ## Các thành phần
 
@@ -11,21 +11,12 @@ Repository gồm ứng dụng luyện thi chứng chỉ IT, API quản lý đề
 | [`examtopics-downloader/`](examtopics-downloader/) | CLI tải câu hỏi, xuất JSON/Markdown | Go |
 | [`batch/`](batch/) | Kho dữ liệu và script chuyển đổi, sửa liên kết, tải ảnh | Python, Shell |
 | [`examtopics-img-downloader/`](examtopics-img-downloader/) | Tải ảnh hàng loạt từ JSON vào kho batch | Python |
-| [`examtopics-retry-dl/`](examtopics-retry-dl/) | Tải lại câu hỏi từ URL hoặc log lỗi | Python |
-| [`plugins/examtopics/`](plugins/examtopics/) | Plugin ExamTopics Explainer | Agent skill |
+| [`skills/`](skills/README.md) | Skill giải thích, bổ sung đáp án và script tải lại câu hỏi | Agent skills, Python |
 | [`.github/workflows/`](.github/workflows/) | Tự động build image và triển khai | GitHub Actions, Docker, Render |
 
-## Công cụ tải câu hỏi
+## AI skills
 
-| Thư mục | Chức năng | Công nghệ |
-|---|---|---|
-| [`examtopics-retry-dl/`](examtopics-retry-dl/) | Tải lại câu hỏi từ URL hoặc log lỗi | Python |
-
-## Plugins và AI skills
-
-| Thư mục | Chức năng | Loại |
-|---|---|---|
-| [`plugins/examtopics/`](plugins/examtopics/) | Giải thích đáp án, phân tích lựa chọn và tổng hợp kiến thức bằng tiếng Việt | Agent plugin |
+Các skill nằm trong [`skills/`](skills/README.md): giải thích câu hỏi bằng tiếng Việt và điền đáp án còn thiếu trong JSON. Xem [hướng dẫn cài đặt và sử dụng](skills/README.md).
 
 ## Luồng dữ liệu
 
@@ -211,18 +202,12 @@ Script đọc `../batch/json/*.json`, trích URL trong `question_images` và `an
 ### Tải lại câu hỏi lỗi
 
 ```bash
-cd examtopics-retry-dl
+cd skills/examtopics-retry-dl
 python -m pip install -r requirements.txt
 python retry_failed_questions.py --input failed_urls.txt --output retried_questions.json
 ```
 
 Đầu vào có thể là file URL/log lỗi hoặc URL truyền trực tiếp. Có các cờ `--retries`, `--timeout`, `--delay`; kết quả JSON cần được kiểm tra và ghép vào bộ đề tương ứng trước khi import.
-
-## ExamTopics Explainer
-
-Plugin tại [`plugins/examtopics/`](plugins/examtopics/) cung cấp skill `examtopics-explainer`, giải thích câu hỏi chứng chỉ bằng tiếng Việt, phân tích từng lựa chọn và tổng hợp kiến thức cần nhớ.
-
-Xem [README plugin](plugins/examtopics/README.md) để tải gói phát hành, cài đặt và sử dụng. Plugin được đóng gói riêng với ứng dụng web và không bao gồm bộ đề thi.
 
 ## Build và kiểm thử
 
