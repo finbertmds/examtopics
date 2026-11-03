@@ -5,3 +5,4 @@ __pycache__/
 *.link-report.json
 *.link-report.md
 fix_examtopics_links.md
+.DS_Store
