@@ -326,7 +326,8 @@
       "B": "Create a service role that has cloudformation.amazonaws.com as the service principal. Configure the role to allow the sts:AssumeRole action.",
       "C": "For each required set of permissions, add a separate policy to the role to allow those permissions. Add the ARN of each CloudFormation stack in the resource field of each policy.",
       "D": "For each required set of permissions, add a separate policy to the role to allow those permissions. Add the ARN of each service that needs the permissions in the resource field of the corresponding policy.",
-      "E": "Update each stack to use the service role.\nF Add a policy to each member role to allow the iam:PassRole action. Set the policy's resource field to the ARN of the service role."
+      "E": "Update each stack to use the service role.",
+      "F": "Add a policy to each member role to allow the iam:PassRole action. Set the policy's resource field to the ARN of the service role."
     },
     "suggested_answer": "BDE",
     "answer": "BDE",
@@ -618,17 +619,22 @@
     "question_number": 34,
     "title": "Exam AWS Certified Security - Specialty SCS-C02 topic 1 question 34 discussion",
     "answers": {
-      "A": "Update the IAM policy attached to the role in the identity account to be:",
-      "B": "Update the trust policy on the role in the target account to be:",
-      "C": "Update the trust policy on the role in the identity account to be:",
-      "D": "Update the IAM policy attached to the role in the target account to be:"
+      "A": "Update the IAM policy attached to the role in the identity account to be: //IMG//",
+      "B": "Update the trust policy on the role in the target account to be: //IMG//",
+      "C": "Update the trust policy on the role in the identity account to be: //IMG//",
+      "D": "Update the IAM policy attached to the role in the target account to be: //IMG//"
     },
     "suggested_answer": "B",
     "answer": "B",
     "link": "https://www.examtopics.com/discussions/amazon/view/122779-exam-aws-certified-security-specialty-scs-c02-topic-1-question-34-discussion/",
     "multiple_choice": false,
     "question_text": "A company uses identity federation to authenticate users into an identity account (987654321987) where the users assume an IAM role named IdentityRole. The users then assume an IAM role named JobFunctionRole in the target AWS account (123456789123) to perform their job functions.\nA user is unable to assume the IAM role in the target account. The policy attached to the role in the identity account is:\n//IMG//\n\nWhat should be done to enable the user to assume the appropriate role in the target account?",
-    "answer_images": [],
+    "answer_images": [
+      "/img/aws-scs-c02/image4.png",
+      "/img/aws-scs-c02/image5.png",
+      "/img/aws-scs-c02/image6.png",
+      "/img/aws-scs-c02/image7.png"
+    ],
     "question_images": [
       "/img/aws-scs-c02/image3.png"
     ]
@@ -1038,17 +1044,22 @@
     "question_number": 57,
     "title": "Exam AWS Certified Security - Specialty SCS-C02 topic 1 question 57 discussion",
     "answers": {
-      "A": "",
-      "B": "",
-      "C": "",
-      "D": ""
+      "A": "//IMG//",
+      "B": "//IMG//",
+      "C": "//IMG//",
+      "D": "//IMG//"
     },
     "suggested_answer": "C",
     "answer": "C",
     "link": "https://www.examtopics.com/discussions/amazon/view/122813-exam-aws-certified-security-specialty-scs-c02-topic-1-question-57-discussion/",
     "multiple_choice": false,
     "question_text": "To meet regulatory requirements, a security engineer needs to implement an IAM policy that restricts the use of AWS services to the us-east-1 Region.\nWhat policy should the engineer implement?",
-    "answer_images": [],
+    "answer_images": [
+      "/img/aws-scs-c02/image8.png",
+      "/img/aws-scs-c02/image9.png",
+      "/img/aws-scs-c02/image10.png",
+      "/img/aws-scs-c02/image11.png"
+    ],
     "question_images": []
   },
   {
@@ -1260,17 +1271,22 @@
     "question_number": 69,
     "title": "Exam AWS Certified Security - Specialty SCS-C02 topic 1 question 69 discussion",
     "answers": {
-      "A": "",
-      "B": "",
-      "C": "",
-      "D": ""
+      "A": "//IMG//",
+      "B": "//IMG//",
+      "C": "//IMG//",
+      "D": "//IMG//"
     },
     "suggested_answer": "B",
     "answer": "B",
     "link": "https://www.examtopics.com/discussions/amazon/view/127041-exam-aws-certified-security-specialty-scs-c02-topic-1-question-69-discussion/",
     "multiple_choice": false,
     "question_text": "A security engineer needs to configure an Amazon S3 bucket policy to restrict access to an S3 bucket that is named DOC-EXAMPLE-BUCKET. The policy must allow access to only DOC-EXAMPLE-BUCKET from only the following endpoint: vpce-1a2b3c4d. The policy must deny all access to DOC-EXAMPLE-BUCKET if the specified endpoint is not used.\n\nWhich bucket policy statement meets these requirements?",
-    "answer_images": [],
+    "answer_images": [
+      "/img/aws-scs-c02/image13.png",
+      "/img/aws-scs-c02/image14.png",
+      "/img/aws-scs-c02/image15.png",
+      "/img/aws-scs-c02/image16.png"
+    ],
     "question_images": []
   },
   {
@@ -1794,17 +1810,21 @@
     "question_number": 98,
     "title": "Exam AWS Certified Security - Specialty SCS-C02 topic 1 question 98 discussion",
     "answers": {
-      "A": "Remove the Condition element. Change the Principal element to the following:",
-      "B": "Change the Action element to the following:",
+      "A": "Remove the Condition element. Change the Principal element to the following: //IMG//",
+      "B": "Change the Action element to the following: //IMG//",
       "C": "Change the Resource element to \"arn:aws:s3:::DOC-EXAMPLE- BUCKET/*''.",
-      "D": "Change the Resource element to \"arn:aws:lambda:::function:MyLambdaFunction\". Change the Principal element to the following:"
+      "D": "Change the Resource element to \"arn:aws:lambda:::function:MyLambdaFunction\". Change the Principal element to the following: //IMG//"
     },
     "suggested_answer": "C",
     "answer": "C",
     "link": "https://www.examtopics.com/discussions/amazon/view/127150-exam-aws-certified-security-specialty-scs-c02-topic-1-question-98-discussion/",
     "multiple_choice": false,
     "question_text": "A security engineer is troubleshooting an AWS Lambda function that is named MyLambdaFunction. The function is encountering an error when the function attempts to read the objects in an Amazon S3 bucket that is named DOC-EXAMPLE-BUCKET. The S3 bucket has the following bucket policy:\n\n//IMG//\n\n\nWhich change should the security engineer make to the policy to ensure that the Lambda function can read the bucket objects?",
-    "answer_images": [],
+    "answer_images": [
+      "/img/aws-scs-c02/image18.png",
+      "/img/aws-scs-c02/image19.png",
+      "/img/aws-scs-c02/image20.png"
+    ],
     "question_images": [
       "/img/aws-scs-c02/image17.png"
     ]
@@ -1832,17 +1852,22 @@
     "question_number": 100,
     "title": "Exam AWS Certified Security - Specialty SCS-C02 topic 1 question 100 discussion",
     "answers": {
-      "A": "",
-      "B": "",
-      "C": "",
-      "D": ""
+      "A": "//IMG//",
+      "B": "//IMG//",
+      "C": "//IMG//",
+      "D": "//IMG//"
     },
     "suggested_answer": "B",
     "answer": "B",
     "link": "https://www.examtopics.com/discussions/amazon/view/127151-exam-aws-certified-security-specialty-scs-c02-topic-1-question-100-discussion/",
     "multiple_choice": false,
     "question_text": "A company has a guideline that mandates the encryption of all Amazon S3 bucket data in transit. A security engineer must implement an S3 bucket policy that denies any S3 operations if data is not encrypted.\n\nWhich S3 bucket policy will meet this requirement?",
-    "answer_images": [],
+    "answer_images": [
+      "/img/aws-scs-c02/image21.png",
+      "/img/aws-scs-c02/image22.png",
+      "/img/aws-scs-c02/image23.png",
+      "/img/aws-scs-c02/image24.png"
+    ],
     "question_images": []
   },
   {
@@ -1979,17 +2004,22 @@
     "question_number": 108,
     "title": "Exam AWS Certified Security - Specialty SCS-C02 topic 1 question 108 discussion",
     "answers": {
-      "A": "",
-      "B": "",
-      "C": "",
-      "D": ""
+      "A": "//IMG//",
+      "B": "//IMG//",
+      "C": "//IMG//",
+      "D": "//IMG//"
     },
     "suggested_answer": "A",
     "answer": "A",
     "link": "https://www.examtopics.com/discussions/amazon/view/127134-exam-aws-certified-security-specialty-scs-c02-topic-1-question-108-discussion/",
     "multiple_choice": false,
     "question_text": "A security engineer needs to create an Amazon S3 bucket policy to grant least privilege read access to IAM user accounts that are named User1, User2, and User3. These IAM user accounts are members of the AuthorizedPeople IAM group. The security engineer drafts the following S3 bucket policy:\n\n//IMG//\n\n\nWhen the security engineer tries to add the policy to the S3 bucket, the following error message appears: \"Missing required field Principal.\"\n\nThe security engineer is adding a Principal element to the policy. The addition must provide read access to only User1, User2, and User3.\n\nWhich solution meets these requirements?",
-    "answer_images": [],
+    "answer_images": [
+      "/img/aws-scs-c02/image27.png",
+      "/img/aws-scs-c02/image28.png",
+      "/img/aws-scs-c02/image29.png",
+      "/img/aws-scs-c02/image30.png"
+    ],
     "question_images": [
       "/img/aws-scs-c02/image26.png"
     ]
@@ -2091,17 +2121,22 @@
     "question_number": 114,
     "title": "Exam AWS Certified Security - Specialty SCS-C02 topic 1 question 114 discussion",
     "answers": {
-      "A": "",
-      "B": "",
-      "C": "",
-      "D": ""
+      "A": "//IMG//",
+      "B": "//IMG//",
+      "C": "//IMG//",
+      "D": "//IMG//"
     },
     "suggested_answer": "A",
     "answer": "A",
     "link": "https://www.examtopics.com/discussions/amazon/view/127154-exam-aws-certified-security-specialty-scs-c02-topic-1-question-114-discussion/",
     "multiple_choice": false,
     "question_text": "A company deploys a set of standard IAM roles in AWS accounts. The IAM roles are based on job functions within the company. To balance operational efficiency and security, a security engineer implemented AWS Organizations SCPs to restrict access to critical security services in all company accounts.\n\nAll of the company's accounts and OUs within AWS Organizations have a default FullAWSAccess SCP that is attached. The security engineer needs to ensure that no one can disable Amazon GuardDuty and AWS Security Hub. The security engineer also must not override other permissions that are granted by IAM policies that are defined in the accounts.\n\nWhich SCP should the security engineer attach to the root of the organization to meet these requirements?",
-    "answer_images": [],
+    "answer_images": [
+      "/img/aws-scs-c02/image31.png",
+      "/img/aws-scs-c02/image32.png",
+      "/img/aws-scs-c02/image33.png",
+      "/img/aws-scs-c02/image34.png"
+    ],
     "question_images": []
   },
   {
@@ -2301,8 +2336,8 @@
       "C": "Configure the IAM policy in use by the IAM role to have access to the required AWS logs: API actions that will publish logs.",
       "D": "Add an interface VPC endpoint to provide a route to CloudWatch Logs."
     },
-    "suggested_answer": "A",
-    "answer": "A",
+    "suggested_answer": "C",
+    "answer": "C",
     "link": "https://www.examtopics.com/discussions/amazon/view/140238-exam-aws-certified-security-specialty-scs-c02-topic-1-question-125-discussion/",
     "multiple_choice": false,
     "question_text": "An Amazon EC2 Auto Scaling group launches Amazon Linux EC2 instances and installs the Amazon CloudWatch agent to publish logs to Amazon CloudWatch Logs. The EC2 instances launch with an IAM role that has an IAM policy attached. The policy provides access to publish custom metrics to CloudWatch. The EC2 instances run in a private subnet inside a VPC The VPC provides access to the internet for private subnets through a NAT gateway.\n\nA security engineer notices that no logs are being published to CloudWatch Logs for the EC2 instances that the Auto Scaling group launches. The security engineer validates that the CloudWatch Logs agent is running and is configured properly on the EC2 instances. In addition, the security engineer validates that network communications are working properly to AWS services.\n\nWhat can the security engineer do to ensure that the logs are published to CloudWatch Logs?",
@@ -3117,17 +3152,22 @@
     "question_number": 170,
     "title": "Exam AWS Certified Security - Specialty SCS-C02 topic 1 question 170 discussion",
     "answers": {
-      "A": "",
-      "B": "",
-      "C": "",
-      "D": ""
+      "A": "//IMG//",
+      "B": "//IMG//",
+      "C": "//IMG//",
+      "D": "//IMG//"
     },
     "suggested_answer": "A",
     "answer": "A",
     "link": "https://www.examtopics.com/discussions/amazon/view/140646-exam-aws-certified-security-specialty-scs-c02-topic-1-question-170-discussion/",
     "multiple_choice": false,
     "question_text": "A company uses AWS Organizations and has many AWS accounts. The company has a new requirement to use server-side encryption with customer-provided keys (SSE-C) on all new object uploads to Amazon S3 buckets.\n\nA security engineer is creating an SCP that includes a Deny effect for the s3:PutObject action.\n\nWhich condition must the security engineer add to the SCP to enforce the new SSE-C requirement?",
-    "answer_images": [],
+    "answer_images": [
+      "/img/aws-scs-c02/image36.png",
+      "/img/aws-scs-c02/image37.png",
+      "/img/aws-scs-c02/image38.png",
+      "/img/aws-scs-c02/image39.png"
+    ],
     "question_images": []
   },
   {
@@ -3135,17 +3175,22 @@
     "question_number": 171,
     "title": "Exam AWS Certified Security - Specialty SCS-C02 topic 1 question 171 discussion",
     "answers": {
-      "A": "",
-      "B": "",
-      "C": "",
-      "D": ""
+      "A": "//IMG//",
+      "B": "//IMG//",
+      "C": "//IMG//",
+      "D": "//IMG//"
     },
     "suggested_answer": "B",
     "answer": "B",
     "link": "https://www.examtopics.com/discussions/amazon/view/140647-exam-aws-certified-security-specialty-scs-c02-topic-1-question-171-discussion/",
     "multiple_choice": false,
     "question_text": "A company wants to deny a specific federated user named Bob access to an Amazon S3 bucket named DOC-EXAMPLE-BUCKET. The company wants to meet this requirement by using a bucket policy. The company also needs to ensure that this bucket policy affects Bob's S3 permissions only. Any other permissions that Bob has must remain intact.\n\nWhich policy should the company use to meet these requirements?",
-    "answer_images": [],
+    "answer_images": [
+      "/img/aws-scs-c02/image40.png",
+      "/img/aws-scs-c02/image41.png",
+      "/img/aws-scs-c02/image42.png",
+      "/img/aws-scs-c02/image43.png"
+    ],
     "question_images": []
   },
   {
@@ -3341,8 +3386,8 @@
       "D": "Configure AWS CloudTrail to send log notifications to an Amazon Simple Notification Service (Amazon SNS) topic. Create an AWS Lambda function that parses the CloudTrail notification for root login activity and notifies a separate SNS topic that contains the endpoints that should receive notification. Subscribe the Lambda function to the SNS topic that is receiving log notifications from CloudTrail.",
       "E": "Configure an Amazon EventBridge event rule that runs when Amazon CloudWatch API calls are recorded for a successful root login. Configure the rule to target an Amazon Simple Notification Service (Amazon SNS) topic. Subscribe any required endpoints to the SNS topic so that these endpoints can receive notification."
     },
-    "suggested_answer": "CE",
-    "answer": "CE",
+    "suggested_answer": "CD",
+    "answer": "CD",
     "link": "https://www.examtopics.com/discussions/amazon/view/148611-exam-aws-certified-security-specialty-scs-c02-topic-1-question-182-discussion/",
     "multiple_choice": true,
     "question_text": "A company has secured the AWS account root user for its AWS account by following AWS best practices. The company also has enabled AWS CloudTrail, which is sending its logs to Amazon S3. A security engineer wants to receive notification in near-real time if a user uses the AWS account root user credentials to sign in to the AWS Management Console\n\nWhich solutions will provide this notification? (Choose two.)",
@@ -4724,17 +4769,22 @@
     "question_number": 258,
     "title": "Exam AWS Certified Security - Specialty SCS-C02 topic 1 question 258 discussion",
     "answers": {
-      "A": "",
-      "B": "",
-      "C": "",
-      "D": ""
+      "A": "//IMG//",
+      "B": "//IMG//",
+      "C": "//IMG//",
+      "D": "//IMG//"
     },
     "suggested_answer": "C",
     "answer": "C",
     "link": "https://www.examtopics.com/discussions/amazon/view/153956-exam-aws-certified-security-specialty-scs-c02-topic-1-question-258-discussion/",
     "multiple_choice": false,
     "question_text": "A company is using AWS Organizations with the default SCP. The company needs to restrict AWS usage for all AWS accounts that are in a specific OU.\n\nExcept for some desired global services, the AWS usage must occur only in the eu-west-1 Region for all accounts in the OU. A security engineer must create an SCP that applies the restriction to existing accounts and any new accounts in the OU.\n\nWhich SCP will meet these requirements?",
-    "answer_images": [],
+    "answer_images": [
+      "/img/aws-scs-c02/image46.png",
+      "/img/aws-scs-c02/image47.png",
+      "/img/aws-scs-c02/image48.png",
+      "/img/aws-scs-c02/image49.png"
+    ],
     "question_images": []
   },
   {
@@ -5021,8 +5071,8 @@
       "D": "Implement IP-based match rules in the web ACL for any IP addresses that generate many successful login responses. Block any IP addresses that generate many successful logins.",
       "E": "Create a custom block response that redirects users to a secure workflow to reset their password inside the system."
     },
-    "suggested_answer": "AB",
-    "answer": "AB",
+    "suggested_answer": "BE",
+    "answer": "BE",
     "link": "https://www.examtopics.com/discussions/amazon/view/152314-exam-aws-certified-security-specialty-scs-c02-topic-1-question-274-discussion/",
     "multiple_choice": true,
     "question_text": "A company has a new web-based account management system for an online game. Players create a unique username and password to log in to the system.\n\nThe company has implemented an AWS WAF web ACL for the system. The web ACL includes the core rule set (CRS) AWS managed rule group on the Application Load Balancer that serves the system.\n\nThe company’s security team finds that the system was the target of a credential stuffing attack. Credentials that were exposed in other breaches were used to try to log in to the system.\n\nThe security team must implement a solution to reduce the chance of a successful credential stuffing attack in the future. The solution also must minimize impact on legitimate users of the system.\n\nWhich combination of actions will meet these requirements? (Choose two.)",
@@ -5147,8 +5197,8 @@
       "C": "Use inbound rule 100 to allow traffic on TCP port range 1024-65535. Use inbound rule 200 to deny traffic on TCP port 3306. Use outbound rule 100 to allow traffic on TCP port 443.",
       "D": "Use inbound rule 100 to deny traffic on TCP port 3306. Use inbound rule 200 to allow traffic on TCP port 443. Use outbound rule 100 to allow traffic on TCP port 443."
     },
-    "suggested_answer": "D",
-    "answer": "D",
+    "suggested_answer": "B",
+    "answer": "B",
     "link": "https://www.examtopics.com/discussions/amazon/view/152984-exam-aws-certified-security-specialty-scs-c02-topic-1-question-285-discussion/",
     "multiple_choice": false,
     "question_text": "A public subnet contains two Amazon EC2 instances. The subnet has a custom network ACL. A security engineer is designing a solution to improve the subnet security.\n\nThe solution must allow outbound traffic to an internet service that uses TLS through port 443. The solution also must deny inbound traffic that is destined for MySQL port 3306.\n\nWhich network ACL rule set meets these requirements?",
