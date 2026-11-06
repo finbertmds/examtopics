@@ -69,6 +69,7 @@ export const QuestionItem: React.FC<QuestionItemProps> = ({
   const isCorrect = userAnswer?.isCorrect;
   const isAnswered = !!userAnswer;
   const correctAnswers = getCorrectAnswers(question.suggested_answer);
+  const additionalAnswer = question.answer && question.answer !== "" && question.answer !== question.suggested_answer ? getCorrectAnswers(question.answer!) : null;
 
   // Check if user has selected enough answers for multiple choice questions
   const hasSelectedEnoughAnswers = question.multiple_choice
@@ -318,11 +319,11 @@ export const QuestionItem: React.FC<QuestionItemProps> = ({
               {correctAnswers.join(', ')}
             </span>
           </div>
-          {question.answer !== question.suggested_answer && (
+          {additionalAnswer && (
             <div className="flex items-center gap-2">
               <strong className="text-gray-800 dark:text-gray-200">{t('additionalAnswer')}</strong>
               <span className="ml-2 text-indigo-600 dark:text-indigo-400 font-medium break-words">
-                {question.answer}
+                {additionalAnswer.join(', ')}
               </span>
             </div>
           )}
