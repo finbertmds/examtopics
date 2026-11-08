@@ -29,6 +29,8 @@ Chỉ áp dụng các điểm liên quan:
 
 Viết bằng tiếng Việt; giữ nguyên tên dịch vụ, API, class, function, keyword và thuật ngữ kỹ thuật tiếng Anh. Giải nghĩa thuật ngữ mới khi cần. Không chép lại toàn bộ đề, không thêm lý thuyết ngoài phạm vi. Luôn trình bày đầy đủ các mục 1–5 theo khung sau, giữ nguyên số thứ tự, kèm phần đáp án và kết luận. Với câu đơn giản, rút ngắn nội dung từng mục thay vì bỏ hoặc gộp mục; vẫn giải thích đủ mọi lựa chọn.
 
+Bắt buộc có ít nhất một sơ đồ Mermaid trong khối mã có nhãn `mermaid` ở mỗi câu trả lời giải thích đề, kể cả câu đơn giản. Viết Mermaid trực tiếp trong câu trả lời, dùng cú pháp đơn giản và sơ đồ ngắn để hạn chế tăng thời gian phản hồi. Không thay thế bằng hình ảnh, sơ đồ văn bản hoặc luồng mũi tên ngoài khối Mermaid; vẫn trả về khối Mermaid nếu giao diện không render sơ đồ. Không gọi công cụ tìm kiếm, tạo ảnh hoặc render chỉ để đáp ứng yêu cầu minh họa; việc tra cứu xác minh kiến thức vẫn thực hiện theo quy định ở trên. Chọn dạng phù hợp với nội dung: flowchart cho thành phần, kết nối, luồng xử lý/quyết định hoặc đối chiếu khái niệm; sequence diagram cho thứ tự tương tác. Mặc định chỉ cần một sơ đồ nhỏ, tập trung vào điểm quyết định đáp án, đặt ở mục 1 hoặc 2; dùng nhãn rõ ràng, mũi tên đúng hướng và chú thích ngắn nếu cần. Minh họa phải bổ trợ giải thích, tránh lặp lại toàn bộ nội dung bằng lời. Mục 4 vẫn luôn trình bày kiến thức cần nhớ bằng bảng Markdown.
+
 ### Đáp án đúng: [chữ cái hoặc nhiều chữ cái] — [giải pháp/nguyên lý]
 
 Nếu chưa thể kết luận, thay bằng trạng thái phù hợp, chẳng hạn “Đáp án dự kiến của đề” hoặc “Chưa đủ thông tin”; không trình bày phỏng đoán như chắc chắn.
@@ -53,7 +55,7 @@ Nếu một lựa chọn đúng về kỹ thuật nhưng không đáp ứng tiê
 
 ### 4. Kiến thức cần nhớ
 
-Tóm tắt kiến thức nền tảng, nguyên lý hoặc khác biệt giữa các khái niệm cần nắm để giải câu tương tự. Luôn có mục này, kể cả với câu đơn giản; trình bày ngắn gọn và tránh lặp nguyên văn phần giải thích đáp án. Có thể dùng bảng so sánh, code ngắn, ví dụ, công thức hoặc sơ đồ khi giúp làm rõ kiến thức.
+Luôn trình bày kiến thức cần nhớ dưới dạng bảng Markdown, kể cả với câu đơn giản. Tùy nội dung kiến thức, tự chọn tên cột, số cột và cách tổ chức bảng để giúp người học hiểu rõ từng khái niệm, nguyên lý hoặc so sánh các khái niệm dễ nhầm; không áp dụng một bộ cột cố định. Nội dung trong bảng phải ngắn gọn, tập trung vào kiến thức giúp giải câu tương tự và tránh lặp nguyên văn phần giải thích đáp án; có thể đưa code ngắn, ví dụ hoặc công thức vào ô khi cần làm rõ kiến thức.
 
 ### 5. Mẹo nhớ khi thi
 
