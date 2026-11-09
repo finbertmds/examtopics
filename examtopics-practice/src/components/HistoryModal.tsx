@@ -30,15 +30,15 @@ const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose, examId }) 
   const [dailyTracking, setDailyTracking] = useState<Array<{ date: string; count: number }>>([]);
 
   useEffect(() => {
-    if (isOpen) {
+    if (isOpen && activeTab === 'history') {
       loadData();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isOpen, examId]);
+  }, [isOpen, examId, activeTab]);
 
   useEffect(() => {
     const loadCompletedIds = async () => {
-      if (!examId) {
+      if (isOpen && !examId) {
         try {
           const ids = await getCompletedExamIds();
           setCompletedExamIds(ids);
@@ -57,10 +57,11 @@ const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose, examId }) 
 
   useEffect(() => {
     const loadStats = async () => {
-      if (activeTab === 'stats' && selectedExamForStats) {
+      const statsExamId = examId || selectedExamForStats;
+      if (isOpen && activeTab === 'stats' && statsExamId) {
         setLoading(true);
         try {
-          const statsData = await getExamStats(selectedExamForStats);
+          const statsData = await getExamStats(statsExamId);
           setStats(statsData);
         } catch (error) {
           console.error('Error loading stats:', error);
@@ -73,11 +74,11 @@ const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose, examId }) 
     };
     loadStats();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedExamForStats, activeTab]);
+  }, [isOpen, examId, selectedExamForStats, activeTab]);
 
   useEffect(() => {
     const loadTracking = async () => {
-      if (activeTab === 'tracking') {
+      if (isOpen && activeTab === 'tracking') {
         setLoading(true);
         try {
           const trackingData = await getDailyTracking(examId);
@@ -105,17 +106,13 @@ const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose, examId }) 
     };
     loadTracking();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeTab]);
+  }, [isOpen, activeTab, examId]);
 
   const loadData = async () => {
     setLoading(true);
     try {
       const historyData = await getHistory(examId);
       setHistory(historyData || []);
-      if (examId && activeTab === 'stats') {
-        const statsData = await getExamStats(examId);
-        setStats(statsData);
-      }
     } catch (error) {
       console.error('Error loading history data:', error);
       toast.error('Error loading history data')
