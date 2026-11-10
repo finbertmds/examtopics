@@ -1465,7 +1465,7 @@
     "question_text": "HOTSPOT\n\n\n\nA company uses an organization in AWS Organizations to manage multiple AWS accounts. A security engineer needs to monitor the security compliance of AWS resources across the organization. The security engineer wants to receive notifications when any AWS resources does not comply with the company's security policies.\n\n\n\nSelect the correct AWS Config based solution from the following list to meet each requirement. Select each AWS Config based solution one time.\n\n\n\n•\tAWS Config aggregator\n\n•\tAWS Config conformance packs\n\n•\tAWS Config with AWS Systems Manager\n\n•\tAWS Config rules\n\n•\tAWS Config with AWS User Notifications\n\n\n\n//IMG//",
     "answer_images": [],
     "question_images": [
-      "/img/aws-scs-c03/image25.png"
+      "/img/aws-scs-c03/aws-certified-security-specialty-scs-c03/image25.png"
     ]
   },
   {
@@ -1718,15 +1718,16 @@
     "link": "https://www.examtopics.com/discussions/amazon/view/88522-exam-aws-certified-security-specialty-topic-1-question-418-discussion/",
     "multiple_choice": true,
     "question_text": "A company has application logs from AWS accounts in an organization in AWS Organizations. A security engineer is copying these logs to a centralized Amazon S3 bucket in the security team’s AWS account.\n\n\n\nEach of the company’s applications is in its own AWS account. Logs are encrypted and pushed into S3 buckets that are associated with each account.\n\n\n\nThe security engineer deploys an AWS Lambda function into each account to copy the relevant log files to the centralized S3 bucket. The Lambda function can copy the log files in the centralized S3 bucket.\n\n\n\nThe Lambda function’s IAM execution role policy from the security team’s AWS account is the following:\n\n\n\n//IMG//\n\n\n\nThe centralized S3 bucket policy is the following:\n\n\n\n//IMG//\n\n\n\nThe security engineer needs to remove excess permissions while ensuring the functionality of the solution.\n\n\n\nWhich changes to the policies meet these requirements? (Choose two.)",
-    "answer_images": [],
+    "answer_images": [
+      "/img/aws-scs-c03/aws-certified-security-specialty/image25.png",
+      "/img/aws-scs-c03/aws-certified-security-specialty/image26.png",
+      "/img/aws-scs-c03/aws-certified-security-specialty/image27.png",
+      "/img/aws-scs-c03/aws-certified-security-specialty/image28.png",
+      "/img/aws-scs-c03/aws-certified-security-specialty/image29.png"
+    ],
     "question_images": [
       "/img/aws-scs-c03/image23.png",
-      "/img/aws-scs-c03/image24.png",
-      "/img/aws-scs-c03/image25.png",
-      "/img/aws-scs-c03/image26.png",
-      "/img/aws-scs-c03/image27.png",
-      "/img/aws-scs-c03/image28.png",
-      "/img/aws-scs-c03/image29.png"
+      "/img/aws-scs-c03/image24.png"
     ]
   },
   {
