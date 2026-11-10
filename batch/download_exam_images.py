@@ -57,22 +57,24 @@ def download_images(json_path: Path) -> tuple[int, int, int]:
     with requests.Session() as session:
         session.headers.update({"User-Agent": "Mozilla/5.0"})
         for url in urls:
-            filename = Path(unquote(urlparse(url).path)).name
-            if not filename:
+            url_path = unquote(urlparse(url).path).lstrip("/")
+            relative_path = Path(url_path)
+            filename = relative_path.name
+            if not filename or url_path.endswith("/") or relative_path.is_absolute() or ".." in relative_path.parts or "\\" in url_path or ":" in url_path:
                 print(f"Skipping URL without a filename: {url}")
                 failed += 1
                 continue
 
-            output_path = output_dir / filename
-            local_path = f"/img/{output_dir.name}/{filename}"
+            output_path = output_dir / relative_path
+            local_path = f"/img/{output_dir.name}/{relative_path.as_posix()}"
             if output_path.exists():
                 skipped += 1
-                local_paths[url] = local_path
                 continue
 
             try:
                 response = session.get(url, timeout=30)
                 response.raise_for_status()
+                output_path.parent.mkdir(parents=True, exist_ok=True)
                 output_path.write_bytes(response.content)
                 downloaded += 1
                 local_paths[url] = local_path
