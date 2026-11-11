@@ -35,6 +35,7 @@
   "remainingQuestions": "remaining questions",
   "questionsAnswered": "questions answered",
   "confirmSubmitExam": "Are you sure you want to submit the exam? Current progress will be saved to history and reset.",
+  "unansweredSubmitWarning": "You have {{count}} unanswered questions. Do you still want to submit?",
   "currentProgressWillBeLost": "Current progress will be lost",
   "currentProgressWillBeSaved": "Current progress will be saved",
   "copyright": "© 2025 Exam Practice Platform",

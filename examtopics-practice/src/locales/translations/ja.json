@@ -35,6 +35,7 @@
   "remainingQuestions": "残りの問題",
   "questionsAnswered": "問題回答済み",
   "confirmSubmitExam": "試験を提出してもよろしいですか？現在の進捗は履歴に保存されてリセットされます。",
+  "unansweredSubmitWarning": "未回答の問題が{{count}}問あります。このまま提出しますか？",
   "currentProgressWillBeLost": "現在の進捗は失われます",
   "currentProgressWillBeSaved": "現在の進捗は保存されます",
   "copyright": "© 2025 試験練習プラットフォーム",

@@ -35,6 +35,7 @@
   "remainingQuestions": "câu còn lại",
   "questionsAnswered": "câu đã làm",
   "confirmSubmitExam": "Bạn có chắc chắn muốn gửi bài thi? Tiến độ hiện tại sẽ được lưu vào lịch sử và được đặt lại.",
+  "unansweredSubmitWarning": "Bạn còn {{count}} câu hỏi chưa trả lời. Bạn vẫn muốn nộp bài?",
   "currentProgressWillBeLost": "Tiến độ hiện tại sẽ bị mất",
   "currentProgressWillBeSaved": "Tiến độ hiện tại sẽ được lưu",
   "copyright": "© 2025 Nền Tảng Luyện Thi",

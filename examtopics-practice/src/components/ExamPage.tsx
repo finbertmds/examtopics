@@ -433,6 +433,7 @@ const ExamPage: React.FC = () => {
   }
 
   const answeredCount = Object.keys(progress.answers).length;
+  const unansweredCount = questions.length - answeredCount;
 
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900 transition-colors">
@@ -709,6 +710,7 @@ const ExamPage: React.FC = () => {
         onConfirm={confirmSubmit}
         title={t("submitExam")}
         message={t("confirmSubmitExam")}
+        warning={unansweredCount > 0 ? t("unansweredSubmitWarning", { count: unansweredCount }) : undefined}
         confirmText={t("submit")}
         confirmButtonColor="green"
       />

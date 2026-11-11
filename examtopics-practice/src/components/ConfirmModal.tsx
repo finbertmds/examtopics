@@ -7,6 +7,7 @@ interface ConfirmModalProps {
   onConfirm: () => void;
   title: string;
   message: string;
+  warning?: string;
   confirmText?: string;
   cancelText?: string;
   confirmButtonColor?: 'red' | 'blue' | 'green' | 'orange';
@@ -18,6 +19,7 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
   onConfirm,
   title,
   message,
+  warning,
   confirmText,
   cancelText,
   confirmButtonColor = 'blue'
@@ -67,6 +69,11 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
             <p className="text-sm text-gray-600 dark:text-gray-300">
               {message}
             </p>
+            {warning && (
+              <p role="alert" className="mt-3 rounded-md bg-amber-50 p-3 text-sm font-medium text-amber-800 dark:bg-amber-900/30 dark:text-amber-200">
+                {warning}
+              </p>
+            )}
           </div>
           
           {/* Actions */}
