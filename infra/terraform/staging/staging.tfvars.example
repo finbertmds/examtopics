@@ -1,0 +1,6 @@
+staging_account_id       = "000000000000"
+staging_domain           = "staging.example.com"
+api_ami_id               = "ami-00000000000000000"
+frontend_certificate_arn = "arn:aws:acm:us-east-1:000000000000:certificate/00000000-0000-0000-0000-000000000000"
+# Supply the alert address after budget creation is included in the approved plan.
+# budget_alert_email = "staging-alerts@example.com"

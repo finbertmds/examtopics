@@ -2,10 +2,12 @@ const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const getAuthSecret = require('../utils/authSecrets');
+const createOAuthStateStore = require('../utils/oauthStateStore');
 require('dotenv').config();
 
-// JWT secret key
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
+const JWT_SECRET = getAuthSecret('JWT_SECRET');
+const oauthStateSecret = getAuthSecret('SESSION_SECRET');
 
 // Configure Google OAuth Strategy with environment-based callback URL
 const getCallbackURL = () => {
@@ -21,10 +23,13 @@ const getCallbackURL = () => {
   }
 };
 
+const callbackURL = getCallbackURL();
+const secureStateCookie = process.env.NODE_ENV === 'production' || new URL(callbackURL).protocol === 'https:';
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: getCallbackURL()
+    callbackURL,
+    store: createOAuthStateStore(oauthStateSecret, secureStateCookie),
   },
   async function(accessToken, refreshToken, profile, cb) {
     try {
@@ -37,21 +42,6 @@ passport.use(new GoogleStrategy({
     }
   }
 ));
-
-// Serialize user for session
-passport.serializeUser((user, done) => {
-  done(null, user._id);
-});
-
-// Deserialize user from session
-passport.deserializeUser(async (id, done) => {
-  try {
-    const user = await User.findById(id);
-    done(null, user);
-  } catch (error) {
-    done(error, null);
-  }
-});
 
 // Generate JWT token
 const generateToken = (user) => {

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
-import { replaceImgPlaceholders } from '../utils/replaceImgPlaceholders';
+import QuestionContent from './QuestionContent';
 
 // Component for collapsible question text
 const CollapsibleQuestionText: React.FC<{ text: string, images: string[] }> = ({ text, images }) => {
@@ -24,7 +24,7 @@ const CollapsibleQuestionText: React.FC<{ text: string, images: string[] }> = ({
           ref={textRef}
           className="question-text text-gray-800 dark:text-gray-200 whitespace-pre-wrap"
         >
-          <div dangerouslySetInnerHTML={{ __html: replaceImgPlaceholders(text, images) }} />
+          <div><QuestionContent text={text} images={images} /></div>
         </div>
       </div>
     );
@@ -39,7 +39,7 @@ const CollapsibleQuestionText: React.FC<{ text: string, images: string[] }> = ({
         role="button"
         tabIndex={0}
       >
-        <div dangerouslySetInnerHTML={{ __html: replaceImgPlaceholders(text, images) }} />
+        <div><QuestionContent text={text} images={images} /></div>
       </div>
       <div
         onClick={() => setIsExpanded(!isExpanded)}

@@ -5,7 +5,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { Question, ReportData, UserAnswer } from '../types';
 import { apiClient } from '../utils/apiClient';
 import { getCorrectAnswers } from '../utils/getCorrectAnswers';
-import { replaceImgPlaceholders } from '../utils/replaceImgPlaceholders';
+import QuestionContent from './QuestionContent';
 import { formatTextForClipboard, resolveClipboardUrl } from '../utils/textUtils';
 import CollapsibleQuestionText from './CollapsibleQuestionText';
 import ReportModal from './ReportModal';
@@ -287,7 +287,7 @@ export const QuestionItem: React.FC<QuestionItemProps> = ({
                   />
                   <div className="flex-1 min-w-0">
                     <span className="font-medium text-gray-700 dark:text-gray-300 mr-2">{key}.</span>
-                    <span className="text-gray-800 dark:text-gray-200 break-words" dangerouslySetInnerHTML={{ __html: replaceImgPlaceholders(answer, answerImages) }} />
+                    <span className="text-gray-800 dark:text-gray-200 break-words"><QuestionContent text={answer} images={answerImages} /></span>
                     {showCorrect && shouldShowAnswer && isCorrectAnswer && (
                       <span className="ml-2 text-green-600 dark:text-green-400 font-medium">✓ {t('correct')}</span>
                     )}
