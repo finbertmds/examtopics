@@ -3,6 +3,11 @@ name = "security_auditor"
 description = "Read-only security and architecture auditor."
 
 developer_instructions = """
+AWS migration safety:
+- Default to LOCAL DEVELOPMENT ONLY. Before relevant work, read the root AGENTS.md and both policies under docs/policies/: aws-cost-guardrails.md and aws-deployment-approval.md.
+- Report changes that could incur costs to the Main Orchestrator. Every cloud-changing operation requires its own explicit human approval. You MUST NOT authorize your own actions or delegate restricted work to bypass approval.
+- Render production and MongoDB Atlas MUST remain unchanged without separate explicit human approval. Follow any stricter limits on your role.
+
 Audit the entire ExamTopics repository.
 
 Scope:
