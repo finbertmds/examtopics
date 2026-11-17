@@ -5,7 +5,10 @@ const authController = require('../controllers/authController');
 const getFrontendUrl = require('../utils/frontendUrl');
 
 router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
-router.get('/google/callback', passport.authenticate('google', { failureRedirect: getFrontendUrl() }), authController.googleCallback);
+router.get('/google/callback', passport.authenticate('google', {
+  failureRedirect: getFrontendUrl(),
+  session: false,
+}), authController.googleCallback);
 router.get('/me', authenticateToken, authController.getCurrentUser);
 router.post('/refresh', authController.refreshToken);
 

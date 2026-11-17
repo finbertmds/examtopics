@@ -4,18 +4,6 @@ import { getBackendUrl } from './backendUrl';
 
 const backendUrl = getBackendUrl();
 
-class ApiRequestError extends Error {
-  status: number;
-  responseBody: any;
-
-  constructor(message: string, status: number, responseBody?: any) {
-    super(message);
-    this.name = 'ApiRequestError';
-    this.status = status;
-    this.responseBody = responseBody;
-  }
-}
-
 class ApiClient {
   private baseUrl: string;
 
@@ -26,8 +14,7 @@ class ApiClient {
   private async fetchWithAuth<T>(
     endpoint: string,
     options: RequestInit = {},
-    token?: string,
-    retryOnAuthError: boolean = true
+    token?: string
   ): Promise<ApiResponse<T>> {
     try {
       if (!networkService.isNetworkOnline()) {
@@ -64,11 +51,7 @@ class ApiClient {
           // Ignore JSON parse errors for non-JSON responses
         }
 
-        throw new ApiRequestError(
-          errorBody?.error || errorBody?.message || `HTTP error! status: ${response.status}`,
-          response.status,
-          errorBody
-        );
+        throw new Error(errorBody?.error || errorBody?.message || `HTTP error! status: ${response.status}`);
       }
 
       const data = await response.json();
@@ -97,20 +80,6 @@ class ApiClient {
             error: 'Network offline',
             message: 'No internet connection available',
           };
-        }
-
-        if (
-          retryOnAuthError &&
-          token &&
-          error instanceof ApiRequestError &&
-          error.status === 403 &&
-          error.responseBody?.error === 'Invalid or expired token'
-        ) {
-          const refreshedToken = await this.refreshToken(token);
-          if (refreshedToken) {
-            window.dispatchEvent(new CustomEvent('auth-token-refreshed', { detail: refreshedToken }));
-            return this.fetchWithAuth<T>(endpoint, options, refreshedToken, false);
-          }
         }
       }
 
@@ -241,29 +210,8 @@ class ApiClient {
     return `${this.baseUrl}/auth/google`;
   }
 
-  private async refreshToken(token: string): Promise<string | null> {
-    try {
-      const response = await fetch(`${this.baseUrl}/auth/refresh`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (!response.ok) {
-        return null;
-      }
-
-      const data = await response.json();
-      if (data?.success && data?.token) {
-        return data.token;
-      }
-
-      return null;
-    } catch (_error) {
-      return null;
-    }
+  async refreshToken(token: string): Promise<ApiResponse<{ token: string }>> {
+    return this.fetchWithAuth<{ token: string }>('/auth/refresh', { method: 'POST' }, token);
   }
 
   private extractResponseData(data: any): any {

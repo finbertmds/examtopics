@@ -50,8 +50,9 @@ const parseAnswersMap = (answers) => {
   return {};
 };
 
-const formatQuestion = (q, examCode) => ({
-  examId: examCode,
+const formatQuestion = (q, exam) => ({
+  examId: exam._id,
+  examCode: exam.code,
   question_number: q.question_number,
   topic_number: q.topic_number || 1,
   title: q.title || '',
@@ -69,15 +70,16 @@ const formatQuestion = (q, examCode) => ({
  * Format + insert questions in adaptive batches to keep memory/latency stable for large payloads.
  * Avoids mapping the entire array up-front (important when length > 1000).
  */
-const insertQuestionsInBatches = async (examCode, questionsArray) => {
+const insertQuestionsInBatches = async (exam, questionsArray) => {
   if (!Array.isArray(questionsArray) || questionsArray.length === 0) return 0;
 
+  const examCode = exam.code;
   const total = questionsArray.length;
   const batchSize = total > LARGE_QUESTION_THRESHOLD ? LARGE_BATCH_SIZE : SMALL_BATCH_SIZE;
   let insertedCount = 0;
 
   for (let i = 0; i < total; i += batchSize) {
-    const batch = questionsArray.slice(i, i + batchSize).map((q) => formatQuestion(q, examCode));
+    const batch = questionsArray.slice(i, i + batchSize).map((q) => formatQuestion(q, exam));
     try {
       const insertedQuestions = await Question.insertMany(batch, {
         ordered: false,
@@ -136,7 +138,7 @@ class ExamService {
     }
 
     const updatedExam = await Exam.findOneAndUpdate(
-      { code, createdBy: currentOwnerId },
+      { _id: exam._id, createdBy: currentOwnerId },
       { $set: { createdBy: newOwner._id } },
       { returnDocument: 'after' }
     );
@@ -152,7 +154,7 @@ class ExamService {
       return { error: 'Forbidden' };
     }
 
-    const questions = await Question.find({ examId: code }).sort({ topic_number: 1, question_number: 1 });
+    const questions = await Question.find({ examId: exam._id }).sort({ topic_number: 1, question_number: 1 });
     return questions.map((question) => ({
       topic_number: question.topic_number || 1,
       question_number: question.question_number,
@@ -199,7 +201,7 @@ class ExamService {
     await exam.save();
 
     if (questionsArray && questionsArray.length > 0) {
-      await insertQuestionsInBatches(exam.code, questionsArray);
+      await insertQuestionsInBatches(exam, questionsArray);
     }
 
     return exam;
@@ -218,7 +220,7 @@ class ExamService {
     }
 
     const exam = await Exam.findOneAndUpdate(
-      { code, createdBy: userId },
+      { _id: existingExam._id, createdBy: userId },
       updateData,
       { returnDocument: 'after', runValidators: true }
     );
@@ -226,8 +228,8 @@ class ExamService {
 
     if (hasQuestions) {
       // Replace questions: delete first, then insert in adaptive batches
-      await Question.deleteMany({ examId: code });
-      await insertQuestionsInBatches(exam.code, questionsArray);
+      await Question.deleteMany({ examId: exam._id });
+      await insertQuestionsInBatches(exam, questionsArray);
     }
 
     return exam;
@@ -240,9 +242,9 @@ class ExamService {
       return { error: 'Forbidden' };
     }
 
-    const exam = await Exam.findOneAndDelete({ code, createdBy: userId });
+    const exam = await Exam.findOneAndDelete({ _id: existingExam._id, createdBy: userId });
     if (!exam) return { error: 'Forbidden' };
-    await Question.deleteMany({ examId: code });
+    await Question.deleteMany({ examId: exam._id });
     return { exam };
   }
 
@@ -252,13 +254,14 @@ class ExamService {
 
     const skip = (page - 1) * (limit || 0);
 
-    let query = Question.find({ examId: examCode }).sort({ topic_number: 1, question_number: 1 });
+    const questionFilter = { examId: exam._id };
+    let query = Question.find(questionFilter).sort({ topic_number: 1, question_number: 1 });
     
     if (skip > 0) query = query.skip(skip);
     if (limit > 0) query = query.limit(limit);
 
     const questions = await query;
-    const total = await Question.countDocuments({ examId: examCode });
+    const total = await Question.countDocuments(questionFilter);
 
     return {
       count: questions.length,
@@ -275,7 +278,7 @@ class ExamService {
   async getQuestionByExamAndNumber(examCode, topicNumber, questionNumber, userId) {
     const exam = await Exam.findOne({ code: examCode, ...getReadableExamFilter(userId) });
     if (!exam) return null;
-    return await Question.findOne({ examId: examCode, topic_number: topicNumber, question_number: questionNumber });
+    return await Question.findOne({ examId: exam._id, topic_number: topicNumber, question_number: questionNumber });
   }
 
   async updateExamQuestion(code, topicNumber, questionNumber, userId, updateFields) {
@@ -337,7 +340,7 @@ class ExamService {
     }
 
     const question = await Question.findOneAndUpdate(
-      { examId: code, topic_number: topicNumber, question_number: questionNumber },
+      { examId: exam._id, topic_number: topicNumber, question_number: questionNumber },
       allowedUpdates,
       { returnDocument: 'after' }
     );

@@ -1,0 +1,12 @@
+# The image needs application code and npm manifests only.
+**
+!package.json
+!package-lock.json
+!index.js
+!config/*.js
+!controllers/*.js
+!middleware/*.js
+!models/*.js
+!routes/*.js
+!services/*.js
+!utils/*.js

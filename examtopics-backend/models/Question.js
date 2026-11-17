@@ -2,9 +2,17 @@ const mongoose = require('mongoose');
 
 const questionSchema = new mongoose.Schema({
   examId: {
-    type: String,
+    // Legacy rows contain a BSON string code. Keep it distinct from the ObjectId
+    // stored by new writers so the existing unique index separates both namespaces.
+    type: mongoose.Schema.Types.ObjectId,
     required: true,
     index: true,
+    immutable: true,
+  },
+  examCode: {
+    type: String,
+    required: true,
+    immutable: true,
   },
   question_number: {
     type: Number,
@@ -50,6 +58,13 @@ const questionSchema = new mongoose.Schema({
   },
 }, {
   timestamps: true,
+  toJSON: {
+    transform(_doc, result) {
+      result.examId = result.examCode;
+      delete result.examCode;
+      return result;
+    },
+  },
 });
 
 // Ensure question number is unique within a topic for an exam

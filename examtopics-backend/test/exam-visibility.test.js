@@ -1,6 +1,12 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const jwt = require('jsonwebtoken');
+const { randomBytes } = require('node:crypto');
+
+process.env.NODE_ENV = 'test';
+process.env.GOOGLE_CLIENT_ID = 'oauth-test-client';
+process.env.GOOGLE_CLIENT_SECRET = randomBytes(32).toString('hex');
+process.env.JWT_SECRET = randomBytes(32).toString('hex');
 
 const Exam = require('../models/Exam');
 const Question = require('../models/Question');
@@ -85,7 +91,7 @@ test('a non-owner cannot update or delete an exam', async () => {
 });
 
 test('optional authentication resolves a valid token before continuing', async () => {
-  const token = jwt.sign({ userId: 'owner-1' }, process.env.JWT_SECRET || 'your-secret-key-change-in-production');
+  const token = jwt.sign({ userId: 'owner-1' }, process.env.JWT_SECRET);
   const req = { headers: { authorization: `Bearer ${token}` } };
 
   await new Promise((resolve) => {

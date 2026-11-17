@@ -1,13 +1,12 @@
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
-const session = require('express-session');
 require('dotenv').config();
 
 const connectDB = require('./config/database');
 const sheetsHelper = require('./services/sheetsService');
 const databaseService = require('./services/databaseService');
-const { passport, generateToken, authenticateToken, getUserFromToken } = require('./services/authService');
+const { passport } = require('./services/authService');
 // const progressService = require('./services/progressService');
 const errorHandler = require('./middleware/errorHandler');
 
@@ -46,17 +45,8 @@ app.use(cors({
 // Allow large exam question payloads (1000+ items, optional image URLs)
 app.use(express.json({ limit: '25mb' }));
 
-// Session configuration
-app.use(session({
-  secret: process.env.SESSION_SECRET || 'your-session-secret',
-  resave: false,
-  saveUninitialized: false,
-  cookie: { secure: process.env.NODE_ENV === 'production' }
-}));
-
 // Initialize passport
 app.use(passport.initialize());
-app.use(passport.session());
 
 // Health check endpoint
 app.get('/health', async (req, res) => {

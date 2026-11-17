@@ -88,7 +88,8 @@ async function migrate() {
         }
 
         return {
-          examId: newExam.code,
+          examId: newExam._id,
+          examCode: newExam.code,
           question_number: q.question_number,
           topic_number: q.topic_number || 1,
           title: q.title || '',

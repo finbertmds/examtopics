@@ -2,10 +2,16 @@ const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const getAuthSecret = require('../utils/authSecrets');
+const createOAuthStateStore = require('../utils/oauthStateStore');
 require('dotenv').config();
 
-// JWT secret key
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
+const JWT_SECRET = getAuthSecret('JWT_SECRET');
+const oauthStateSecret = getAuthSecret('SESSION_SECRET');
+const DAY_SECONDS = 24 * 60 * 60;
+const ACCESS_TOKEN_LIFETIME = 7 * DAY_SECONDS;
+const SESSION_LIFETIME = 30 * DAY_SECONDS;
+const REFRESH_WINDOW = DAY_SECONDS;
 
 // Configure Google OAuth Strategy with environment-based callback URL
 const getCallbackURL = () => {
@@ -21,10 +27,13 @@ const getCallbackURL = () => {
   }
 };
 
+const callbackURL = getCallbackURL();
+const secureStateCookie = process.env.NODE_ENV === 'production' || new URL(callbackURL).protocol === 'https:';
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: getCallbackURL()
+    callbackURL,
+    store: createOAuthStateStore(oauthStateSecret, secureStateCookie),
   },
   async function(accessToken, refreshToken, profile, cb) {
     try {
@@ -38,49 +47,34 @@ passport.use(new GoogleStrategy({
   }
 ));
 
-// Serialize user for session
-passport.serializeUser((user, done) => {
-  done(null, user._id);
-});
+const nowInSeconds = () => Math.floor(Date.now() / 1000);
 
-// Deserialize user from session
-passport.deserializeUser(async (id, done) => {
-  try {
-    const user = await User.findById(id);
-    done(null, user);
-  } catch (error) {
-    done(error, null);
-  }
-});
+const signAccessToken = ({ userId, email, name, picture }, now, sessionExpiresAt) => jwt.sign({
+  userId,
+  email,
+  name,
+  picture: picture || null,
+  iat: now,
+  exp: Math.min(now + ACCESS_TOKEN_LIFETIME, sessionExpiresAt),
+  sessionExpiresAt,
+}, JWT_SECRET);
 
-// Generate JWT token
 const generateToken = (user) => {
-  return jwt.sign(
-    { 
-      userId: user._id, 
-      email: user.email,
-      name: user.name,
-      picture: user.picture || null
-    },
-    JWT_SECRET,
-    { expiresIn: '7d' }
-  );
+  const now = nowInSeconds();
+  return signAccessToken({ userId: user._id, email: user.email, name: user.name, picture: user.picture },
+    now, now + SESSION_LIFETIME);
 };
 
-// Refresh access token from an expired but signed token
 const refreshAccessToken = (token) => {
   try {
-    const decoded = jwt.verify(token, JWT_SECRET, { ignoreExpiration: true });
-    return jwt.sign(
-      {
-        userId: decoded.userId,
-        email: decoded.email,
-        name: decoded.name,
-        picture: decoded.picture || null
-      },
-      JWT_SECRET,
-      { expiresIn: '7d' }
-    );
+    const now = nowInSeconds();
+    const decoded = jwt.verify(token, JWT_SECRET, { algorithms: ['HS256'], clockTimestamp: now });
+    const { exp, sessionExpiresAt } = decoded;
+    if (!Number.isSafeInteger(exp) || !Number.isSafeInteger(sessionExpiresAt) ||
+        exp >= sessionExpiresAt || exp - now > REFRESH_WINDOW) {
+      return null;
+    }
+    return signAccessToken(decoded, now, sessionExpiresAt);
   } catch (error) {
     return null;
   }
