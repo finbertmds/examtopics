@@ -7,3 +7,4 @@
 /plugins/examtopics-public/
 /dist/
 reports/
+*secrets.sh

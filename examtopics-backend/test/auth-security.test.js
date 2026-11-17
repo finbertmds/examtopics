@@ -4,6 +4,7 @@ const { spawnSync } = require('node:child_process');
 const { randomBytes } = require('node:crypto');
 const { IncomingMessage, ServerResponse } = require('node:http');
 const express = require('express');
+const jwt = require('jsonwebtoken');
 
 process.env.GOOGLE_CLIENT_ID = 'oauth-test-client';
 process.env.GOOGLE_CLIENT_SECRET = randomBytes(32).toString('hex');
@@ -13,7 +14,7 @@ process.env.SESSION_SECRET = randomBytes(32).toString('hex');
 process.env.GOOGLE_CALLBACK_URL = 'https://api.example.test/auth/google/callback';
 process.env.FRONTEND_URL = 'https://app.example.test';
 
-const { passport } = require('../services/authService');
+const { passport, generateToken } = require('../services/authService');
 const authRoutes = require('../routes/authRoutes');
 
 function loadProductionAuth(overrides) {
@@ -50,17 +51,77 @@ test('production startup accepts configured keys', () => {
   assert.equal(loadProductionAuth({}).status, 0);
 });
 
-function request(app, url, headers = {}) {
+function request(app, url, headers = {}, method = 'GET') {
   return new Promise((resolve, reject) => {
     const req = new IncomingMessage({});
-    req.method = 'GET';
+    req.method = method;
     req.url = url;
     req.headers = headers;
     const res = new ServerResponse(req);
-    res.end = () => resolve(res);
+    res.end = (body) => {
+      res.testBody = body;
+      resolve(res);
+    };
     app.handle(req, res, reject);
   });
 }
+
+const DAY_SECONDS = 24 * 60 * 60;
+const user = { _id: 'test-user', email: 'candidate@example.test', name: 'Candidate' };
+
+function authApp() {
+  const app = express();
+  app.use('/auth', authRoutes);
+  return app;
+}
+
+function refresh(app, token) {
+  return request(app, '/auth/refresh', { authorization: `Bearer ${token}` }, 'POST');
+}
+
+test('refresh is available only in the final 24 hours before access expires', async (t) => {
+  const now = Math.floor(Date.now() / 1000);
+  let elapsed = 0;
+  t.mock.method(Date, 'now', () => (now + elapsed) * 1000);
+  const token = generateToken(user);
+  const app = authApp();
+
+  elapsed = 6 * DAY_SECONDS - 1;
+  assert.equal((await refresh(app, token)).statusCode, 403);
+  elapsed = 6 * DAY_SECONDS;
+  assert.equal((await refresh(app, token)).statusCode, 200);
+  elapsed = 7 * DAY_SECONDS;
+  assert.equal((await refresh(app, token)).statusCode, 403);
+});
+
+test('successive refreshes preserve the 30-day limit for access and renewal', async (t) => {
+  const now = Math.floor(Date.now() / 1000);
+  let day = 0;
+  t.mock.method(Date, 'now', () => (now + day * DAY_SECONDS) * 1000);
+  const app = authApp();
+  let token = generateToken(user);
+
+  for (day of [6, 12, 18, 24]) {
+    const response = await refresh(app, token);
+    assert.equal(response.statusCode, 200);
+    token = JSON.parse(response.testBody).token;
+  }
+
+  assert.equal(jwt.decode(token).exp, now + 30 * DAY_SECONDS);
+  day = 29;
+  assert.equal((await refresh(app, token)).statusCode, 403);
+  day = 30;
+  assert.equal((await refresh(app, token)).statusCode, 403);
+  const me = await request(app, '/auth/me', { authorization: `Bearer ${token}` });
+  assert.equal(me.statusCode, 403);
+});
+
+test('legacy tokens retain access until expiry but cannot start a new session by refreshing', async () => {
+  const app = authApp();
+  const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
+  assert.equal((await request(app, '/auth/me', { authorization: `Bearer ${token}` })).statusCode, 200);
+  assert.equal((await refresh(app, token)).statusCode, 403);
+});
 
 test('Google OAuth binds a short-lived state to the browser and consumes it at callback', async (t) => {
   const strategy = passport._strategy('google');

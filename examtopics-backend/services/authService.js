@@ -8,6 +8,10 @@ require('dotenv').config();
 
 const JWT_SECRET = getAuthSecret('JWT_SECRET');
 const oauthStateSecret = getAuthSecret('SESSION_SECRET');
+const DAY_SECONDS = 24 * 60 * 60;
+const ACCESS_TOKEN_LIFETIME = 7 * DAY_SECONDS;
+const SESSION_LIFETIME = 30 * DAY_SECONDS;
+const REFRESH_WINDOW = DAY_SECONDS;
 
 // Configure Google OAuth Strategy with environment-based callback URL
 const getCallbackURL = () => {
@@ -43,34 +47,34 @@ passport.use(new GoogleStrategy({
   }
 ));
 
-// Generate JWT token
+const nowInSeconds = () => Math.floor(Date.now() / 1000);
+
+const signAccessToken = ({ userId, email, name, picture }, now, sessionExpiresAt) => jwt.sign({
+  userId,
+  email,
+  name,
+  picture: picture || null,
+  iat: now,
+  exp: Math.min(now + ACCESS_TOKEN_LIFETIME, sessionExpiresAt),
+  sessionExpiresAt,
+}, JWT_SECRET);
+
 const generateToken = (user) => {
-  return jwt.sign(
-    { 
-      userId: user._id, 
-      email: user.email,
-      name: user.name,
-      picture: user.picture || null
-    },
-    JWT_SECRET,
-    { expiresIn: '7d' }
-  );
+  const now = nowInSeconds();
+  return signAccessToken({ userId: user._id, email: user.email, name: user.name, picture: user.picture },
+    now, now + SESSION_LIFETIME);
 };
 
-// Refresh access token from an expired but signed token
 const refreshAccessToken = (token) => {
   try {
-    const decoded = jwt.verify(token, JWT_SECRET, { ignoreExpiration: true });
-    return jwt.sign(
-      {
-        userId: decoded.userId,
-        email: decoded.email,
-        name: decoded.name,
-        picture: decoded.picture || null
-      },
-      JWT_SECRET,
-      { expiresIn: '7d' }
-    );
+    const now = nowInSeconds();
+    const decoded = jwt.verify(token, JWT_SECRET, { algorithms: ['HS256'], clockTimestamp: now });
+    const { exp, sessionExpiresAt } = decoded;
+    if (!Number.isSafeInteger(exp) || !Number.isSafeInteger(sessionExpiresAt) ||
+        exp >= sessionExpiresAt || exp - now > REFRESH_WINDOW) {
+      return null;
+    }
+    return signAccessToken(decoded, now, sessionExpiresAt);
   } catch (error) {
     return null;
   }
