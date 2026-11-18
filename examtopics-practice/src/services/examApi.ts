@@ -3,6 +3,7 @@
 
 import { Exam, Question } from '../types';
 import { getBackendUrl } from '../utils/backendUrl';
+import { resolveSessionBearer } from '../utils/sessionAccess';
 
 const backendUrl = getBackendUrl();
 
@@ -10,8 +11,8 @@ const getBaseUrl = () => {
     return backendUrl + '/api'
 };
 
-const getAuthHeaders = (token?: string | null): HeadersInit => token
-  ? { 'Authorization': `Bearer ${token}` }
+const getAuthHeaders = async (token?: string | null): Promise<HeadersInit> => token
+  ? { 'Authorization': `Bearer ${await resolveSessionBearer(token)}` }
   : {};
 
 const getApiError = async (response: Response, fallback: string): Promise<Error> => {
@@ -19,10 +20,32 @@ const getApiError = async (response: Response, fallback: string): Promise<Error>
   return new Error(data.error || data.message || fallback);
 };
 
+const QUESTIONS_PER_PAGE = 100;
+const MAX_QUESTION_PAGE = 1000;
+
+async function getQuestionPage(examCode: string, page: number, token?: string | null, signal?: AbortSignal) {
+  const params = new URLSearchParams({ page: String(page), limit: String(QUESTIONS_PER_PAGE) });
+  const response = await fetch(`${getBaseUrl()}/questions/${encodeURIComponent(examCode)}?${params}`, {
+    headers: await getAuthHeaders(token),
+    signal,
+  });
+  if (!response.ok) throw await getApiError(response, 'Failed to fetch questions');
+  const result: { data: Question[]; pagination: { page: number; totalPages: number; revision: string } } =
+    await response.json();
+  const { pagination } = result;
+  if (pagination?.page !== page || !Number.isInteger(pagination.totalPages) ||
+      pagination.totalPages < 0 || pagination.totalPages > MAX_QUESTION_PAGE ||
+      typeof pagination.revision !== 'string' || !Array.isArray(result.data) ||
+      result.data.length > QUESTIONS_PER_PAGE) {
+    throw new Error('Invalid question pagination');
+  }
+  return result;
+}
+
 export const examApi = {
   getExams: async (token?: string | null): Promise<Exam[]> => {
     const response = await fetch(`${getBaseUrl()}/exams`, {
-      headers: getAuthHeaders(token),
+      headers: await getAuthHeaders(token),
     });
     if (!response.ok) throw new Error('Failed to fetch exams');
     const data = await response.json();
@@ -34,7 +57,7 @@ export const examApi = {
   getMyExams: async (token: string): Promise<Exam[]> => {
     const response = await fetch(`${getBaseUrl()}/exams/me/created`, {
       headers: {
-        'Authorization': `Bearer ${token}`
+        'Authorization': `Bearer ${await resolveSessionBearer(token)}`
       }
     });
     if (!response.ok) throw new Error('Failed to fetch my exams');
@@ -46,7 +69,7 @@ export const examApi = {
 
   getMetadata: async (token?: string | null): Promise<{ categories: string[], tags: string[] }> => {
     const response = await fetch(`${getBaseUrl()}/exams/metadata/info`, {
-      headers: getAuthHeaders(token),
+      headers: await getAuthHeaders(token),
     });
     if (!response.ok) throw new Error('Failed to fetch metadata');
     const data = await response.json();
@@ -55,32 +78,31 @@ export const examApi = {
 
   getExam: async (code: string, token?: string | null): Promise<Exam> => {
     const response = await fetch(`${getBaseUrl()}/exams/${code}`, {
-      headers: getAuthHeaders(token),
+      headers: await getAuthHeaders(token),
     });
     if (!response.ok) throw await getApiError(response, 'Failed to fetch exam');
     const data = await response.json();
     return { ...data.exam, code: data.exam.code || data.exam._id };
   },
 
-  getQuestions: async (examCode: string, page = 1, limit = 0, token?: string | null): Promise<{ data: Question[], pagination: any }> => {
-    const response = await fetch(`${getBaseUrl()}/questions/${examCode}?page=${page}&limit=${limit}`, {
-      headers: getAuthHeaders(token),
-    });
-    if (!response.ok) throw await getApiError(response, 'Failed to fetch questions');
-    const data = await response.json();
-    return {
-      ...data,
-      data: data.data.map((q: any) => ({
-          ...q,
-          topic_number: q.topic_number || 1
-      }))
-    };
+  getAllQuestions: async (examCode: string, token?: string | null, signal?: AbortSignal): Promise<Question[]> => {
+    const first = await getQuestionPage(examCode, 1, token, signal);
+    const questions = [...first.data];
+    const { totalPages, revision } = first.pagination;
+    for (let page = 2; page <= totalPages; page++) {
+      const next = await getQuestionPage(examCode, page, token, signal);
+      if (next.pagination.revision !== revision || next.pagination.totalPages !== totalPages) {
+        throw new Error('Exam changed during question loading. Reload the exam.');
+      }
+      questions.push(...next.data);
+    }
+    return questions.map(question => ({ ...question, topic_number: question.topic_number || 1 }));
   },
 
   downloadExam: async (examCode: string, token: string): Promise<Blob> => {
     const response = await fetch(`${getBaseUrl()}/exams/${examCode}/export`, {
       headers: {
-        'Authorization': `Bearer ${token}`
+        'Authorization': `Bearer ${await resolveSessionBearer(token)}`
       }
     });
     if (!response.ok) {
@@ -95,7 +117,7 @@ export const examApi = {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
+        'Authorization': `Bearer ${await resolveSessionBearer(token)}`
       },
       body: JSON.stringify({ email })
     });
@@ -107,7 +129,7 @@ export const examApi = {
 
   getQuestion: async (examCode: string, topicNumber: number, questionNumber: number, token?: string | null): Promise<Question> => {
     const response = await fetch(`${getBaseUrl()}/questions/${examCode}/${questionNumber}?topicNumber=${topicNumber}`, {
-      headers: getAuthHeaders(token),
+      headers: await getAuthHeaders(token),
     });
     if (!response.ok) throw await getApiError(response, 'Failed to fetch question');
     const data = await response.json();
@@ -119,7 +141,7 @@ export const examApi = {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
+        'Authorization': `Bearer ${await resolveSessionBearer(token)}`
       },
       body: JSON.stringify({ ...updateData, topic_number: topicNumber })
     });
@@ -133,7 +155,7 @@ export const examApi = {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
+        'Authorization': `Bearer ${await resolveSessionBearer(token)}`
       },
       body: JSON.stringify(examData)
     });
@@ -147,7 +169,7 @@ export const examApi = {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
+        'Authorization': `Bearer ${await resolveSessionBearer(token)}`
       },
       body: JSON.stringify(examData)
     });
@@ -160,7 +182,7 @@ export const examApi = {
     const response = await fetch(`${getBaseUrl()}/exams/${code}`, {
       method: 'DELETE',
       headers: {
-        'Authorization': `Bearer ${token}`
+        'Authorization': `Bearer ${await resolveSessionBearer(token)}`
       }
     });
     if (!response.ok) throw new Error('Failed to delete exam');

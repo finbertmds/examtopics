@@ -30,7 +30,7 @@ const ExamPage: React.FC = () => {
   const { token } = useAuth();
   const { findExamById } = useExams({ token });
   const [currentExam, setCurrentExam] = useState<Exam | null>(exam);
-  const questionsHook = useQuestions(examId, currentExam?.file, token);
+  const questionsHook = useQuestions(examId, token);
   const {
     questions,
     loading: questionsLoading,
@@ -61,23 +61,9 @@ const ExamPage: React.FC = () => {
     submitExam,
   } = useProgress(examId);
 
-  const isQuestionsLoadedRef = React.useRef(false);
-
   useEffect(() => {
-    if (isQuestionsLoadedRef.current) return;
-    isQuestionsLoadedRef.current = true;
-
-    const loadQuestionsData = async () => {
-      try {
-        console.log("Loading questions...");
-        await loadQuestions();
-      } catch (error) {
-        console.error("Error loading questions:", error);
-      }
-    };
-    loadQuestionsData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    void loadQuestions();
+  }, [loadQuestions]);
 
   // Check for URL parameters and set state accordingly
   useEffect(() => {

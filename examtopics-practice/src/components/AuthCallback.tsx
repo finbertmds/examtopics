@@ -1,34 +1,26 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { finishGoogleLogin } from '../utils/loginExchange';
 import { useLanguage } from '../contexts/LanguageContext';
 
 const AuthCallback: React.FC = () => {
-  const { setToken } = useAuth();
+  const { acceptSession } = useAuth();
   const navigate = useNavigate();
   const { t } = useLanguage();
 
+  const exchange = useRef<ReturnType<typeof finishGoogleLogin> | null>(null);
+
   useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const token = urlParams.get('token');
-    const error = urlParams.get('error');
-
-    if (error) {
-      console.error('Authentication error:', error);
-      // Redirect to home with error
-      navigate('/', { state: { authError: error } });
-      return;
-    }
-
-    if (token) {
-      // Set the token and redirect to home
-      setToken(token);
-      navigate('/', { state: { authSuccess: true } });
-    } else {
-      // No token found, redirect to home
-      navigate('/');
-    }
-  }, [setToken, navigate]);
+    exchange.current ??= finishGoogleLogin();
+    let active = true;
+    void exchange.current.then((session) => {
+      if (!active) return;
+      if (session) acceptSession(session);
+      navigate('/', { replace: true, state: session ? { authSuccess: true } : { authError: 'login_failed' } });
+    });
+    return () => { active = false; };
+  }, [acceptSession, navigate]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900">

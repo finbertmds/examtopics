@@ -6,7 +6,6 @@ class GoogleSheetsHelper {
     this.sheets = null;
     this.sheetId = process.env.GOOGLE_SHEET_ID;
     this.initializationPromise = null;
-    this.connectionCache = null;
   }
 
   async initialize() {
@@ -43,56 +42,36 @@ class GoogleSheetsHelper {
   }
 
   async appendRow(data) {
-    try {
-      const sheets = await this.initialize();
-      const timestamp = new Date().toISOString();
-      const row = [
-        timestamp,
-        data.topicNumber || '',
-        data.questionNumber || '',
-        data.examId || '',
-        data.reason || '',
-        data.comment || '',
-        data.user || '',
-        data.url || ''
-      ];
-
-      const response = await sheets.spreadsheets.values.append({
-        spreadsheetId: this.sheetId,
-        range: 'A:H', // Assuming columns A-H for timestamp, topicNumber, questionNumber, examId, reason, comment, user, url
-        valueInputOption: 'RAW',
-        insertDataOption: 'INSERT_ROWS',
-        resource: {
-          values: [row]
-        }
-      });
-
-      console.log('Row appended successfully');
-      return response.data;
-    } catch (error) {
-      console.error('Failed to append row to Google Sheets:', error.message);
-      throw error;
-    }
+    const sheets = await this.initialize();
+    const row = [
+      new Date().toISOString(),
+      data.topicNumber,
+      data.questionNumber,
+      data.examId,
+      data.reason,
+      data.comment,
+      data.user,
+      data.url,
+    ];
+    const response = await sheets.spreadsheets.values.append({
+      spreadsheetId: this.sheetId,
+      range: 'A:H',
+      valueInputOption: 'RAW',
+      insertDataOption: 'INSERT_ROWS',
+      resource: { values: [row] },
+    }, { timeout: 5_000, retry: false });
+    return response.data;
   }
 
-  async testConnection({ force = false } = {}) {
-    const now = Date.now();
-    if (!force && this.connectionCache && now - this.connectionCache.checkedAt < 60_000) {
-      return this.connectionCache.connected;
-    }
-
+  async testConnection({ signal } = {}) {
     try {
       const sheets = await this.initialize();
       const response = await sheets.spreadsheets.get({
         spreadsheetId: this.sheetId,
         fields: 'spreadsheetId',
-      });
-      const connected = response.data?.spreadsheetId === this.sheetId;
-      this.connectionCache = { connected, checkedAt: now };
-      return connected;
-    } catch (error) {
-      console.error('Google Sheets connection test failed:', error.message);
-      this.connectionCache = { connected: false, checkedAt: now };
+      }, { signal, retry: false });
+      return response.data?.spreadsheetId === this.sheetId;
+    } catch {
       return false;
     }
   }

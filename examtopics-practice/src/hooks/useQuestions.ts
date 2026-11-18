@@ -1,67 +1,46 @@
-import { useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { examApi } from '../services/examApi';
 import { Question } from '../types';
 
-export const useQuestions = (
-  examId: string | undefined,
-  examFile: string | undefined,
-  token?: string | null
-) => {
-  const [questions, setQuestions] = useState<Question[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+type Scope = { examId: string | undefined; token: string | null | undefined };
+type Result = { scope: Scope; questions: Question[]; loading: boolean; error: string | null };
 
-  const loadQuestions = async () => {
-    if (!examId) {
-      setQuestions([]);
-      setLoading(false);
-      return;
-    }
+export const useQuestions = (examId: string | undefined, token?: string | null) => {
+  const scope = useMemo(() => ({ examId, token }), [examId, token]);
+  const [result, setResult] = useState<Result>();
+  const request = useRef<AbortController | null>(null);
 
-    setLoading(true);
-    setError(null);
+  useEffect(() => () => request.current?.abort(), [scope]);
+
+  const loadQuestions = useCallback(async () => {
+    request.current?.abort();
+    if (!scope.examId) return;
+
+    const controller = new AbortController();
+    request.current = controller;
+    setResult({ scope, questions: [], loading: true, error: null });
 
     try {
-      const response = await examApi.getQuestions(examId, 1, 0, token);
-      setQuestions(response.data);
+      const questions = await examApi.getAllQuestions(scope.examId, scope.token, controller.signal);
+      if (!controller.signal.aborted) {
+        setResult({ scope, questions, loading: false, error: null });
+      }
     } catch (error) {
-      console.error('Error loading questions:', error);
-      setError(error instanceof Error ? error.message : 'Unknown error');
-    } finally {
-      setLoading(false);
+      if (!controller.signal.aborted) {
+        setResult({ scope, questions: [], loading: false, error: error instanceof Error ? error.message : 'Unknown error' });
+      }
     }
-  };
+  }, [scope]);
 
-  const refreshQuestions = async () => {
-    if (!examId) {
-      return;
-    }
+  const setQuestions = (questions: Question[]) =>
+    setResult(current => current?.scope === scope ? { ...current, questions } : current);
 
-    if (!navigator.onLine) {
-      setError('Cannot refresh while offline');
-      return;
-    }
-
-    setLoading(true);
-    setError(null);
-    
-    try {
-      const response = await examApi.getQuestions(examId, 1, 0, token);
-      setQuestions(response.data);
-    } catch (error) {
-      console.error('Error refreshing questions:', error);
-      setError(error instanceof Error ? error.message : 'Unknown error');
-    } finally {
-      setLoading(false);
-    }
-  };
-
+  const current = result?.scope === scope ? result : undefined;
   return {
-    questions,
-    loading,
-    error,
+    questions: current?.questions ?? [],
+    loading: current?.loading ?? Boolean(examId),
+    error: current?.error ?? null,
     loadQuestions,
-    refreshQuestions,
-    setQuestions
+    setQuestions,
   };
 };

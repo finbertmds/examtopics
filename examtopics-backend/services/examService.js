@@ -6,6 +6,18 @@ const LARGE_QUESTION_THRESHOLD = 1000;
 const SMALL_BATCH_SIZE = 100;
 const LARGE_BATCH_SIZE = 500;
 
+const MAX_QUESTION_PAGE = 1000;
+const MAX_QUESTIONS_PER_PAGE = 100;
+const QUESTION_QUERY_TIMEOUT_MS = 3000;
+
+function boundedPageNumber(value, maximum) {
+  const number = typeof value === 'string' && /^[1-9]\d*$/.test(value) ? Number(value) : value;
+  if (!Number.isSafeInteger(number) || number < 1 || number > maximum) {
+    throw Object.assign(new Error('Invalid page or limit'), { status: 400, code: 'INVALID_QUESTION_PAGINATION' });
+  }
+  return number;
+}
+
 const getReadableExamFilter = (userId) => {
   const visibilityFilters = [
     { isPublished: true },
@@ -17,23 +29,6 @@ const getReadableExamFilter = (userId) => {
   }
 
   return { $or: visibilityFilters };
-};
-
-const getBulkWriteErrors = (error) => {
-  if (Array.isArray(error.writeErrors)) return error.writeErrors;
-  if (typeof error.result?.getWriteErrors === 'function') {
-    return error.result.getWriteErrors();
-  }
-  return [];
-};
-
-const isDuplicateKeyError = (error) => error?.code === 11000 || error?.err?.code === 11000;
-
-const isOnlyDuplicateKeyError = (error) => {
-  const writeErrors = getBulkWriteErrors(error);
-  return writeErrors.length > 0
-    ? writeErrors.every(isDuplicateKeyError)
-    : isDuplicateKeyError(error);
 };
 
 const parseAnswersMap = (answers) => {
@@ -53,8 +48,8 @@ const parseAnswersMap = (answers) => {
 const formatQuestion = (q, exam) => ({
   examId: exam._id,
   examCode: exam.code,
-  question_number: q.question_number,
-  topic_number: q.topic_number || 1,
+  question_number: Question.schema.path('question_number').cast(q.question_number),
+  topic_number: Question.schema.path('topic_number').cast(q.topic_number || 1),
   title: q.title || '',
   question_text: q.question_text || '',
   answers: parseAnswersMap(q.answers),
@@ -70,40 +65,42 @@ const formatQuestion = (q, exam) => ({
  * Format + insert questions in adaptive batches to keep memory/latency stable for large payloads.
  * Avoids mapping the entire array up-front (important when length > 1000).
  */
-const insertQuestionsInBatches = async (exam, questionsArray) => {
-  if (!Array.isArray(questionsArray) || questionsArray.length === 0) return 0;
-
-  const examCode = exam.code;
+const insertQuestionsInBatches = async (exam, questionsArray, session) => {
   const total = questionsArray.length;
   const batchSize = total > LARGE_QUESTION_THRESHOLD ? LARGE_BATCH_SIZE : SMALL_BATCH_SIZE;
+  const seenByTopic = new Map();
   let insertedCount = 0;
 
   for (let i = 0; i < total; i += batchSize) {
-    const batch = questionsArray.slice(i, i + batchSize).map((q) => formatQuestion(q, exam));
-    try {
-      const insertedQuestions = await Question.insertMany(batch, {
-        ordered: false,
-        lean: true,
-        rawResult: false,
-      });
-      insertedCount += insertedQuestions.length;
-    } catch (error) {
-      if (Array.isArray(error.insertedDocs)) {
-        insertedCount += error.insertedDocs.length;
-      }
-      if (!isOnlyDuplicateKeyError(error)) {
-        console.error(`Error inserting questions for exam ${examCode}:`, error);
-        throw error;
-      }
-      console.warn(
-        `Skipped duplicate questions for exam ${examCode}:`,
-        getBulkWriteErrors(error).length
-      );
+    const batch = [];
+    for (const entry of questionsArray.slice(i, i + batchSize)) {
+      const question = formatQuestion(entry, exam);
+      const topic = question.topic_number ?? null;
+      const number = question.question_number ?? null;
+      if (!seenByTopic.has(topic)) seenByTopic.set(topic, new Set());
+      const seen = seenByTopic.get(topic);
+      if (seen.has(number)) continue;
+      seen.add(number);
+      batch.push(question);
     }
+    if (batch.length === 0) continue;
+
+    // Duplicate input positions are handled before insertion. A database error
+    // aborts the entire transaction instead of leaving a partially written exam.
+    await Question.insertMany(batch, { lean: true, session });
+    insertedCount += batch.length;
   }
 
-  console.log(`Inserted ${insertedCount}/${total} questions for exam ${examCode}`);
   return insertedCount;
+};
+
+const lockExamForQuestionMutation = async (filter, session) => {
+  // A real write takes the same document lock as ownership transfer.
+  const result = await Exam.updateOne(filter, { $inc: { questionMutationVersion: 1 } }, {
+    session,
+    timestamps: false,
+  });
+  return result.matchedCount === 1;
 };
 
 class ExamService {
@@ -177,7 +174,7 @@ class ExamService {
 
   async createExamWithQuestions(examData, questionsArray, userId) {
     // Determine question count
-    const questionCount = questionsArray ? questionsArray.length : 0;
+    const questionCount = questionsArray?.length || 0;
     
     // Create new Exam instance. Default code to slugified name or a random string if not provided.
     const examCode = examData.code || examData.id || examData.name?.en?.toLowerCase().replace(/[^a-z0-9]+/g, '-') || examData.name?.toLowerCase?.().replace(/[^a-z0-9]+/g, '-');
@@ -190,21 +187,27 @@ class ExamService {
       throw err;
     }
 
-    const exam = new Exam({
-      ...examData,
-      code: examCode,
-      questionCount,
-      createdBy: userId,
-      isPublished: examData.isPublished === true,
-    });
-    
-    await exam.save();
+    const create = async (session) => {
+      const exam = new Exam({
+        ...examData,
+        code: examCode,
+        questionCount,
+        createdBy: userId,
+        isPublished: examData.isPublished === true,
+      });
+      await exam.save({ session });
 
-    if (questionsArray && questionsArray.length > 0) {
-      await insertQuestionsInBatches(exam, questionsArray);
-    }
+      if (questionCount > 0) {
+        const insertedCount = await insertQuestionsInBatches(exam, questionsArray, session);
+        if (insertedCount !== questionCount) {
+          exam.questionCount = insertedCount;
+          await exam.save({ session });
+        }
+      }
+      return exam;
+    };
 
-    return exam;
+    return questionCount > 0 ? Exam.db.transaction(create) : create();
   }
 
   async updateExamWithQuestions(code, updateData, questionsArray, userId) {
@@ -215,24 +218,27 @@ class ExamService {
     }
 
     const hasQuestions = Array.isArray(questionsArray) && questionsArray.length > 0;
-    if (hasQuestions) {
-      updateData.questionCount = questionsArray.length;
-    }
+    const ownedExam = { _id: existingExam._id, createdBy: userId };
+    const update = async (session) => {
+      let fields = updateData;
+      if (hasQuestions) {
+        if (!await lockExamForQuestionMutation(ownedExam, session)) return { error: 'Forbidden' };
 
-    const exam = await Exam.findOneAndUpdate(
-      { _id: existingExam._id, createdBy: userId },
-      updateData,
-      { returnDocument: 'after', runValidators: true }
-    );
-    if (!exam) return { error: 'Forbidden' };
+        await Question.deleteMany({ examId: existingExam._id }, { session });
+        const questionCount = await insertQuestionsInBatches(existingExam, questionsArray, session);
+        fields = { ...updateData, questionCount };
+      }
 
-    if (hasQuestions) {
-      // Replace questions: delete first, then insert in adaptive batches
-      await Question.deleteMany({ examId: exam._id });
-      await insertQuestionsInBatches(exam, questionsArray);
-    }
+      const exam = await Exam.findOneAndUpdate(ownedExam, fields, {
+        returnDocument: 'after',
+        runValidators: true,
+        session,
+      });
+      if (hasQuestions && !exam) throw new Error('Could not update the locked exam');
+      return exam || { error: 'Forbidden' };
+    };
 
-    return exam;
+    return hasQuestions ? Exam.db.transaction(update) : update();
   }
 
   async deleteExam(code, userId) {
@@ -242,35 +248,50 @@ class ExamService {
       return { error: 'Forbidden' };
     }
 
-    const exam = await Exam.findOneAndDelete({ _id: existingExam._id, createdBy: userId });
-    if (!exam) return { error: 'Forbidden' };
-    await Question.deleteMany({ examId: exam._id });
-    return { exam };
+    return Exam.db.transaction(async (session) => {
+      const exam = await Exam.findOneAndDelete({ _id: existingExam._id, createdBy: userId }, { session });
+      if (!exam) return { error: 'Forbidden' };
+      await Question.deleteMany({ examId: exam._id }, { session });
+      return { exam };
+    });
   }
 
-  async getQuestionsByExamCode(examCode, page = 1, limit = 0, userId) {
-    const exam = await Exam.findOne({ code: examCode, ...getReadableExamFilter(userId) });
+  async getQuestionsByExamCode(examCode, requestedPage = 1, requestedLimit = MAX_QUESTIONS_PER_PAGE, userId) {
+    const page = boundedPageNumber(requestedPage, MAX_QUESTION_PAGE);
+    const limit = boundedPageNumber(requestedLimit, MAX_QUESTIONS_PER_PAGE);
+    const exam = await Exam.findOne(
+      { code: examCode, ...getReadableExamFilter(userId) },
+      '+questionMutationVersion',
+      { maxTimeMS: QUESTION_QUERY_TIMEOUT_MS }
+    );
     if (!exam) return null;
 
-    const skip = (page - 1) * (limit || 0);
-
     const questionFilter = { examId: exam._id };
-    let query = Question.find(questionFilter).sort({ topic_number: 1, question_number: 1 });
-    
-    if (skip > 0) query = query.skip(skip);
-    if (limit > 0) query = query.limit(limit);
+    const queryOptions = { maxTimeMS: QUESTION_QUERY_TIMEOUT_MS };
+    const query = Question.find(questionFilter, null, queryOptions)
+      .sort({ topic_number: 1, question_number: 1 })
+      .limit(limit);
+    if (page > 1) query.skip((page - 1) * limit);
 
-    const questions = await query;
-    const total = await Question.countDocuments(questionFilter);
-
+    const [questions, total] = await Promise.all([query, Question.countDocuments(questionFilter, queryOptions)]);
+    const version = exam.questionMutationVersion ?? 0;
+    const confirmedExam = await Exam.findOne(
+      { _id: exam._id, ...getReadableExamFilter(userId) },
+      '+questionMutationVersion',
+      queryOptions
+    );
+    if (!confirmedExam || (confirmedExam.questionMutationVersion ?? 0) !== version) {
+      throw Object.assign(new Error('Exam changed during question loading. Reload the exam.'), { status: 409, code: 'QUESTION_PAGE_CHANGED' });
+    }
     return {
       count: questions.length,
       data: questions,
       pagination: {
         total,
         page,
-        limit: limit === 0 ? total : limit,
-        totalPages: limit === 0 ? 1 : Math.ceil(total / limit)
+        limit,
+        totalPages: Math.ceil(total / limit),
+        revision: `${exam._id}:${version}`,
       }
     };
   }
@@ -339,13 +360,16 @@ class ExamService {
       return { error: 'NoUpdates' };
     }
 
-    const question = await Question.findOneAndUpdate(
-      { examId: exam._id, topic_number: topicNumber, question_number: questionNumber },
-      allowedUpdates,
-      { returnDocument: 'after' }
-    );
+    const ownedExam = { _id: exam._id, createdBy: userId };
+    return Exam.db.transaction(async (session) => {
+      if (!await lockExamForQuestionMutation(ownedExam, session)) return { error: 'Forbidden' };
 
-    return question;
+      return Question.findOneAndUpdate(
+        { examId: exam._id, topic_number: topicNumber, question_number: questionNumber },
+        allowedUpdates,
+        { returnDocument: 'after', session }
+      );
+    });
   }
 }
 

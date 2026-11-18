@@ -2,6 +2,9 @@ const express = require('express');
 const router = express.Router();
 const examController = require('../controllers/examController');
 const { authenticateToken, getUserFromToken } = require('../services/authService');
+const importBody = express.json({ limit: '25mb', inflate: false });
+const questionBody = express.json({ limit: '256kb', inflate: false });
+const ownershipBody = express.json({ limit: '4kb', inflate: false });
 
 // Note: In an ideal world, create/update/delete endpoints should be 
 // protected by an Admin middleware, but for now we protect using authenticateToken
@@ -16,10 +19,10 @@ router.get('/questions/:code/:questionNumber', getUserFromToken, examController.
 router.get('/questions/:code', getUserFromToken, examController.getQuestionsByExamCode);
 
 // Admin-level endpoints (protected by user token)
-router.post('/exams', authenticateToken, examController.createExam);
-router.put('/exams/:code', authenticateToken, examController.updateExam);
-router.put('/exams/:code/owner', authenticateToken, examController.transferExamOwnership);
-router.put('/exams/:code/questions/:questionNumber', authenticateToken, examController.updateQuestion);
+router.post('/exams', authenticateToken, importBody, examController.createExam);
+router.put('/exams/:code', authenticateToken, importBody, examController.updateExam);
+router.put('/exams/:code/owner', authenticateToken, ownershipBody, examController.transferExamOwnership);
+router.put('/exams/:code/questions/:questionNumber', authenticateToken, questionBody, examController.updateQuestion);
 router.delete('/exams/:code', authenticateToken, examController.deleteExam);
 
 module.exports = router;

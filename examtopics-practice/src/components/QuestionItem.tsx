@@ -36,7 +36,7 @@ export const QuestionItem: React.FC<QuestionItemProps> = ({
   examId
 }) => {
   const { t } = useLanguage();
-  const { user } = useAuth();
+  const { token } = useAuth();
 
   const [selectedAnswers, setSelectedAnswers] = useState<string[]>(
     userAnswer?.selectedAnswers || []
@@ -95,11 +95,9 @@ export const QuestionItem: React.FC<QuestionItemProps> = ({
         examId: examId,
         reason: reason,
         comment: comment,
-        user: user?.email || null,
-        url: `${window.location.origin}/exam/${examId}?topicNumber=${question.topic_number}&questionNumber=${question.question_number}`
       };
 
-      const response = await apiClient.submitReport(reportData);
+      const response = await apiClient.submitReport(reportData, token ?? undefined);
 
       if (response.success) {
         toast.success(`${t('reportSubmittedSuccessfully')} - ${t('topic')} ${question.topic_number}, ${t('question')} ${question.question_number}`);

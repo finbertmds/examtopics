@@ -45,7 +45,7 @@ Tạo sheet với các cột: `timestamp`, `questionId`, `examId`, `reason`, `co
 4. Click "Create Credentials" → "OAuth 2.0 Client IDs"
 5. Chọn "Web application"
 6. Thêm Authorized redirect URIs:
-   - `http://localhost:3000/auth/google/callback` (development)
+   - `http://localhost:3001/auth/google/callback` (development)
    - `https://your-backend-domain.com/auth/google/callback` (production)
 7. Copy Client ID và Client Secret
 
@@ -79,7 +79,7 @@ GOOGLE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nYour private key here\n-----END
 # Google OAuth Configuration
 GOOGLE_CLIENT_ID=your_google_oauth_client_id
 GOOGLE_CLIENT_SECRET=your_google_oauth_client_secret
-GOOGLE_CALLBACK_URL=http://localhost:3000/auth/google/callback
+GOOGLE_CALLBACK_URL=http://localhost:3001/auth/google/callback
 
 # JWT Configuration
 JWT_SECRET=your-jwt-secret-key-change-in-production
@@ -133,25 +133,11 @@ Gửi báo cáo mới.
 
 ### GET /health
 
-Kiểm tra trạng thái service.
+Kiểm tra tiến trình HTTP. Endpoint này không gọi MongoDB hoặc Google Sheets.
 
-**Response:**
-```json
-{
-  "success": true,
-  "status": "healthy",
-  "timestamp": "2024-01-01T00:00:00.000Z",
-  "services": {
-    "googleSheets": "connected",
-    "mongodb": "connected"
-  },
-  "stats": {
-    "totalUsers": 5,
-    "totalExams": 12,
-    "storageSize": 5
-  }
-}
-```
+### GET /health/readiness
+
+Kiểm tra phụ thuộc với thời gian chờ giới hạn và bộ nhớ đệm ngắn. Kết quả có `services.mongodb` và `services.googleSheets`. Trả HTTP 503 nếu MongoDB chưa sẵn sàng. Sheets có trạng thái riêng vì ứng dụng có thể tiếp tục phục vụ câu hỏi khi Sheets gián đoạn.
 
 ### GET /auth/me
 

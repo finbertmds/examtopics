@@ -4,88 +4,42 @@ const helmet = require('helmet');
 require('dotenv').config();
 
 const connectDB = require('./config/database');
-const sheetsHelper = require('./services/sheetsService');
-const databaseService = require('./services/databaseService');
 const { passport } = require('./services/authService');
-// const progressService = require('./services/progressService');
 const errorHandler = require('./middleware/errorHandler');
+const getFrontendUrl = require('./utils/frontendUrl');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// Connect to MongoDB
-connectDB();
-
 // Middleware
 app.use(helmet());
 // CORS configuration with environment-based origins
-const getCorsOrigins = () => {
-  const env = process.env.NODE_ENV || 'development';
-  
-  if (env === 'production') {
-    // Production: Allow specific origins
-    const origins = [
-      'https://examtopics-practice.onrender.com',
-      process.env.FRONTEND_URL
-    ].filter(Boolean);
-    
-    return origins.length > 0 ? origins : ['https://examtopics-practice.onrender.com'];
-  } else {
-    // Development: Allow localhost
-    return ['http://localhost:3000', 'http://localhost:3001'];
-  }
-};
+const frontendOrigin = new URL(getFrontendUrl()).origin;
+const corsOrigins = process.env.NODE_ENV === 'production'
+  ? ['https://examtopics-practice.onrender.com', frontendOrigin]
+  : ['http://localhost:3000', 'http://localhost:3001', frontendOrigin];
 
 app.use(cors({
-  origin: getCorsOrigins(),
+  origin: corsOrigins,
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-ExamTopics-Session'],
   credentials: true
 }));
-// Allow large exam question payloads (1000+ items, optional image URLs)
-app.use(express.json({ limit: '25mb' }));
-
 // Initialize passport
 app.use(passport.initialize());
-
-// Health check endpoint
-app.get('/health', async (req, res) => {
-  try {
-    const [sheetsConnected, mongodbConnected] = await Promise.all([
-      sheetsHelper.testConnection(),
-      databaseService.testConnection(),
-    ]);
-    // const progressStats = await progressService.getStats();
-
-    res.status(mongodbConnected ? 200 : 503).json({
-      success: mongodbConnected,
-      status: mongodbConnected ? 'healthy' : 'unhealthy',
-      timestamp: new Date().toISOString(),
-      services: {
-        googleSheets: sheetsConnected ? 'connected' : 'disconnected',
-        mongodb: mongodbConnected ? 'connected' : 'disconnected'
-      },
-      // stats: progressStats
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: 'Health check failed',
-      details: error.message
-    });
-  }
-});
 
 // Domain Routes
 const authRoutes = require('./routes/authRoutes');
 const progressRoutes = require('./routes/progressRoutes');
 const reportRoutes = require('./routes/reportRoutes');
 const examRoutes = require('./routes/examRoutes');
+const healthRoutes = require('./routes/healthRoutes');
 
 app.use('/auth', authRoutes);
 app.use('/progress', progressRoutes);
 app.use('/report', reportRoutes);
 app.use('/api', examRoutes);
+app.use('/health', healthRoutes);
 
 // 404 handler
 app.use( (req, res) => {
@@ -95,23 +49,15 @@ app.use( (req, res) => {
   });
 });
 
-// Error handler
-app.use((error, req, res, next) => {
-  console.error('Unhandled error:', error);
-  res.status(500).json({
-    success: false,
-    error: 'Internal server error'
-  });
-});
-
-// Start server
-// Error handling middleware (must be last)
 app.use(errorHandler);
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-  console.log(`Health check: http://localhost:${PORT}/health`);
-  console.log(`Report endpoint: POST http://localhost:${PORT}/report`);
-});
+if (require.main === module) {
+  connectDB();
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+    console.log(`Health check: http://localhost:${PORT}/health`);
+    console.log(`Report endpoint: POST http://localhost:${PORT}/report`);
+  });
+}
 
 module.exports = app;

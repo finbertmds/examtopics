@@ -2,124 +2,155 @@ import { act, fireEvent, render, screen } from '@testing-library/react';
 import { apiClient } from '../utils/apiClient';
 import { AuthProvider, useAuth } from './AuthContext';
 
-const DAY = 24 * 60 * 60;
-const now = 1_790_000_000;
+const now = 1_790_000_000_000;
+const day = 86_400_000;
+const fixture = {
+  token: 'access-token', user: { id: 'candidate' },
+  idleExpiresAt: now + day, absoluteExpiresAt: now + 30 * day,
+};
 
-function sessionToken(exp: number, sessionExpiresAt = now + 30 * DAY) {
-  return `header.${btoa(JSON.stringify({ exp, sessionExpiresAt }))}.signature`;
-}
+const fallbackBearer = `fixture.${btoa(JSON.stringify({ exp: now / 1000 + 600, sid: 'fixture-session' }))}.fixture`;
 
 function SessionStatus() {
-  const { isAuthenticated, token } = useAuth();
-  return <output data-testid="session">{isAuthenticated ? token : 'Signed out'}</output>;
+  const { isAuthenticated, token, logout, notice, acceptSession } = useAuth();
+  return <>
+    <output>{isAuthenticated ? token : 'Signed out'}</output>
+    <span>{notice}</span>
+    <button onClick={logout}>Sign out</button>
+    <button onClick={() => acceptSession({ ...fixture, token: fallbackBearer, user: { id: 'candidate', email: 'fixture@example.test', name: 'Fixture' } })}>
+      Accept fixture exchange
+    </button>
+  </>;
+
 }
 
-function jsonResponse(status: number, body: object) {
-  return new Response(JSON.stringify(body), { status });
-}
-
-function openSession(token: string) {
-  localStorage.setItem('auth_token', token);
-  const renewedToken = sessionToken(now + 7 * DAY);
-  const refresh = vi.fn(async () => jsonResponse(200, { success: true, token: renewedToken }));
-  vi.stubGlobal('fetch', vi.fn(async (input: string) => {
-    const { pathname } = new URL(input);
-    if (pathname === '/auth/me') return jsonResponse(200, { success: true, user: { id: 'candidate' } });
-    if (pathname === '/auth/refresh') return refresh();
-    return jsonResponse(403, { success: false, error: 'Invalid or expired token' });
-  }));
+function start(fetch: ReturnType<typeof vi.fn>) {
+  vi.stubGlobal('fetch', fetch);
   const listeners = vi.spyOn(window, 'addEventListener');
-  render(<AuthProvider><SessionStatus /></AuthProvider>);
-
-  // A real browser marks input events trusted. jsdom only exposes script-generated events.
-  const activity = (type: string) => {
-    for (const [eventType, listener] of listeners.mock.calls) {
-      if (eventType === type && typeof listener === 'function') {
-        listener.call(window, { type, isTrusted: true } as Event);
-      }
-    }
+  const app = render(<AuthProvider><SessionStatus /></AuthProvider>);
+  const activity = () => {
+    const listener = listeners.mock.calls.findLast(([name]) => name === 'click')?.[1];
+    if (typeof listener === 'function') listener.call(window, { isTrusted: true } as Event);
   };
-  return { refresh, renewedToken, activity };
+  return { ...app, activity };
+}
+
+function path(input: string) {
+  return new URL(input).pathname;
 }
 
 beforeEach(() => {
   vi.useFakeTimers();
-  vi.setSystemTime(now * 1000);
+  vi.setSystemTime(now);
   vi.spyOn(console, 'error').mockImplementation(() => {});
 });
 
 afterEach(() => {
   localStorage.clear();
+  sessionStorage.clear();
   vi.unstubAllGlobals();
   vi.restoreAllMocks();
   vi.useRealTimers();
 });
 
-it('renews in the last day only after foreground user input', async () => {
-  const token = sessionToken(now + DAY);
-  const { refresh, renewedToken, activity } = openSession(token);
+it('restores on reload without registering activity or persisting the bearer', async () => {
+  localStorage.setItem('auth_token', 'old-credential');
+  const fetch = vi.fn(async (_input: string, _options: RequestInit) => Response.json({ success: true, ...fixture }));
+  const first = start(fetch);
   await act(async () => {});
-  await act(() => apiClient.loadAllProgress(token));
+  expect(screen.getByText(fixture.token)).toBeInTheDocument();
   fireEvent.click(window);
   fireEvent(document, new Event('visibilitychange'));
-  expect(refresh).not.toHaveBeenCalled();
+  first.unmount();
 
-  await act(async () => activity('click'));
-  expect(refresh).toHaveBeenCalledTimes(1);
-  expect(screen.getByTestId('session')).toHaveTextContent(renewedToken);
-});
-
-it('excludes early tokens from renewal on user activity', async () => {
-  const token = sessionToken(now + DAY + 1);
-  const { refresh, activity } = openSession(token);
-  await act(async () => activity('click'));
-
-  expect(refresh).not.toHaveBeenCalled();
-});
-
-it('does not renew a token that already ends at the absolute limit', async () => {
-  const deadline = now + DAY;
-  const { refresh, activity } = openSession(sessionToken(deadline, deadline));
-  await act(async () => activity('keydown'));
-
-  expect(refresh).not.toHaveBeenCalled();
-});
-
-it('expires the idle session without a renewal request', async () => {
-  const { refresh, activity } = openSession(sessionToken(now + 60));
+  render(<AuthProvider><SessionStatus /></AuthProvider>);
   await act(async () => {});
-  await act(() => vi.advanceTimersByTimeAsync(60_000));
-
-  expect(screen.getByTestId('session')).toHaveTextContent('Signed out');
+  expect(screen.getByText(fixture.token)).toBeInTheDocument();
+  expect(fetch.mock.calls.map(([url]) => path(url))).toEqual(['/auth/session', '/auth/session']);
+  expect(fetch.mock.calls[0][1]).toMatchObject({ credentials: 'include' });
   expect(localStorage.getItem('auth_token')).toBeNull();
-  expect(localStorage.getItem('cached_user')).toBeNull();
-
-  await act(async () => activity('keydown'));
-  expect(refresh).not.toHaveBeenCalled();
 });
 
-it('ignores a late successful renewal if the token has already changed', async () => {
-  const { refresh, activity } = openSession(sessionToken(now + DAY));
-  const replacementToken = sessionToken(now + 4 * DAY);
-  refresh.mockImplementationOnce(async () => {
-    localStorage.setItem('auth_token', replacementToken);
-    return jsonResponse(200, { success: true, token: sessionToken(now + 7 * DAY) });
+it('waits for genuine activity renewal before making an authenticated request', async () => {
+  const renew = { ...fixture, token: 'replacement-token' };
+  let resolveActivity!: (response: Response) => void;
+  const pending = new Promise<Response>(resolve => { resolveActivity = resolve; });
+  const fetch = vi.fn(async (input: string, _options: RequestInit) => {
+    if (path(input) === '/auth/activity') return pending;
+    if (path(input) === '/auth/session') return Response.json({ success: true, ...fixture });
+    return Response.json({ success: true });
   });
-
-  await act(async () => activity('click'));
-  expect(refresh).toHaveBeenCalledTimes(1);
-  expect(localStorage.getItem('auth_token')).toBe(replacementToken);
-});
-
-it('uses the renewed token from another tab before the old token expires', async () => {
-  const initialToken = sessionToken(now + 60);
-  const { renewedToken } = openSession(initialToken);
+  const { activity } = start(fetch);
   await act(async () => {});
-  await act(async () => {
-    localStorage.setItem('auth_token', renewedToken);
-    window.dispatchEvent(new StorageEvent('storage', { key: 'auth_token' }));
+  let request!: ReturnType<typeof apiClient.loadAllProgress>;
+  act(() => {
+    activity();
+    request = apiClient.loadAllProgress(fixture.token);
   });
-  await act(() => vi.advanceTimersByTimeAsync(60_000));
+  await act(async () => {});
+  expect(fetch.mock.calls.map(([url]) => path(url))).toEqual(['/auth/session', '/auth/activity']);
 
-  expect(screen.getByTestId('session')).toHaveTextContent(renewedToken);
+  await act(async () => {
+    resolveActivity(Response.json({ success: true, ...renew }));
+    await request;
+  });
+  const requestOptions = fetch.mock.calls.at(-1)![1] as RequestInit;
+  expect(new Headers(requestOptions.headers).get('Authorization')).toBe('Bearer replacement-token');
+  expect(screen.getByText(fixture.token)).toBeInTheDocument();
+});
+
+it('signs out at the idle deadline without a background renewal', async () => {
+  const fetch = vi.fn(async () => Response.json({ success: true, ...fixture, idleExpiresAt: now + 60_000 }));
+  start(fetch);
+  await act(async () => {});
+  await act(() => vi.advanceTimersByTimeAsync(60_000));
+  expect(screen.getByText('Signed out')).toBeInTheDocument();
+  expect(fetch).toHaveBeenCalledTimes(1);
+});
+
+it('ignores a late restore after logout', async () => {
+  let resolveRestore!: (response: Response) => void;
+  const pending = new Promise<Response>(resolve => { resolveRestore = resolve; });
+  const fetch = vi.fn(async (input: string) => path(input) === '/auth/session' ? pending : Response.json({ success: true }));
+  start(fetch);
+
+  await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Sign out' })); });
+  await act(async () => { resolveRestore(Response.json({ success: true, ...fixture })); });
+
+  expect(screen.getByText('Signed out')).toBeInTheDocument();
+  expect(fetch.mock.calls.map(([url]) => path(url))).toEqual(['/auth/session', '/auth/logout']);
+});
+
+it('keeps a blocked-cookie session in memory and retries logout with its bearer', async () => {
+  const logout = vi.fn()
+    .mockResolvedValueOnce(Response.json({ success: false }, { status: 503 }))
+    .mockResolvedValueOnce(Response.json({ success: true }));
+  const fetch = vi.fn(async (input: string, options: RequestInit) => {
+    if (path(input) === '/auth/logout') return logout(new Headers(options.headers).get('Authorization'));
+    return Response.json({ success: false }, { status: 401 });
+  });
+  const { activity } = start(fetch);
+  await act(async () => {});
+  await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Accept fixture exchange' })); });
+  expect(screen.getByText('sessionCookieUnavailable')).toBeInTheDocument();
+  expect(screen.getByText(fallbackBearer)).toBeInTheDocument();
+  await act(async () => activity());
+  expect(fetch.mock.calls.map(([url]) => path(url))).not.toContain('/auth/activity');
+
+  await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Sign out' })); });
+  expect(screen.getByText('sessionLogoutFailed')).toBeInTheDocument();
+  await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Sign out' })); });
+  expect(logout.mock.calls).toEqual([[ `Bearer ${fallbackBearer}` ], [ `Bearer ${fallbackBearer}` ]]);
+  expect(screen.getByText('Signed out')).toBeInTheDocument();
+});
+
+it('does not restore or revoke a potentially different cookie session after an unconfirmed logout and reload', async () => {
+  sessionStorage.setItem('examtopics-logout-pending', '1');
+  const fetch = vi.fn();
+  start(fetch);
+  await act(async () => {});
+
+  expect(screen.getByText('Signed out')).toBeInTheDocument();
+  expect(screen.getByText('sessionLogoutUnconfirmed')).toBeInTheDocument();
+  expect(fetch).not.toHaveBeenCalled();
 });

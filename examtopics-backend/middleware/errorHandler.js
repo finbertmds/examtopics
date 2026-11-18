@@ -1,5 +1,15 @@
 const errorHandler = (err, req, res, next) => {
-  console.error('Error:', err);
+  if (res.headersSent) return next(err);
+
+  if (err.type === 'entity.too.large') {
+    return res.status(413).json({ success: false, error: 'Request body too large' });
+  }
+  if (err.type === 'entity.parse.failed' || err.type === 'request.size.invalid' || err.type === 'request.aborted') {
+    return res.status(400).json({ success: false, error: 'Invalid request body' });
+  }
+  if (err.type === 'encoding.unsupported' || err.type === 'charset.unsupported') {
+    return res.status(415).json({ success: false, error: 'Unsupported request encoding' });
+  }
 
   // MongoDB specific errors
   if (err.name === 'ParallelSaveError') {
@@ -21,16 +31,14 @@ const errorHandler = (err, req, res, next) => {
   if (err.name === 'ValidationError') {
     return res.status(400).json({
       success: false,
-      error: 'Validation failed',
-      details: Object.values(err.errors).map(e => e.message)
+      error: 'Validation failed'
     });
   }
 
   if (err.name === 'CastError') {
     return res.status(400).json({
       success: false,
-      error: 'Invalid data format',
-      details: `Invalid ${err.path}: ${err.value}`
+      error: 'Invalid data format'
     });
   }
 
@@ -59,11 +67,10 @@ const errorHandler = (err, req, res, next) => {
     });
   }
 
-  // Default error
-  res.status(err.status || 500).json({
+  console.error('Unhandled request error');
+  return res.status(500).json({
     success: false,
-    error: err.message || 'Internal server error',
-    details: process.env.NODE_ENV === 'development' ? err.stack : undefined
+    error: 'Internal server error'
   });
 };
 
