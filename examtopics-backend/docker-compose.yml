@@ -5,10 +5,10 @@ services:
     image: mongo:7
     container_name: examtopics-mongodb
     ports:
-      - "27017:27017"
+      - "127.0.0.1:27017:27017"
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=root
-      - MONGO_INITDB_ROOT_PASSWORD=root
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME:?Set a local MongoDB username in .env}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD:?Set a local MongoDB password in .env}
     volumes:
       - mongo-data:/data/db
     restart: unless-stopped

@@ -50,7 +50,8 @@ Reviewed 2026-11-15 against baseline `b19dbc6`. The evidence links use baseline 
 | SEC-14 | Patched locally. The progress API rejects invalid exam identifiers and checks positive safe integer positions before reaching MongoDB. Bulk answer and training keys must use canonical positions. Progress responses preserve stored exam IDs as own data keys. [Regression tests](../../examtopics-backend/test/progress-validation.test.js) |
 | SEC-16 | Patched locally for backend runtime paths. Unexpected HTTP failures use fixed messages and server-generated request IDs. Logs for those failures include a fixed event and the same request ID. Progress, history, OAuth and database startup no longer log raw exceptions or identifiers. Standalone migration command output is outside this runtime change. [Regression tests](../../examtopics-backend/test/error-redaction.test.js) |
 | SEC-17 | Patched locally. `npm run dev` uses Node.js watch mode and the backend lockfiles no longer include the affected watcher dependency chain. A locked install, watcher restart smoke test and public npm registry audit passed. [Node.js watch mode](https://nodejs.org/api/cli.html#--watch) |
-| SEC-10–13, SEC-15 | Remain open. Track separately with the remediation listed above. |
+| SEC-12 | Patched locally. Compose publishes MongoDB only on IPv4 loopback and requires both local initialization credentials. Sample import requires an explicit `MONGO_URI`. Offline Compose validation and the migration regression test passed. Existing volumes keep their credentials until they are rotated in MongoDB. [Local MongoDB setup](../../examtopics-backend/README.md#chạy-mongodb-cục-bộ-bằng-docker-compose) |
+| SEC-10–11, SEC-13, SEC-15 | Remain open. Track separately with the remediation listed above. |
 
 ## Verification limits
 
