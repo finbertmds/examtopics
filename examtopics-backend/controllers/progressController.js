@@ -1,15 +1,50 @@
+const { sendInternalError } = require('../utils/requestFailure');
 const progressService = require('../services/progressService');
+
+const isExamId = (value) => typeof value === 'string' && value.trim().length > 0;
+const isPosition = (value) => Number.isSafeInteger(value) && value > 0;
+const isRecord = (value) => value !== null && typeof value === 'object' && !Array.isArray(value);
+
+function parseQuestionKey(key) {
+  if (typeof key !== 'string') return null;
+  const [topic, question, extra] = key.split('-');
+  const topicNumber = Number(topic);
+  const questionNumber = Number(question);
+  if (extra !== undefined || !isPosition(topicNumber) || !isPosition(questionNumber) ||
+      key !== `${topicNumber}-${questionNumber}`) {
+    return null;
+  }
+  return { topicNumber, questionNumber };
+}
+
+function validProgressPositions(progress) {
+  if (!isRecord(progress)) return false;
+  const { currentTopic, currentQuestion, markedForTraining, answers } = progress;
+  if ((currentTopic !== undefined && !isPosition(currentTopic)) ||
+      (currentQuestion !== undefined && !isPosition(currentQuestion)) ||
+      (markedForTraining !== undefined &&
+        (!Array.isArray(markedForTraining) || !markedForTraining.every(parseQuestionKey)))) {
+    return false;
+  }
+  if (answers === undefined) return true;
+  return isRecord(answers) && Object.entries(answers).every(([key, answer]) => {
+    const position = parseQuestionKey(key);
+    return position && isRecord(answer) &&
+      (answer.topicNumber === undefined || answer.topicNumber === position.topicNumber) &&
+      (answer.questionNumber === undefined || answer.questionNumber === position.questionNumber);
+  });
+}
 
 class ProgressController {
   async saveProgress(req, res) {
     try {
-      const { examId, progress } = req.body;
+      const { examId, progress } = req.body ?? {};
       const userId = req.user.userId;
 
-      if (!examId || !progress) {
+      if (!isExamId(examId) || !validProgressPositions(progress)) {
         return res.status(400).json({
           success: false,
-          error: 'examId and progress are required'
+          error: 'Valid examId and progress are required'
         });
       }
 
@@ -20,19 +55,15 @@ class ProgressController {
         message: 'Progress saved successfully',
         saved
       });
-    } catch (error) {
-      console.error('Error saving progress:', error);
-      res.status(500).json({
-        success: false,
-        error: 'Failed to save progress',
-        details: error.message
-      });
+    } catch {
+      return sendInternalError(res, 'progress.save_failed', 'Failed to save progress');
     }
   }
 
   async loadProgress(req, res) {
     try {
       const { examId } = req.params;
+      if (!isExamId(examId)) return res.status(400).json({ success: false, error: 'A valid examId is required' });
       const userId = req.user.userId;
 
       const progress = await progressService.loadProgress(userId, examId);
@@ -41,13 +72,8 @@ class ProgressController {
         success: true,
         progress: progress || null
       });
-    } catch (error) {
-      console.error('Error loading progress:', error);
-      res.status(500).json({
-        success: false,
-        error: 'Failed to load progress',
-        details: error.message
-      });
+    } catch {
+      return sendInternalError(res, 'progress.load_failed', 'Failed to load progress');
     }
   }
 
@@ -60,22 +86,18 @@ class ProgressController {
         success: true,
         progress: allProgress
       });
-    } catch (error) {
-      console.error('Error loading all progress:', error);
-      res.status(500).json({
-        success: false,
-        error: 'Failed to load progress',
-        details: error.message
-      });
+    } catch {
+      return sendInternalError(res, 'progress.load_all_failed', 'Failed to load progress');
     }
   }
 
   async addAnswer(req, res) {
     try {
-      const { examId, topicNumber, questionNumber, selectedAnswers, isCorrect } = req.body;
+      const { examId, topicNumber, questionNumber, selectedAnswers, isCorrect } = req.body ?? {};
       const userId = req.user.userId;
 
-      if (!examId || !topicNumber || !questionNumber || !selectedAnswers || isCorrect === undefined) {
+      if (!isExamId(examId) || !isPosition(topicNumber) || !isPosition(questionNumber) ||
+          !isPosition(questionNumber + 1) || !selectedAnswers || isCorrect === undefined) {
         return res.status(400).json({
           success: false,
           error: 'examId, topicNumber, questionNumber, selectedAnswers, and isCorrect are required'
@@ -95,22 +117,17 @@ class ProgressController {
           score: progress.score
         }
       });
-    } catch (error) {
-      console.error('Error saving answer for question ' + questionNumber + ' in topic ' + topicNumber + ':', error);
-      res.status(500).json({
-        success: false,
-        error: 'Failed to save answer for question ' + questionNumber + ' in topic ' + topicNumber,
-        details: error.message
-      });
+    } catch {
+      return sendInternalError(res, 'progress.answer_failed', 'Failed to save answer');
     }
   }
 
   async toggleTrainingMark(req, res) {
     try {
-      const { examId, topicNumber, questionNumber, isMarkedForTraining } = req.body;
+      const { examId, topicNumber, questionNumber, isMarkedForTraining } = req.body ?? {};
       const userId = req.user.userId;
 
-      if (!examId || !topicNumber || !questionNumber) {
+      if (!isExamId(examId) || !isPosition(topicNumber) || !isPosition(questionNumber)) {
         return res.status(400).json({
           success: false,
           error: 'examId, topicNumber, and questionNumber are required'
@@ -123,22 +140,17 @@ class ProgressController {
         success: true,
         message: 'Training mark for question ' + questionNumber + ' in topic ' + topicNumber + ' ' + (isMarkedForTraining ? 'added' : 'removed') + ' successfully',
       });
-    } catch (error) {
-      console.error('Error toggling training mark for question ' + questionNumber + ' in topic ' + topicNumber + ':', error);
-      res.status(500).json({
-        success: false,
-        error: 'Failed to toggle training mark for question ' + questionNumber + ' in topic ' + topicNumber,
-        details: error.message
-      });
+    } catch {
+      return sendInternalError(res, 'progress.training_mark_failed', 'Failed to toggle training mark');
     }
   }
 
   async submitProgress(req, res) {
     try {
-      const { examId, progress, score, totalQuestions, answeredCount } = req.body;
+      const { examId, progress, score, totalQuestions, answeredCount } = req.body ?? {};
       const userId = req.user.userId;
 
-      if (!examId || !progress || !score || !totalQuestions || answeredCount === undefined) {
+      if (!isExamId(examId) || !validProgressPositions(progress) || !score || !totalQuestions || answeredCount === undefined) {
         return res.status(400).json({
           success: false,
           error: 'examId, progress, score object, totalQuestions, and answeredCount are required'
@@ -159,22 +171,17 @@ class ProgressController {
         success: true,
         message: 'Exam ' + examId + ' submitted and progress reset successfully'
       });
-    } catch (error) {
-      console.error('Error submitting exam ' + examId + ':', error);
-      res.status(500).json({
-        success: false,
-        error: 'Failed to submit exam ' + examId,
-        details: error.message
-      });
+    } catch {
+      return sendInternalError(res, 'progress.submit_failed', 'Failed to submit exam');
     }
   }
 
   async resetProgress(req, res) {
     try {
-      const { examId } = req.body;
+      const { examId } = req.body ?? {};
       const userId = req.user.userId;
 
-      if (!examId) {
+      if (!isExamId(examId)) {
         return res.status(400).json({
           success: false,
           error: 'examId is required'
@@ -187,19 +194,15 @@ class ProgressController {
         success: true,
         message: 'Progress reset successfully'
       });
-    } catch (error) {
-      console.error('Error resetting progress:', error);
-      res.status(500).json({
-        success: false,
-        error: 'Failed to reset progress',
-        details: error.message
-      });
+    } catch {
+      return sendInternalError(res, 'progress.reset_failed', 'Failed to reset progress');
     }
   }
 
   async getUserExamHistory(req, res) {
     try {
       const { examId } = req.params;
+      if (!isExamId(examId)) return res.status(400).json({ success: false, error: 'A valid examId is required' });
       const { limit = 10 } = req.query;
       const userId = req.user.userId;
 
@@ -209,13 +212,8 @@ class ProgressController {
         success: true,
         history
       });
-    } catch (error) {
-      console.error('Error getting exam history:', error);
-      res.status(500).json({
-        success: false,
-        error: 'Failed to get exam history',
-        details: error.message
-      });
+    } catch {
+      return sendInternalError(res, 'progress.exam_history_failed', 'Failed to get exam history');
     }
   }
 
@@ -230,19 +228,15 @@ class ProgressController {
         success: true,
         history
       });
-    } catch (error) {
-      console.error('Error getting user history:', error);
-      res.status(500).json({
-        success: false,
-        error: 'Failed to get user history',
-        details: error.message
-      });
+    } catch {
+      return sendInternalError(res, 'progress.user_history_failed', 'Failed to get user history');
     }
   }
 
   async getExamStats(req, res) {
     try {
       const { examId } = req.params;
+      if (!isExamId(examId)) return res.status(400).json({ success: false, error: 'A valid examId is required' });
       const userId = req.user.userId;
 
       const stats = await progressService.getExamStats(userId, examId);
@@ -251,13 +245,8 @@ class ProgressController {
         success: true,
         stats
       });
-    } catch (error) {
-      console.error('Error getting exam stats:', error);
-      res.status(500).json({
-        success: false,
-        error: 'Failed to get exam stats',
-        details: error.message
-      });
+    } catch {
+      return sendInternalError(res, 'progress.exam_stats_failed', 'Failed to get exam stats');
     }
   }
 
@@ -271,13 +260,8 @@ class ProgressController {
         success: true,
         examIds
       });
-    } catch (error) {
-      console.error('Error getting completed exam IDs:', error);
-      res.status(500).json({
-        success: false,
-        error: 'Failed to get completed exam IDs',
-        details: error.message
-      });
+    } catch {
+      return sendInternalError(res, 'progress.completed_exams_failed', 'Failed to get completed exam IDs');
     }
   }
 
@@ -286,19 +270,18 @@ class ProgressController {
       const { examId } = req.query;
       const userId = req.user.userId;
 
+      if (examId !== undefined && !isExamId(examId)) {
+        return res.status(400).json({ success: false, error: 'Invalid examId' });
+      }
+
       const dailyProgress = await progressService.getDailyProgress(userId, examId);
       
       res.json({
         success: true,
         dailyProgress: dailyProgress
       });
-    } catch (error) {
-      console.error('Error getting daily progress:', error);
-      res.status(500).json({
-        success: false,
-        error: 'Failed to get daily progress',
-        details: error.message
-      });
+    } catch {
+      return sendInternalError(res, 'progress.daily_failed', 'Failed to get daily progress');
     }
   }
 }

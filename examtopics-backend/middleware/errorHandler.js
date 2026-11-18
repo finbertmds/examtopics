@@ -1,5 +1,10 @@
+const { logFailure, sendInternalError } = require('../utils/requestFailure');
+
 const errorHandler = (err, req, res, next) => {
-  if (res.headersSent) return next(err);
+  if (res.headersSent) {
+    logFailure('request.response_interrupted', res.locals?.requestId);
+    return res.destroy();
+  }
 
   if (err.type === 'entity.too.large') {
     return res.status(413).json({ success: false, error: 'Request body too large' });
@@ -67,11 +72,7 @@ const errorHandler = (err, req, res, next) => {
     });
   }
 
-  console.error('Unhandled request error');
-  return res.status(500).json({
-    success: false,
-    error: 'Internal server error'
-  });
+  return sendInternalError(res, 'request.unhandled_failure');
 };
 
 module.exports = errorHandler;

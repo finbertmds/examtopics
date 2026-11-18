@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "dev": "nodemon index.js",
+    "dev": "node --watch index.js",
     "test": "node --test test",
     "test:oauth": "node scripts/test-oauth.js",
     "migrate:progress": "node scripts/migrate-progress.js",
@@ -31,9 +31,6 @@
     "mongoose": "^9.11.4",
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0"
-  },
-  "devDependencies": {
-    "nodemon": "^3.1.14"
   },
   "engines": {
     "node": ">=26.12.1 <27"

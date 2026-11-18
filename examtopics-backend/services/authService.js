@@ -40,7 +40,6 @@ passport.use(new GoogleStrategy({
       const user = await User.findOrCreateUser(profile);
       return cb(null, user);
     } catch (error) {
-      console.error('Error in Google OAuth strategy:', error);
       return cb(error, null);
     }
   }
