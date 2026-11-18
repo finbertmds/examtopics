@@ -316,13 +316,10 @@ class ExamController {
 
   async getQuestionsByExamCode(req, res, next) {
     try {
-      const page = parseInt(req.query.page) || 1;
-      const limit = req.query.limit !== undefined ? parseInt(req.query.limit) : 0; // Default 0 means return all
-      
       const result = await examService.getQuestionsByExamCode(
         req.params.code,
-        page,
-        limit,
+        req.query.page,
+        req.query.limit,
         req.user?.userId
       );
       if (!result) {
@@ -330,6 +327,9 @@ class ExamController {
       }
       res.json({ success: true, ...result });
     } catch (error) {
+      if (error.code === 'INVALID_QUESTION_PAGINATION' || error.code === 'QUESTION_PAGE_CHANGED') {
+        return res.status(error.status).json({ success: false, error: error.message });
+      }
       next(error);
     }
   }

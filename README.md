@@ -131,8 +131,8 @@ Backend chia thành `routes/`, `controllers/`, `services/`, `models/`, `middlewa
 
 | Nhóm | Endpoint chính |
 | --- | --- |
-| Trạng thái | `GET /health` |
-| Đăng nhập | `GET /auth/google`, `GET /auth/google/callback`, `GET /auth/me`, `POST /auth/refresh` |
+| Trạng thái | `GET /health` (liveness), `GET /health/readiness` (MongoDB và Sheets) |
+| Đăng nhập | `GET /auth/google`, `GET /auth/google/callback`, `POST /auth/exchange`, `GET /auth/me`, `POST /auth/session`, `POST /auth/activity`, `POST /auth/logout` |
 | Đọc đề | `GET /api/exams`, `GET /api/exams/:code`, `GET /api/exams/metadata/info` |
 | Đọc câu hỏi | `GET /api/questions/:code`, `GET /api/questions/:code/:questionNumber` |
 | Quản lý đề | `POST /api/exams`, `PUT /api/exams/:code`, `DELETE /api/exams/:code` |
@@ -144,6 +144,11 @@ Backend chia thành `routes/`, `controllers/`, `services/`, `models/`, `middlewa
 | Báo cáo | `POST /report` |
 
 Các API yêu cầu xác thực sử dụng header `Authorization: Bearer <token>`. Quyền đọc đề riêng tư và quyền sửa/xóa được kiểm tra ở backend.
+
+- Danh sách câu hỏi nhận `page` từ 1 đến 1.000 và `limit` từ 1 đến 100 (mặc định 100). Giao diện tải từng trang và chỉ hiển thị khi các trang cùng phiên bản đề.
+- `POST /report` nhận JSON tối đa 4 KiB. Mỗi địa chỉ IP kết nối trực tiếp được gửi tối đa 5 lượt/phút, tổng cộng 30 lượt/phút mỗi process. Khi đứng sau reverse proxy, người dùng qua cùng proxy chia sẻ giới hạn 5 lượt/phút. Backend tự xác định tài khoản nếu có token hợp lệ và tạo liên kết câu hỏi.
+- Tạo đề kèm câu hỏi, sửa câu hỏi và xóa đề yêu cầu MongoDB hỗ trợ transaction. [Cấu hình replica set cục bộ](docs/audit/sec-07-exam-mutations.md).
+
 
 ### Migration dữ liệu
 

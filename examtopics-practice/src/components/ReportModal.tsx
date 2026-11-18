@@ -112,6 +112,7 @@ const ReportModal: React.FC<ReportModalProps> = ({
               </label>
               <textarea
                 value={comment}
+                maxLength={1000}
                 onChange={(e) => setComment(e.target.value)}
                 disabled={isSubmitting}
                 rows={4}

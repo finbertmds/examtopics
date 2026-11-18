@@ -90,8 +90,11 @@ test('a non-owner cannot update or delete an exam', async () => {
   }
 });
 
-test('optional authentication resolves a valid token before continuing', async () => {
-  const token = jwt.sign({ userId: 'owner-1' }, process.env.JWT_SECRET);
+test('optional authentication resolves a valid token before continuing', async (t) => {
+  const sid = randomBytes(32).toString('base64url');
+  const AuthSession = require('../models/AuthSession');
+  t.mock.method(AuthSession, 'findOne', async ({ _id }) => _id === sid ? { userId: 'owner-1' } : null);
+  const token = jwt.sign({ userId: 'owner-1', sid }, process.env.JWT_SECRET, { expiresIn: '10m' });
   const req = { headers: { authorization: `Bearer ${token}` } };
 
   await new Promise((resolve) => {

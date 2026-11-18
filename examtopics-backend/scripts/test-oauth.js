@@ -7,6 +7,7 @@
 
 const https = require('https');
 const http = require('http');
+const { createHash, randomBytes } = require('node:crypto');
 
 // Configuration
 const config = {
@@ -42,7 +43,6 @@ const testBackendHealth = () => {
           const response = JSON.parse(data);
           if (response.success) {
             console.log('✅ Backend health check: PASSED');
-            console.log(`   Services: ${JSON.stringify(response.services)}`);
           } else {
             console.log('❌ Backend health check: FAILED');
             console.log(`   Error: ${response.error}`);
@@ -64,13 +64,15 @@ const testBackendHealth = () => {
 
 const testOAuthEndpoint = () => {
   return new Promise((resolve, reject) => {
-    const url = `${currentConfig.backendUrl}/auth/google`;
+    const verifier = randomBytes(32).toString('base64url');
+    const challenge = createHash('sha256').update(verifier).digest('base64url');
+    const url = `${currentConfig.backendUrl}/auth/google?${new URLSearchParams({ challenge })}`;
     const client = url.startsWith('https') ? https : http;
     
     client.get(url, (res) => {
       if (res.statusCode === 302) {
         console.log('✅ OAuth endpoint: PASSED');
-        console.log(`   Redirects to: ${res.headers.location}`);
+        console.log(`   Redirects to: ${new URL(res.headers.location, url).origin}`);
       } else {
         console.log('❌ OAuth endpoint: FAILED');
         console.log(`   Status: ${res.statusCode}`);

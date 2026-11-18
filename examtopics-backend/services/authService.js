@@ -1,17 +1,16 @@
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const jwt = require('jsonwebtoken');
+const { ACCESS_TOKEN_SECONDS } = require('../config/auth');
 const User = require('../models/User');
 const getAuthSecret = require('../utils/authSecrets');
 const createOAuthStateStore = require('../utils/oauthStateStore');
 require('dotenv').config();
+const sessions = require('./authSessionService');
+const isOAuthValue = require('../utils/isOAuthValue');
 
 const JWT_SECRET = getAuthSecret('JWT_SECRET');
 const oauthStateSecret = getAuthSecret('SESSION_SECRET');
-const DAY_SECONDS = 24 * 60 * 60;
-const ACCESS_TOKEN_LIFETIME = 7 * DAY_SECONDS;
-const SESSION_LIFETIME = 30 * DAY_SECONDS;
-const REFRESH_WINDOW = DAY_SECONDS;
 
 // Configure Google OAuth Strategy with environment-based callback URL
 const getCallbackURL = () => {
@@ -47,84 +46,62 @@ passport.use(new GoogleStrategy({
   }
 ));
 
-const nowInSeconds = () => Math.floor(Date.now() / 1000);
+function generateToken(user, session) {
+  const now = Math.floor(Date.now() / 1000);
+  return jwt.sign({
+    sid: session._id,
+    userId: String(user._id),
+    email: user.email,
+    name: user.name,
+    picture: user.picture || null,
+    iat: now,
+    exp: Math.min(now + ACCESS_TOKEN_SECONDS, Math.floor(session.expiresAt.getTime() / 1000)),
+  }, JWT_SECRET, { algorithm: 'HS256' });
+}
 
-const signAccessToken = ({ userId, email, name, picture }, now, sessionExpiresAt) => jwt.sign({
-  userId,
-  email,
-  name,
-  picture: picture || null,
-  iat: now,
-  exp: Math.min(now + ACCESS_TOKEN_LIFETIME, sessionExpiresAt),
-  sessionExpiresAt,
-}, JWT_SECRET);
-
-const generateToken = (user) => {
-  const now = nowInSeconds();
-  return signAccessToken({ userId: user._id, email: user.email, name: user.name, picture: user.picture },
-    now, now + SESSION_LIFETIME);
-};
-
-const refreshAccessToken = (token) => {
+function readBearer(req, { ignoreExpiration = false } = {}) {
+  const token = /^Bearer ([^\s]+)$/i.exec(req.headers.authorization)?.[1];
+  if (!token) return null;
   try {
-    const now = nowInSeconds();
-    const decoded = jwt.verify(token, JWT_SECRET, { algorithms: ['HS256'], clockTimestamp: now });
-    const { exp, sessionExpiresAt } = decoded;
-    if (!Number.isSafeInteger(exp) || !Number.isSafeInteger(sessionExpiresAt) ||
-        exp >= sessionExpiresAt || exp - now > REFRESH_WINDOW) {
+    const claims = jwt.verify(token, JWT_SECRET, { algorithms: ['HS256'], ignoreExpiration });
+    if (!isOAuthValue(claims.sid) || typeof claims.userId !== 'string' || !Number.isSafeInteger(claims.exp)) {
       return null;
     }
-    return signAccessToken(decoded, now, sessionExpiresAt);
-  } catch (error) {
+    return claims;
+  } catch {
     return null;
   }
-};
+}
 
-// Verify JWT token middleware
-const authenticateToken = (req, res, next) => {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
+async function authenticatedClaims(req) {
+  const claims = readBearer(req);
+  if (!claims) return null;
+  const session = await sessions.findActive(claims.sid);
+  return session && String(session.userId) === claims.userId ? claims : null;
+}
 
-  if (!token) {
-    return res.status(401).json({ 
-      success: false, 
-      error: 'Access token required' 
-    });
+async function authenticateToken(req, res, next) {
+  if (!req.headers.authorization) {
+    return res.status(401).json({ success: false, error: 'Access token required' });
   }
-
-  jwt.verify(token, JWT_SECRET, (err, user) => {
-    if (err) {
-      return res.status(403).json({ 
-        success: false, 
-        error: 'Invalid or expired token' 
-      });
-    }
-    req.user = user;
-    next();
-  });
-};
-
-// Get user from token (without requiring authentication)
-const getUserFromToken = (req, res, next) => {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
-
-  if (!token) {
-    return next();
+  const claims = await authenticatedClaims(req);
+  if (!claims) {
+    return res.status(403).json({ success: false, error: 'Invalid or expired token' });
   }
+  req.user = claims;
+  return next();
+}
 
-  jwt.verify(token, JWT_SECRET, (err, user) => {
-    if (!err) {
-      req.user = user;
-    }
-    next();
-  });
-};
+async function getUserFromToken(req, res, next) {
+  const claims = await authenticatedClaims(req);
+  if (claims) req.user = claims;
+  return next();
+}
 
 module.exports = {
   passport,
   generateToken,
-  refreshAccessToken,
+  readBearer,
   authenticateToken,
-  getUserFromToken
+  getUserFromToken,
 };

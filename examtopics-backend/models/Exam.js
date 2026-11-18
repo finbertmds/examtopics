@@ -37,6 +37,10 @@ const examSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
+  questionMutationVersion: {
+    type: Number,
+    select: false,
+  },
   createdBy: {
     type: String,
     required: false,

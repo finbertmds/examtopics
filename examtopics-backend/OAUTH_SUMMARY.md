@@ -16,7 +16,7 @@
 - ✅ **Environment-based backend URL** configuration
 - ✅ **Google OAuth login button** with proper styling
 - ✅ **User menu component** with avatar, name, email, and logout
-- ✅ **JWT token storage** in localStorage
+- ✅ **JWT token storage** in tab memory after a one-use code exchange, with a partitioned HttpOnly cookie to restore the session after reload
 - ✅ **User authentication state** management
 - ✅ **Progress sync** between frontend and backend
 - ✅ **Responsive design** for mobile and desktop
@@ -193,7 +193,7 @@ npm run test:oauth
 curl https://examtopics-backend-latest.onrender.com/health
 
 # Test OAuth endpoint
-curl -I https://examtopics-backend-latest.onrender.com/auth/google
+npm run test:oauth
 ```
 
 ## ✅ Ready for Deployment

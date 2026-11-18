@@ -123,9 +123,7 @@ class DataService {
     return apiClient.getCurrentUser(token);
   }
 
-  getGoogleAuthUrl(): string {
-    return apiClient.getGoogleAuthUrl();
-  }
+
 }
 
 export const dataService = new DataService();

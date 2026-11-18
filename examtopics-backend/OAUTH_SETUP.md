@@ -100,7 +100,7 @@ NODE_ENV=production
 2. Frontend redirects to backend OAuth endpoint (localhost:3001/auth/google)
 3. Backend redirects to Google OAuth
 4. Google redirects back to backend callback (localhost:3001/auth/google/callback)
-5. Backend generates JWT token and redirects to frontend (localhost:3000/auth/callback?token=xxx)
+5. Backend redirects to the frontend callback with a one-use code in the URL fragment. The frontend clears the fragment and exchanges the code and its original verifier with `POST /auth/exchange`.
 6. Frontend stores token and loads user info
 
 ### Production Flow:
@@ -108,7 +108,7 @@ NODE_ENV=production
 2. Frontend redirects to backend OAuth endpoint (examtopics-backend-latest.onrender.com/auth/google)
 3. Backend redirects to Google OAuth
 4. Google redirects back to backend callback (examtopics-backend-latest.onrender.com/auth/google/callback)
-5. Backend generates JWT token and redirects to frontend (examtopics-practice.onrender.com/auth/callback?token=xxx)
+5. Backend redirects to the frontend callback with a one-use code in the URL fragment. The frontend exchanges the code and verifier over HTTPS.
 6. Frontend stores token and loads user info
 
 ## 5. Troubleshooting
@@ -175,3 +175,9 @@ npm start
 - Check browser console for CORS errors
 - Monitor token storage/retrieval
 - Track user session management
+
+The exchange code expires after 60 seconds. Render keeps the frontend and API on their existing separate hostnames. The browser calls the exchange from the frontend origin with credentials and `X-ExamTopics-Session: 1`. Its response sets the partitioned, host-only `__Host-examtopics-session` cookie. Keep `FRONTEND_URL` set to the exact frontend HTTPS origin.
+
+`POST /auth/session` restores a valid session in the same frontend partition without extending its idle deadline. Trusted foreground activity calls `POST /auth/activity` at most once per minute per tab. The server expires sessions after 24 hours without accepted activity or 30 days from sign-in. Access JWTs last at most ten minutes and stay in tab memory. The browser needs CHIPS to keep the session across reloads. When cookie delivery is blocked, the app explains the limitation and can use the access JWT until it expires.
+
+On staging, verify TTL indexes with `expireAfterSeconds: 0` on `oauthlogincodes.expiresAt` and `authsessions.expiresAt`. The latter is a new collection. No user or exam data needs migration. Release frontend and backend together. Existing users need one sign-in after the change to obtain a session cookie. Verify sign-in, reload, idle expiry, and logout on the target browsers before production rollout.

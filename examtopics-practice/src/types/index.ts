@@ -129,8 +129,12 @@ export interface ReportData {
   examId: string;
   reason: string;
   comment: string;
-  user: string | null;
-  url: string;
+}
+
+export interface AuthSession extends UserData {
+  token: string;
+  idleExpiresAt: number;
+  absoluteExpiresAt: number;
 }
 
 export interface UserData {
