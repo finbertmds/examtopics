@@ -1,3 +1,4 @@
+const { sendInternalError } = require('../utils/requestFailure');
 const sheetsHelper = require('../services/sheetsService');
 const getFrontendUrl = require('../utils/frontendUrl');
 
@@ -32,8 +33,7 @@ class ReportController {
         url: `${getFrontendUrl()}/exam/${encodeURIComponent(code)}?${query}`,
       });
     } catch {
-      console.error('Google Sheets report write failed');
-      return res.status(500).json({ success: false, error: 'Failed to process report' });
+      return sendInternalError(res, 'report.write_failed', 'Failed to process report');
     }
 
     return res.json({

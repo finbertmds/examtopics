@@ -23,7 +23,7 @@ Run commands from each project directory unless specified.
 - At the root, `nvm install && nvm use` selects Node.js 26.12.1 from `.nvmrc`.
 - In each Node project, run `npm ci` to install locked dependencies.
 - Frontend: `npm start` serves on port 3000; `npm run build` checks TypeScript and builds production assets; `npm test` runs tests; `npm run test:watch` watches changes.
-- Backend: `npm run dev` starts with nodemon; `npm start` runs the server; `npm test` runs regression tests.
+- Backend: `npm run dev` starts Node.js in watch mode. Use `npm start` to run the server and `npm test` to run regression tests.
 - Go downloader: `go build ./cmd` builds the CLI; `go test ./...` runs tests.
 - From the root, `python -m unittest discover -s batch/tests` runs Python regression tests. Install each Python tool's dependencies from its own `requirements.txt`.
 

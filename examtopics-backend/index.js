@@ -1,3 +1,4 @@
+const { randomUUID } = require('node:crypto');
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
@@ -11,7 +12,13 @@ const getFrontendUrl = require('./utils/frontendUrl');
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// Middleware
+app.use((req, res, next) => {
+  const requestId = randomUUID();
+  res.locals.requestId = requestId;
+  res.setHeader('X-Request-Id', requestId);
+  next();
+});
+
 app.use(helmet());
 // CORS configuration with environment-based origins
 const frontendOrigin = new URL(getFrontendUrl()).origin;
@@ -23,6 +30,7 @@ app.use(cors({
   origin: corsOrigins,
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-ExamTopics-Session'],
+  exposedHeaders: ['X-Request-Id'],
   credentials: true
 }));
 // Initialize passport

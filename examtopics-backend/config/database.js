@@ -1,3 +1,4 @@
+const { logFailure } = require('../utils/requestFailure');
 const mongoose = require('mongoose');
 require('dotenv').config();
 
@@ -9,14 +10,12 @@ const connectDB = async () => {
       throw new Error('MONGO_URI is not defined in environment variables');
     }
 
-    const conn = await mongoose.connect(mongoURI);
+    await mongoose.connect(mongoURI);
 
-    console.log(`MongoDB Connected: ${conn.connection.host}`);
+    console.log('MongoDB connected');
     
     // Handle connection events
-    mongoose.connection.on('error', (err) => {
-      console.error('MongoDB connection error:', err);
-    });
+    mongoose.connection.on('error', () => logFailure('database.connection_error'));
 
     mongoose.connection.on('disconnected', () => {
       console.log('MongoDB disconnected');
@@ -29,8 +28,8 @@ const connectDB = async () => {
       process.exit(0);
     });
 
-  } catch (error) {
-    console.error('Database connection failed:', error.message);
+  } catch {
+    logFailure('database.connection_failed');
     process.exit(1);
   }
 };
