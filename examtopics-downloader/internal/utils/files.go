@@ -4,9 +4,9 @@ import (
 	"bufio"
 	"encoding/base64"
 	"encoding/json"
+	"examtopics-downloader/internal/constants"
 	"examtopics-downloader/internal/models"
 	"fmt"
-	"io"
 	"log"
 	"net/http"
 	"os"
@@ -79,6 +79,17 @@ func SaveLinks(filename string, links []models.QuestionData) {
 
 // ConvertQuestionDataToJSON converts QuestionData to QuestionDataJson format
 func ConvertQuestionDataToJSON(data models.QuestionData, fromCache bool) models.QuestionDataJson {
+	answerImages, questionImages := data.AnswerImages, data.QuestionImages
+	if fromCache {
+		answerImages, questionImages = data.RawData.AnswerImages, data.RawData.QuestionImages
+	}
+	// nil slices encode as null; the export schema requires arrays even without images.
+	if answerImages == nil {
+		answerImages = []string{}
+	}
+	if questionImages == nil {
+		questionImages = []string{}
+	}
 	questionNumber := ExtractQuestionNumber(data.Title)
 	topicNumber := ExtractTopicNumber(data.Title)
 	if !fromCache {
@@ -114,8 +125,8 @@ func ConvertQuestionDataToJSON(data models.QuestionData, fromCache bool) models.
 			Link:            data.QuestionLink,
 			MultipleChoice:  multipleChoice,
 			QuestionText:    questionText,
-			AnswerImages:    data.RawData.AnswerImages,
-			QuestionImages:  data.RawData.QuestionImages,
+			AnswerImages:    answerImages,
+			QuestionImages:  questionImages,
 		}
 	}
 
@@ -138,8 +149,8 @@ func ConvertQuestionDataToJSON(data models.QuestionData, fromCache bool) models.
 		Link:            data.QuestionLink,
 		MultipleChoice:  multipleChoice,
 		QuestionText:    strings.TrimSpace(data.Content),
-		AnswerImages:    data.AnswerImages,
-		QuestionImages:  data.QuestionImages,
+		AnswerImages:    answerImages,
+		QuestionImages:  questionImages,
 	}
 }
 
@@ -342,8 +353,7 @@ func PushFileToGitHub(filePath, fileName, token string) error {
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
-		body, _ := io.ReadAll(resp.Body)
-		return fmt.Errorf("GitHub API returned status %d: %s", resp.StatusCode, string(body))
+		return fmt.Errorf("GitHub API returned status %d", resp.StatusCode)
 	}
 
 	log.Printf("Successfully pushed %s to GitHub", fileName)
@@ -389,8 +399,13 @@ func FetchCachedPagesFromGitHub(providerName, token string) ([]string, *CacheMet
 	}
 
 	// Parse response
+	body, err := ReadResponseBody(resp.Body, constants.MaxDataResponseBytes)
+	if err != nil {
+		log.Printf("Failed to read cached pages response: %v", err)
+		return nil, nil
+	}
 	var fileContent GitHubFileContent
-	if err := json.NewDecoder(resp.Body).Decode(&fileContent); err != nil {
+	if err := json.Unmarshal(body, &fileContent); err != nil {
 		log.Printf("Failed to decode response: %v", err)
 		return nil, nil
 	}

@@ -49,7 +49,17 @@ Tạo sheet với các cột: `timestamp`, `questionId`, `examId`, `reason`, `co
    - `https://your-backend-domain.com/auth/google/callback` (production)
 7. Copy Client ID và Client Secret
 
-### 4. Cấu hình MongoDB Atlas
+### 4. Cấu hình MongoDB
+
+#### Chạy MongoDB cục bộ bằng Docker Compose
+
+Trong `examtopics-backend/`, đặt `MONGO_INITDB_ROOT_USERNAME` và `MONGO_INITDB_ROOT_PASSWORD` riêng cho máy phát triển trong `.env` (dùng mật khẩu ngẫu nhiên). Cấu hình `MONGO_URI` trỏ đến `127.0.0.1:27017`, chọn database phát triển và đặt `authSource=admin` nếu kết nối bằng tài khoản khởi tạo. Mã hóa phần tên người dùng và mật khẩu trong URI nếu có ký tự đặc biệt. Giữ giá trị gốc trong biến khởi tạo của Compose.
+
+```bash
+docker compose up -d mongodb
+```
+
+Cấu hình này dành cho phát triển cục bộ. Dùng Docker Engine 28 trở lên để địa chỉ loopback chặn kết nối từ các máy khác trên cùng mạng. [Quy tắc publish cổng của Docker](https://docs.docker.com/engine/network/port-publishing/)
 
 #### Tạo MongoDB Atlas Cluster:
 1. Vào [MongoDB Atlas](https://cloud.mongodb.com/)

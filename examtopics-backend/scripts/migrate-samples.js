@@ -11,12 +11,13 @@ const SAMPLES_DIR = path.join(__dirname, '../../examtopics-practice/public/exams
 const EXAMS_JSON_PATH = path.join(SAMPLES_DIR, 'exams.json');
 
 async function migrate() {
-  try {
-    // Override MongoDB URI for local dev if not defined
-    if (!process.env.MONGO_URI) {
-      process.env.MONGO_URI = 'mongodb://root:root@127.0.0.1:27017/examtopics?authSource=admin';
-    }
+  if (!process.env.MONGO_URI?.trim()) {
+    console.error('MONGO_URI must identify the database for the sample import');
+    process.exitCode = 1;
+    return;
+  }
 
+  try {
     await connectDB();
     console.log('Connected to MongoDB');
 
