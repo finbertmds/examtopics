@@ -31,7 +31,7 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
-function start(progressResponse: () => Response, completedIds: string[] = []) {
+function start(progressResponse: () => Response, completedIds: string[] = [], exams = [exam]) {
   let restore!: () => void;
   const session = new Promise<Response>(resolve => {
     restore = () => resolve(Response.json({
@@ -43,7 +43,7 @@ function start(progressResponse: () => Response, completedIds: string[] = []) {
   vi.stubGlobal('fetch', vi.fn(async (input: string) => {
     switch (new URL(input).pathname) {
       case '/auth/session': return session;
-      case '/api/exams': return Response.json({ exams: [exam] });
+      case '/api/exams': return Response.json({ exams });
       case '/progress/all': return progressResponse();
       case '/progress/completed-exam-ids': return Response.json({ success: true, examIds: completedIds });
       default: throw new Error(`Unexpected request: ${input}`);
@@ -59,6 +59,22 @@ it('displays saved progress after the session is restored on Home', async () => 
   expect(await screen.findByRole('button', { name: /Continue/ })).toBeInTheDocument();
   expect(screen.getByText('10%')).toBeInTheDocument();
   expect(screen.getByText('100% Accuracy')).toBeInTheDocument();
+});
+
+it.each(['Exams in Progress', 'Completed Exams', 'Available Exams'])('can collapse %s independently on Home', async title => {
+  const restore = start(() => Response.json({ success: true, progress }), ['completed-fixture'], [
+    exam,
+    { ...exam, code: 'completed-fixture', name: 'Completed fixture' },
+    { ...exam, code: 'available-fixture', name: 'Available fixture' },
+  ]);
+  await restore();
+  const toggle = await screen.findByRole('button', { name: new RegExp(`Collapse .*${title}`) });
+  const content = document.getElementById(toggle.getAttribute('aria-controls')!);
+  expect(content).toBeVisible();
+  fireEvent.click(toggle);
+  expect(content).not.toBeVisible();
+  expect(screen.getAllByRole('heading', { level: 2 })).toHaveLength(3);
+  expect(screen.getAllByRole('button', { name: /Collapse/ })).toHaveLength(2);
 });
 
 it('loads completed exams after the session is restored', async () => {

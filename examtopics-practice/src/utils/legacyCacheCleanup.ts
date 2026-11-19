@@ -1,9 +1,12 @@
+import { HOME_SECTION_PREFERENCES_PREFIX } from './homeSectionPreferences';
+
 const CLEANUP_FLAG = 'examtopics_cache_cleanup_v1';
 const INDEXED_DB_NAME = 'ExamTopicsCache';
 
 const LEGACY_LOCAL_STORAGE_KEYS = ['exam-progress'];
 
 const isLegacyLocalStorageKey = (key: string): boolean => {
+  if (key.startsWith(HOME_SECTION_PREFERENCES_PREFIX)) return false;
   if (LEGACY_LOCAL_STORAGE_KEYS.includes(key)) return true;
   if (key.includes('_history')) return true;
   if (key.startsWith('examtopics') && key !== CLEANUP_FLAG) return true;

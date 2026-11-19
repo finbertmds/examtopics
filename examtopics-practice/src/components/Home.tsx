@@ -7,6 +7,7 @@ import { dataService } from '../services/dataService';
 import { Exam, FilterType } from '../types';
 import { getExamDescription, getExamName } from '../utils/examUtils';
 import ExamCard from './ExamCard';
+import CollapsibleExamSection from './CollapsibleExamSection';
 import FloatingButtons from './FloatingButtons';
 import { LanguageToggle } from './LanguageToggle';
 import { ThemeToggle } from './ThemeToggle';
@@ -22,7 +23,7 @@ const Home: React.FC = () => {
   const navigate = useNavigate();
   const { getProgressStats, isLoading: progressLoading, isLoaded: progressLoaded, error: progressError, reload: reloadProgress } = useAllProgress();
   const { t, language } = useLanguage();
-  const { token, isAuthenticated, isLoading: authLoading } = useAuth();
+  const { user, token, sessionId, isAuthenticated, isLoading: authLoading } = useAuth();
   const { exams, loading, error, loadExams } = useExams({ token });
   const [completedExams, setCompletedExams] = useState<string[]>([]);
 
@@ -322,13 +323,13 @@ const Home: React.FC = () => {
             <>
               {/* Exams with Progress */}
               {examsWithProgress.length > 0 && (
-                <>
-                  <div className="mb-6">
-                    <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
-                      📊 {t('examsInProgress')} ({examsWithProgress.length})
-                    </h2>
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                <CollapsibleExamSection
+                  sectionId="progress"
+                  userId={user?.id}
+                  sessionId={sessionId}
+                  title={`📊 ${t('examsInProgress')} (${examsWithProgress.length})`}
+                >
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {examsWithProgress.map((exam) => (
                       <ExamCard
                         type="progress"
@@ -344,18 +345,18 @@ const Home: React.FC = () => {
                       />
                     ))}
                   </div>
-                </>
+                </CollapsibleExamSection>
               )}
 
               {/* Completed Exams */}
               {examsCompleted.length > 0 && (
-                <>
-                  <div className="mb-6">
-                    <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
-                      ✅ {t('completedExams')} ({examsCompleted.length})
-                    </h2>
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                <CollapsibleExamSection
+                  sectionId="completed"
+                  userId={user?.id}
+                  sessionId={sessionId}
+                  title={`✅ ${t('completedExams')} (${examsCompleted.length})`}
+                >
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {examsCompleted.map((exam) => (
                       <ExamCard
                         type="completed"
@@ -371,17 +372,17 @@ const Home: React.FC = () => {
                       />
                     ))}
                   </div>
-                </>
+                </CollapsibleExamSection>
               )}
 
               {/* Exams without Progress */}
               {examsWithoutProgress.length > 0 && (
-                <>
-                  <div className="mb-6">
-                    <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
-                      🆕 {t('availableExams')} ({examsWithoutProgress.length})
-                    </h2>
-                  </div>
+                <CollapsibleExamSection
+                  sectionId="available"
+                  userId={user?.id}
+                  sessionId={sessionId}
+                  title={`🆕 ${t('availableExams')} (${examsWithoutProgress.length})`}
+                >
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {examsWithoutProgress.map((exam) => (
                       <ExamCard
@@ -398,7 +399,7 @@ const Home: React.FC = () => {
                       />
                     ))}
                   </div>
-                </>
+                </CollapsibleExamSection>
               )}
             </>
           );

@@ -1,6 +1,8 @@
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import { apiClient } from '../utils/apiClient';
 import { AuthProvider, useAuth } from './AuthContext';
+import { LanguageProvider } from './LanguageContext';
+import CollapsibleExamSection from '../components/CollapsibleExamSection';
 
 const now = 1_790_000_000_000;
 const day = 86_400_000;
@@ -12,10 +14,15 @@ const fixture = {
 const fallbackBearer = `fixture.${btoa(JSON.stringify({ exp: now / 1000 + 600, sid: 'fixture-session' }))}.fixture`;
 
 function SessionStatus() {
-  const { isAuthenticated, token, logout, notice, acceptSession } = useAuth();
+  const { isAuthenticated, token, user, sessionId, logout, notice, acceptSession } = useAuth();
   return <>
     <output>{isAuthenticated ? token : 'Signed out'}</output>
     <span>{notice}</span>
+    <LanguageProvider>
+      <CollapsibleExamSection userId={user?.id} sessionId={sessionId} sectionId="available" title="Available Exams">
+        <p>Available fixture</p>
+      </CollapsibleExamSection>
+    </LanguageProvider>
     <button onClick={logout}>Sign out</button>
     <button onClick={() => acceptSession({ ...fixture, token: fallbackBearer, user: { id: 'candidate', email: 'fixture@example.test', name: 'Fixture' } })}>
       Accept fixture exchange
@@ -40,9 +47,42 @@ function path(input: string) {
 }
 
 beforeEach(() => {
+  localStorage.setItem('language', 'en');
   vi.useFakeTimers();
   vi.setSystemTime(now);
   vi.spyOn(console, 'error').mockImplementation(() => {});
+});
+
+it.each(['logout', 'expiry'])('resets Home section preferences after %s and a new login', async reason => {
+  const fetch = vi.fn(async () => Response.json({ success: true, ...fixture, idleExpiresAt: now + 60_000 }));
+  start(fetch);
+  await act(async () => {});
+  fireEvent.click(screen.getByRole('button', { name: /Collapse Available Exams/ }));
+  expect(screen.getByText('Available fixture')).not.toBeVisible();
+  if (reason === 'logout') {
+    await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Sign out' })); });
+  } else {
+    await act(() => vi.advanceTimersByTimeAsync(60_000));
+  }
+  expect(screen.getByText('Signed out')).toBeInTheDocument();
+  expect(screen.getByText('Available fixture')).toBeVisible();
+  await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Accept fixture exchange' })); });
+  expect(screen.getByText('Available fixture')).toBeVisible();
+});
+
+it('preserves Home section preferences across restores and activity token renewal', async () => {
+  let currentToken = fallbackBearer;
+  const fetch = vi.fn(async () => Response.json({ success: true, ...fixture, token: currentToken }));
+  const first = start(fetch);
+  await act(async () => {});
+  fireEvent.click(screen.getByRole('button', { name: /Collapse Available Exams/ }));
+  first.unmount();
+  currentToken = `fixture.${btoa(JSON.stringify({ exp: now / 1000 + 900, sid: 'fixture-session' }))}.renewed`;
+  const restored = start(fetch);
+  await act(async () => {});
+  expect(screen.getByText('Available fixture')).not.toBeVisible();
+  await act(async () => restored.activity());
+  expect(screen.getByText('Available fixture')).not.toBeVisible();
 });
 
 afterEach(() => {
