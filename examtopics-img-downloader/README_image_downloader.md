@@ -71,3 +71,7 @@ Sau khi chạy xong, script sẽ hiển thị:
 - Script sẽ bỏ qua các hình ảnh đã tồn tại
 - Tự động tạo thư mục output nếu chưa có
 - Hỗ trợ resume download (có thể chạy lại nếu bị gián đoạn)
+
+## Secure local output
+
+Image downloads accept HTTP(S) URLs on the two supported ExamTopics hosts and validate each redirect. Choose a trusted output root with trusted parent directories. Safe writes require POSIX directory descriptors and no-follow operations, available on the tested macOS/Linux setup. Platforms lacking those operations fail closed.

@@ -11,6 +11,22 @@ import (
 	"examtopics-downloader/internal/utils"
 )
 
+type cacheOptions struct {
+	useCache bool
+	noCache  bool
+}
+
+func registerCacheFlags(flags *flag.FlagSet) *cacheOptions {
+	options := &cacheOptions{}
+	flags.BoolVar(&options.useCache, "use-cache", false, "Use cached data from local files and GitHub (disabled by default)")
+	flags.BoolVar(&options.noCache, "no-cache", false, "Disable all cache use; overrides -use-cache (legacy flag)")
+	return options
+}
+
+func (options *cacheOptions) enabled() bool {
+	return options.useCache && !options.noCache
+}
+
 func main() {
 	provider := flag.String("p", "google", "Name of the exam provider (default -> google)")
 	grepStr := flag.String("s", "", "String to grep for in discussion links (required)")
@@ -18,12 +34,13 @@ func main() {
 	commentBool := flag.Bool("c", false, "Optionally include all the comment/discussion text")
 	examsFlag := flag.Bool("exams", false, "Optionally show all the possible exams for your selected provider and exit")
 	saveUrls := flag.Bool("save-links", false, "Optional argument to save unique links to questions")
-	noCache := flag.Bool("no-cache", false, "Optional argument, set to disable looking through cached data on github")
-	saveAllPages := flag.Bool("save-all-pages", false, "Save all pages from provider to file when using no-cache mode")
+	cache := registerCacheFlags(flag.CommandLine)
+	saveAllPages := flag.Bool("save-all-pages", false, "Save all pages from provider to a cache file (requires -use-cache)")
 	pushToGitHub := flag.Bool("push-github", false, "Push cached pages to GitHub repository")
 	token := flag.String("t", "", "Optional argument to make cached requests faster to gh api")
 	exportJSON := flag.Bool("json", false, "Export data to JSON format in addition to MD format")
 	flag.Parse()
+	noCache := !cache.enabled()
 	defer reportExhaustedRetries()
 
 	if *examsFlag {
@@ -39,7 +56,7 @@ func main() {
 		log.Println("running without a valid string to search for with -s, (no_grep_str)!")
 	}
 
-	if !*noCache {
+	if !noCache {
 		links := fetch.GetCachedPages(*provider, *grepStr, *token)
 		if len(links) > 0 {
 			utils.WriteData(links, *outputPath, *commentBool)
@@ -55,8 +72,12 @@ func main() {
 		}
 	}
 
-	fmt.Println("Going to manual scraping, cached data failed.")
-	links := fetch.GetAllPages(*provider, *grepStr, *noCache, *saveAllPages, *pushToGitHub, *token)
+	if noCache {
+		fmt.Println("Cache disabled (default), scraping fresh data from ExamTopics.")
+	} else {
+		fmt.Println("No cached data available, scraping fresh data from ExamTopics.")
+	}
+	links := fetch.GetAllPages(*provider, *grepStr, noCache, *saveAllPages, *pushToGitHub, *token)
 
 	if *saveUrls {
 		utils.SaveLinks("saved-links.txt", links)

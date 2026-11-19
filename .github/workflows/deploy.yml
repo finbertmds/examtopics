@@ -1,4 +1,4 @@
-name: Build and Deploy to Render
+name: Deploy frontend to Render
 
 on:
   push:
@@ -7,15 +7,21 @@ on:
     paths:
       - 'examtopics-practice/**'
   workflow_dispatch:
+
+permissions: {}
+
 jobs:
-  build-and-deploy:
+  deploy:
+    if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
 
     steps:
-      # Trigger deploy trên Render
       - name: Trigger Render deploy
+        env:
+          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+          RENDER_SERVICE_ID: ${{ secrets.RENDER_SERVICE_ID }}
         run: |
-          curl -X POST \
-            -H "Accept: application/json" \
-            -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
-            https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/deploys
+          curl --fail --silent --show-error --output /dev/null --request POST \
+            --header "Accept: application/json" \
+            --header "Authorization: Bearer ${RENDER_API_KEY:?Missing Render API key}" \
+            "https://api.render.com/v1/services/${RENDER_SERVICE_ID:?Missing Render service ID}/deploys"

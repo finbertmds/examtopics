@@ -1,4 +1,4 @@
-name: Build backend and Deploy to Render
+name: Build backend and deploy to Render
 
 on:
   push:
@@ -8,37 +8,42 @@ on:
       - 'examtopics-backend/**'
   workflow_dispatch:
 
+permissions: {}
+
 jobs:
   deploy:
+    if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
-    
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-    
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
-    
-    - name: Login to Docker Hub
-      uses: docker/login-action@v3
-      with:
-        username: ${{ secrets.DOCKERHUB_USERNAME }}
-        password: ${{ secrets.DOCKERHUB_TOKEN }}
-        
-    - name: Build and push Docker image
-      uses: docker/build-push-action@v6
-      with:
-        context: examtopics-backend
-        push: true
-        tags: ngovanhuy0241/examtopics-backend:latest
-        platforms: linux/amd64
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
+    permissions:
+      contents: read
 
-    # Trigger deploy on Render
-    - name: Trigger Render deploy
-      run: |
-        curl -X POST \
-          -H "Accept: application/json" \
-          -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
-          https://api.render.com/v1/services/${{ secrets.RENDER_BACKEND_SERVICE_ID }}/deploys
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+      - name: Login to Docker Hub
+        uses: docker/login-action@v4
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v7
+        with:
+          context: examtopics-backend
+          push: true
+          tags: ngovanhuy0241/examtopics-backend:latest
+          platforms: linux/amd64
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      - name: Trigger Render deploy
+        env:
+          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+          RENDER_SERVICE_ID: ${{ secrets.RENDER_BACKEND_SERVICE_ID }}
+        run: |
+          curl --fail --silent --show-error --output /dev/null --request POST \
+            --header "Accept: application/json" \
+            --header "Authorization: Bearer ${RENDER_API_KEY:?Missing Render API key}" \
+            "https://api.render.com/v1/services/${RENDER_SERVICE_ID:?Missing Render service ID}/deploys"

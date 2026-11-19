@@ -1,6 +1,6 @@
 module examtopics-downloader
 
-go 1.24.2
+go 1.27.4
 
 require (
 	github.com/PuerkitoBio/goquery v1.10.3
@@ -15,6 +15,6 @@ require (
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mattn/go-runewidth v0.0.16 // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect
-	golang.org/x/net v0.39.0 // indirect
-	golang.org/x/sys v0.32.0 // indirect
+	golang.org/x/net v0.63.0 // indirect
+	golang.org/x/sys v0.50.0 // indirect
 )

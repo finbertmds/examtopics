@@ -14,7 +14,6 @@ import (
 	"examtopics-downloader/internal/utils"
 
 	"github.com/PuerkitoBio/goquery"
-	"github.com/cheggaaa/pb/v3"
 )
 
 func getDataFromLink(link string) *models.QuestionData {
@@ -156,7 +155,7 @@ func fetchAllPageLinksConcurrently(providerName, grepStr string, numPages, concu
 	var wg sync.WaitGroup
 	sem := make(chan struct{}, concurrency)
 	results := make(chan []string, numPages)
-	bar := pb.StartNew(numPages)
+	progress := utils.NewProgress(numPages, "Pages")
 	startTime := utils.StartTime()
 
 	rateLimiter := utils.CreateRateLimiter(constants.RequestsPerSecond)
@@ -181,7 +180,7 @@ func fetchAllPageLinksConcurrently(providerName, grepStr string, numPages, concu
 			}
 
 			results <- links
-			bar.Increment()
+			progress.Increment()
 		}(i)
 	}
 
@@ -195,7 +194,6 @@ func fetchAllPageLinksConcurrently(providerName, grepStr string, numPages, concu
 		all = append(all, res...)
 	}
 
-	bar.Finish()
 	fmt.Printf("Scraping completed in %s.\n", utils.TimeSince(startTime))
 	return all
 }
@@ -217,7 +215,7 @@ func processCachedLinks(cachedLinks []string, grepStr string) []models.QuestionD
 	sem := make(chan struct{}, constants.MaxConcurrentRequests)
 	results := make([]*models.QuestionData, len(filteredLinks))
 	startTime := utils.StartTime()
-	bar := pb.StartNew(len(filteredLinks))
+	progress := utils.NewProgress(len(filteredLinks), "Questions")
 
 	rateLimiter := utils.CreateRateLimiter(constants.RequestsPerSecond)
 	defer rateLimiter.Stop()
@@ -237,12 +235,11 @@ func processCachedLinks(cachedLinks []string, grepStr string) []models.QuestionD
 			if data != nil {
 				results[i] = data
 			}
-			bar.Increment()
+			progress.Increment()
 		}(i, url)
 	}
 
 	wg.Wait()
-	bar.Finish()
 
 	// Filter out nil entries
 	var finalData []models.QuestionData
@@ -417,7 +414,7 @@ func GetAllPages(providerName string, grepStr string, noCache bool, saveAllPages
 	sem := make(chan struct{}, constants.MaxConcurrentRequests)
 	results := make([]*models.QuestionData, len(matchingLinks))
 	startTime := utils.StartTime()
-	bar := pb.StartNew(len(matchingLinks))
+	progress := utils.NewProgress(len(matchingLinks), "Questions")
 
 	rateLimiter := utils.CreateRateLimiter(constants.RequestsPerSecond)
 	defer rateLimiter.Stop()
@@ -437,12 +434,11 @@ func GetAllPages(providerName string, grepStr string, noCache bool, saveAllPages
 			if data != nil {
 				results[i] = data
 			}
-			bar.Increment()
+			progress.Increment()
 		}(i, url)
 	}
 
 	wg.Wait()
-	bar.Finish()
 	// Filter out nil entries
 	var finalData []models.QuestionData
 	for _, entry := range results {
