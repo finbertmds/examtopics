@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"io"
 	"log"
 	"net/http"
 	"sort"
@@ -37,6 +36,10 @@ func GetExhaustedRetryURLs() []string {
 }
 
 func FetchURL(url string, client http.Client) []byte {
+	return fetchURLWithLimit(url, client, constants.MaxDataResponseBytes)
+}
+
+func fetchURLWithLimit(url string, client http.Client, limit int64) []byte {
 	backoff := constants.InitalBackoff
 
 	for attempt := 0; attempt <= constants.MaxRetries; attempt++ {
@@ -54,7 +57,7 @@ func FetchURL(url string, client http.Client) []byte {
 		}
 
 		if resp.StatusCode == http.StatusOK {
-			body, err := io.ReadAll(resp.Body)
+			body, err := utils.ReadResponseBody(resp.Body, limit)
 			resp.Body.Close()
 			if err != nil {
 				log.Printf("failed to read response body: %v", err)
@@ -104,7 +107,7 @@ func parseRetryAfter(value string) (time.Duration, bool) {
 }
 
 func ParseHTML(url string, client http.Client) (*goquery.Document, error) {
-	body := FetchURL(url, client)
+	body := fetchURLWithLimit(url, client, constants.MaxHTMLResponseBytes)
 	if body == nil {
 		return nil, fmt.Errorf("empty response body from URL %q", url)
 	}

@@ -247,13 +247,15 @@ Frontend dùng Vitest, jsdom và Testing Library; backend dùng `node:test`; Go 
 - **Backend:** chạy `npm ci` rồi `npm start`, hoặc build từ `examtopics-backend/Dockerfile`; cấu hình biến môi trường và kết nối MongoDB/Google tương ứng.
 - **Docker Compose:** cấu hình local tại [`examtopics-backend/docker-compose.yml`](examtopics-backend/docker-compose.yml).
 
-Các workflow hiện chạy khi push vào `master` với đường dẫn liên quan hoặc được kích hoạt thủ công:
+Các workflow Render tự chạy khi push vào `master` có thay đổi trong thư mục ứng dụng tương ứng, hoặc qua dispatch thủ công:
 
 | Workflow | Hoạt động |
 | --- | --- |
 | `deploy.yml` | Gọi API Render để deploy frontend |
 | `deploy-backend.yml` | Build/push image backend lên Docker Hub rồi gọi Render deploy |
 | `docker.yml` | Build/test Go và push image downloader `ghcr.io/<repository_owner>/examtopics:latest` |
+
+Workflow Render dùng repository secrets và tự triển khai sau khi merge vào master có thay đổi frontend hoặc backend tương ứng. Các action dùng tag major phiên bản mới nhất đã xác minh. Workflow GHCR vẫn chạy qua dispatch thủ công trên master và dùng environment package-release.
 
 Secrets phục vụ triển khai gồm `RENDER_API_KEY`, `RENDER_SERVICE_ID`, `RENDER_BACKEND_SERVICE_ID`, `DOCKERHUB_USERNAME` và `DOCKERHUB_TOKEN`; workflow GHCR dùng `GITHUB_TOKEN`.
 

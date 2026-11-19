@@ -12,6 +12,9 @@ import (
 )
 
 func TestGetAllPages(t *testing.T) {
+	if testing.Short() {
+		t.Skip("external crawler test")
+	}
 	links := fetch.GetAllPages("lpi", "010-160", false, false, false, "")
 	if len(links) == 0 {
 		t.Fatalf("Expected non-empty links, but got empty")
@@ -20,6 +23,9 @@ func TestGetAllPages(t *testing.T) {
 }
 
 func TestValidateExamsOutput(t *testing.T) {
+	if testing.Short() {
+		t.Skip("external crawler test")
+	}
 	links := fetch.GetAllPages("lpi", "010-160", false, false, false, "")
 	if len(links) == 0 {
 		t.Fatalf("Expected non-empty links, but got empty")
@@ -46,6 +52,9 @@ func TestValidateExamsOutput(t *testing.T) {
 }
 
 func TestExamProvider(t *testing.T) {
+	if testing.Short() {
+		t.Skip("external crawler test")
+	}
 	data := fetch.GetProviderExams("google")
 	if len(data) == 0 {
 		t.Fatalf("Expected non-empty data for provider 'google', but got: %v", data)
@@ -55,6 +64,9 @@ func TestExamProvider(t *testing.T) {
 }
 
 func TestWriteData(t *testing.T) {
+	if testing.Short() {
+		t.Skip("external crawler test")
+	}
 	links := fetch.GetAllPages("lpi", "010-160", false, false, false, "")
 	if len(links) == 0 {
 		t.Fatalf("Expected non-empty links, but got empty")
