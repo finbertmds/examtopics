@@ -73,8 +73,6 @@ const ExamPage: React.FC = () => {
     const questionNumber = urlParams.get("questionNumber");
 
     if (mode) {
-      console.log(`Practice mode detected, setting filter to ${mode}`);
-
       setFilterState((prevState) => ({
         ...prevState,
         type: mode as FilterType,
@@ -88,10 +86,6 @@ const ExamPage: React.FC = () => {
       const questionNum = parseInt(questionNumber);
 
       if (!isNaN(topicNum) && !isNaN(questionNum)) {
-        console.log("URL contains topic and question, will scroll to:", {
-          topicNum,
-          questionNum,
-        });
         setUrlTopicNumber(topicNum);
         setUrlQuestionNumber(questionNum);
       }
@@ -111,11 +105,9 @@ const ExamPage: React.FC = () => {
 
       // If no exam in state but we have examId, try to load exam using hook
       if (!currentExam && examId) {
-        console.log("Loading exam for examId:", examId);
         currentExam = await findExamById(examId);
 
         if (currentExam) {
-          console.log("Exam loaded:", currentExam);
           setCurrentExam(currentExam);
         } else {
           console.error("Exam not found for examId:", examId);
@@ -133,9 +125,6 @@ const ExamPage: React.FC = () => {
       if (currentExam !== exam) {
         setCurrentExam(currentExam);
       }
-
-      // Questions are now loaded by useQuestions hook
-      console.log("Exam loaded, questions will be loaded by useQuestions hook");
     };
 
     loadExamAndQuestions();

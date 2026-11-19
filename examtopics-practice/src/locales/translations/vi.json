@@ -1,4 +1,5 @@
 {
+  "errorLoadingProgress": "Không thể tải tiến độ. Vui lòng thử lại.",
   "retry": "Thử lại",
   "errorLoadingExams": "Lỗi khi tải đề thi. Vui lòng thử lại.",
   "loading": "Đang tải...",

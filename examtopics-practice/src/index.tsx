@@ -9,7 +9,6 @@ import { cleanupLegacyCache } from './utils/legacyCacheCleanup';
 const bootstrap = async () => {
   try {
     if (autoFixReloadLoop.isInReloadLoop()) {
-      console.log('Detected reload loop, auto-fixing...');
       await autoFixReloadLoop.clearAll();
       autoFixReloadLoop.notifyAndReload();
       return;
