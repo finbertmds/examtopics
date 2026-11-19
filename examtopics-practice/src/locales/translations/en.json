@@ -1,4 +1,5 @@
 {
+  "errorLoadingProgress": "Unable to load progress. Please try again.",
   "retry": "Retry",
   "errorLoadingExams": "Error loading exams. Please try again.",
   "loading": "Loading...",

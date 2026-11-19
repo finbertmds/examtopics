@@ -1,21 +1,114 @@
-import React from 'react';
-import { render, screen } from '@testing-library/react';
-import { vi } from 'vitest';
+import { StrictMode } from 'react';
+import { act, render, screen, waitFor } from '@testing-library/react';
 import App from './App';
 
-vi.mock('./components/Home', () => ({ default: () => <h1>Exam practice</h1> }));
-
-Object.defineProperty(window, 'matchMedia', {
-  writable: true,
-  value: vi.fn().mockImplementation((query: string) => ({
-    matches: false,
-    media: query,
-    addEventListener: vi.fn(),
-    removeEventListener: vi.fn(),
-  })),
+beforeEach(() => {
+  localStorage.setItem('language', 'en');
+  vi.stubGlobal('matchMedia', () => ({ matches: false, addEventListener() {}, removeEventListener() {} }));
 });
 
-test('renders the home route with app providers', () => {
-  render(<App />);
-  expect(screen.getByRole('heading', { name: 'Exam practice' })).toBeInTheDocument();
+afterEach(() => {
+  window.history.replaceState({}, '', '/');
+  localStorage.clear();
+  sessionStorage.clear();
+  vi.unstubAllGlobals();
+});
+
+function start(progressResponse = () => Promise.resolve(Response.json({ success: true, progress: {} }))) {
+  const requests: { path: string; authorization: string | null }[] = [];
+  let finishRestore!: (response: Response) => void;
+  const restore = new Promise<Response>(resolve => { finishRestore = resolve; });
+  vi.stubGlobal('fetch', vi.fn(async (input: string, options: RequestInit = {}) => {
+    const path = new URL(input).pathname;
+    requests.push({ path, authorization: new Headers(options.headers).get('Authorization') });
+    switch (path) {
+      case '/auth/exchange': return Response.json({
+        success: true, token: 'restored-app-token',
+        user: { id: 'app-user', email: 'fixture@example.test', name: 'Fixture' },
+        idleExpiresAt: Date.now() + 60_000, absoluteExpiresAt: Date.now() + 120_000,
+      });
+      case '/auth/session': return restore;
+      case '/api/exams': return Response.json({ exams: [] });
+      case '/progress/all': return progressResponse();
+      case '/progress/completed-exam-ids': return Response.json({ success: true, examIds: [] });
+      default: throw new Error(`Unexpected request: ${path}`);
+    }
+  }));
+  render(<StrictMode><App /></StrictMode>);
+  return { requests, finishRestore };
+}
+
+it.each(['/', '/exam/fixture', '/admin'])('waits for session restoration before mounting route %s', async path => {
+  window.history.replaceState({}, '', path);
+  const { requests } = start();
+  await act(async () => {});
+  expect(requests.map(request => request.path)).toEqual(['/auth/session']);
+  expect(screen.getByRole('status')).toHaveTextContent('Loading');
+});
+
+it('loads exams and progress with the restored session after auth/session finishes', async () => {
+  const { requests, finishRestore } = start();
+  await act(async () => {
+    finishRestore(Response.json({
+      success: true, token: 'restored-app-token',
+      user: { id: 'app-user', email: 'fixture@example.test', name: 'Fixture' },
+      idleExpiresAt: Date.now() + 60_000, absoluteExpiresAt: Date.now() + 120_000,
+    }));
+  });
+  await waitFor(() => expect(requests).toHaveLength(4));
+  expect(requests[0].path).toBe('/auth/session');
+  expect(requests.slice(1).map(request => request.path).sort()).toEqual([
+    '/api/exams', '/progress/all', '/progress/completed-exam-ids',
+  ]);
+  expect(requests.slice(1).map(request => request.authorization)).toEqual([
+    'Bearer restored-app-token', 'Bearer restored-app-token', 'Bearer restored-app-token',
+  ]);
+  expect(await screen.findByRole('heading', { name: /Exam Practice Platform/ })).toBeInTheDocument();
+});
+
+it('loads public exams after auth/session confirms there is no session', async () => {
+  const { requests, finishRestore } = start();
+  await act(async () => { finishRestore(Response.json({ success: false }, { status: 401 })); });
+  await waitFor(() => expect(requests).toEqual([
+    { path: '/auth/session', authorization: null },
+    { path: '/api/exams', authorization: null },
+  ]));
+  expect(await screen.findByRole('heading', { name: /Exam Practice Platform/ })).toBeInTheDocument();
+});
+
+it.each([true, false])('waits for progress/all to settle before requesting all exams (success: %s)', async success => {
+  let finishProgress!: (response: Response) => void;
+  const progress = new Promise<Response>(resolve => { finishProgress = resolve; });
+  const { requests, finishRestore } = start(() => progress);
+  await act(async () => {
+    finishRestore(Response.json({
+      success: true, token: 'restored-app-token',
+      user: { id: 'app-user', email: 'fixture@example.test', name: 'Fixture' },
+      idleExpiresAt: Date.now() + 60_000, absoluteExpiresAt: Date.now() + 120_000,
+    }));
+  });
+  await waitFor(() => expect(requests.some(request => request.path === '/progress/all')).toBe(true));
+  expect(requests.some(request => request.path === '/api/exams')).toBe(false);
+  await act(async () => {
+    finishProgress(Response.json(success ? { success: true, progress: {} } : { success: false, error: 'Unavailable' }));
+  });
+  await waitFor(() => expect(requests.filter(request => request.path === '/api/exams')).toHaveLength(1));
+  expect(await screen.findByRole('heading', { name: /Exam Practice Platform/ })).toBeInTheDocument();
+  if (!success) expect(screen.getByRole('alert')).toHaveTextContent('Unable to load progress');
+});
+
+it('allows the OAuth callback to exchange its code before checking the session', async () => {
+  window.history.replaceState({}, '', '/auth/callback#code=fixture-code');
+  sessionStorage.setItem('oauth_login_verifier', 'fixture-verifier');
+  const { requests, finishRestore } = start();
+  await waitFor(() => expect(requests.map(request => request.path)).toEqual(['/auth/exchange', '/auth/session']));
+  await act(async () => {
+    finishRestore(Response.json({
+      success: true, token: 'restored-app-token',
+      user: { id: 'app-user', email: 'fixture@example.test', name: 'Fixture' },
+      idleExpiresAt: Date.now() + 60_000, absoluteExpiresAt: Date.now() + 120_000,
+    }));
+  });
+  expect(await screen.findByRole('heading', { name: /Exam Practice Platform/ })).toBeInTheDocument();
+  await waitFor(() => expect(requests.some(request => request.path === '/api/exams')).toBe(true));
 });

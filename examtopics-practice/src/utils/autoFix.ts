@@ -24,9 +24,7 @@ export const autoFixReloadLoop = {
 
   async clearAll(): Promise<void> {
     try {
-      console.log('Auto-fixing reload loop...');
       await forceCleanupLegacyCache();
-      console.log('Auto-fix completed');
     } catch (error) {
       console.error('Error in auto-fix:', error);
     }
