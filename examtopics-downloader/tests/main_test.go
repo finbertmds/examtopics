@@ -11,22 +11,27 @@ import (
 	"examtopics-downloader/internal/utils"
 )
 
+const (
+	testProvider = "a10-networks"
+	testExam     = "a10-certified-professional-system-administration-4"
+)
+
 func TestGetAllPages(t *testing.T) {
 	if testing.Short() {
 		t.Skip("external crawler test")
 	}
-	links := fetch.GetAllPages("lpi", "010-160", false, false, false, "")
+	links := fetch.GetAllPages(testProvider, testExam, false, false, false, "")
 	if len(links) == 0 {
 		t.Fatalf("Expected non-empty links, but got empty")
 	}
-	fmt.Printf("Data len of %d for provider 'lpi'\n", len(links))
+	fmt.Printf("Data len of %d for provider %q\n", len(links), testProvider)
 }
 
 func TestValidateExamsOutput(t *testing.T) {
 	if testing.Short() {
 		t.Skip("external crawler test")
 	}
-	links := fetch.GetAllPages("lpi", "010-160", false, false, false, "")
+	links := fetch.GetAllPages(testProvider, testExam, false, false, false, "")
 	if len(links) == 0 {
 		t.Fatalf("Expected non-empty links, but got empty")
 	}
@@ -40,7 +45,7 @@ func TestValidateExamsOutput(t *testing.T) {
 	}
 
 	content := string(data)
-	expectedContent := "https://www.examtopics.com/discussions/lpi/view"
+	expectedContent := "https://www.examtopics.com/discussions/a10-networks/view/"
 	if !strings.Contains(content, expectedContent) {
 		t.Errorf("Expected file content to contain %q but got:\n%s", expectedContent, content)
 	}
@@ -55,19 +60,19 @@ func TestExamProvider(t *testing.T) {
 	if testing.Short() {
 		t.Skip("external crawler test")
 	}
-	data := fetch.GetProviderExams("google")
+	data := fetch.GetProviderExams(testProvider)
 	if len(data) == 0 {
-		t.Fatalf("Expected non-empty data for provider 'google', but got: %v", data)
+		t.Fatalf("Expected non-empty data for provider %q, but got: %v", testProvider, data)
 	}
 
-	t.Logf("Got %d exams for provider 'google'", len(data))
+	t.Logf("Got %d exams for provider %q", len(data), testProvider)
 }
 
 func TestWriteData(t *testing.T) {
 	if testing.Short() {
 		t.Skip("external crawler test")
 	}
-	links := fetch.GetAllPages("lpi", "010-160", false, false, false, "")
+	links := fetch.GetAllPages(testProvider, testExam, false, false, false, "")
 	if len(links) == 0 {
 		t.Fatalf("Expected non-empty links, but got empty")
 	}

@@ -46,7 +46,7 @@ docker rm examtopics-downloader
 ### Using Dockerfile
 
 1. `git clone https://github.com/finbertmds/examtopics` and make sure docker is installed on your system.
-2. Run `cd examtopics-downloader && docker build -t examtopics-dl . && docker run --rm examtopics-dl -p google -s devops -save-links -o output.md`
+2. Run `cd examtopics-downloader && docker build -t examtopics-dl . && docker run --rm examtopics-dl -p a10-networks -s a10-certified-professional-system-administration-4 -save-links -o output.md -json`
 3. After setup, it will give you a list of exams with the `cisco` provider.
 
 ### Building from Source

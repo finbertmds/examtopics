@@ -79,6 +79,17 @@ func SaveLinks(filename string, links []models.QuestionData) {
 
 // ConvertQuestionDataToJSON converts QuestionData to QuestionDataJson format
 func ConvertQuestionDataToJSON(data models.QuestionData, fromCache bool) models.QuestionDataJson {
+	answerImages, questionImages := data.AnswerImages, data.QuestionImages
+	if fromCache {
+		answerImages, questionImages = data.RawData.AnswerImages, data.RawData.QuestionImages
+	}
+	// nil slices encode as null; the export schema requires arrays even without images.
+	if answerImages == nil {
+		answerImages = []string{}
+	}
+	if questionImages == nil {
+		questionImages = []string{}
+	}
 	questionNumber := ExtractQuestionNumber(data.Title)
 	topicNumber := ExtractTopicNumber(data.Title)
 	if !fromCache {
@@ -114,8 +125,8 @@ func ConvertQuestionDataToJSON(data models.QuestionData, fromCache bool) models.
 			Link:            data.QuestionLink,
 			MultipleChoice:  multipleChoice,
 			QuestionText:    questionText,
-			AnswerImages:    data.RawData.AnswerImages,
-			QuestionImages:  data.RawData.QuestionImages,
+			AnswerImages:    answerImages,
+			QuestionImages:  questionImages,
 		}
 	}
 
@@ -138,8 +149,8 @@ func ConvertQuestionDataToJSON(data models.QuestionData, fromCache bool) models.
 		Link:            data.QuestionLink,
 		MultipleChoice:  multipleChoice,
 		QuestionText:    strings.TrimSpace(data.Content),
-		AnswerImages:    data.AnswerImages,
-		QuestionImages:  data.QuestionImages,
+		AnswerImages:    answerImages,
+		QuestionImages:  questionImages,
 	}
 }
 
