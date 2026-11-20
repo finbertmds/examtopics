@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "deny": [
+      "Bash(terraform apply *)",
+      "Bash(terraform destroy *)",
+      "Bash(terraform import *)",
+      "Bash(terraform state *)",
+      "Bash(terraform force-unlock *)",
+      "Bash(aws *)",
+      "Bash(git push *)",
+      "Bash(gh workflow run *)",
+      "Bash(gh pr merge *)",
+      "Bash(gh release create *)",
+      "Bash(docker push *)",
+      "Bash(npm run migrate:*)",
+      "Bash(npm run test:oauth*)",
+      "Bash(curl *api.render.com*)",
+      "Read(**/.env)",
+      "Read(**/.env.*)",
+      "Read(**/*.pem)",
+      "Read(**/client_secret_*)",
+      "Read(**/*.tfstate)",
+      "Read(**/*.tfstate.*)",
+      "Read(**/*.tfvars)",
+      "Read(**/*.tfvars.json)"
+    ],
+    "ask": [
+      "Bash(terraform plan *)",
+      "Bash(terraform init *)",
+      "Bash(git commit *)",
+      "Bash(npm ci *)",
+      "Bash(npm install *)",
+      "Bash(docker *)",
+      "Bash(node scripts/*)",
+      "Bash(node examtopics-backend/scripts/*)"
+    ]
+  }
+}
