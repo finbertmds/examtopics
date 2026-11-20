@@ -88,9 +88,6 @@ const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose, examId }) 
           if (Array.isArray(trackingData)) {
             validData = trackingData.filter((item: any): item is { date: string; count: number } => {
               const isValid = item && item.date && typeof item.count === 'number';
-              if (!isValid) {
-                console.log('Invalid item:', item);
-              }
               return isValid;
             });
           }

@@ -3,10 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useAllProgress } from '../hooks/useAllProgress';
 import { useExams } from '../hooks/useExams';
-import { useProgress } from '../hooks/useProgress';
+import { dataService } from '../services/dataService';
 import { Exam, FilterType } from '../types';
 import { getExamDescription, getExamName } from '../utils/examUtils';
 import ExamCard from './ExamCard';
+import CollapsibleExamSection from './CollapsibleExamSection';
 import FloatingButtons from './FloatingButtons';
 import { LanguageToggle } from './LanguageToggle';
 import { ThemeToggle } from './ThemeToggle';
@@ -20,10 +21,9 @@ const Home: React.FC = () => {
   const [selectedDifficulty, setSelectedDifficulty] = useState('all');
   const [isMobile, setIsMobile] = useState(false);
   const navigate = useNavigate();
-  const { getProgressStats } = useAllProgress();
-  const { getCompletedExamIds } = useProgress();
+  const { getProgressStats, isLoading: progressLoading, isLoaded: progressLoaded, error: progressError, reload: reloadProgress } = useAllProgress();
   const { t, language } = useLanguage();
-  const { token } = useAuth();
+  const { user, token, sessionId, isAuthenticated, isLoading: authLoading } = useAuth();
   const { exams, loading, error, loadExams } = useExams({ token });
   const [completedExams, setCompletedExams] = useState<string[]>([]);
 
@@ -39,14 +39,43 @@ const Home: React.FC = () => {
   }, []);
 
   const isExamsLoadedRef = React.useRef(false);
+  const completedExamsRequest = React.useRef<{
+    token: string;
+    promise: ReturnType<typeof dataService.getCompletedExamIds>;
+  } | null>(null);
 
   useEffect(() => {
-    if (isExamsLoadedRef.current) return;
+    let cancelled = false;
+    setCompletedExams([]);
+    if (!isAuthenticated || !token) {
+      completedExamsRequest.current = null;
+      return;
+    }
+
+    const loadCompletedExams = async () => {
+      try {
+        if (completedExamsRequest.current?.token !== token) {
+          completedExamsRequest.current = { token, promise: dataService.getCompletedExamIds(token) };
+        }
+        const response = await completedExamsRequest.current.promise;
+        if (!cancelled && response.success) setCompletedExams(response.data?.examIds || []);
+      } catch (error) {
+        if (!cancelled) {
+          console.error('Error loading completed exams:', error);
+          toast.error('Error loading completed exams');
+        }
+      }
+    };
+    loadCompletedExams();
+    return () => { cancelled = true; };
+  }, [isAuthenticated, token]);
+
+  useEffect(() => {
+    if (authLoading || !progressLoaded || isExamsLoadedRef.current) return;
     isExamsLoadedRef.current = true;
 
     const loadExamsData = async () => {
       try {
-        console.log('Loading exams...');
         await loadExams();
       } catch (error) {
         console.error('Error loading exams:', error);
@@ -54,27 +83,7 @@ const Home: React.FC = () => {
     };
     loadExamsData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const isCompletedExamsLoadedRef = React.useRef(false);
-
-  useEffect(() => {
-    if (isCompletedExamsLoadedRef.current) return;
-    isCompletedExamsLoadedRef.current = true;
-
-    const loadCompletedExams = async () => {
-      try {
-        console.log('Loading completed exams...');
-        const examIds = await getCompletedExamIds();
-        setCompletedExams(examIds);
-      } catch (error) {
-        console.error('Error loading completed exams:', error);
-        toast.error('Error loading completed exams')
-      }
-    };
-    loadCompletedExams();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [authLoading, progressLoaded]);
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
@@ -171,7 +180,7 @@ const Home: React.FC = () => {
       <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600 dark:text-gray-300">{t('loadingExamList')}</p>
+          <p className="text-gray-600 dark:text-gray-300">{t(!progressLoaded ? 'loadingProgress' : 'loadingExamList')}</p>
         </div>
       </div>
     );
@@ -216,6 +225,13 @@ const Home: React.FC = () => {
       </div>
 
       <div className="container mx-auto px-4 py-4">
+        {progressLoading && <p role="status" className="mb-4 text-gray-600 dark:text-gray-300">{t('loadingProgress')}</p>}
+        {progressError && (
+          <div role="alert" className="mb-4 p-3 rounded-lg bg-red-50 text-red-800 dark:bg-red-900/20 dark:text-red-200">
+            {t('errorLoadingProgress')}
+            <button type="button" onClick={reloadProgress} className="ml-3 underline">{t('retry')}</button>
+          </div>
+        )}
         {/* Search and Filters */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-4 transition-colors">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -307,13 +323,13 @@ const Home: React.FC = () => {
             <>
               {/* Exams with Progress */}
               {examsWithProgress.length > 0 && (
-                <>
-                  <div className="mb-6">
-                    <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
-                      📊 {t('examsInProgress')} ({examsWithProgress.length})
-                    </h2>
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                <CollapsibleExamSection
+                  sectionId="progress"
+                  userId={user?.id}
+                  sessionId={sessionId}
+                  title={`📊 ${t('examsInProgress')} (${examsWithProgress.length})`}
+                >
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {examsWithProgress.map((exam) => (
                       <ExamCard
                         type="progress"
@@ -329,18 +345,18 @@ const Home: React.FC = () => {
                       />
                     ))}
                   </div>
-                </>
+                </CollapsibleExamSection>
               )}
 
               {/* Completed Exams */}
               {examsCompleted.length > 0 && (
-                <>
-                  <div className="mb-6">
-                    <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
-                      ✅ {t('completedExams')} ({examsCompleted.length})
-                    </h2>
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                <CollapsibleExamSection
+                  sectionId="completed"
+                  userId={user?.id}
+                  sessionId={sessionId}
+                  title={`✅ ${t('completedExams')} (${examsCompleted.length})`}
+                >
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {examsCompleted.map((exam) => (
                       <ExamCard
                         type="completed"
@@ -356,17 +372,17 @@ const Home: React.FC = () => {
                       />
                     ))}
                   </div>
-                </>
+                </CollapsibleExamSection>
               )}
 
               {/* Exams without Progress */}
               {examsWithoutProgress.length > 0 && (
-                <>
-                  <div className="mb-6">
-                    <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
-                      🆕 {t('availableExams')} ({examsWithoutProgress.length})
-                    </h2>
-                  </div>
+                <CollapsibleExamSection
+                  sectionId="available"
+                  userId={user?.id}
+                  sessionId={sessionId}
+                  title={`🆕 ${t('availableExams')} (${examsWithoutProgress.length})`}
+                >
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {examsWithoutProgress.map((exam) => (
                       <ExamCard
@@ -383,7 +399,7 @@ const Home: React.FC = () => {
                       />
                     ))}
                   </div>
-                </>
+                </CollapsibleExamSection>
               )}
             </>
           );
