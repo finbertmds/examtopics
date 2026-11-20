@@ -3,12 +3,14 @@ import { AuthSession, User } from '../types';
 import { apiClient } from '../utils/apiClient';
 import { beginGoogleLogin } from '../utils/loginExchange';
 import { registerSessionAccess, SessionAccess } from '../utils/sessionAccess';
+import { clearHomeSectionPreferences } from '../utils/homeSectionPreferences';
 
 type SessionNotice = 'sessionCookieUnavailable' | 'sessionRestoreFailed' | 'sessionLogoutFailed' | 'sessionLogoutUnconfirmed';
 
 interface AuthContextType {
   user: User | null;
   token: string | null;
+  sessionId: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
   notice: SessionNotice | null;
@@ -31,6 +33,7 @@ const COOKIE_NOTICE_KEY = 'examtopics-session-cookie-unavailable';
 const LOGOUT_PENDING_KEY = 'examtopics-logout-pending';
 
 interface ActiveSession extends SessionAccess {
+  userId: string;
   id?: string;
   deadline: number;
   absoluteDeadline: number;
@@ -51,6 +54,7 @@ function bearerClaims(token: string): { exp?: number; sid?: string } {
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
+  const [sessionId, setSessionId] = useState<string | null>(null);
   const [isLoading, setLoading] = useState(true);
   const [notice, setNotice] = useState<SessionNotice | null>(null);
   const active = useRef<ActiveSession | null>(null);
@@ -62,9 +66,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const clearSession = useCallback(() => {
     window.clearTimeout(expirationTimer.current);
-    if (active.current) active.current.bearer = null;
+    if (active.current) {
+      clearHomeSectionPreferences(active.current.userId);
+      active.current.bearer = null;
+    }
+    clearHomeSectionPreferences();
     active.current = null;
     setToken(null);
+    setSessionId(null);
     setUser(null);
   }, []);
 
@@ -83,6 +92,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const installSession = useCallback((data: AuthSession) => {
     if (active.current) active.current.bearer = null;
     const session: ActiveSession = {
+      userId: data.user.id,
       handle: data.token,
       bearer: data.token,
       id: bearerClaims(data.token).sid,
@@ -96,6 +106,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     registerSessionAccess(session);
     setUser(data.user);
     setToken(session.handle);
+    // The session ID stays stable when the short-lived access token is renewed.
+    setSessionId(session.id || `expires:${data.absoluteExpiresAt}`);
     setNotice(null);
     setLoading(false);
     checkExpiry();
@@ -150,6 +162,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     logoutBearer.current = undefined;
     sessionStorage.removeItem(COOKIE_NOTICE_KEY);
     sessionStorage.removeItem(LOGOUT_PENDING_KEY);
+    clearHomeSectionPreferences(data.user.id);
+    clearHomeSectionPreferences();
     const session = installSession(data);
     // Check cookie delivery, since Set-Cookie is not readable from JavaScript.
     session.pending = apiClient.restoreSession().then(result => {
@@ -260,7 +274,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   return (
     <AuthContext.Provider value={{
-      user, token, isAuthenticated: !!user, isLoading, notice, login, logout, retryRestore, acceptSession,
+      user, token, sessionId, isAuthenticated: !!user, isLoading, notice, login, logout, retryRestore, acceptSession,
     }}>
       {children}
     </AuthContext.Provider>
