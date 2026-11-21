@@ -11,7 +11,16 @@ on:
 permissions: {}
 
 jobs:
+  # Production deploys only run after every offline quality gate passes (OPS-001).
+  # The called workflow receives no secrets.
+  ci:
+    if: github.ref == 'refs/heads/master'
+    uses: ./.github/workflows/ci.yml
+    permissions:
+      contents: read
+
   deploy:
+    needs: ci
     if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     permissions:

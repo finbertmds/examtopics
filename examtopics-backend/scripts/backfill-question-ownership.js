@@ -3,6 +3,7 @@ const { readFile } = require('node:fs/promises');
 const mongoose = require('mongoose');
 const Exam = require('../models/Exam');
 const Question = require('../models/Question');
+const { assertDatabaseTarget, stripGuardArgs } = require('./lib/targetGuard');
 require('dotenv').config({ path: path.join(__dirname, '../.env') });
 
 class BackfillError extends Error {}
@@ -138,11 +139,17 @@ async function backfillQuestionOwnership(entries, { apply = false } = {}) {
 }
 
 async function main() {
-  const [, , manifestPath, option, ...extras] = process.argv;
+  const args = process.argv.slice(2);
+  const [manifestPath, option, ...extras] = stripGuardArgs(args);
   if (!manifestPath || manifestPath.startsWith('-') || (option !== undefined && option !== '--apply') || extras.length) {
-    throw new BackfillError('Usage: node scripts/backfill-question-ownership.js <verified-manifest.json> [--apply]');
+    throw new BackfillError('Usage: node scripts/backfill-question-ownership.js <verified-manifest.json> [--apply] [--target=<hosts>/<db>]');
   }
   if (!process.env.MONGO_URI) throw new BackfillError('Set MONGO_URI explicitly for the approved database.');
+  try {
+    assertDatabaseTarget({ uri: process.env.MONGO_URI, argv: args, write: true });
+  } catch (error) {
+    throw new BackfillError(error.message);
+  }
   let content;
   try {
     content = await readFile(manifestPath, 'utf8');

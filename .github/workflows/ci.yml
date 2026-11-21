@@ -1,0 +1,120 @@
+name: CI
+
+# Offline quality gates for every component (OPS-001).
+# No job receives secrets or cloud credentials. Deploy workflows call this
+# workflow and only deploy after it succeeds.
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+  workflow_call:
+
+permissions: {}
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}-${{ github.event_name }}
+  cancel-in-progress: true
+
+jobs:
+  backend:
+    name: Backend tests
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: examtopics-backend
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: examtopics-backend/package-lock.json
+      - run: npm ci
+      - run: npm test
+
+  frontend:
+    name: Frontend build and tests
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: examtopics-practice
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: examtopics-practice/package-lock.json
+      - run: npm ci
+      - name: Type check and build
+        run: npm run build
+      - run: npm test
+
+  go:
+    name: Go downloader tests
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: examtopics-downloader
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@v7
+        with:
+          go-version: '1.27.4'
+          cache-dependency-path: examtopics-downloader/go.sum
+      - run: go build ./...
+      - name: Offline tests (live crawler tests are skipped by -short)
+        run: go test -short -timeout 2m ./...
+
+  python:
+    name: Python tool tests
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.13'
+      - run: python -m pip install -r batch/requirements.txt -r examtopics-img-downloader/requirements.txt
+      - run: python -m unittest discover -s batch/tests
+
+  terraform:
+    name: Terraform offline checks
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: infra/terraform/staging
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: hashicorp/setup-terraform@v4
+        with:
+          terraform_version: '1.17.2'
+          terraform_wrapper: false
+      - run: terraform fmt -check -recursive
+      # No backend and no credentials: init only downloads the locked provider.
+      - run: terraform init -backend=false -input=false
+      - run: terraform validate
+      # tests/staging.tftest.hcl uses mock_provider, so no AWS calls are made.
+      - run: terraform test

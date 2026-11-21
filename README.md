@@ -160,6 +160,8 @@ Chạy trong `examtopics-backend/`, sau khi cấu hình đúng database:
 | `npm run migrate:progress` | Chuyển tiến độ cũ sang định dạng có topic/question |
 | `npm run migrate:exam-visibility` | Đặt công khai cho các đề cũ chưa có trường `isPublished`; có thể chạy lại |
 
+Mặc định các lệnh trên chỉ chạy thử (dry run); thêm `-- --apply` để ghi dữ liệu. Với database từ xa (host không phải loopback hoặc `mongodb+srv://`) cần xác nhận bằng `--target=<hosts>/<database>` khớp với `MONGO_URI`. Khi `NODE_ENV=production`, database từ xa bị từ chối trừ khi đặt thêm `ALLOW_REMOTE_MIGRATION=1`. Xem [hướng dẫn backend](examtopics-backend/README.md#database-target-guard-for-scripts).
+
 Sao lưu dữ liệu trước khi chạy migration trên database đang sử dụng. Để thêm đề thông thường, dùng chức năng import JSON tại `/admin`.
 
 ## Công cụ tải và xử lý dữ liệu

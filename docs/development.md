@@ -54,9 +54,16 @@ The frontend reads `REACT_APP_BACKEND_URL` and `REACT_APP_FRONTEND_URL`. Both ar
 
 | Command | Effect |
 |---|---|
-| `npm run migrate:samples` | Imports `public/exams/*.json` into `MONGO_URI`; **deletes and recreates** matching exams |
-| `npm run migrate:progress`, `npm run migrate:exam-visibility` | Rewrite stored progress / exam visibility in `MONGO_URI` |
+| `npm run migrate:samples` | Imports `public/exams/*.json` into `MONGO_URI`; with `-- --apply` it **deletes and recreates** matching exams |
+| `npm run migrate:progress`, `npm run migrate:exam-visibility` | Rewrite stored progress / exam visibility in `MONGO_URI` (only with `-- --apply`) |
 | `node scripts/export-question-ownership.js`, `backfill-question-ownership.js [--apply]` | SEC-04 cutover; see `docs/audit/sec-04-question-ownership.md` |
+
+All database scripts run behind a target guard (`examtopics-backend/scripts/lib/targetGuard.js`):
+- Write scripts default to a dry run.
+- Remote targets need `--target=<hosts>/<database>`.
+- With `NODE_ENV=production`, remote targets are refused unless `ALLOW_REMOTE_MIGRATION=1` is set.
+
+Details are in the [backend README](../examtopics-backend/README.md#database-target-guard-for-scripts).
 | `npm run test:oauth` | Exercises the OAuth configuration (NOT VERIFIED whether it calls Google) |
 | Go downloader, Python downloaders | Network requests to third-party sites |
 | `node scripts/package-examtopics.mjs` | Builds plugin ZIPs into `dist/` (local only, no upload) |

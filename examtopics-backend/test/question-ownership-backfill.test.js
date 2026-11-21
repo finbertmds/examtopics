@@ -24,20 +24,22 @@ function runCli(t, { manifest, connectionError } = {}) {
   if (manifest !== undefined) writeFileSync(manifestPath, manifest);
   // Replace only the external connection; file parsing and CLI reporting stay real.
   const bootstrap = `
+    require('dotenv').config = () => ({ parsed: {} });
     const mongoose = require('mongoose');
     mongoose.connect = async () => {
       throw Object.assign(new Error('private-error mongodb://private-user:private-password@private-host/db'),
         ${JSON.stringify(connectionError || { name: 'UnexpectedConnectionAttempt' })});
     };
     mongoose.disconnect = async () => {};
-    process.argv = [process.execPath, ${JSON.stringify(require.resolve('../scripts/backfill-question-ownership'))}, ${JSON.stringify(manifestPath)}];
+    process.argv = [process.execPath, ${JSON.stringify(require.resolve('../scripts/backfill-question-ownership'))}, ${JSON.stringify(manifestPath)}, '--target=private-host/db'];
     require('node:module').runMain();
   `;
   return spawnSync(process.execPath, ['-e', bootstrap], {
     cwd: path.join(__dirname, '..'),
     encoding: 'utf8',
     timeout: 10000,
-    env: { ...process.env, MONGO_URI: 'mongodb://private-user:private-password@private-host/db' },
+    // Hermetic: ignore the developer's NODE_ENV and migration override.
+    env: { ...process.env, NODE_ENV: '', ALLOW_REMOTE_MIGRATION: '', MONGO_URI: 'mongodb://private-user:private-password@private-host/db' },
   });
 }
 
