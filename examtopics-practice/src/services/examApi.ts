@@ -20,6 +20,14 @@ const getApiError = async (response: Response, fallback: string): Promise<Error>
   return new Error(data.error || data.message || fallback);
 };
 
+// Mutations fail on a non-2xx status or an explicit success:false body (ARCH-003).
+const readMutationResult = async (response: Response, fallback: string): Promise<any> => {
+  if (!response.ok) throw await getApiError(response, fallback);
+  const data = await response.json().catch(() => null);
+  if (!data || data.success === false) throw new Error(data?.error || data?.message || fallback);
+  return data;
+};
+
 const QUESTIONS_PER_PAGE = 100;
 const MAX_QUESTION_PAGE = 1000;
 
@@ -145,8 +153,7 @@ export const examApi = {
       },
       body: JSON.stringify({ ...updateData, topic_number: topicNumber })
     });
-    if (!response.ok) throw new Error('Failed to update question');
-    const data = await response.json();
+    const data = await readMutationResult(response, 'Failed to update question');
     return data.question;
   },
 
@@ -159,9 +166,7 @@ export const examApi = {
       },
       body: JSON.stringify(examData)
     });
-    if (!response.ok) throw new Error('Failed to create exam');
-    const data = await response.json();
-    return data;
+    return readMutationResult(response, 'Failed to create exam');
   },
 
   updateExam: async (code: string, examData: any, token: string): Promise<Exam> => {
@@ -173,8 +178,7 @@ export const examApi = {
       },
       body: JSON.stringify(examData)
     });
-    if (!response.ok) throw new Error('Failed to update exam');
-    const data = await response.json();
+    const data = await readMutationResult(response, 'Failed to update exam');
     return data.exam;
   },
 
@@ -185,6 +189,6 @@ export const examApi = {
         'Authorization': `Bearer ${await resolveSessionBearer(token)}`
       }
     });
-    if (!response.ok) throw new Error('Failed to delete exam');
+    await readMutationResult(response, 'Failed to delete exam');
   }
 };

@@ -47,6 +47,8 @@ function pickExamFields(body, { allowCode = false } = {}) {
   }, {});
 }
 
+const EXAM_CODE_PATTERN = /^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$/;
+
 function hasInvalidPublishValue(body) {
   return Object.prototype.hasOwnProperty.call(body, 'isPublished') &&
     typeof body.isPublished !== 'boolean';
@@ -144,7 +146,7 @@ class ExamController {
       const { questions } = req.body;
       const parsed = parseQuestionsPayload(questions);
       if (parsed.error) {
-        return res.status(200).json({ success: false, message: parsed.error });
+        return res.status(400).json({ success: false, error: parsed.error });
       }
 
       if (hasInvalidPublishValue(req.body)) {
@@ -152,8 +154,12 @@ class ExamController {
       }
 
       const examData = pickExamFields(req.body, { allowCode: true });
+      // SEC-026: the code is used in MongoDB filters and URL paths, so it must be a plain bounded slug.
+      if (examData.code !== undefined && (typeof examData.code !== 'string' || !EXAM_CODE_PATTERN.test(examData.code))) {
+        return res.status(400).json({ success: false, error: 'code must be 1-128 letters, digits, dots, underscores or hyphens, starting with a letter or digit' });
+      }
       if (!examData.name || !examData.description) {
-        return res.status(200).json({ success: false, message: 'Name and description are required' });
+        return res.status(400).json({ success: false, error: 'Name and description are required' });
       }
 
       const userId = req.user ? req.user.userId : null;
@@ -161,7 +167,7 @@ class ExamController {
       res.status(201).json({ success: true, exam });
     } catch (error) {
       if (error.code === 'DUPLICATE_EXAM_CODE' || (error.code === 11000 && error.keyPattern && error.keyPattern.code)) {
-        return res.status(200).json({ success: false, message: 'Exam code already exists. Please use a different code or name.' });
+        return res.status(409).json({ success: false, error: 'Exam code already exists. Please use a different code or name.' });
       }
       next(error);
     }
@@ -178,7 +184,7 @@ class ExamController {
       const updateData = pickExamFields(req.body);
       const parsed = parseQuestionsPayload(questions);
       if (parsed.error) {
-        return res.status(200).json({ success: false, message: parsed.error });
+        return res.status(400).json({ success: false, error: parsed.error });
       }
 
       const result = await examService.updateExamWithQuestions(
@@ -262,7 +268,7 @@ class ExamController {
         suggested_answer === undefined &&
         answer === undefined
       ) {
-        return res.status(400).json({ success: false, message: 'Provide at least one field to update' });
+        return res.status(400).json({ success: false, error: 'Provide at least one field to update' });
       }
 
       const userId = req.user?.userId;
@@ -286,6 +292,9 @@ class ExamController {
         }
         if (result.error === 'NoUpdates') {
           return res.status(400).json({ success: false, error: 'Nothing to update' });
+        }
+        if (result.error === 'InvalidLink') {
+          return res.status(400).json({ success: false, error: 'link must be an http(s) URL' });
         }
       }
 

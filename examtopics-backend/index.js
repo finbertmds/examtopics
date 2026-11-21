@@ -8,9 +8,13 @@ const connectDB = require('./config/database');
 const { passport } = require('./services/authService');
 const errorHandler = require('./middleware/errorHandler');
 const getFrontendUrl = require('./utils/frontendUrl');
+const parseTrustProxy = require('./utils/trustProxy');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
+
+const trustProxy = parseTrustProxy(process.env.TRUST_PROXY);
+if (trustProxy) app.set('trust proxy', trustProxy);
 
 app.use((req, res, next) => {
   const requestId = randomUUID();

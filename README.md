@@ -146,7 +146,8 @@ Backend chia thành `routes/`, `controllers/`, `services/`, `models/`, `middlewa
 Các API yêu cầu xác thực sử dụng header `Authorization: Bearer <token>`. Quyền đọc đề riêng tư và quyền sửa/xóa được kiểm tra ở backend.
 
 - Danh sách câu hỏi nhận `page` từ 1 đến 1.000 và `limit` từ 1 đến 100 (mặc định 100). Giao diện tải từng trang và chỉ hiển thị khi các trang cùng phiên bản đề.
-- `POST /report` nhận JSON tối đa 4 KiB. Mỗi địa chỉ IP kết nối trực tiếp được gửi tối đa 5 lượt/phút, tổng cộng 30 lượt/phút mỗi process. Khi đứng sau reverse proxy, người dùng qua cùng proxy chia sẻ giới hạn 5 lượt/phút. Backend tự xác định tài khoản nếu có token hợp lệ và tạo liên kết câu hỏi.
+- `POST /report` nhận JSON tối đa 4 KiB. Mỗi địa chỉ IP kết nối trực tiếp được gửi tối đa 5 lượt/phút, tổng cộng 30 lượt/phút mỗi process. Khi đứng sau reverse proxy, đặt `TRUST_PROXY` bằng số proxy tin cậy (1–5) để mỗi người dùng có giới hạn riêng; để trống thì người dùng qua cùng proxy chia sẻ giới hạn 5 lượt/phút. Không đặt `TRUST_PROXY` khi API nhận kết nối trực tiếp từ client, vì client có thể giả mạo `X-Forwarded-For`. Backend tự xác định tài khoản nếu có token hợp lệ và tạo liên kết câu hỏi.
+- Lỗi API trả về mã 4xx kèm trường `error` (dữ liệu không hợp lệ: 400, trùng mã đề: 409), không trả 200 kèm `success: false`. `link` của câu hỏi chỉ nhận URL http(s); `limit` của lịch sử nhận số nguyên 1–100; `code` khi tạo đề gồm 1–128 chữ, số, `.`, `_` hoặc `-`, bắt đầu bằng chữ hoặc số.
 - Tạo đề kèm câu hỏi, sửa câu hỏi và xóa đề yêu cầu MongoDB hỗ trợ transaction. [Cấu hình replica set cục bộ](docs/audit/sec-07-exam-mutations.md).
 
 
