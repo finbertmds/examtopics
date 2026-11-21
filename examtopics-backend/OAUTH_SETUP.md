@@ -28,7 +28,7 @@ Authorized redirect URIs:
 ```
 Name: ExamTopics Backend - Production
 Authorized JavaScript origins:
-- https://examtopics-practice.onrender.com
+- https://examtopics.onrender.com
 
 Authorized redirect URIs:
 - https://examtopics-backend-latest.onrender.com/auth/google/callback
@@ -80,7 +80,7 @@ GOOGLE_CLIENT_ID=your_production_client_id
 GOOGLE_CLIENT_SECRET=your_production_client_secret
 JWT_SECRET=your_production_jwt_secret
 SESSION_SECRET=your_production_session_secret
-FRONTEND_URL=https://examtopics-practice.onrender.com
+FRONTEND_URL=https://examtopics.onrender.com
 GOOGLE_CALLBACK_URL=https://examtopics-backend-latest.onrender.com/auth/google/callback
 MONGO_URI=your_mongodb_atlas_uri
 ```
@@ -88,7 +88,7 @@ MONGO_URI=your_mongodb_atlas_uri
 ### Render Frontend Environment Variables:
 ```env
 REACT_APP_BACKEND_URL=https://examtopics-backend-latest.onrender.com
-REACT_APP_FRONTEND_URL=https://examtopics-practice.onrender.com
+REACT_APP_FRONTEND_URL=https://examtopics.onrender.com
 NODE_ENV=production
 ```
 
@@ -103,7 +103,7 @@ NODE_ENV=production
 6. Frontend stores token and loads user info
 
 ### Production Flow:
-1. User clicks "Login with Google" on frontend (examtopics-practice.onrender.com)
+1. User clicks "Login with Google" on frontend (examtopics.onrender.com)
 2. Frontend redirects to backend OAuth endpoint (examtopics-backend-latest.onrender.com/auth/google)
 3. Backend redirects to Google OAuth
 4. Google redirects back to backend callback (examtopics-backend-latest.onrender.com/auth/google/callback)

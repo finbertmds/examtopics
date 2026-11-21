@@ -293,7 +293,7 @@ Duplicates and related groups:
 - **Verification:** A test shows that with `NODE_ENV=production` and a staging `FRONTEND_URL`, the Render origin is rejected and the configured origin is allowed.
 - **Partial resolution (Batch 3 / T3.1):** `utils/corsOrigins.js`: production allows only the origin of `FRONTEND_URL` (the hardcoded Render origin is gone). Tests: `test/cors-origins.test.js`.
 - **Residual (B3-S1, Low):** with `NODE_ENV=production` and **no** `FRONTEND_URL`, `utils/frontendUrl.js` still falls back to the Render production frontend, so an unconfigured staging API would trust it (and send OAuth login codes there). Closing it needs production fail-fast on a missing `FRONTEND_URL`, which waits for verification of Render's settings (A2). Until then, the staging runbook must set `FRONTEND_URL`.
-- **Pre-merge check:** if Render's `FRONTEND_URL` is set to a host other than the one users visit, anonymous API calls from that host now fail CORS (login there was already broken by the Origin check).
+- **Pre-merge check (done 2026-11-21):** the owner confirmed Render's backend `FRONTEND_URL` is `https://examtopics.onrender.com/`, the host users visit (also the canonical URL in `index.html`). The production defaults in `utils/frontendUrl.js` and `src/utils/backendUrl.ts` now use that host too, and the value is trimmed. The old `https://examtopics-practice.onrender.com` is no longer allowed by CORS; login there already failed the Origin check.
 
 ### SEC-028: Ownership transfer reveals whether an email is registered
 - **Category / Severity / Confidence:** Information disclosure / Low / High

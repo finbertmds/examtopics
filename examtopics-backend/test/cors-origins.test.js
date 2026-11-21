@@ -26,7 +26,13 @@ test('a staging API in production mode does not trust the Render production fron
 
 test('production without FRONTEND_URL keeps the existing Render frontend origin', (t) => {
   withEnv(t, { NODE_ENV: 'production', FRONTEND_URL: undefined });
-  assert.deepEqual(getCorsOrigins(), ['https://examtopics-practice.onrender.com']);
+  assert.deepEqual(getCorsOrigins(), ['https://examtopics.onrender.com']);
+});
+
+test('the configured production FRONTEND_URL is trimmed and its trailing slash ignored', (t) => {
+  withEnv(t, { NODE_ENV: 'production', FRONTEND_URL: ' https://examtopics.onrender.com/ ' });
+  assert.equal(require('../utils/frontendUrl')(), 'https://examtopics.onrender.com');
+  assert.deepEqual(getCorsOrigins(), ['https://examtopics.onrender.com']);
 });
 
 test('development allows the local dev servers plus the configured frontend', (t) => {

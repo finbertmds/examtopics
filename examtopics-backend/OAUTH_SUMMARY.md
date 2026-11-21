@@ -69,7 +69,7 @@ NODE_ENV=development
 - **OAuth Callback**: `http://localhost:3001/auth/google/callback`
 
 ### Production (Render)
-- **Frontend**: `https://examtopics-practice.onrender.com`
+- **Frontend**: `https://examtopics.onrender.com`
 - **Backend**: `https://examtopics-backend-latest.onrender.com`
 - **OAuth Callback**: `https://examtopics-backend-latest.onrender.com/auth/google/callback`
 
@@ -82,7 +82,7 @@ Development:
 - http://localhost:3001
 
 Production:
-- https://examtopics-practice.onrender.com
+- https://examtopics.onrender.com
 ```
 
 ### Authorized Redirect URIs
