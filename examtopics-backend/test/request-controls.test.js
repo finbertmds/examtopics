@@ -68,7 +68,8 @@ test('authentication runs before exam import parsing and large limits apply only
   const token = fixtureBearer(t);
   assert.equal((await request({ url: '/api/exams', body: '{' })).status, 401);
   const imported = await request({ url: '/api/exams', body, token });
-  assert.equal(imported.status, 200);
+  // The large body was parsed; validation then rejects it (ARCH-003: 400, not 200).
+  assert.equal(imported.status, 400);
   assert.equal(JSON.parse(imported.body).success, false);
   assert.equal((await request({ url: '/auth/exchange', body, token })).status, 413);
 });

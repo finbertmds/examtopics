@@ -38,17 +38,19 @@ Plan and sequencing: [remediation-roadmap.md](remediation-roadmap.md) · [implem
 | OPS-003 | AUD-M4 | CI/CD | Medium | High | Open | Backend image tagged only `:latest` |
 | SEC-018 | AUD-M1 | Data exposure | Medium | High | Open | Ownership manifest tracked in git |
 | SEC-019 | AUD-M2 | Data exposure | Medium | Medium | Open | Encrypted archive tracked in git |
-| SEC-020 | AUD-M3 | Authorization | Medium | High | Open | Any authenticated user can publish exams |
-| SEC-021 | AUD-M5 | Data safety | Medium | High | **Resolved (branch `fix/remediation-batch-1`, not merged)** | Database scripts have no target guard |
-| SEC-022 | AUD-L2 | Availability | Low | High | Open | Report limiter not proxy-aware, with a single global bucket |
+| SEC-020 | AUD-M3 | Authorization | Medium | High | **Deferred by owner (2026-11-21)** | Any authenticated user can publish exams |
+| SEC-021 | AUD-M5 | Data safety | Medium | High | **Resolved (merged to `develop` in PR #13; not yet on `master`)** | Database scripts have no target guard |
+| SEC-022 | AUD-L2 | Availability | Low | High | **Resolved (branch `fix/remediation-batch-2`, not merged)** | Report limiter not proxy-aware, with a single global bucket |
 | SEC-023 | AUD-L3 | Hardening | Low | High | Open | No Content-Security-Policy |
-| SEC-024 | new | Input validation | Low | High | Open | `question.link` scheme not validated |
-| SEC-025 | new | Resource use | Low | High | Open | Unbounded `limit` on history endpoints |
-| SEC-026 | new | Input validation | Low | High | Open | `code` body field not type-checked on create |
+| SEC-024 | new | Input validation | Low | High | **Resolved (branch `fix/remediation-batch-2`, not merged)** | `question.link` scheme not validated |
+| SEC-025 | new | Resource use | Low | High | **Resolved (branch `fix/remediation-batch-2`, not merged)** | Unbounded `limit` on history endpoints |
+| SEC-026 | new | Input validation | Low | High | **Resolved (branch `fix/remediation-batch-2`, not merged)** | `code` body field not type-checked on create |
 | SEC-027 | new | Configuration | Low | High | Open | Production CORS list always includes the Render origin |
+| SEC-028 | new (Batch 2 review) | Information disclosure | Low | High | Open | Ownership transfer reveals whether an email is registered |
+| SEC-029 | new (Batch 2 review) | Hardening | Low | High | Open | Exam codes used unencoded in frontend URL paths |
 | ARCH-001 | AUD-L1 / debt | Configuration | Low | High | Open | Hardcoded Render URLs and `env.example` drift |
 | ARCH-002 | new | Duplication | Low | High | Open | `examApi.ts` duplicates the HTTP client |
-| ARCH-003 | new | Correctness | Medium | High | Open | Errors returned as HTTP 200 `success:false`; frontend swallows them |
+| ARCH-003 | new | Correctness | Medium | High | **Resolved (branch `fix/remediation-batch-2`, not merged)** | Errors returned as HTTP 200 `success:false`; frontend swallows them |
 | ARCH-004 | new | Data model | Low | High | Open | `Exam.createdBy` stored as String; `'admin'` placeholder |
 | ARCH-005 | new | Layering | Low | High | Open | `authController` queries models directly |
 | ARCH-006 | debt | Maintainability | Low | High | Open | Oversized `AdminPage.tsx` / `ExamPage.tsx` |
@@ -57,12 +59,12 @@ Plan and sequencing: [remediation-roadmap.md](remediation-roadmap.md) · [implem
 | ARCH-009 | new | Dead code | Low | High | Open | Unused `User.refreshTokens` methods |
 | ARCH-010 | debt | Documentation | Low | High | Open | Overlapping docs and a stale policy statement |
 | ARCH-011 | new | Layering | Low | High | Open | Health probe cache logic lives in the route file |
-| QA-001 | new | Test gap | Medium | High | Open | No tests for exam ownership transfer |
+| QA-001 | new | Test gap | Medium | High | **Resolved (branch `fix/remediation-batch-2`, not merged)** | No tests for exam ownership transfer |
 | QA-002 | new | Test gap | Medium | High | Open | Progress write paths and user scoping untested |
 | QA-003 | new | Test gap | Medium | High | Open | Core frontend flows untested |
-| QA-004 | new | Bug | Low | High | Open | Missing translation keys shown raw to users |
-| QA-005 | new | Test gap | Low | High | Open | No locale key-parity test |
-| QA-006 | new | Test fragility | Low | High | Open | Limiter test relies on shared module state |
+| QA-004 | new | Bug | Low | High | **Resolved (branch `fix/remediation-batch-2`, not merged)** | Missing translation keys shown raw to users |
+| QA-005 | new | Test gap | Low | High | **Resolved (branch `fix/remediation-batch-2`, not merged)** | No locale key-parity test |
+| QA-006 | new | Test fragility | Low | High | **Resolved (branch `fix/remediation-batch-2`, not merged)** | Limiter test relies on shared module state |
 | QA-007 | AUD-M6 | Tooling | Medium | High | Open | Local toolchain mismatch blocks quality gates |
 | INFRA-001 | new | Cost/performance | Low | High | Open | CloudFront caching disabled for static exam data |
 | INFRA-002 | new | Supply chain | Low | High | Open | ECR image scanning on push not enabled |
@@ -154,6 +156,7 @@ Duplicates and related groups:
   - In `test/exam-visibility.test.js`, a non-admin publish on create or update is stored as unpublished (or returns 403).
   - An admin publish succeeds.
   - Private visibility is unchanged.
+- **Decision (2026-11-21):** the owner deferred this. Any authenticated user can still publish; a dedicated publisher-authorization flow will be designed later. Task T2.3 was not implemented.
 
 ### SEC-021: Database scripts have no target guard
 - **Category / Severity / Confidence:** Data safety / Medium / High
@@ -210,6 +213,8 @@ Duplicates and related groups:
   - With trust 1, different client IPs get separate buckets.
   - A spoofed leftmost `X-Forwarded-For` entry does not escape the limit.
   - With trust unset, forwarded headers are ignored.
+- **Resolution (Batch 2 / T2.6):** `utils/trustProxy.js` accepts `TRUST_PROXY` only as a hop count `1`-`5` (anything else stops startup; unset keeps `req.ip` as the socket peer). The limiter keys on `req.ip` and is a per-router factory. Tests: `test/report-limiter-proxy.test.js` (separate buckets behind one trusted hop, leftmost `X-Forwarded-For` spoofing, header ignored when unset, startup refusal). Backend suite 104/104 and frontend build plus 69/69 tests on Node 26.12.1; independent security and QA reviews found no Critical/High issues.
+- **Residual (Low):** setting `TRUST_PROXY` higher than the real proxy count, or exposing the API directly while it is set, lets clients spoof their IP. Keep it unset on Render until the hop count is verified (A2). The single 30/min process bucket is unchanged.
 
 ### SEC-023: No Content-Security-Policy
 - **Category / Severity / Confidence:** Hardening / Low / High
@@ -244,6 +249,8 @@ Duplicates and related groups:
 - **Dependencies:** None.
 - **Complexity / Regression risk:** S / Low
 - **Verification:** A backend test rejects or blanks a `javascript:` link, and a frontend test confirms it is not rendered as a link.
+- **Resolution (Batch 2 / T2.4):** `services/examService.js` `isSafeLink`: question edits with a non-http(s) link return 400 `InvalidLink` before any write; imports store unsafe links as `''`. Frontend `isHttpUrl` (`src/utils/textUtils.ts`) gates the only `href` sink in `QuestionItem.tsx`. Tests: `test/input-hardening.test.js`, `src/utils/textUtils.test.ts`. Backend suite 104/104 and frontend build plus 69/69 tests on Node 26.12.1; independent security and QA reviews found no Critical/High issues.
+- **Residual:** existing stored links are not rewritten (NOT VERIFIED whether any are unsafe); the frontend gate stops them from rendering. `scripts/migrate-samples.js` still copies links from repository data without the check.
 
 ### SEC-025: Unbounded `limit` on history endpoints
 - **Category / Severity / Confidence:** Resource use / Low / High
@@ -255,6 +262,7 @@ Duplicates and related groups:
 - **Dependencies:** Confirm the frontend uses ≤ 100.
 - **Complexity / Regression risk:** S / Low
 - **Verification:** In `test/progress-validation.test.js`, `limit=1e9` is clamped and `limit=abc` is rejected or defaulted.
+- **Resolution (Batch 2 / T2.4):** `historyLimit` in `controllers/progressController.js` accepts an integer `1`-`100` (defaults 50 and 10 unchanged) and returns 400 otherwise. The frontend never sends `limit`. Tests: `test/input-hardening.test.js`. Backend suite 104/104 and frontend build plus 69/69 tests on Node 26.12.1; independent security and QA reviews found no Critical/High issues.
 
 ### SEC-026: `code` body field not type-checked on create
 - **Category / Severity / Confidence:** Input validation / Low / High
@@ -266,6 +274,8 @@ Duplicates and related groups:
 - **Dependencies:** Check the existing code formats in data before choosing the pattern.
 - **Complexity / Regression risk:** S / Low to medium (an existing unusual code could be rejected).
 - **Verification:** `code: {"$ne": null}` returns 400, and existing code formats from `public/exams/exams.json` are accepted.
+- **Resolution (Batch 2 / T2.4):** `createExam` requires a string `code` matching `^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$` (all codes in `public/exams/exams.json` match; existing Atlas codes NOT VERIFIED but unaffected, since only creation is checked). Tests: `test/input-hardening.test.js`, including path-traversal and control-character values, with a mutation check. Backend suite 104/104 and frontend build plus 69/69 tests on Node 26.12.1; independent security and QA reviews found no Critical/High issues.
+- **Residual:** see SEC-029 for unencoded path segments in the frontend.
 
 ### SEC-027: Production CORS list always includes the Render origin
 - **Category / Severity / Confidence:** Configuration / Low / High
@@ -277,6 +287,24 @@ Duplicates and related groups:
 - **Dependencies:** ARCH-001. Render production must set `FRONTEND_URL` (NOT VERIFIED).
 - **Complexity / Regression risk:** S / Medium
 - **Verification:** A test shows that with `NODE_ENV=production` and a staging `FRONTEND_URL`, the Render origin is rejected and the configured origin is allowed.
+
+### SEC-028: Ownership transfer reveals whether an email is registered
+- **Category / Severity / Confidence:** Information disclosure / Low / High
+- **Affected:** `examtopics-backend/controllers/examController.js` `transferExamOwnership` (404 `UserNotFound` vs 400 `AlreadyOwner`/200).
+- **Root cause:** distinct responses for unknown and known target emails. Because anyone can create an exam (SEC-020 deferred), any signed-in user can probe emails.
+- **Impact:** account enumeration of registered Google emails.
+- **Remediation:** return one generic response for an unknown or ineligible target, or rate-limit transfers; decide together with the SEC-020 publishing design.
+- **Complexity / Regression risk:** S / Low (the admin UI maps `UserNotFound` to a message; update it).
+- **Verification:** the transfer test asserts identical responses for unknown and existing non-eligible emails.
+
+### SEC-029: Exam codes used unencoded in frontend URL paths
+- **Category / Severity / Confidence:** Hardening / Low / Medium
+- **Affected:** `examtopics-practice/src/services/examApi.ts` (getExam, downloadExam, getQuestion, updateQuestion, updateExam, deleteExam) and `src/utils/apiClient.ts` (`/progress/load/${examId}`, history paths).
+- **Root cause:** exam codes are interpolated into paths without `encodeURIComponent`.
+- **Impact:** a legacy code containing `/` or `..` could make a viewer's browser send authenticated GET requests to other API paths on the same origin. New codes are restricted by SEC-026; legacy codes in Atlas are NOT VERIFIED.
+- **Remediation:** encode every code/examId path segment; add frontend tests.
+- **Complexity / Regression risk:** S / Low.
+- **Verification:** tests show `getExam('../x')` requests `/api/exams/..%2Fx`.
 
 ### ARCH-001: Hardcoded Render URLs and `env.example` drift
 - **Category / Severity / Confidence:** Configuration / Low (blocks staging) / High
@@ -322,6 +350,8 @@ Duplicates and related groups:
 - **Verification:**
   - Backend contract tests assert status codes and the `error` field for each validation path.
   - Frontend tests assert that `examApi` rejects and AdminPage shows the error.
+- **Resolution (Batch 2 / T2.2):** exam create/update/question validation failures return 400, duplicate codes 409, all with an `error` field. `examApi` mutations throw on `!ok` or `success:false` and surface the server message; every caller in `AdminPage.tsx` already shows `error.message`. Tests: `test/exam-error-contract.test.js`, `src/services/examApi.test.ts`; `test/request-controls.test.js` updated for the intentional 200→400 change. Backend suite 104/104 and frontend build plus 69/69 tests on Node 26.12.1; independent security and QA reviews found no Critical/High issues.
+- **Residual:** the `else` branch at `AdminPage.tsx:444-459` is now unreachable but harmless.
 
 ### ARCH-004: `Exam.createdBy` stored as String; `'admin'` placeholder
 - **Category / Severity / Confidence:** Data model / Low / High
@@ -425,6 +455,7 @@ Duplicates and related groups:
 - **Dependencies:** None.
 - **Complexity / Regression risk:** S / None (tests only).
 - **Verification:** The new tests fail when the owner check is removed and pass otherwise.
+- **Resolution (Batch 2 / T2.1):** `test/exam-ownership-transfer.test.js` covers owner transfer with a conditional write, non-owner/anonymous refusal, unknown exam/user, self-transfer, a concurrent ownership change, and controller status mapping. A mutation check confirmed it fails without the owner check. The old-owner edit denial after transfer is already covered by `test/exam-question-ownership.test.js`.
 
 ### QA-002: Progress write paths and user scoping untested
 - **Category / Severity / Confidence:** Test gap / Medium / High
@@ -452,6 +483,7 @@ Duplicates and related groups:
 - **Remediation:** Add both keys to all three locales.
 - **Complexity / Regression risk:** S / None.
 - **Verification:** The QA-005 test passes, and the UI shows translated text.
+- **Resolution (Batch 2 / T2.5):** `errorLoadingQuestions` and `untitled` added to `en`, `ja` and `vi`.
 
 ### QA-005: No locale key-parity test
 - **Category / Severity / Confidence:** Test gap / Low / High
@@ -459,6 +491,7 @@ Duplicates and related groups:
 - **Remediation:** Add a Vitest test that compares the flattened key sets and checks every `t('…')` literal against `en.json`.
 - **Complexity / Regression risk:** S / None.
 - **Verification:** The test fails on the current tree until QA-004 is fixed.
+- **Resolution (Batch 2 / T2.5):** `src/locales/locales.test.ts` checks key parity, that every literal `t('key')` exists in `en.json`, and that no value is empty. It failed on exactly the two QA-004 keys before they were added.
 
 ### QA-006: Limiter test relies on shared module state
 - **Category / Severity / Confidence:** Test fragility / Low / High
@@ -466,6 +499,7 @@ Duplicates and related groups:
 - **Remediation:** Export a test-only reset or a limiter factory. Do this together with SEC-022.
 - **Complexity / Regression risk:** S / Low.
 - **Verification:** The tests pass in any order.
+- **Resolution (Batch 2 / T2.6):** `routes/reportRoutes.js` exports `createReportRouter()`; each instance owns its limiter state, and the new proxy tests use isolated instances.
 
 ### QA-007: Local toolchain mismatch blocks quality gates
 - **Category / Severity / Confidence:** Tooling / Medium / High

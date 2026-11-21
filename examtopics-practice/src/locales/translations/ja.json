@@ -232,5 +232,7 @@
   "confirmDeleteExam": "この試験を削除してもよろしいですか？",
   "examDeletedSuccessfully": "試験が正常に削除されました！",
   "failedToDeleteExam": "試験の削除に失敗しました。",
-  "failedToCreateExam": "試験の作成に失敗しました。"
+  "failedToCreateExam": "試験の作成に失敗しました。",
+  "errorLoadingQuestions": "問題を読み込めませんでした。もう一度お試しください。",
+  "untitled": "無題"
 }

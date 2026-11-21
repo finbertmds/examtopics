@@ -6,7 +6,7 @@ import { Question, ReportData, UserAnswer } from '../types';
 import { apiClient } from '../utils/apiClient';
 import { getCorrectAnswers } from '../utils/getCorrectAnswers';
 import QuestionContent from './QuestionContent';
-import { formatTextForClipboard, resolveClipboardUrl } from '../utils/textUtils';
+import { formatTextForClipboard, isHttpUrl, resolveClipboardUrl } from '../utils/textUtils';
 import CollapsibleQuestionText from './CollapsibleQuestionText';
 import ReportModal from './ReportModal';
 
@@ -327,7 +327,7 @@ export const QuestionItem: React.FC<QuestionItemProps> = ({
           )}
         </div>
       )}
-      {question.link && (
+      {isHttpUrl(question.link) && (
         <a
           href={question.link}
           target="_blank"

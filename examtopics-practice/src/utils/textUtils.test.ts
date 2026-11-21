@@ -1,4 +1,4 @@
-import { formatTextForClipboard, resolveClipboardUrl } from './textUtils';
+import { formatTextForClipboard, isHttpUrl, resolveClipboardUrl } from './textUtils';
 
 describe('formatTextForClipboard', () => {
   it('preserves comparison operators in question and answer text', () => {
@@ -35,5 +35,15 @@ describe('formatTextForClipboard', () => {
   it('preserves relative paths without a leading slash', () => {
     expect(resolveClipboardUrl('img/image27.png', 'https://practice.example'))
       .toBe('img/image27.png');
+  });
+});
+
+describe('isHttpUrl', () => {
+  it('accepts only absolute http(s) URLs', () => {
+    expect(isHttpUrl('https://www.examtopics.com/discussions/1')).toBe(true);
+    expect(isHttpUrl('http://example.com/x')).toBe(true);
+    for (const value of ['javascript:alert(1)', ' JavaScript:alert(1)', 'data:text/html,x', '//evil.example', '/relative', '', undefined, null, 42]) {
+      expect(isHttpUrl(value)).toBe(false);
+    }
   });
 });

@@ -31,6 +31,17 @@ const getReadableExamFilter = (userId) => {
   return { $or: visibilityFilters };
 };
 
+// SEC-024: question links are rendered as hrefs, so only http(s) URLs are stored.
+const isSafeLink = (value) => {
+  if (value === '' || value === null) return true;
+  if (typeof value !== 'string') return false;
+  try {
+    return ['http:', 'https:'].includes(new URL(value).protocol);
+  } catch {
+    return false;
+  }
+};
+
 const parseAnswersMap = (answers) => {
   if (typeof answers === 'object' && answers !== null) {
     return { ...answers };
@@ -55,7 +66,7 @@ const formatQuestion = (q, exam) => ({
   answers: parseAnswersMap(q.answers),
   suggested_answer: q.suggested_answer || '',
   answer: q.answer,
-  link: q.link || '',
+  link: q.link && isSafeLink(q.link) ? q.link : '',
   multiple_choice: q.multiple_choice || false,
   answer_images: q.answer_images || [],
   question_images: q.question_images || [],
@@ -334,7 +345,8 @@ class ExamService {
       }
     }
     if (updateFields.link !== undefined) {
-      allowedUpdates.link = updateFields.link;
+      if (!isSafeLink(updateFields.link)) return { error: 'InvalidLink' };
+      allowedUpdates.link = updateFields.link || '';
     }
     if (updateFields.multiple_choice !== undefined) {
       allowedUpdates.multiple_choice = updateFields.multiple_choice;

@@ -232,5 +232,7 @@
   "confirmDeleteExam": "Are you sure you want to delete this exam?",
   "examDeletedSuccessfully": "Exam deleted successfully!",
   "failedToDeleteExam": "Failed to delete exam.",
-  "failedToCreateExam": "Failed to create exam."
+  "failedToCreateExam": "Failed to create exam.",
+  "errorLoadingQuestions": "Unable to load questions. Please try again.",
+  "untitled": "Untitled"
 }
