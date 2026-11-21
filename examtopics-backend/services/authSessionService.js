@@ -1,6 +1,7 @@
 const { createHash, randomBytes } = require('node:crypto');
 const { IDLE_MS, ABSOLUTE_MS } = require('../config/auth');
 const AuthSession = require('../models/AuthSession');
+const User = require('../models/User');
 const isOAuthValue = require('../utils/isOAuthValue');
 const getFrontendUrl = require('../utils/frontendUrl');
 
@@ -42,6 +43,10 @@ function findActive(id, now = Date.now()) {
   return AuthSession.findOne(activeFilter(id, now));
 }
 
+function findSessionUser(session) {
+  return User.findById(session.userId);
+}
+
 async function touchSession(session, now) {
   return AuthSession.findOneAndUpdate(activeFilter(session._id, now), {
     $max: {
@@ -65,6 +70,7 @@ async function revokeSession(req, res, bearer) {
 module.exports = {
   createSession,
   findActive,
+  findSessionUser,
   getCookieSessionId,
   touchSession,
   revokeSession,

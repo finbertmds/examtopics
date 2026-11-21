@@ -120,7 +120,7 @@
 
 ### Production (Render)
 - Backend: `https://examtopics-backend-latest.onrender.com`
-- Frontend: `https://examtopics-practice.onrender.com`
+- Frontend: `https://examtopics.onrender.com`
 - Service Worker: `/sw.js`
 
 ## Dependencies đã thêm

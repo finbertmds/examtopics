@@ -23,7 +23,7 @@ External dependencies:
 ## Current production topology (from workflows and code defaults)
 
 ```text
-Browser ──► Render static site (examtopics-practice)   https://examtopics-practice.onrender.com
+Browser ──► Render static site (examtopics-practice)   https://examtopics.onrender.com
    │
    └─────► Render web service (examtopics-backend)     https://examtopics-backend-latest.onrender.com
                  ├─► MongoDB Atlas

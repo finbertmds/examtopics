@@ -18,14 +18,14 @@ export const getBackendUrl = (): string => {
 /**
  * Get frontend URL based on environment
  * Development: http://localhost:3000
- * Production: https://examtopics-practice.onrender.com
+ * Production: https://examtopics.onrender.com
  */
 export const getFrontendUrl = (): string => {
   const env = process.env.NODE_ENV || 'development';
   
   if (env === 'production') {
     // Production: Use environment variable or default Render frontend URL
-    return process.env.REACT_APP_FRONTEND_URL || 'https://examtopics-practice.onrender.com';
+    return process.env.REACT_APP_FRONTEND_URL || 'https://examtopics.onrender.com';
   } else {
     // Development: Use localhost
     return process.env.REACT_APP_FRONTEND_URL || 'http://localhost:3000';

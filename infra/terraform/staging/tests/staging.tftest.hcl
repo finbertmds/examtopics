@@ -10,6 +10,16 @@ variables {
 run "staging_defaults" {
   command = plan
 
+  # The policy id is computed, so it is unknown in a mocked plan. A fixed mock
+  # id lets the cache behaviours' linkage be asserted at plan time.
+  override_resource {
+    target          = aws_cloudfront_response_headers_policy.frontend
+    override_during = plan
+    values = {
+      id = "mock-frontend-headers-policy"
+    }
+  }
+
   assert {
     condition = alltrue([
       aws_s3_bucket_public_access_block.frontend.block_public_acls,
@@ -39,6 +49,39 @@ run "staging_defaults" {
       length(aws_budgets_budget.staging) == 0
     )
     error_message = "Staging must use the configured staging hosts, expose web ports only and leave budget creation opt-in."
+  }
+
+  assert {
+    condition = (
+      length([
+        for item in aws_cloudfront_response_headers_policy.frontend.custom_headers_config[0].items : item
+        if item.header == "Content-Security-Policy-Report-Only" &&
+        item.override &&
+        strcontains(item.value, "default-src 'self'") &&
+        strcontains(item.value, "connect-src 'self' https://api.staging.example.com")
+      ]) == 1 &&
+      aws_cloudfront_response_headers_policy.frontend.security_headers_config[0].frame_options[0].frame_option == "DENY" &&
+      !aws_cloudfront_response_headers_policy.frontend.security_headers_config[0].strict_transport_security[0].include_subdomains
+    )
+    error_message = "The frontend headers policy must send a Report-Only CSP that allows the staging API, deny framing and keep HSTS off subdomains."
+  }
+
+  assert {
+    condition = alltrue([
+      for policy_id in [
+        aws_cloudfront_distribution.frontend.default_cache_behavior[0].response_headers_policy_id,
+        aws_cloudfront_distribution.frontend.ordered_cache_behavior[0].response_headers_policy_id,
+      ] : policy_id == aws_cloudfront_response_headers_policy.frontend.id && policy_id != "67f7725c-6f97-4210-82d7-5512b31e9d03"
+    ])
+    error_message = "Both frontend cache behaviours must use the custom response headers policy, not the managed one."
+  }
+
+  assert {
+    condition = (
+      aws_ecr_repository.api.image_tag_mutability == "IMMUTABLE" &&
+      aws_ecr_repository.api.image_scanning_configuration[0].scan_on_push
+    )
+    error_message = "The release repository must keep immutable tags and scan images on push."
   }
 }
 

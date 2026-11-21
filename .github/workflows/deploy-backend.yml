@@ -43,7 +43,10 @@ jobs:
         with:
           context: examtopics-backend
           push: true
-          tags: ngovanhuy0241/examtopics-backend:latest
+          # :latest is what Render pulls; the commit SHA tag is an immutable record for rollback (OPS-003).
+          tags: |
+            ngovanhuy0241/examtopics-backend:latest
+            ngovanhuy0241/examtopics-backend:${{ github.sha }}
           platforms: linux/amd64
           cache-from: type=gha
           cache-to: type=gha,mode=max

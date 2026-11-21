@@ -44,7 +44,6 @@ NODE_ENV=development
 
 # URLs
 FRONTEND_URL=http://localhost:3000
-CORS_ORIGIN=http://localhost:3000
 
 # Database
 MONGO_URI=your_mongodb_atlas_uri
@@ -70,7 +69,7 @@ NODE_ENV=development
 - **OAuth Callback**: `http://localhost:3001/auth/google/callback`
 
 ### Production (Render)
-- **Frontend**: `https://examtopics-practice.onrender.com`
+- **Frontend**: `https://examtopics.onrender.com`
 - **Backend**: `https://examtopics-backend-latest.onrender.com`
 - **OAuth Callback**: `https://examtopics-backend-latest.onrender.com/auth/google/callback`
 
@@ -83,7 +82,7 @@ Development:
 - http://localhost:3001
 
 Production:
-- https://examtopics-practice.onrender.com
+- https://examtopics.onrender.com
 ```
 
 ### Authorized Redirect URIs
@@ -180,7 +179,7 @@ npm run test:oauth
 
 ### Common Issues
 1. **redirect_uri_mismatch**: Check Google Cloud Console configuration
-2. **CORS errors**: Verify CORS_ORIGIN in backend environment
+2. **CORS errors**: Verify FRONTEND_URL in the backend matches the frontend origin
 3. **JWT token issues**: Check JWT_SECRET configuration
 4. **Database connection**: Verify MONGO_URI in production
 

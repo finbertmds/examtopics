@@ -29,9 +29,7 @@ cd ../examtopics-practice && npm ci
 
 ### Environment variables (names only)
 
-Defined in `examtopics-backend/env.example`. Not listed there:
-- `GOOGLE_CALLBACK_URL` is used in production (`services/authService.js:22`) but is missing from `env.example`.
-- `CORS_ORIGIN` is listed in `env.example` but no code reads it.
+Defined in `examtopics-backend/env.example`, including `GOOGLE_CALLBACK_URL` (production) and the optional `TRUST_PROXY`. In production, CORS allows only the origin of `FRONTEND_URL`.
 
 The frontend reads `REACT_APP_BACKEND_URL` and `REACT_APP_FRONTEND_URL`. Both are **public** once bundled.
 

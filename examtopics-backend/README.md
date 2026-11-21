@@ -100,7 +100,6 @@ MONGO_URI=
 
 PORT=3001
 FRONTEND_URL=http://localhost:3000
-CORS_ORIGIN=https://your-frontend-domain.com
 ```
 
 ### 5. Chạy ứng dụng
@@ -246,7 +245,8 @@ Trong Render Dashboard, thêm các environment variables:
 - `GOOGLE_CLIENT_EMAIL`
 - `GOOGLE_PRIVATE_KEY`
 - `PORT` (Render sẽ tự động set)
-- `CORS_ORIGIN` (optional)
+- `FRONTEND_URL` (the only origin CORS allows in production)
+- `GOOGLE_CALLBACK_URL`
 
 ### 4. Deploy
 

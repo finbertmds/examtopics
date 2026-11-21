@@ -87,7 +87,7 @@ Backend mặc định chạy tại `http://localhost:3001`. Cấu hình theo [`e
 | `GOOGLE_CLIENT_EMAIL`, `GOOGLE_PRIVATE_KEY` | Service account có quyền ghi vào Sheet |
 | `PORT`, `NODE_ENV` | Cổng và môi trường chạy |
 
-OAuth callback ở môi trường development là `http://localhost:3001/auth/google/callback`; đăng ký URL này trong Google OAuth client. Trong production, đặt thêm `GOOGLE_CALLBACK_URL` theo domain backend. CORS được xác định trong `index.js` theo môi trường và `FRONTEND_URL`; biến `CORS_ORIGIN` trong file mẫu hiện không được mã nguồn sử dụng.
+OAuth callback ở môi trường development là `http://localhost:3001/auth/google/callback`; đăng ký URL này trong Google OAuth client. Trong production, đặt thêm `GOOGLE_CALLBACK_URL` theo domain backend. CORS chỉ cho phép origin của `FRONTEND_URL` trong production (thêm `localhost:3000/3001` khi phát triển); xem `utils/corsOrigins.js`.
 
 ### Frontend
 
