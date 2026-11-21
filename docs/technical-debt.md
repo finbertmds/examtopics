@@ -2,6 +2,8 @@
 
 Prioritized backlog from the 2026-11-21 repository review. Security items are tracked in `docs/security-audit.md`; they appear here only where they are also maintenance debt.
 
+> **Current status:** these items have been re-validated and given IDs (ARCH-, QA-, OPS-, INFRA-), along with new findings, in [`docs/remediation/findings-tracker.md`](remediation/findings-tracker.md). That tracker is now the source of truth for status. The table below is kept for history.
+
 | Priority | Item | Evidence | Suggested action |
 |---|---|---|---|
 | P1 | No CI test workflow; deploys are ungated (AUD-H1) | `.github/workflows/` (3 files, none runs Node tests) | Add a PR/push workflow: `npm ci`, frontend build + test, backend test, Go `-short` tests, Python unittest, Terraform fmt/validate/test |

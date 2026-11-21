@@ -2,6 +2,8 @@
 
 This page is the entry point for security status. Detailed findings SEC-01 … SEC-17 (reviewed 2026-11-15 against `b19dbc6`) and how each was handled are in [`docs/audit/security-report.md`](audit/security-report.md). Related runbooks: [SEC-04 ownership cutover](audit/sec-04-question-ownership.md) and [SEC-07 transactions](audit/sec-07-exam-mutations.md).
 
+> **Current status:** the consolidated, re-validated inventory (2026-11-21, HEAD `3a573db`) is [`docs/remediation/findings-tracker.md`](remediation/findings-tracker.md). It gives every item a new ID (SEC-0xx, OPS-, ARCH-, QA-, INFRA-), and that tracker supersedes the status columns below. Remediation sequencing: [`remediation-roadmap.md`](remediation/remediation-roadmap.md), [`implementation-plan.md`](remediation/implementation-plan.md).
+
 ## Status of SEC findings (from the detailed report)
 
 - **Patched locally:** SEC-01, 02, 03, 04, 05, 06, 07, 08, 09 (mitigated), 11, 12, 13, 14, 15, 16, 17.
@@ -15,7 +17,7 @@ No Critical issue was confirmed.
 | ID | Severity | Finding | Evidence | Recommended action |
 |---|---|---|---|---|
 | AUD-H1 | High | No automated tests gate production deploys. No workflow runs tests on PRs, `deploy-backend.yml` builds and deploys without `npm test`, and `deploy.yml` deploys with no build or test. | `.github/workflows/deploy-backend.yml:3-49`, `.github/workflows/deploy.yml:3-27` | Add a test workflow with no secrets for PRs and pushes, and make deploy jobs depend on it (`needs:`). Workflow change needs approval. |
-| AUD-H2 | High (conditional) | The SEC-04 ownership code is on `master`, which auto-deploys. Older code-keyed questions are excluded from reads until backfilled. Production deploy and backfill status are NOT VERIFIED. | `docs/audit/sec-04-question-ownership.md:3-5`; commit `529a92d` in `master` history | With authorization, check the deployed Render revision and the backfill result (read-only). |
+| AUD-H2 | ~~High (conditional)~~ **Closed** | The SEC-04 ownership code is on `master`, which auto-deploys. **Closed 2026-11-21:** the owner confirmed the backfill ran before Render deployed the code (not independently verified). Tracked as OPS-002. | `docs/audit/sec-04-question-ownership.md:3-5`; commit `529a92d` in `master` history | None. |
 | AUD-M1 | Medium | The SEC-04 ownership manifest is committed: 9,944 entries of exam/question ObjectIds and exam codes, possibly including private exam codes. This goes against the runbook. | `examtopics-backend/verified-question-ownership.json` (commit `1a32cc9`); `docs/audit/sec-04-question-ownership.md:30` | Remove it from the repo and add it to `.gitignore`. Decide whether history needs cleaning. |
 | AUD-M2 | Medium | An encrypted archive with unverified contents (possibly a database dump) is committed. | `examtopics-backend/examtopics.tar.gz.gpg` (commit `843e2d1`) | Confirm the contents and how the key is managed, then move it out of git. |
 | AUD-M3 | Medium | Any authenticated Google user can create and publish exams visible to everyone. There is no admin or moderation role, and imports can be up to 25 MB. | `examtopics-backend/routes/examRoutes.js:9-26`; `services/examService.js:195-196` | Decide the publishing policy (admin role, review queue or quotas). |
