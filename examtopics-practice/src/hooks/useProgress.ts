@@ -190,8 +190,8 @@ export const useProgress = (examId?: string) => {
     try {
       const response = await dataService.getCompletedExamIds(token || undefined);
 
-      if (response.success && response.data?.examIds) {
-        return response.data.examIds;
+      if (response.success && response.data?.exams) {
+        return response.data.exams.map(exam => exam.code);
       }
     } catch (error) {
       console.error('Error getting completed exam IDs:', error);

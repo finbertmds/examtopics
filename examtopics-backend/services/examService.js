@@ -115,6 +115,14 @@ const lockExamForQuestionMutation = async (filter, session) => {
 };
 
 class ExamService {
+  async getExamSummaries(userId, codes) {
+    if (codes.length === 0) return [];
+    return Exam.find(
+      { code: { $in: codes }, ...getReadableExamFilter(userId) },
+      { _id: 0, code: 1, name: 1 }
+    ).lean();
+  }
+
   async getAllExams(userId) {
     return await Exam.find(getReadableExamFilter(userId)).sort({ createdAt: -1 });
   }

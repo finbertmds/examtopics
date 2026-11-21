@@ -5,6 +5,7 @@ const User = require('../models/User');
 const Exam = require('../models/Exam');
 const Question = require('../models/Question');
 const Debouncer = require('../utils/debounce');
+const examService = require('./examService');
 
 class ProgressService {
   constructor() {
@@ -216,12 +217,27 @@ class ProgressService {
 
   // Get user's exam history
   async getUserExamHistory(userId, examId, limit = 10) {
-    return await History.getUserExamHistory(userId, examId, limit);
+    const history = await History.getUserExamHistory(userId, examId, limit);
+    return this.attachExamSummaries(userId, history);
   }
 
   // Get user's all history
   async getUserHistory(userId, limit = 50) {
-    return await History.getUserHistory(userId, limit);
+    const history = await History.getUserHistory(userId, limit);
+    return this.attachExamSummaries(userId, history);
+  }
+
+  async getExamSummaries(userId, examIds) {
+    const codes = [...new Set(examIds)];
+    const exams = await examService.getExamSummaries(userId, codes);
+    const byCode = new Map(exams.map(exam => [exam.code, exam]));
+    return codes.map(code => byCode.get(code) || { code, name: code });
+  }
+
+  async attachExamSummaries(userId, history) {
+    const exams = await this.getExamSummaries(userId, history.map(entry => entry.examId));
+    const byCode = new Map(exams.map(exam => [exam.code, exam]));
+    return history.map(entry => ({ ...entry, exam: byCode.get(entry.examId) }));
   }
 
   // Get exam statistics
@@ -229,9 +245,10 @@ class ProgressService {
     return await History.getExamStats(userId, examId);
   }
 
-  // Get completed exam IDs for a user
-  async getCompletedExamIds(userId) {
-    return await History.getCompletedExamIds(userId);
+  // Get completed exams with their codes and localized names.
+  async getCompletedExams(userId) {
+    const examIds = await History.getCompletedExamIds(userId);
+    return this.getExamSummaries(userId, examIds);
   }
 
   // Get daily progress tracking

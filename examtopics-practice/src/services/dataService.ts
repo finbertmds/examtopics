@@ -1,4 +1,4 @@
-import { AllProgressData, ApiResponse, CompletedExamIdsData, DailyTrackingData, HistoryData, ReportData, StatsData, UserData, UserProgress } from '../types';
+import { AllProgressData, ApiResponse, CompletedExamsData, DailyTrackingData, HistoryData, ReportData, StatsData, UserData, UserProgress } from '../types';
 import { apiClient } from '../utils/apiClient';
 
 class DataService {
@@ -95,7 +95,7 @@ class DataService {
     return apiClient.getHistory(examId, token);
   }
 
-  async getCompletedExamIds(token?: string): Promise<ApiResponse<CompletedExamIdsData>> {
+  async getCompletedExamIds(token?: string): Promise<ApiResponse<CompletedExamsData>> {
     if (!token) {
       return { success: false, error: 'Not authenticated', message: 'Authentication required' };
     }
