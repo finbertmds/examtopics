@@ -30,7 +30,7 @@ function start(progressResponse = () => Promise.resolve(Response.json({ success:
       case '/auth/session': return restore;
       case '/api/exams': return Response.json({ exams: [] });
       case '/progress/all': return progressResponse();
-      case '/progress/completed-exam-ids': return Response.json({ success: true, examIds: [] });
+      case '/progress/completed-exam-ids': return Response.json({ success: true, exams: [] });
       default: throw new Error(`Unexpected request: ${path}`);
     }
   }));

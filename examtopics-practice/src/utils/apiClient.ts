@@ -1,5 +1,5 @@
 import { networkService } from '../services/networkService';
-import { AllProgressData, ApiResponse, AuthSession, CompletedExamIdsData, DailyTrackingData, HistoryData, ReportData, StatsData, UserData, UserProgress } from '../types';
+import { AllProgressData, ApiResponse, AuthSession, CompletedExamsData, DailyTrackingData, HistoryData, ReportData, StatsData, UserData, UserProgress } from '../types';
 import { getBackendUrl } from './backendUrl';
 import { resolveSessionBearer } from './sessionAccess';
 
@@ -207,8 +207,8 @@ class ApiClient {
     }, token);
   }
 
-  async getCompletedExamIds(token?: string): Promise<ApiResponse<CompletedExamIdsData>> {
-    return this.fetchWithAuth<CompletedExamIdsData>('/progress/completed-exam-ids', {
+  async getCompletedExamIds(token?: string): Promise<ApiResponse<CompletedExamsData>> {
+    return this.fetchWithAuth<CompletedExamsData>('/progress/completed-exam-ids', {
       method: 'GET',
     }, token);
   }

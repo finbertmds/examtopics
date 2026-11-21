@@ -265,11 +265,11 @@ class ProgressController {
     try {
       const userId = req.user.userId;
 
-      const examIds = await progressService.getCompletedExamIds(userId);
+      const exams = await progressService.getCompletedExams(userId);
       
       res.json({
         success: true,
-        examIds
+        exams
       });
     } catch {
       return sendInternalError(res, 'progress.completed_exams_failed', 'Failed to get completed exam IDs');
