@@ -9,6 +9,7 @@ test('sample migration exits before connecting when no explicit MongoDB URI is c
   const errors = [];
   let connections = 0;
   const fakeProcess = {
+    argv: [process.execPath, filename],
     env: { MONGO_URI: '' },
     exitCode: 0,
     exit(code) { this.exitCode = code; },
@@ -20,6 +21,7 @@ test('sample migration exits before connecting when no explicit MongoDB URI is c
     mongoose: {},
     '../models/Exam': {},
     '../models/Question': {},
+    './lib/targetGuard': require('../scripts/lib/targetGuard'),
     '../config/database': async () => {
       connections += 1;
       throw new Error('Fixture does not connect');

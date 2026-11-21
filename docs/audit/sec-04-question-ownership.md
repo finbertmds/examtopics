@@ -6,6 +6,8 @@ Rows that still store a string code stay in the database and outside API reads a
 
 ## Prepare the data
 
+> **Target guard (SEC-021).** The exporter and the backfill check the database target before connecting. For a remote target (any non-loopback host, `mongodb+srv://`, or a `replicaSet`/`loadBalanced` URI without `directConnection=true`), append `--target=<hosts>/<database>` matching `MONGO_URI` to every command below. With `NODE_ENV=production`, remote targets are refused unless `ALLOW_REMOTE_MIGRATION=1` is also set. See [the backend README](../../examtopics-backend/README.md#database-target-guard-for-scripts).
+
 1. Rehearse with synthetic fixtures or a sanitized snapshot in a disposable MongoDB database. Check the unique compound index on `questions` and the unique index on `exams.code`. Record counts and known-good queries before proceeding.
 2. From the repository root, run the exporter after setting `MONGO_URI` in `examtopics-backend/.env` to the approved database with read-only credentials. The exporter reads this file directly. It joins legacy string `questions.examId` values to `exams.code` and writes a candidate manifest outside the repository with file permissions `0600`.
 

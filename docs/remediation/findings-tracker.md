@@ -39,7 +39,7 @@ Plan and sequencing: [remediation-roadmap.md](remediation-roadmap.md) · [implem
 | SEC-018 | AUD-M1 | Data exposure | Medium | High | Open | Ownership manifest tracked in git |
 | SEC-019 | AUD-M2 | Data exposure | Medium | Medium | Open | Encrypted archive tracked in git |
 | SEC-020 | AUD-M3 | Authorization | Medium | High | Open | Any authenticated user can publish exams |
-| SEC-021 | AUD-M5 | Data safety | Medium | High | Open | Database scripts have no target guard |
+| SEC-021 | AUD-M5 | Data safety | Medium | High | **Resolved (branch `fix/remediation-batch-1`, not merged)** | Database scripts have no target guard |
 | SEC-022 | AUD-L2 | Availability | Low | High | Open | Report limiter not proxy-aware, with a single global bucket |
 | SEC-023 | AUD-L3 | Hardening | Low | High | Open | No Content-Security-Policy |
 | SEC-024 | new | Input validation | Low | High | Open | `question.link` scheme not validated |
@@ -179,6 +179,16 @@ Duplicates and related groups:
   - Using the `test/migrate-samples-config.test.js` spawn pattern for each script: a mismatched or missing target makes zero connection attempts and exits 1.
   - A matching target connects once.
   - The output never prints the password.
+- **Resolution (2026-11-21, Batch 1 / T1.4):**
+  - **Shared guard:** `examtopics-backend/scripts/lib/targetGuard.js`, wired into all five DB scripts before they connect.
+  - **Dry run:** write scripts are a dry run unless `--apply` is passed, with Mongoose `autoIndex` and `autoCreate` disabled during the dry run.
+  - **Remote targets:** a remote, `+srv` or `replicaSet`/`loadBalanced` target needs a matching `--target=<hosts>/<database>`, and is refused under `NODE_ENV=production` unless `ALLOW_REMOTE_MIGRATION=1`. Only the database name is printed. The silent localhost default in `migrate-progress.js` is gone.
+  - **Verified:**
+    - `test/script-target-guard.test.js` has 18 tests, including spoofed hosts, per-script refusal before connect, a single local connect, dry run vs apply and the dry-run connection options.
+    - The backend suite passes 85/85 on Node 26.12.1, including when `NODE_ENV=production` is set in the shell.
+    - A mutation check confirmed the tests fail against the original `migrate-progress.js`.
+    - Independent security and QA reviews found no Critical or High issues.
+  - **Residual (Low, documented):** a localhost tunnel, or a local replica-set member without `directConnection=true`, can still reach a remote server (B1-02a). Raw driver errors from older script paths may include host names (pre-existing, SEC-016 scope).
 
 ### SEC-022: Report limiter not proxy-aware, with a single global bucket
 - **Category / Severity / Confidence:** Availability / Low / High

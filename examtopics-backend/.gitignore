@@ -66,3 +66,8 @@ client_secret_*
 
 *.tar.gz
 db/*
+
+# Sensitive operational artifacts (SEC-018, SEC-019): never commit
+verified-question-ownership*.json
+ownership-diagnostics*.json
+*.gpg
