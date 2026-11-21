@@ -5,7 +5,17 @@ const path = require('node:path');
 const { spawnSync } = require('node:child_process');
 const { IncomingMessage, ServerResponse } = require('node:http');
 const { PassThrough } = require('node:stream');
+const { randomBytes } = require('node:crypto');
 const express = require('express');
+
+// Hermetic fixtures (no local .env): authService builds the OAuth strategy at require time,
+// and the spawned index.js inherits these values.
+process.env.NODE_ENV = 'test';
+process.env.GOOGLE_CLIENT_ID = 'oauth-test-client';
+process.env.GOOGLE_CLIENT_SECRET = randomBytes(32).toString('hex');
+process.env.JWT_SECRET = randomBytes(32).toString('hex');
+process.env.SESSION_SECRET = randomBytes(32).toString('hex');
+delete process.env.MONGO_URI;
 
 const parseTrustProxy = require('../utils/trustProxy');
 const Sheets = require('../services/sheetsService');
