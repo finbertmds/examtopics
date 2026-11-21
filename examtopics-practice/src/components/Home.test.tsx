@@ -45,7 +45,7 @@ function start(progressResponse: () => Response, completedIds: string[] = [], ex
       case '/auth/session': return session;
       case '/api/exams': return Response.json({ exams });
       case '/progress/all': return progressResponse();
-      case '/progress/completed-exam-ids': return Response.json({ success: true, examIds: completedIds });
+      case '/progress/completed-exam-ids': return Response.json({ success: true, exams: completedIds.map(code => ({ code, name: code })) });
       default: throw new Error(`Unexpected request: ${input}`);
     }
   }));

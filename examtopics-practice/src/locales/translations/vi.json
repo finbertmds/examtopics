@@ -232,5 +232,7 @@
   "confirmDeleteExam": "Bạn có chắc chắn muốn xóa đề thi này?",
   "examDeletedSuccessfully": "Đề thi đã được xóa thành công!",
   "failedToDeleteExam": "Không thể xóa đề thi.",
-  "failedToCreateExam": "Không thể tạo đề thi."
+  "failedToCreateExam": "Không thể tạo đề thi.",
+  "errorLoadingQuestions": "Không thể tải câu hỏi. Vui lòng thử lại.",
+  "untitled": "Chưa đặt tên"
 }

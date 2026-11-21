@@ -18,7 +18,7 @@ const config = {
   },
   production: {
     backendUrl: 'https://examtopics-backend-latest.onrender.com',
-    frontendUrl: 'https://examtopics-practice.onrender.com',
+    frontendUrl: 'https://examtopics.onrender.com',
     callbackUrl: 'https://examtopics-backend-latest.onrender.com/auth/google/callback'
   }
 };

@@ -1,9 +1,27 @@
 import { networkService } from '../services/networkService';
-import { AllProgressData, ApiResponse, AuthSession, CompletedExamIdsData, DailyTrackingData, HistoryData, ReportData, StatsData, UserData, UserProgress } from '../types';
+import { AllProgressData, ApiResponse, AuthSession, CompletedExamsData, DailyTrackingData, HistoryData, ReportData, StatsData, UserData, UserProgress } from '../types';
 import { getBackendUrl } from './backendUrl';
 import { resolveSessionBearer } from './sessionAccess';
 
 const backendUrl = getBackendUrl();
+
+export interface ApiRequestOptions extends RequestInit {
+  token?: string | null;
+}
+
+// Shared transport for callers that need the raw Response (ARCH-002): backend base
+// URL, offline check and the current session bearer. Unlike ApiClient methods it
+// throws instead of wrapping errors, and adds no timeout, so large exam imports
+// and caller-provided AbortSignals keep working.
+export async function apiRequest(endpoint: string, { token, headers, ...init }: ApiRequestOptions = {}): Promise<Response> {
+  // The bearer must only ever reach the backend origin: accept root-relative paths only,
+  // so `${backendUrl}${endpoint}` cannot be redirected to another host (e.g. '@evil.test').
+  if (!endpoint.startsWith('/') || endpoint.startsWith('//')) throw new Error('Invalid API endpoint');
+  if (!networkService.isNetworkOnline()) throw new Error('Network is offline');
+  const requestHeaders = new Headers(headers);
+  if (token) requestHeaders.set('Authorization', `Bearer ${await resolveSessionBearer(token)}`);
+  return fetch(`${backendUrl}${endpoint}`, { ...init, headers: requestHeaders });
+}
 
 class ApiClient {
   private baseUrl: string;
@@ -189,8 +207,8 @@ class ApiClient {
     }, token);
   }
 
-  async getCompletedExamIds(token?: string): Promise<ApiResponse<CompletedExamIdsData>> {
-    return this.fetchWithAuth<CompletedExamIdsData>('/progress/completed-exam-ids', {
+  async getCompletedExamIds(token?: string): Promise<ApiResponse<CompletedExamsData>> {
+    return this.fetchWithAuth<CompletedExamsData>('/progress/completed-exam-ids', {
       method: 'GET',
     }, token);
   }

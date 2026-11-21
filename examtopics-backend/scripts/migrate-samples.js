@@ -6,18 +6,23 @@ require('dotenv').config({ path: path.join(__dirname, '../.env') });
 const Exam = require('../models/Exam');
 const Question = require('../models/Question');
 const connectDB = require('../config/database');
+const { assertDatabaseTarget, applyDryRunConnectionDefaults } = require('./lib/targetGuard');
 
 const SAMPLES_DIR = path.join(__dirname, '../../examtopics-practice/public/exams');
 const EXAMS_JSON_PATH = path.join(SAMPLES_DIR, 'exams.json');
 
 async function migrate() {
-  if (!process.env.MONGO_URI?.trim()) {
-    console.error('MONGO_URI must identify the database for the sample import');
+  let target;
+  try {
+    target = assertDatabaseTarget({ uri: process.env.MONGO_URI, argv: process.argv.slice(2), write: true });
+  } catch (error) {
+    console.error(`Sample import refused: ${error.message}`);
     process.exitCode = 1;
     return;
   }
 
   try {
+    applyDryRunConnectionDefaults(mongoose, target);
     await connectDB();
     console.log('Connected to MongoDB');
 
@@ -39,6 +44,13 @@ async function migrate() {
           // Fallback to name-based query for older imports that lacked code
           const queryName = typeof examData.name === 'object' ? examData.name.en : examData.name;
           deleteTarget = await Exam.findOne({ "name.en": queryName }) || await Exam.findOne({ name: queryName });
+      }
+
+      if (!target.apply) {
+        console.log(deleteTarget
+          ? `[dry run] Would delete exam ${deleteTarget._id} and its questions, then re-import ${examData.id} from ${examData.file}`
+          : `[dry run] Would import ${examData.id} from ${examData.file}`);
+        continue;
       }
 
       if (deleteTarget) {
@@ -128,7 +140,9 @@ async function migrate() {
       console.log(`\nImport completed for ${newExam.code} with ${newExam.questionCount} questions`);
     }
 
-    console.log('\nMigration fully completed successfully!');
+    console.log(target.apply
+      ? '\nMigration fully completed successfully!'
+      : '\nDry run complete. No changes were written. Re-run with --apply to import.');
     process.exit(0);
 
   } catch (error) {

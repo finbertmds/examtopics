@@ -2,6 +2,7 @@ const path = require('node:path');
 const { readFile, writeFile } = require('node:fs/promises');
 const dotenv = require('dotenv');
 const mongoose = require('mongoose');
+const { assertDatabaseTarget, stripGuardArgs } = require('./lib/targetGuard');
 
 class ExportError extends Error {}
 
@@ -57,9 +58,10 @@ async function exportManifest(questions, { diagnose = false } = {}) {
 }
 
 async function main() {
-  const [, , outputPath, option, ...extras] = process.argv;
+  const args = process.argv.slice(2);
+  const [outputPath, option, ...extras] = stripGuardArgs(args);
   if (!outputPath || outputPath.startsWith('-') || (option !== undefined && option !== '--diagnose') || extras.length) {
-    throw new ExportError('Usage: node scripts/export-question-ownership.js <output.json> [--diagnose]');
+    throw new ExportError('Usage: node scripts/export-question-ownership.js <output.json> [--diagnose] [--target=<hosts>/<db>]');
   }
   const diagnose = option === '--diagnose';
 
@@ -68,6 +70,11 @@ async function main() {
     throw new ExportError('Cannot read examtopics-backend/.env.');
   }));
   if (!MONGO_URI) throw new ExportError('Set MONGO_URI in examtopics-backend/.env.');
+  try {
+    assertDatabaseTarget({ uri: MONGO_URI, argv: args, env: process.env, write: false });
+  } catch (error) {
+    throw new ExportError(error.message);
+  }
 
   let output;
   try {

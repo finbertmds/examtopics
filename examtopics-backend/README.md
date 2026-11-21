@@ -100,7 +100,6 @@ MONGO_URI=
 
 PORT=3001
 FRONTEND_URL=http://localhost:3000
-CORS_ORIGIN=https://your-frontend-domain.com
 ```
 
 ### 5. Chạy ứng dụng
@@ -246,7 +245,8 @@ Trong Render Dashboard, thêm các environment variables:
 - `GOOGLE_CLIENT_EMAIL`
 - `GOOGLE_PRIVATE_KEY`
 - `PORT` (Render sẽ tự động set)
-- `CORS_ORIGIN` (optional)
+- `FRONTEND_URL` (the only origin CORS allows in production)
+- `GOOGLE_CALLBACK_URL`
 
 ### 4. Deploy
 
@@ -260,10 +260,24 @@ Render sẽ tự động build và deploy service. URL sẽ có dạng:
 New exams are private until their owner publishes them. After deploying the backend visibility support, migrate existing exams once so they remain public:
 
 ```bash
-npm run migrate:exam-visibility
+npm run migrate:exam-visibility                 # dry run: reports how many exams would change
+npm run migrate:exam-visibility -- --apply      # writes
 ```
 
 The migration only updates exams where `isPublished` is missing, reports the matched and modified counts, and is safe to run more than once.
+
+### Database target guard for scripts
+
+Every script under `scripts/` that connects to MongoDB checks its target first (`scripts/lib/targetGuard.js`):
+
+- `MONGO_URI` must be set explicitly. There is no default database.
+- The guard prints the database name and whether the host is local or remote. The guard's own output never includes credentials or host names. Some migration scripts can still print raw driver errors when a connection fails, so treat their failure output as sensitive.
+- Write scripts (`migrate:samples`, `migrate:progress`, `migrate:exam-visibility`, `backfill-question-ownership.js`) are a **dry run** unless `--apply` is passed. A dry run also turns off Mongoose `autoIndex` and `autoCreate`, so it creates no indexes or collections.
+- A remote target must be confirmed with `--target=<hosts>/<database>`, matching `MONGO_URI` (comma-separated hosts, with ports if present; host names are case-insensitive), for example `--target=cluster0.example.net/examtopics`. Remote means any non-loopback host, `mongodb+srv://`, or a `replicaSet`/`loadBalanced` URI without `directConnection=true`.
+- Limitation: an SSH tunnel or port-forward from `localhost` to a shared database still looks local. So does a local `mongod` that belongs to a replica set with remote members: without `directConnection=true` the driver can discover those members. Do not tunnel shared databases to localhost, and add `directConnection=true` to local URIs that point at a replica-set member.
+- With `NODE_ENV=production`, remote targets are refused unless `ALLOW_REMOTE_MIGRATION=1` is also set. Use that only for an operation approved under `docs/policies/aws-deployment-approval.md`.
+
+Running any of these against Render production, MongoDB Atlas or other shared data still needs separate explicit approval.
 
 ### Test với curl:
 

@@ -58,7 +58,7 @@ const Home: React.FC = () => {
           completedExamsRequest.current = { token, promise: dataService.getCompletedExamIds(token) };
         }
         const response = await completedExamsRequest.current.promise;
-        if (!cancelled && response.success) setCompletedExams(response.data?.examIds || []);
+        if (!cancelled && response.success) setCompletedExams(response.data?.exams.map(exam => exam.code) || []);
       } catch (error) {
         if (!cancelled) {
           console.error('Error loading completed exams:', error);

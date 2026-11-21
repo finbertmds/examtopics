@@ -4,6 +4,15 @@ const progressService = require('../services/progressService');
 const isExamId = (value) => typeof value === 'string' && value.trim().length > 0;
 const isPosition = (value) => Number.isSafeInteger(value) && value > 0;
 const isRecord = (value) => value !== null && typeof value === 'object' && !Array.isArray(value);
+const MAX_HISTORY_LIMIT = 100;
+
+// SEC-025: history page size is a single integer from 1 to MAX_HISTORY_LIMIT; null means invalid.
+function historyLimit(value, fallback) {
+  if (value === undefined) return fallback;
+  if (typeof value !== 'string' || !/^\d+$/.test(value)) return null;
+  const limit = Number(value);
+  return limit >= 1 && limit <= MAX_HISTORY_LIMIT ? limit : null;
+}
 
 function parseQuestionKey(key) {
   if (typeof key !== 'string') return null;
@@ -203,10 +212,11 @@ class ProgressController {
     try {
       const { examId } = req.params;
       if (!isExamId(examId)) return res.status(400).json({ success: false, error: 'A valid examId is required' });
-      const { limit = 10 } = req.query;
+      const limit = historyLimit(req.query.limit, 10);
+      if (limit === null) return res.status(400).json({ success: false, error: 'limit must be an integer from 1 to 100' });
       const userId = req.user.userId;
 
-      const history = await progressService.getUserExamHistory(userId, examId, parseInt(limit));
+      const history = await progressService.getUserExamHistory(userId, examId, limit);
       
       res.json({
         success: true,
@@ -219,10 +229,11 @@ class ProgressController {
 
   async getUserHistory(req, res) {
     try {
-      const { limit = 50 } = req.query;
+      const limit = historyLimit(req.query.limit, 50);
+      if (limit === null) return res.status(400).json({ success: false, error: 'limit must be an integer from 1 to 100' });
       const userId = req.user.userId;
 
-      const history = await progressService.getUserHistory(userId, parseInt(limit));
+      const history = await progressService.getUserHistory(userId, limit);
       
       res.json({
         success: true,
@@ -254,11 +265,11 @@ class ProgressController {
     try {
       const userId = req.user.userId;
 
-      const examIds = await progressService.getCompletedExamIds(userId);
+      const exams = await progressService.getCompletedExams(userId);
       
       res.json({
         success: true,
-        examIds
+        exams
       });
     } catch {
       return sendInternalError(res, 'progress.completed_exams_failed', 'Failed to get completed exam IDs');

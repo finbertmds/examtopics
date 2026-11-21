@@ -11,7 +11,16 @@ on:
 permissions: {}
 
 jobs:
+  # Production deploys only run after every offline quality gate passes (OPS-001).
+  # The called workflow receives no secrets.
+  ci:
+    if: github.ref == 'refs/heads/master'
+    uses: ./.github/workflows/ci.yml
+    permissions:
+      contents: read
+
   deploy:
+    needs: ci
     if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     permissions:
@@ -34,7 +43,10 @@ jobs:
         with:
           context: examtopics-backend
           push: true
-          tags: ngovanhuy0241/examtopics-backend:latest
+          # :latest is what Render pulls; the commit SHA tag is an immutable record for rollback (OPS-003).
+          tags: |
+            ngovanhuy0241/examtopics-backend:latest
+            ngovanhuy0241/examtopics-backend:${{ github.sha }}
           platforms: linux/amd64
           cache-from: type=gha
           cache-to: type=gha,mode=max

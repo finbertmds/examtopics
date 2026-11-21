@@ -80,7 +80,7 @@ function runDiagnosticCli(t, existingOutput) {
   const bootstrap = `
     const fs = require('node:fs/promises');
     const readFile = fs.readFile;
-    fs.readFile = (file, ...args) => String(file).endsWith('/.env')
+    fs.readFile = (file, ...args) => /[\\\\/]\\.env$/.test(String(file))
       ? Promise.resolve(Buffer.from('MONGO_URI=mongodb://private-user:private-password@private-host/db'))
       : readFile(file, ...args);
     const mongoose = require('mongoose');
@@ -89,11 +89,13 @@ function runDiagnosticCli(t, existingOutput) {
     mongoose.connection.db = { collection: () => ({ aggregate: () => ({ toArray: async () => [
       { _id: new mongoose.Types.ObjectId(), examId: 'orphan-exam', parents: [] }
     ] }) }) };
-    process.argv = [process.execPath, ${JSON.stringify(require.resolve('../scripts/export-question-ownership'))}, ${JSON.stringify(outputPath)}, '--diagnose'];
+    process.argv = [process.execPath, ${JSON.stringify(require.resolve('../scripts/export-question-ownership'))}, ${JSON.stringify(outputPath)}, '--diagnose', '--target=private-host/db'];
     require('node:module').runMain();
   `;
   const result = spawnSync(process.execPath, ['-e', bootstrap], {
     cwd: path.join(__dirname, '..'), encoding: 'utf8', timeout: 10000,
+    // Hermetic: ignore the developer's NODE_ENV and migration override.
+    env: { ...process.env, NODE_ENV: '', ALLOW_REMOTE_MIGRATION: '' },
   });
   return { result, outputPath };
 }

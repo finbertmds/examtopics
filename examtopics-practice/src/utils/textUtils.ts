@@ -15,3 +15,14 @@ export const resolveClipboardUrl = (url: string, baseUrl: string): string => {
     return url;
   }
 };
+
+// SEC-024: explanation links are rendered as hrefs, so only absolute http(s) URLs are allowed.
+export const isHttpUrl = (value: unknown): value is string => {
+  if (typeof value !== 'string' || !value) return false;
+  try {
+    const { protocol } = new URL(value);
+    return protocol === 'http:' || protocol === 'https:';
+  } catch {
+    return false;
+  }
+};

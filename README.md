@@ -87,7 +87,7 @@ Backend mặc định chạy tại `http://localhost:3001`. Cấu hình theo [`e
 | `GOOGLE_CLIENT_EMAIL`, `GOOGLE_PRIVATE_KEY` | Service account có quyền ghi vào Sheet |
 | `PORT`, `NODE_ENV` | Cổng và môi trường chạy |
 
-OAuth callback ở môi trường development là `http://localhost:3001/auth/google/callback`; đăng ký URL này trong Google OAuth client. Trong production, đặt thêm `GOOGLE_CALLBACK_URL` theo domain backend. CORS được xác định trong `index.js` theo môi trường và `FRONTEND_URL`; biến `CORS_ORIGIN` trong file mẫu hiện không được mã nguồn sử dụng.
+OAuth callback ở môi trường development là `http://localhost:3001/auth/google/callback`; đăng ký URL này trong Google OAuth client. Trong production, đặt thêm `GOOGLE_CALLBACK_URL` theo domain backend. CORS chỉ cho phép origin của `FRONTEND_URL` trong production (thêm `localhost:3000/3001` khi phát triển); xem `utils/corsOrigins.js`.
 
 ### Frontend
 
@@ -146,7 +146,8 @@ Backend chia thành `routes/`, `controllers/`, `services/`, `models/`, `middlewa
 Các API yêu cầu xác thực sử dụng header `Authorization: Bearer <token>`. Quyền đọc đề riêng tư và quyền sửa/xóa được kiểm tra ở backend.
 
 - Danh sách câu hỏi nhận `page` từ 1 đến 1.000 và `limit` từ 1 đến 100 (mặc định 100). Giao diện tải từng trang và chỉ hiển thị khi các trang cùng phiên bản đề.
-- `POST /report` nhận JSON tối đa 4 KiB. Mỗi địa chỉ IP kết nối trực tiếp được gửi tối đa 5 lượt/phút, tổng cộng 30 lượt/phút mỗi process. Khi đứng sau reverse proxy, người dùng qua cùng proxy chia sẻ giới hạn 5 lượt/phút. Backend tự xác định tài khoản nếu có token hợp lệ và tạo liên kết câu hỏi.
+- `POST /report` nhận JSON tối đa 4 KiB. Mỗi địa chỉ IP kết nối trực tiếp được gửi tối đa 5 lượt/phút, tổng cộng 30 lượt/phút mỗi process. Khi đứng sau reverse proxy, đặt `TRUST_PROXY` bằng số proxy tin cậy (1–5) để mỗi người dùng có giới hạn riêng; để trống thì người dùng qua cùng proxy chia sẻ giới hạn 5 lượt/phút. Không đặt `TRUST_PROXY` khi API nhận kết nối trực tiếp từ client, vì client có thể giả mạo `X-Forwarded-For`. Backend tự xác định tài khoản nếu có token hợp lệ và tạo liên kết câu hỏi.
+- Lỗi API trả về mã 4xx kèm trường `error` (dữ liệu không hợp lệ: 400, trùng mã đề: 409), không trả 200 kèm `success: false`. `link` của câu hỏi chỉ nhận URL http(s); `limit` của lịch sử nhận số nguyên 1–100; `code` khi tạo đề gồm 1–128 chữ, số, `.`, `_` hoặc `-`, bắt đầu bằng chữ hoặc số.
 - Tạo đề kèm câu hỏi, sửa câu hỏi và xóa đề yêu cầu MongoDB hỗ trợ transaction. [Cấu hình replica set cục bộ](docs/audit/sec-07-exam-mutations.md).
 
 
@@ -159,6 +160,8 @@ Chạy trong `examtopics-backend/`, sau khi cấu hình đúng database:
 | `npm run migrate:samples` | Đọc `public/exams/exams.json` và các JSON tương ứng để import dữ liệu mẫu; script có xóa/tạo lại các đề trùng |
 | `npm run migrate:progress` | Chuyển tiến độ cũ sang định dạng có topic/question |
 | `npm run migrate:exam-visibility` | Đặt công khai cho các đề cũ chưa có trường `isPublished`; có thể chạy lại |
+
+Mặc định các lệnh trên chỉ chạy thử (dry run); thêm `-- --apply` để ghi dữ liệu. Với database từ xa (host không phải loopback hoặc `mongodb+srv://`) cần xác nhận bằng `--target=<hosts>/<database>` khớp với `MONGO_URI`. Khi `NODE_ENV=production`, database từ xa bị từ chối trừ khi đặt thêm `ALLOW_REMOTE_MIGRATION=1`. Xem [hướng dẫn backend](examtopics-backend/README.md#database-target-guard-for-scripts).
 
 Sao lưu dữ liệu trước khi chạy migration trên database đang sử dụng. Để thêm đề thông thường, dùng chức năng import JSON tại `/admin`.
 

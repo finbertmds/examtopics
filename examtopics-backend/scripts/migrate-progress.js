@@ -1,12 +1,23 @@
 const mongoose = require('mongoose');
 const Progress = require('../models/Progress');
+const { assertDatabaseTarget, applyDryRunConnectionDefaults } = require('./lib/targetGuard');
 require('dotenv').config();
 
 // Migration script to convert old progress format to new format
-async function migrateProgressData() {
+async function migrateProgressData({ argv = process.argv.slice(2), env = process.env } = {}) {
+  let target;
+  try {
+    target = assertDatabaseTarget({ uri: env.MONGO_URI, argv, env, write: true });
+  } catch (error) {
+    console.error(`Progress migration refused: ${error.message}`);
+    process.exitCode = 1;
+    return;
+  }
+
   try {
     // Connect to MongoDB
-    await mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/examtopics');
+    applyDryRunConnectionDefaults(mongoose, target);
+    await mongoose.connect(env.MONGO_URI);
     console.log('Connected to MongoDB');
 
     // Get all progress documents
@@ -79,10 +90,11 @@ async function migrateProgressData() {
 
         // Update document if needed
         if (needsUpdate) {
+          migratedCount++;
+          if (!target.apply) continue;
           progress.answers = newAnswers;
           progress.markedForTraining = newMarkedForTraining;
           await progress.save();
-          migratedCount++;
           console.log(`Migrated progress for user ${progress.userId}, exam ${progress.examId}`);
         }
       } catch (error) {
@@ -91,7 +103,9 @@ async function migrateProgressData() {
       }
     }
 
-    console.log(`Migration completed: ${migratedCount} documents migrated, ${errorCount} errors`);
+    console.log(target.apply
+      ? `Migration completed: ${migratedCount} documents migrated, ${errorCount} errors`
+      : `Dry run: ${migratedCount} documents would be migrated, ${errorCount} errors. Re-run with --apply to write.`);
   } catch (error) {
     console.error('Migration failed:', error);
   } finally {

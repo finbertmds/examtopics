@@ -66,9 +66,12 @@ export interface FilterState {
   selectedTopic: number | 'all'; // 'all' means show all topics, number means specific topic
 }
 
+export type ExamSummary = Pick<Exam, 'code' | 'name'>;
+
 export interface HistoryEntry {
   _id: string;
   examId: string;
+  exam?: ExamSummary;
   progress: Record<string, any>;
   markedForTraining: string[];
   score: {
@@ -106,8 +109,8 @@ export interface HistoryData {
   history: HistoryEntry[];
 }
 
-export interface CompletedExamIdsData {
-  examIds: string[];
+export interface CompletedExamsData {
+  exams: ExamSummary[];
 }
 export interface DailyTrackingData {
   dailyProgress: { date: string; count: number }[];

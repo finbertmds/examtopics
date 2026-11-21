@@ -26,7 +26,8 @@ const userSchema = new mongoose.Schema({
     default: null
   },
   
-  // JWT and session management
+  // Legacy field from the removed refresh-token flow (SEC-003). No code reads or writes it;
+  // it stays in the schema so stored documents keep validating (ARCH-009).
   refreshTokens: [{
     token: {
       type: String,
@@ -94,21 +95,6 @@ userSchema.index({ lastLogin: -1 });
 userSchema.methods.updateLastLogin = function() {
   this.lastLogin = new Date();
   this.loginCount += 1;
-  return this.save();
-};
-
-userSchema.methods.addRefreshToken = function(token) {
-  this.refreshTokens.push({ token });
-  return this.save();
-};
-
-userSchema.methods.removeRefreshToken = function(token) {
-  this.refreshTokens = this.refreshTokens.filter(rt => rt.token !== token);
-  return this.save();
-};
-
-userSchema.methods.clearAllRefreshTokens = function() {
-  this.refreshTokens = [];
   return this.save();
 };
 
