@@ -35,40 +35,41 @@ Plan and sequencing: [remediation-roadmap.md](remediation-roadmap.md) · [implem
 | SEC-001…SEC-017 | SEC-01…SEC-17 | Security | High–Low | High | Closed (SEC-010 Accepted) | Previous audit findings; see [Closed findings](#closed-and-accepted-findings) |
 | OPS-001 | AUD-H1 | CI/CD | **High** | High | Open | No automated tests gate production deploys |
 | OPS-002 | AUD-H2 | Data | High | Owner-confirmed | Closed | SEC-04 ownership backfill vs auto-deploy |
-| OPS-003 | AUD-M4 | CI/CD | Medium | High | Open | Backend image tagged only `:latest` |
+| OPS-003 | AUD-M4 | CI/CD | Medium | High | **Resolved (branch `fix/remediation-batch-3`, not merged)** | Backend image tagged only `:latest` |
 | SEC-018 | AUD-M1 | Data exposure | Medium | High | Open | Ownership manifest tracked in git |
 | SEC-019 | AUD-M2 | Data exposure | Medium | Medium | Open | Encrypted archive tracked in git |
 | SEC-020 | AUD-M3 | Authorization | Medium | High | **Deferred by owner (2026-11-21)** | Any authenticated user can publish exams |
 | SEC-021 | AUD-M5 | Data safety | Medium | High | **Resolved (merged to `develop` in PR #13; not yet on `master`)** | Database scripts have no target guard |
-| SEC-022 | AUD-L2 | Availability | Low | High | **Resolved (branch `fix/remediation-batch-2`, not merged)** | Report limiter not proxy-aware, with a single global bucket |
-| SEC-023 | AUD-L3 | Hardening | Low | High | Open | No Content-Security-Policy |
-| SEC-024 | new | Input validation | Low | High | **Resolved (branch `fix/remediation-batch-2`, not merged)** | `question.link` scheme not validated |
-| SEC-025 | new | Resource use | Low | High | **Resolved (branch `fix/remediation-batch-2`, not merged)** | Unbounded `limit` on history endpoints |
-| SEC-026 | new | Input validation | Low | High | **Resolved (branch `fix/remediation-batch-2`, not merged)** | `code` body field not type-checked on create |
-| SEC-027 | new | Configuration | Low | High | Open | Production CORS list always includes the Render origin |
+| SEC-022 | AUD-L2 | Availability | Low | High | **Resolved (merged to `develop` in PR #14; not yet on `master`)** | Report limiter not proxy-aware, with a single global bucket |
+| SEC-023 | AUD-L3 | Hardening | Low | High | **Partially resolved (branch `fix/remediation-batch-3`)** | No Content-Security-Policy |
+| SEC-024 | new | Input validation | Low | High | **Resolved (merged to `develop` in PR #14; not yet on `master`)** | `question.link` scheme not validated |
+| SEC-025 | new | Resource use | Low | High | **Resolved (merged to `develop` in PR #14; not yet on `master`)** | Unbounded `limit` on history endpoints |
+| SEC-026 | new | Input validation | Low | High | **Resolved (merged to `develop` in PR #14; not yet on `master`)** | `code` body field not type-checked on create |
+| SEC-027 | new | Configuration | Low | High | **Partially resolved (branch `fix/remediation-batch-3`)** | Production CORS list always includes the Render origin |
 | SEC-028 | new (Batch 2 review) | Information disclosure | Low | High | Open | Ownership transfer reveals whether an email is registered |
 | SEC-029 | new (Batch 2 review) | Hardening | Low | High | Open | Exam codes used unencoded in frontend URL paths |
-| ARCH-001 | AUD-L1 / debt | Configuration | Low | High | Open | Hardcoded Render URLs and `env.example` drift |
-| ARCH-002 | new | Duplication | Low | High | Open | `examApi.ts` duplicates the HTTP client |
-| ARCH-003 | new | Correctness | Medium | High | **Resolved (branch `fix/remediation-batch-2`, not merged)** | Errors returned as HTTP 200 `success:false`; frontend swallows them |
+| SEC-030 | new (Batch 3 review) | Configuration | Low | Medium | Open | A non-http(s) `FRONTEND_URL` yields the origin `null` |
+| ARCH-001 | AUD-L1 / debt | Configuration | Low | High | **Partially resolved (branch `fix/remediation-batch-3`)** | Hardcoded Render URLs and `env.example` drift |
+| ARCH-002 | new | Duplication | Low | High | **Resolved (branch `fix/remediation-batch-3`, not merged)** | `examApi.ts` duplicates the HTTP client |
+| ARCH-003 | new | Correctness | Medium | High | **Resolved (merged to `develop` in PR #14; not yet on `master`)** | Errors returned as HTTP 200 `success:false`; frontend swallows them |
 | ARCH-004 | new | Data model | Low | High | Open | `Exam.createdBy` stored as String; `'admin'` placeholder |
-| ARCH-005 | new | Layering | Low | High | Open | `authController` queries models directly |
+| ARCH-005 | new | Layering | Low | High | **Resolved (branch `fix/remediation-batch-3`, not merged)** | `authController` queries models directly |
 | ARCH-006 | debt | Maintainability | Low | High | Open | Oversized `AdminPage.tsx` / `ExamPage.tsx` |
 | ARCH-007 | debt | Build | Low | High | Open | Duplicate npm/yarn lockfiles |
-| ARCH-008 | AUD-L4 / debt | Dependency | Low | High | Open | Unused `express-session` dependency |
-| ARCH-009 | new | Dead code | Low | High | Open | Unused `User.refreshTokens` methods |
+| ARCH-008 | AUD-L4 / debt | Dependency | Low | High | **Resolved (branch `fix/remediation-batch-3`, not merged)** | Unused `express-session` dependency |
+| ARCH-009 | new | Dead code | Low | High | **Resolved (branch `fix/remediation-batch-3`, not merged)** | Unused `User.refreshTokens` methods |
 | ARCH-010 | debt | Documentation | Low | High | Open | Overlapping docs and a stale policy statement |
-| ARCH-011 | new | Layering | Low | High | Open | Health probe cache logic lives in the route file |
-| QA-001 | new | Test gap | Medium | High | **Resolved (branch `fix/remediation-batch-2`, not merged)** | No tests for exam ownership transfer |
+| ARCH-011 | new | Layering | Low | High | **Resolved (branch `fix/remediation-batch-3`, not merged)** | Health probe cache logic lives in the route file |
+| QA-001 | new | Test gap | Medium | High | **Resolved (merged to `develop` in PR #14; not yet on `master`)** | No tests for exam ownership transfer |
 | QA-002 | new | Test gap | Medium | High | Open | Progress write paths and user scoping untested |
 | QA-003 | new | Test gap | Medium | High | Open | Core frontend flows untested |
-| QA-004 | new | Bug | Low | High | **Resolved (branch `fix/remediation-batch-2`, not merged)** | Missing translation keys shown raw to users |
-| QA-005 | new | Test gap | Low | High | **Resolved (branch `fix/remediation-batch-2`, not merged)** | No locale key-parity test |
-| QA-006 | new | Test fragility | Low | High | **Resolved (branch `fix/remediation-batch-2`, not merged)** | Limiter test relies on shared module state |
+| QA-004 | new | Bug | Low | High | **Resolved (merged to `develop` in PR #14; not yet on `master`)** | Missing translation keys shown raw to users |
+| QA-005 | new | Test gap | Low | High | **Resolved (merged to `develop` in PR #14; not yet on `master`)** | No locale key-parity test |
+| QA-006 | new | Test fragility | Low | High | **Resolved (merged to `develop` in PR #14; not yet on `master`)** | Limiter test relies on shared module state |
 | QA-007 | AUD-M6 | Tooling | Medium | High | Open | Local toolchain mismatch blocks quality gates |
 | INFRA-001 | new | Cost/performance | Low | High | Open | CloudFront caching disabled for static exam data |
-| INFRA-002 | new | Supply chain | Low | High | Open | ECR image scanning on push not enabled |
-| INFRA-003 | new | Test gap | Low | High | Open | Terraform tests miss key assertions |
+| INFRA-002 | new | Supply chain | Low | High | **Resolved (branch `fix/remediation-batch-3`, not merged)** | ECR image scanning on push not enabled |
+| INFRA-003 | new | Test gap | Low | High | **Resolved (branch `fix/remediation-batch-3`, not merged)** | Terraform tests miss key assertions |
 | FP-001 | new | Dead code | — | High | False positive | Suspected unused frontend utilities are in use |
 
 Duplicates and related groups:
@@ -110,6 +111,7 @@ Duplicates and related groups:
 - **Dependencies:** OPS-001 (workflow edits are batched).
 - **Complexity / Regression risk:** S / Low
 - **Verification:** The next run shows both tags in Docker Hub, and the Render deploy succeeds unchanged.
+- **Resolution (Batch 3 / T3.3):** `deploy-backend.yml` pushes `:${{ github.sha }}` next to `:latest`; Render keeps pulling `:latest`. Takes effect on the first master deploy after merge (workflow change: merge needs owner approval).
 
 ### SEC-018: Ownership manifest tracked in git
 - **Category / Severity / Confidence:** Data exposure / Medium / High
@@ -238,6 +240,8 @@ Duplicates and related groups:
 - **Verification:**
   - `terraform test` asserts the CSP.
   - The staging browser console shows no violations for login, exam, images and admin pages before switching from Report-Only.
+- **Partial resolution (Batch 3 / T3.7):** staging Terraform adds `aws_cloudfront_response_headers_policy.frontend` with a `Content-Security-Policy-Report-Only` header (directives as above), X-Frame-Options DENY (was SAMEORIGIN), nosniff, `strict-origin-when-cross-origin` and 1-year HSTS without subdomains; X-XSS-Protection is dropped (deprecated). Drafted by `aws-architect`, cost $0. Backend 107/107 (also with `NODE_ENV=production`), frontend build plus 74/74, Terraform fmt/validate/test (3 runs) offline on Terraform 1.17.2; independent security and QA reviews found no Critical/High issues.
+- **Still open:** not applied to AWS (needs A3); switching to an enforced CSP after a staging console check; any CSP for Render production (A2); no `report-to` endpoint, so violations show only in the browser console.
 
 ### SEC-024: `question.link` scheme not validated
 - **Category / Severity / Confidence:** Input validation / Low / High
@@ -287,6 +291,9 @@ Duplicates and related groups:
 - **Dependencies:** ARCH-001. Render production must set `FRONTEND_URL` (NOT VERIFIED).
 - **Complexity / Regression risk:** S / Medium
 - **Verification:** A test shows that with `NODE_ENV=production` and a staging `FRONTEND_URL`, the Render origin is rejected and the configured origin is allowed.
+- **Partial resolution (Batch 3 / T3.1):** `utils/corsOrigins.js`: production allows only the origin of `FRONTEND_URL` (the hardcoded Render origin is gone). Tests: `test/cors-origins.test.js`.
+- **Residual (B3-S1, Low):** with `NODE_ENV=production` and **no** `FRONTEND_URL`, `utils/frontendUrl.js` still falls back to the Render production frontend, so an unconfigured staging API would trust it (and send OAuth login codes there). Closing it needs production fail-fast on a missing `FRONTEND_URL`, which waits for verification of Render's settings (A2). Until then, the staging runbook must set `FRONTEND_URL`.
+- **Pre-merge check:** if Render's `FRONTEND_URL` is set to a host other than the one users visit, anonymous API calls from that host now fail CORS (login there was already broken by the Origin check).
 
 ### SEC-028: Ownership transfer reveals whether an email is registered
 - **Category / Severity / Confidence:** Information disclosure / Low / High
@@ -305,6 +312,15 @@ Duplicates and related groups:
 - **Remediation:** encode every code/examId path segment; add frontend tests.
 - **Complexity / Regression risk:** S / Low.
 - **Verification:** tests show `getExam('../x')` requests `/api/exams/..%2Fx`.
+
+### SEC-030: A non-http(s) `FRONTEND_URL` yields the origin `null`
+- **Category / Severity / Confidence:** Configuration / Low / Medium
+- **Affected:** `examtopics-backend/utils/corsOrigins.js`, `routes/authRoutes.js:28` (`new URL(getFrontendUrl()).origin`).
+- **Root cause:** the configured URL's scheme is not validated; `data:`/`file:` URLs have origin `"null"`.
+- **Impact:** with such a misconfiguration, CORS and the session guard accept `Origin: null` (sent by sandboxed iframes). Requires operator error.
+- **Remediation:** validate `FRONTEND_URL` as http(s) at startup together with the ARCH-001 fail-fast.
+- **Complexity / Regression risk:** S / Low.
+- **Verification:** startup test with `FRONTEND_URL=data:,x` fails.
 
 ### ARCH-001: Hardcoded Render URLs and `env.example` drift
 - **Category / Severity / Confidence:** Configuration / Low (blocks staging) / High
@@ -326,6 +342,8 @@ Duplicates and related groups:
   - Production startup without `FRONTEND_URL` fails fast (test).
   - A production build without `REACT_APP_BACKEND_URL` fails.
   - The configured URLs are used.
+- **Partial resolution (Batch 3 / T3.1):** `env.example` drops the unused `CORS_ORIGIN` and documents `GOOGLE_CALLBACK_URL`; README, `docs/development.md` and the OAuth docs are aligned.
+- **Still open:** production fallbacks to Render URLs in `utils/frontendUrl.js`, `services/authService.js:22` and `src/utils/backendUrl.ts`, plus the `index.html` canonical host (T3.2). Fail-fast was not implemented because Render's environment variables are not verified (A2).
 
 ### ARCH-002: `examApi.ts` duplicates the HTTP client
 - **Category / Severity / Confidence:** Duplication / Low / High
@@ -337,6 +355,8 @@ Duplicates and related groups:
 - **Dependencies:** ARCH-003 (error contract) first.
 - **Complexity / Regression risk:** M / Medium
 - **Verification:** `examApi` unit tests with stubbed fetch for success, 401 renewal and error mapping; AdminPage smoke test.
+- **Resolution (Batch 3 / T3.6):** `apiRequest()` in `src/utils/apiClient.ts` is the shared transport (backend URL, offline check, session bearer, root-relative paths only so the bearer cannot leave the backend origin). `examApi.ts` uses it for every call with unchanged URLs, error messages, headers and AbortSignal handling. New behaviour: offline now fails fast with `Network is offline`. Tests: `src/services/examApi.test.ts` (read paths, errors, signal, offline, endpoint guard with a mutation check). Backend 107/107 (also with `NODE_ENV=production`), frontend build plus 74/74, Terraform fmt/validate/test (3 runs) offline on Terraform 1.17.2; independent security and QA reviews found no Critical/High issues.
+- **Residual:** SEC-029 (unencoded codes in paths) is unchanged.
 
 ### ARCH-003: Errors returned as HTTP 200 `success:false`; frontend swallows them
 - **Category / Severity / Confidence:** Correctness / Medium / High
@@ -374,6 +394,7 @@ Duplicates and related groups:
 - **Dependencies:** None.
 - **Complexity / Regression risk:** S / Low (`test/auth-security.test.js` covers it).
 - **Verification:** All auth tests pass unchanged.
+- **Resolution (Batch 3 / T3.5):** login-code issue/redeem moved to `services/loginCodeService.js`; session user lookup to `authSessionService.findSessionUser`. `authController.js` no longer imports models. Existing `test/auth-security.test.js` passes unchanged.
 
 ### ARCH-006: Oversized `AdminPage.tsx` / `ExamPage.tsx`
 - **Category / Severity / Confidence:** Maintainability / Low / High
@@ -407,6 +428,7 @@ Duplicates and related groups:
 - **Dependencies:** QA-007 (correct Node for `npm`).
 - **Complexity / Regression risk:** S / Low
 - **Verification:** `npm ci && npm test` and a `node -e "require('./index')"` smoke load.
+- **Resolution (Batch 3 / T3.4):** `express-session` removed from `package.json` and `package-lock.json` (only its subtree). `examtopics-backend/yarn.lock` still lists it; see ARCH-007.
 
 ### ARCH-009: Unused `User.refreshTokens` methods
 - **Category / Severity / Confidence:** Dead code / Low / High
@@ -418,6 +440,7 @@ Duplicates and related groups:
 - **Dependencies:** None.
 - **Complexity / Regression risk:** S / Low
 - **Verification:** grep shows no references, and backend tests pass.
+- **Resolution (Batch 3 / T3.5):** `addRefreshToken`, `removeRefreshToken` and `clearAllRefreshTokens` removed; the `refreshTokens` schema field is kept and marked legacy.
 
 ### ARCH-010: Overlapping docs and a stale policy statement
 - **Category / Severity / Confidence:** Documentation / Low / High
@@ -440,6 +463,7 @@ Duplicates and related groups:
 - **Remediation:** Move it to `services/healthService.js` when the file is next touched.
 - **Complexity / Regression risk:** S / Low.
 - **Verification:** `test/health-routes.test.js` passes.
+- **Resolution (Batch 3 / T3.5):** probe cache moved to `services/healthService.js`; `test/health-routes.test.js` passes unchanged.
 
 ### QA-001: No tests for exam ownership transfer
 - **Category / Severity / Confidence:** Test gap / Medium / High
@@ -527,6 +551,7 @@ Duplicates and related groups:
 - **Remediation:** Add `image_scanning_configuration { scan_on_push = true }` (basic scanning, $0).
 - **Complexity / Regression risk:** S / Low.
 - **Verification:** A `terraform test` assertion.
+- **Resolution (Batch 3 / T3.7):** `registry.tf` enables basic `scan_on_push` ($0). Offline only; applying needs A3.
 
 ### INFRA-003: Terraform tests miss key assertions
 - **Category / Severity / Confidence:** Test gap / Low / High
@@ -534,6 +559,7 @@ Duplicates and related groups:
 - **Remediation:** Add assertions together with SEC-023 and INFRA-002.
 - **Complexity / Regression risk:** S / None.
 - **Verification:** `terraform test` passes with mock provider.
+- **Resolution (Batch 3 / T3.7):** `tests/staging.tftest.hcl` asserts the Report-Only CSP, DENY framing, HSTS without subdomains, both cache behaviours on the custom policy, immutable ECR tags and scan on push. Mutation check: pointing a behaviour back at the managed policy and disabling scanning both fail.
 
 ### FP-001: Suspected unused frontend utilities (False positive)
 - `src/utils/migration.ts` is used by `useProgress.ts:6`.

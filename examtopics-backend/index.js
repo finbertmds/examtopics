@@ -7,7 +7,7 @@ require('dotenv').config();
 const connectDB = require('./config/database');
 const { passport } = require('./services/authService');
 const errorHandler = require('./middleware/errorHandler');
-const getFrontendUrl = require('./utils/frontendUrl');
+const getCorsOrigins = require('./utils/corsOrigins');
 const parseTrustProxy = require('./utils/trustProxy');
 
 const app = express();
@@ -24,14 +24,8 @@ app.use((req, res, next) => {
 });
 
 app.use(helmet());
-// CORS configuration with environment-based origins
-const frontendOrigin = new URL(getFrontendUrl()).origin;
-const corsOrigins = process.env.NODE_ENV === 'production'
-  ? ['https://examtopics-practice.onrender.com', frontendOrigin]
-  : ['http://localhost:3000', 'http://localhost:3001', frontendOrigin];
-
 app.use(cors({
-  origin: corsOrigins,
+  origin: getCorsOrigins(),
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-ExamTopics-Session'],
   exposedHeaders: ['X-Request-Id'],

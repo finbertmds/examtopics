@@ -1,14 +1,9 @@
-const { createHash, randomBytes } = require('node:crypto');
 const { IDLE_MS } = require('../config/auth');
 const { generateToken, readBearer } = require('../services/authService');
-const OAuthLoginCode = require('../models/OAuthLoginCode');
-const User = require('../models/User');
+const { issueLoginCode, redeemLoginCode } = require('../services/loginCodeService');
 const getFrontendUrl = require('../utils/frontendUrl');
 const sessions = require('../services/authSessionService');
 const isOAuthValue = require('../utils/isOAuthValue');
-
-const LOGIN_CODE_TTL_MS = 60 * 1000;
-const sha256 = (value) => createHash('sha256').update(value).digest('base64url');
 
 function sessionResponse(res, user, session) {
   return res.json({
@@ -35,7 +30,7 @@ async function restore(req, res, touch) {
   let session = await sessions.findActive(id, now);
   if (!session || (touch && String(session.userId) !== bearer.userId)) return sessionUnavailable(res);
 
-  const user = await User.findById(session.userId);
+  const user = await sessions.findSessionUser(session);
   if (!user) return sessionUnavailable(res);
   if (touch) {
     session = await sessions.touchSession(session, now);
@@ -47,13 +42,7 @@ async function restore(req, res, touch) {
 
 class AuthController {
   async googleCallback(req, res) {
-    const code = randomBytes(32).toString('base64url');
-    await OAuthLoginCode.create({
-      _id: sha256(code),
-      challenge: req.oauthChallenge,
-      userId: req.user._id,
-      expiresAt: new Date(Date.now() + LOGIN_CODE_TTL_MS),
-    });
+    const code = await issueLoginCode(req.oauthChallenge, req.user._id);
     res.redirect(`${getFrontendUrl()}/auth/callback#code=${code}`);
   }
 
@@ -63,12 +52,7 @@ class AuthController {
       return res.status(400).json({ success: false, error: 'Valid login code and verifier required' });
     }
 
-    const grant = await OAuthLoginCode.findOneAndDelete({
-      _id: sha256(code),
-      challenge: sha256(verifier),
-      expiresAt: { $gt: new Date(Date.now()) },
-    });
-    const user = grant && await User.findById(grant.userId);
+    const user = await redeemLoginCode(code, verifier);
     if (!user) {
       return res.status(403).json({ success: false, error: 'Invalid or expired login code' });
     }

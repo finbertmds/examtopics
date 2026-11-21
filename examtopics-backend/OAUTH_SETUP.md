@@ -57,7 +57,6 @@ NODE_ENV=development
 FRONTEND_URL=http://localhost:3000
 
 # CORS Configuration
-CORS_ORIGIN=http://localhost:3000
 ```
 
 ### Frontend (.env)
@@ -82,7 +81,7 @@ GOOGLE_CLIENT_SECRET=your_production_client_secret
 JWT_SECRET=your_production_jwt_secret
 SESSION_SECRET=your_production_session_secret
 FRONTEND_URL=https://examtopics-practice.onrender.com
-CORS_ORIGIN=https://examtopics-practice.onrender.com
+GOOGLE_CALLBACK_URL=https://examtopics-backend-latest.onrender.com/auth/google/callback
 MONGO_URI=your_mongodb_atlas_uri
 ```
 
@@ -125,7 +124,7 @@ NODE_ENV=production
 
 #### 2. CORS Errors
 - **Cause**: Frontend and backend domains don't match CORS configuration
-- **Solution**: Update CORS_ORIGIN in backend environment variables
+- **Solution**: Set FRONTEND_URL in the backend to the exact frontend origin; it is the only origin allowed in production
 
 #### 3. Invalid Client ID
 - **Cause**: Wrong client ID or secret

@@ -71,6 +71,56 @@ resource "aws_cloudfront_function" "frontend_route" {
   code    = file("${path.module}/frontend-route.js")
 }
 
+resource "aws_cloudfront_response_headers_policy" "frontend" {
+  name    = "${local.name}-frontend-headers"
+  comment = "Staging frontend security headers with a Report-Only CSP"
+
+  # CloudFront's content_security_policy setting cannot send Report-Only, so
+  # the CSP is a custom header. frame-ancestors is ignored in Report-Only;
+  # frame_options keeps clickjacking protection enforced.
+  custom_headers_config {
+    items {
+      header   = "Content-Security-Policy-Report-Only"
+      override = true
+      value = join("; ", [
+        "default-src 'self'",
+        "script-src 'self'",
+        "style-src 'self' 'unsafe-inline'",
+        "img-src 'self' data: https:",
+        "connect-src 'self' https://${local.api_host}",
+        "font-src 'self' data:",
+        "object-src 'none'",
+        "base-uri 'self'",
+        "form-action 'self'",
+        "frame-ancestors 'none'",
+      ])
+    }
+  }
+
+  security_headers_config {
+    content_type_options {
+      override = true
+    }
+
+    frame_options {
+      frame_option = "DENY"
+      override     = true
+    }
+
+    referrer_policy {
+      referrer_policy = "strict-origin-when-cross-origin"
+      override        = true
+    }
+
+    strict_transport_security {
+      access_control_max_age_sec = 31536000
+      include_subdomains         = false
+      preload                    = false
+      override                   = true
+    }
+  }
+}
+
 resource "aws_cloudfront_distribution" "frontend" {
   enabled             = true
   is_ipv6_enabled     = true
@@ -91,7 +141,7 @@ resource "aws_cloudfront_distribution" "frontend" {
     cached_methods             = ["GET", "HEAD"]
     viewer_protocol_policy     = "redirect-to-https"
     cache_policy_id            = "4135ea2d-6df8-44a3-9df3-4b5a84be39ad"
-    response_headers_policy_id = "67f7725c-6f97-4210-82d7-5512b31e9d03"
+    response_headers_policy_id = aws_cloudfront_response_headers_policy.frontend.id
 
     function_association {
       event_type   = "viewer-request"
@@ -106,7 +156,7 @@ resource "aws_cloudfront_distribution" "frontend" {
     cached_methods             = ["GET", "HEAD"]
     viewer_protocol_policy     = "redirect-to-https"
     cache_policy_id            = "658327ea-f89d-4fab-a63d-7e88639e58f6"
-    response_headers_policy_id = "67f7725c-6f97-4210-82d7-5512b31e9d03"
+    response_headers_policy_id = aws_cloudfront_response_headers_policy.frontend.id
     compress                   = true
   }
 
