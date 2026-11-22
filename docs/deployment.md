@@ -38,7 +38,7 @@ Use the `release-readiness` skill (`.claude/skills/release-readiness/`) before a
 
 ## Staging: AWS (planned, not deployed by automation)
 
-- Terraform in `infra/terraform/staging/`, region `us-east-1`, `allowed_account_ids` pinned by variable:
+- Terraform in `infra/terraform/staging/`, region `ap-southeast-2` (Sydney), `allowed_account_ids` pinned by variable. CloudFront's ACM certificate remains in `us-east-1`:
   - VPC with a public subnet and no NAT
   - EC2 t3.micro (IMDSv2 required, encrypted gp3 12 GB, SSM access)
   - Elastic IP
@@ -47,10 +47,11 @@ Use the `release-readiness` skill (`.claude/skills/release-readiness/`) before a
   - Secrets Manager secret for the API environment
   - Private S3 + CloudFront with OAC and a routing function
   - CloudWatch alarm
-  - AWS Budget
+  - AWS Budget (only when `budget_alert_email` is supplied)
 - State is **local** (no backend block). `.gitignore` excludes state, plans and tfvars.
 - Offline tests: `terraform test` with `mock_provider` (`tests/staging.tftest.hcl`).
-- Estimated cost: about $13.23/month, with a $15 planning allowance against the $20 budget (`docs/migration/aws-staging-costs.md`).
+- Estimated Sydney cost: about $15.46/month before credits and tax, with an $18 planning allowance against the $20 budget (`docs/migration/aws-staging-costs.md`).
+- Architecture and Console review: [AWS staging Mermaid diagrams](migration/aws-staging-architecture.md).
 - Procedure: `docs/migration/aws-staging-runbook.md`. Approval: the report template in `docs/policies/aws-deployment-approval.md`.
 
 Note: the "Enforcement gaps" paragraph in `aws-deployment-approval.md` says the repository had no Terraform configuration. That is stale, because `infra/terraform/staging/` now exists.
