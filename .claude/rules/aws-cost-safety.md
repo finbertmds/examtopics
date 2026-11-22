@@ -18,3 +18,5 @@ What these rules mean when working in these paths:
 - Never commit state, plans or `*.tfvars`. `infra/terraform/staging/.gitignore` covers them, so keep it that way.
 - Workflow files: `deploy.yml` and `deploy-backend.yml` deploy Render **production** on `master` pushes. Editing them changes production deploy behaviour and needs explicit approval. Do not add secrets to jobs that don't need them, and keep `permissions: {}` at workflow level.
 - Do not touch Render production, MongoDB Atlas or production DNS. Staging stays separate.
+
+The canonical policies define one bounded exception for the separately activated `deploy-staging.yml` workflow after an owner-merged `develop` → `staging` PR. This is not authorization for agents to run live commands or activate the workflow while implementing it. Bootstrap, baseline changes, state migration, GitHub settings and all operations outside that workflow's enforced envelope still require exact approval. Keep this adapter consistent with the canonical policy; never expand the exception here.

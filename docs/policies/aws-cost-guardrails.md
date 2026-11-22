@@ -2,6 +2,14 @@
 
 These rules apply to the Main Orchestrator and every subagent. Cloud mutation and production modification are denied by default. Follow the [deployment approval policy](aws-deployment-approval.md) for authorization.
 
+## Automatic staging cost gate
+
+The [bounded staging workflow exception](aws-deployment-approval.md#exception-activated-owner-merged-staging-cicd) does not change the Free-plan requirement or $20 USD monthly ceiling. Its separately approved bootstrap must include the cost of private state/release storage, retained versions/images and expected CI monitoring requests. Standard public GitHub-hosted runners are used; do not introduce paid runners, subscriptions or AWS paid-only features.
+
+Before any resource change or publication, the activated workflow must verify the exact account, active/unexpired Free plan, USD credits of at least $20, and reported monthly gross spend using `UnblendedCost` excluding `Credit` and `Refund`. Project the **remaining** month's usage plus billing-lag and deployment/storage reserves, then add it to incurred gross spend; do not double-count a full month of existing resources. Use deterministic decimal arithmetic and record the source timestamps and assumptions. Cost Explorer requests themselves are metered; bound and budget them rather than polling repeatedly.
+
+Fail closed if billing is unavailable/incomplete, currencies differ, prices or resource quantities are unknown, artifact/image limits are exceeded, or the account-wide forecast exceeds $20. Freeze the cost model and resource/security baseline outside workflow write access. Changes outside that approved envelope require a new reviewed proposal; GitHub CI passing is not evidence of plan eligibility or sufficient credits. Delayed metering means these checks and Budget alerts cannot guarantee a hard spending cap.
+
 ## Credit protection
 
 - Eligible new AWS accounts may receive up to $200 USD in Free Tier credits. Use the verified balance for decisions.

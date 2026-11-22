@@ -8,6 +8,17 @@
 - Keep staging separate from production. Render production, MongoDB Atlas, and production DNS MUST remain unchanged without separate explicit human approval. Keep Render production running until migration acceptance.
 - Before relevant work, every agent MUST read the [AWS cost guardrails](docs/policies/aws-cost-guardrails.md) and [deployment approval policy](docs/policies/aws-deployment-approval.md). These root rules apply independently of those files. If either file is unavailable, stop cloud-related work until it can be read.
 
+### Bounded automatic AWS staging release
+
+Enforcement runs from the separately reviewed, protected immutable `aws-staging-controller-v1` reusable-controller tag and recorded commit. OIDC trust must bind that controller identity through the verified customized subject. Candidate HCL/providers or safety-controller changes require a separately approved controller upgrade; the initial automatic Terraform source envelope permits only the bounded CloudFront routing-function file.
+
+The owner has authorized preparing a narrowly scoped exception to the local-manual default: **only after separately approved bootstrap and activation**, `.github/workflows/deploy-staging.yml` may release the exact commit of an owner-merged, same-repository PR from `develop` into `staging`, after required CI succeeds. The exception applies only to account `450114866570`, `ap-southeast-2`, and the baseline-controlled staging application Terraform root and application artifacts. It covers scoped monitoring/planning reads, policy-checked saved-plan apply, publication, the fixed SSM deployment document, and application rollback to the recorded healthy release in that run.
+
+- This is authorization for the activated workflow, not standing authorization for chat agents, local commands, direct pushes, arbitrary workflow dispatches/retries, or bypassing a failed gate.
+- The workflow MUST fail closed on identity, Free-plan, credit, cost, baseline, state, or health verification failures. It MUST reject new/unpriced resources, deletes/replacements, privilege escalation, and control-plane changes; partial Terraform failure requires operator intervention.
+- Bootstrap resources/IAM, GitHub settings, state migration, DNS, Atlas, Google, production, database migrations and destructive cleanup remain separately approved operations. Workflow credentials MUST NOT modify their own roles, trust, boundaries, baseline or bootstrap state.
+- This specific exception supersedes the general per-operation local approval requirement only within the activated workflow. All other safety rules continue to apply. See [the CI/CD runbook](docs/migration/aws-staging-cicd.md) and the canonical policies for activation requirements.
+
 ## Shared Local and Production Safety
 
 - **Matching pushes or merges to `master` deploy Render production**, after the reusable CI workflow succeeds (`.github/workflows/deploy.yml`, `deploy-backend.yml`). Pushes, merges, workflow dispatches and publication need explicit, operation-specific human approval. Passing CI or a reviewer verdict does not authorize deployment.

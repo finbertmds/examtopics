@@ -1,0 +1,19 @@
+name: Deploy AWS staging
+
+on:
+  pull_request:
+    branches: [staging]
+    types: [closed]
+
+permissions: {}
+
+jobs:
+  staging:
+    if: github.event.pull_request.merged == true && github.run_attempt == 1
+    uses: finbertmds/examtopics/.github/workflows/staging-release.yml@aws-staging-controller-v1
+    with:
+      source_sha: ${{ github.event.pull_request.merge_commit_sha }}
+    permissions:
+      contents: read
+      pull-requests: read
+      id-token: write

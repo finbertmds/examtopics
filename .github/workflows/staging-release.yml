@@ -1,0 +1,252 @@
+name: AWS staging release controller
+
+on:
+  workflow_call:
+    inputs:
+      source_sha:
+        description: Exact candidate merge commit; independently checked against the event.
+        required: true
+        type: string
+
+permissions: {}
+
+concurrency:
+  group: aws-staging-release
+  cancel-in-progress: false
+
+jobs:
+  eligible:
+    if: github.event.pull_request.merged == true && github.event.pull_request.head.ref == 'develop' && github.event.pull_request.head.repo.id == github.repository_id && github.run_attempt == 1
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      eligible: ${{ steps.gate.outputs.eligible }}
+      relevant: ${{ steps.gate.outputs.relevant }}
+      sha: ${{ steps.gate.outputs.sha }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: refs/tags/aws-staging-controller-v1
+          persist-credentials: false
+      - name: Validate owner merge and determine affected paths
+        id: gate
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          MERGE_SHA: ${{ inputs.source_sha }}
+        run: |
+          gh api --paginate --slurp "repos/finbertmds/examtopics/pulls/$PR_NUMBER/files" > "$RUNNER_TEMP/pr-files.json"
+          python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          from infra.cicd import gate
+          path = Path(os.environ['RUNNER_TEMP'])
+          pages = json.loads((path / 'pr-files.json').read_text())
+          (path / 'paths.json').write_text(json.dumps({'files': gate.pull_request_paths(pages)}))
+          PY
+          python3 infra/cicd/pipeline.py event --event "$GITHUB_EVENT_PATH" --files "$RUNNER_TEMP/paths.json" --sha "$MERGE_SHA" --github-output "$GITHUB_OUTPUT"
+
+  ci:
+    needs: eligible
+    if: needs.eligible.outputs.eligible == 'true'
+    uses: finbertmds/examtopics/.github/workflows/ci.yml@aws-staging-controller-v1
+    with:
+      ref: ${{ needs.eligible.outputs.sha }}
+    permissions:
+      contents: read
+
+  build:
+    needs: [eligible, ci]
+    if: needs.eligible.outputs.relevant == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      frontend_id: ${{ steps.frontend.outputs.artifact-id }}
+      api_id: ${{ steps.api.outputs.artifact-id }}
+    env:
+      MERGE_SHA: ${{ needs.eligible.outputs.sha }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: ${{ needs.eligible.outputs.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: examtopics-practice/package-lock.json
+      - name: Build frontend for staging
+        working-directory: examtopics-practice
+        env:
+          REACT_APP_BACKEND_URL: https://api.staging.finbert.ngo
+          REACT_APP_FRONTEND_URL: https://app.staging.finbert.ngo
+        run: |
+          npm ci
+          npm run build
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4
+      - name: Build AMD64 backend without runtime credentials
+        run: |
+          docker build --platform linux/amd64 --provenance=false --tag "examtopics-staging-api:$MERGE_SHA" examtopics-backend
+          docker save "examtopics-staging-api:$MERGE_SHA" --output "$RUNNER_TEMP/api-image.tar"
+          test "$(stat -c '%s' "$RUNNER_TEMP/api-image.tar")" -le 536870912
+      - id: frontend
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: staging-frontend-${{ needs.eligible.outputs.sha }}
+          path: examtopics-practice/build/
+          if-no-files-found: error
+          retention-days: 1
+      - id: api
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: staging-api-${{ needs.eligible.outputs.sha }}
+          path: ${{ runner.temp }}/api-image.tar
+          if-no-files-found: error
+          retention-days: 1
+          compression-level: 0
+
+  scan:
+    needs: [eligible, build]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
+        with:
+          artifact-ids: ${{ needs.build.outputs.api_id }}
+          path: ${{ runner.temp }}/api
+      - name: Bound the downloaded image archive
+        run: test "$(stat -c '%s' "$RUNNER_TEMP/api/api-image.tar")" -le 536870912
+      - name: Block high and critical image vulnerabilities
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          input: ${{ runner.temp }}/api/api-image.tar
+          exit-code: '1'
+          severity: HIGH,CRITICAL
+          scanners: vuln,secret
+          ignore-unfixed: false
+
+  release:
+    needs: [eligible, ci, build, scan]
+    if: needs.eligible.outputs.relevant == 'true'
+    environment: aws-staging
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      MERGE_SHA: ${{ needs.eligible.outputs.sha }}
+      GH_TOKEN: ${{ github.token }}
+      AWS_REGION: ap-southeast-2
+      AWS_DEFAULT_REGION: ap-southeast-2
+      AWS_IGNORE_CONFIGURED_ENDPOINT_URLS: 'true'
+      STAGING_CONFIG: ${{ vars.STAGING_CONFIG_JSON }}
+    steps:
+      - name: Require separately approved environment activation
+        env:
+          ENABLED: ${{ vars.STAGING_CICD_ENABLED }}
+        run: test "$ENABLED" = true
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: refs/tags/aws-staging-controller-v1
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
+        with:
+          artifact-ids: ${{ needs.build.outputs.frontend_id }}
+          path: ${{ runner.temp }}/frontend
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
+        with:
+          artifact-ids: ${{ needs.build.outputs.api_id }}
+          path: ${{ runner.temp }}/api
+      - uses: hashicorp/setup-terraform@dfe3c3f87815947d99a8997f908cb6525fc44e9e # v4
+        with:
+          terraform_version: '1.17.2'
+          terraform_wrapper: false
+      - name: Validate local configuration and selected commit
+        run: |
+          umask 077
+          mkdir -p "$RUNNER_TEMP/staging-release"
+          python3 - <<'PY'
+          import json, os, subprocess
+          from pathlib import Path
+          from infra.cicd import gate
+          config = json.loads(os.environ['STAGING_CONFIG'])
+          gate.validate_config(config)
+          assert subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip() == config['controller_sha'], 'Controller commit differs from the separately approved tag'
+          (Path(os.environ['RUNNER_TEMP']) / 'staging-release/config.json').write_text(json.dumps(config))
+          PY
+          python3 infra/cicd/pipeline.py assemble --sha "$MERGE_SHA" --work "$RUNNER_TEMP/staging-release"
+          python3 infra/cicd/pipeline.py tip --sha "$MERGE_SHA"
+          test "$(stat -c '%s' "$RUNNER_TEMP/api/api-image.tar")" -le 536870912
+          docker load --input "$RUNNER_TEMP/api/api-image.tar"
+      - name: Assume monitoring role
+        uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd # v6
+        with:
+          aws-region: ap-southeast-2
+          role-to-assume: ${{ vars.AWS_STAGING_MONITOR_ROLE_ARN }}
+          allowed-account-ids: '450114866570'
+          unset-current-credentials: true
+      - name: Verify account plan and projected gross costs
+        run: python3 infra/cicd/pipeline.py monitor --config "$RUNNER_TEMP/staging-release/config.json" --work "$RUNNER_TEMP/staging-release" --receipt "$RUNNER_TEMP/staging-release/receipt.json"
+      - name: Assume planning role
+        uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd # v6
+        with:
+          aws-region: ap-southeast-2
+          role-to-assume: ${{ vars.AWS_STAGING_PLAN_ROLE_ARN }}
+          allowed-account-ids: '450114866570'
+          unset-current-credentials: true
+      - name: Check frozen baseline and create the bounded saved plan
+        run: python3 infra/cicd/pipeline.py prepare --config "$RUNNER_TEMP/staging-release/config.json" --work "$RUNNER_TEMP/staging-release" --sha "$MERGE_SHA"
+      - name: Refresh monitoring immediately before apply
+        uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd # v6
+        with:
+          aws-region: ap-southeast-2
+          role-to-assume: ${{ vars.AWS_STAGING_MONITOR_ROLE_ARN }}
+          allowed-account-ids: '450114866570'
+          unset-current-credentials: true
+      - run: python3 infra/cicd/pipeline.py monitor --config "$RUNNER_TEMP/staging-release/config.json" --work "$RUNNER_TEMP/staging-release" --receipt "$RUNNER_TEMP/staging-release/receipt.json"
+      - name: Assume release role to reserve the environment
+        uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd # v6
+        with:
+          aws-region: ap-southeast-2
+          role-to-assume: ${{ vars.AWS_STAGING_DEPLOY_ROLE_ARN }}
+          allowed-account-ids: '450114866570'
+          unset-current-credentials: true
+      - name: Reserve the release; any existing lease blocks writes
+        run: python3 infra/cicd/pipeline.py acquire --config "$RUNNER_TEMP/staging-release/config.json" --work "$RUNNER_TEMP/staging-release" --sha "$MERGE_SHA" --receipt "$RUNNER_TEMP/staging-release/receipt.json"
+      - name: Assume bounded apply role
+        uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd # v6
+        with:
+          aws-region: ap-southeast-2
+          role-to-assume: ${{ vars.AWS_STAGING_APPLY_ROLE_ARN }}
+          allowed-account-ids: '450114866570'
+          unset-current-credentials: true
+      - name: Apply only the reviewed saved plan and verify outputs
+        run: python3 infra/cicd/pipeline.py apply --config "$RUNNER_TEMP/staging-release/config.json" --work "$RUNNER_TEMP/staging-release" --sha "$MERGE_SHA" --receipt "$RUNNER_TEMP/staging-release/receipt.json"
+      - name: Refresh monitoring before publication
+        uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd # v6
+        with:
+          aws-region: ap-southeast-2
+          role-to-assume: ${{ vars.AWS_STAGING_MONITOR_ROLE_ARN }}
+          allowed-account-ids: '450114866570'
+          unset-current-credentials: true
+      - run: python3 infra/cicd/pipeline.py monitor --config "$RUNNER_TEMP/staging-release/config.json" --work "$RUNNER_TEMP/staging-release" --receipt "$RUNNER_TEMP/staging-release/receipt.json"
+      - name: Assume publisher and fixed-document deployment role
+        uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd # v6
+        with:
+          aws-region: ap-southeast-2
+          role-to-assume: ${{ vars.AWS_STAGING_DEPLOY_ROLE_ARN }}
+          allowed-account-ids: '450114866570'
+          unset-current-credentials: true
+      - name: Publish API, deploy backend, publish frontend and verify release
+        run: |
+          python3 infra/cicd/pipeline.py publish --config "$RUNNER_TEMP/staging-release/config.json" --work "$RUNNER_TEMP/staging-release" --sha "$MERGE_SHA" --receipt "$RUNNER_TEMP/staging-release/receipt.json" --output "$RUNNER_TEMP/staging-release/api-image.txt"
+          python3 infra/cicd/release.py deploy --config "$RUNNER_TEMP/staging-release/config.json" --targets "$RUNNER_TEMP/staging-release/targets.json" --build-dir "$RUNNER_TEMP/frontend" --api-image "$(cat "$RUNNER_TEMP/staging-release/api-image.txt")" --release "$MERGE_SHA" --guard-work "$RUNNER_TEMP/staging-release"
+          python3 infra/cicd/pipeline.py finish --config "$RUNNER_TEMP/staging-release/config.json" --work "$RUNNER_TEMP/staging-release" --sha "$MERGE_SHA"
+      # Do not upload this directory: it contains a saved plan/private baseline.
+      # A failed or cancelled run intentionally retains the S3 lease for investigation.

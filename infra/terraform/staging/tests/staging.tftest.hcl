@@ -143,3 +143,28 @@ run "reject_sydney_frontend_certificate" {
 
   expect_failures = [var.frontend_certificate_arn]
 }
+
+run "rollback_images_survive_failed_publications" {
+  command = plan
+
+  assert {
+    condition = alltrue([
+      for rule in jsondecode(aws_ecr_lifecycle_policy.api.policy).rules :
+      rule.selection.tagStatus == "untagged"
+    ])
+    error_message = "Publishing newer candidates must never evict tagged rollback digests."
+  }
+}
+
+run "operator_attaches_runtime_boundary" {
+  command = plan
+
+  variables {
+    runtime_permissions_boundary_arn = "arn:aws:iam::123456789012:policy/examtopics-staging-runtime-boundary"
+  }
+
+  assert {
+    condition     = aws_iam_role.api.permissions_boundary == "arn:aws:iam::123456789012:policy/examtopics-staging-runtime-boundary"
+    error_message = "Attach the bootstrap-owned boundary to the staging instance role."
+  }
+}

@@ -17,29 +17,8 @@ resource "aws_ecr_lifecycle_policy" "api" {
   policy = jsonencode({
     rules = [
       {
+        # Healthy releases keep their immutable tags until an approved cleanup.
         rulePriority = 1
-        description  = "Retain the ten newest backend release images"
-        selection = {
-          tagStatus     = "tagged"
-          tagPrefixList = ["api-"]
-          countType     = "imageCountMoreThan"
-          countNumber   = 10
-        }
-        action = { type = "expire" }
-      },
-      {
-        rulePriority = 2
-        description  = "Retain the three newest proxy release images"
-        selection = {
-          tagStatus     = "tagged"
-          tagPrefixList = ["proxy-"]
-          countType     = "imageCountMoreThan"
-          countNumber   = 3
-        }
-        action = { type = "expire" }
-      },
-      {
-        rulePriority = 3
         description  = "Remove untagged manifests after seven days"
         selection = {
           tagStatus   = "untagged"

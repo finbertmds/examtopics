@@ -48,3 +48,14 @@ variable "staging_domain" {
     error_message = "Use a lowercase DNS suffix starting with staging, such as staging.finbert.ngo."
   }
 }
+
+variable "runtime_permissions_boundary_arn" {
+  description = "Bootstrap-owned EC2 role boundary. The operator attaches it before enabling automatic staging."
+  type        = string
+  default     = null
+
+  validation {
+    condition     = var.runtime_permissions_boundary_arn == null || var.runtime_permissions_boundary_arn == "arn:aws:iam::${var.staging_account_id}:policy/examtopics-staging-runtime-boundary"
+    error_message = "Use the dedicated staging runtime boundary in the verified account."
+  }
+}
