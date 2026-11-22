@@ -9,6 +9,11 @@ COPY package*.json ./
 # Install dependencies
 RUN npm ci --omit=dev
 
+# Package managers are only needed while building the image.
+RUN rm -rf /usr/local/lib/node_modules/npm /usr/local/lib/node_modules/corepack \
+    && rm -f /usr/local/bin/npm /usr/local/bin/npx /usr/local/bin/corepack \
+      /usr/local/bin/yarn /usr/local/bin/yarnpkg /usr/local/bin/pnpm
+
 # Copy source code
 COPY . .
 
