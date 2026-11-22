@@ -220,6 +220,7 @@ Sau publication thành công, archive `release.json`, update `state.json`, condi
 | --- | --- |
 | Connection PENDING / authentication / webhook permissions | Hoàn tất App installation/AVAILABLE, đúng selected repository và webhook permission; không dùng PAT/access keys để vượt lỗi |
 | Managed policy/Free plan chặn CodeConnections hoặc custom role | Dừng; ghi metadata lỗi và review phương án giữ Free plan |
+| `read_record` / `s3api list-objects-v2` lỗi | Xem note `AWS s3api/list-objects-v2 failed: code=...`. Exit 254 chỉ cho biết AWS service trả lỗi, chưa xác định AccessDenied. Nếu AccessDenied, kiểm tra **service role** (chưa assume deploy role) có `s3:ListBucket` trên release bucket với `s3:prefix=state.json` và `s3:GetObject` trên `state.json` như template; kiểm tra bucket owner khớp `AWS_ACCOUNT_ID`, bucket policy/SCP/boundary. Nếu NoSuchBucket, sửa `RELEASE_BUCKET` hoặc tạo đúng bucket sau phê duyệt. Không tạo state giả hay bỏ expected-owner để vượt lỗi. Bucket trống hợp lệ và sẽ build cả hai. |
 | Git fetch/current-head fail | Kiểm tra full clone, Git credential helper và service-role connection permissions; không cấp token permission cho deploy role |
 | Stale develop commit | Không deploy commit cũ; theo dõi build của head mới |
 | Test/build fail | Không publication, sửa source rồi push theo phê duyệt |

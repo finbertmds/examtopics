@@ -12,9 +12,19 @@ from decimal import Decimal
 
 
 def aws(*args, env=None):
-    return json.loads(subprocess.check_output(
-        ['aws', *args, '--output', 'json', '--no-cli-pager'], text=True, env=env,
-        stderr=subprocess.PIPE))
+    try:
+        return json.loads(subprocess.check_output(
+            ['aws', *args, '--output', 'json', '--no-cli-pager'], text=True, env=env,
+            stderr=subprocess.PIPE))
+    except subprocess.CalledProcessError as error:
+        # Preserve the original exception/stderr for conditional-lock handling,
+        # but expose only the service error code, never raw AWS messages/payloads.
+        match = re.search(r'An error occurred \(([A-Za-z0-9_.-]{1,80})\) when calling ',
+                          error.stderr or '')
+        code = match.group(1) if match else 'Unclassified'
+        error.add_note(f'AWS {args[0]}/{args[1]} failed: code={code}, CLI exit={error.returncode}; '
+                       'raw stderr suppressed')
+        raise
 
 
 def components(paths):

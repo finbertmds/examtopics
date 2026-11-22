@@ -4,6 +4,7 @@ from pathlib import Path
 import unittest
 import subprocess
 import tempfile
+import traceback
 from datetime import datetime, timezone
 from unittest.mock import patch
 
@@ -13,6 +14,28 @@ spec.loader.exec_module(deploy)
 
 
 class DeploymentTests(unittest.TestCase):
+    def test_aws_failure_reports_code_without_raw_payload_and_keeps_exception(self):
+        for code in ['AccessDenied', 'NoSuchBucket', 'PreconditionFailed']:
+            error = subprocess.CalledProcessError(254, ['aws', 's3api', 'list-objects-v2'],
+                stderr=f'An error occurred ({code}) when calling the ListObjectsV2 operation: sensitive-fixture')
+            with self.subTest(code=code), patch.object(deploy.subprocess, 'check_output', side_effect=error):
+                with self.assertRaises(subprocess.CalledProcessError) as caught:
+                    deploy.aws('s3api', 'list-objects-v2')
+                self.assertIs(caught.exception, error)
+                self.assertIn('sensitive-fixture', caught.exception.stderr)
+                displayed = ''.join(traceback.format_exception(caught.exception))
+                self.assertIn(f'code={code}', displayed)
+                self.assertNotIn('sensitive-fixture', displayed)
+
+    def test_unstructured_aws_stderr_is_not_printed(self):
+        error = subprocess.CalledProcessError(253, ['aws', 'sts', 'assume-role'], stderr='sensitive-fixture')
+        with patch.object(deploy.subprocess, 'check_output', side_effect=error):
+            with self.assertRaises(subprocess.CalledProcessError) as caught:
+                deploy.aws('sts', 'assume-role')
+            displayed = ''.join(traceback.format_exception(caught.exception))
+            self.assertIn('code=Unclassified', displayed)
+            self.assertNotIn('sensitive-fixture', displayed)
+
     def test_host_pulls_before_replacement_and_readiness_controls_success(self):
         source = Path(__file__).with_name('replace-api.sh').read_text()
         for fail_pull, ready, expected in [('1', '1', 1), ('0', '1', 0), ('0', '0', 1)]:
