@@ -1,0 +1,39 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "ReadOneGitHubConnection",
+      "Effect": "Allow",
+      "Action": ["codeconnections:GetConnection", "codeconnections:GetConnectionToken"],
+      "Resource": "<CONNECTION_ARN>"
+    },
+    {
+      "Sid": "WriteBuildLogs",
+      "Effect": "Allow",
+      "Action": ["logs:CreateLogStream", "logs:PutLogEvents"],
+      "Resource": "arn:aws:logs:<REGION>:<ACCOUNT_ID>:log-group:/aws/codebuild/examtopics-staging-develop:log-stream:*"
+    },
+    {
+      "Sid": "FindReleaseState",
+      "Effect": "Allow",
+      "Action": "s3:ListBucket",
+      "Resource": "arn:aws:s3:::<RELEASE_BUCKET>",
+      "Condition": {"StringEquals": {"s3:prefix": "state.json"}}
+    },
+    {
+      "Sid": "ReadReleaseState",
+      "Effect": "Allow",
+      "Action": "s3:GetObject",
+      "Resource": "arn:aws:s3:::<RELEASE_BUCKET>/state.json"
+    },
+    {
+      "Sid": "AssumeSeparatedRoles",
+      "Effect": "Allow",
+      "Action": "sts:AssumeRole",
+      "Resource": [
+        "arn:aws:iam::<ACCOUNT_ID>:role/examtopics-staging-monitor",
+        "arn:aws:iam::<ACCOUNT_ID>:role/examtopics-staging-deploy"
+      ]
+    }
+  ]
+}

@@ -557,6 +557,16 @@ docker rm examtopics-api
 
 Nếu thay schema hoặc ownership data, cần kế hoạch migration, fixture/backup và tương thích riêng. Không chạy `npm run migrate:*`, backend scripts hoặc OAuth test live chỉ vì đang deploy. Không gộp data migration vào một lệnh cập nhật container.
 
+### 13.1. Tự động deploy `develop` bằng CodeBuild webhook
+
+Luồng hiện tại là **GitHub push develop → CodeBuild → S3/ECR → SSM cập nhật EC2**. Không cần IAM OIDC provider, AWS access keys trong GitHub hoặc self-hosted runner. Xem [hướng dẫn cấu hình CodeBuild, GitHub App, IAM và recovery](codebuild-develop.md) trước khi bật webhook.
+
+Buildspec ở [`deploy/codebuild/buildspec.yml`](../../deploy/codebuild/buildspec.yml). Controller chọn frontend/backend theo toàn bộ path từng đổi từ release thành công gần nhất, kể cả path đã revert. `.nvmrc` và `deploy/codebuild/**` build cả hai; `infra/**` không tự apply, batch/downloader chỉ kích hoạt khi output trong frontend/backend đổi. Cả hai đổi thì backend phải readiness thành công trước khi publish frontend.
+
+Project dùng GitHub App qua CodeConnections và IAM service role; monitoring và publication dùng hai assumed roles riêng. Build/test chạy trước publication; chỉ PUSH cho `refs/heads/develop` được chấp nhận. Khóa conditional S3 giữ publication tuần tự; build lỗi giữa publication giữ khóa để người vận hành kiểm tra trước khi cho lần tiếp theo chạy. Không đặt project concurrency limit bằng 1 vì có thể làm mất webhook khi build đang chạy.
+
+Đây là cấu hình local cho automation owner yêu cầu. Tạo/sửa CodeBuild, connection, roles, bucket, log group/KMS, bật webhook và push source cần phê duyệt thao tác riêng. Giữ Free plan; nếu account chặn service/role/connection cần thiết thì dừng, không nâng Paid hoặc bật advanced features để vượt lỗi. Render/master, Atlas và DNS production giữ nguyên.
+
 ## 14. Lỗi đã gặp và cách xử lý
 
 | Triệu chứng | Nguyên nhân thường gặp | Cách kiểm tra và xử lý |

@@ -1,0 +1,20 @@
+version: 0.2
+
+env:
+  shell: bash
+  git-credential-helper: yes
+
+phases:
+  install:
+    on-failure: ABORT
+    runtime-versions:
+      nodejs: 26.12.1
+      python: '3.13'
+    commands:
+      - python3 -m unittest discover -s deploy/codebuild -p 'test_*.py'
+  build:
+    on-failure: ABORT
+    commands:
+      # All builds/tests complete before publication inside this controller.
+      # No deployment in post_build (which can run after a failed build phase).
+      - python3 deploy/codebuild/release.py
