@@ -8,13 +8,13 @@ router.use((req, res, next) => {
   next();
 });
 
-router.get('/', (req, res) => res.json({ success: true, status: 'healthy' }));
+router.get('/', (req, res) => res.json({ success: true, status: 'healthy.' }));
 
 router.get('/readiness', async (req, res) => {
   const { mongodb, googleSheets } = await checkReadiness();
   return res.status(mongodb ? 200 : 503).json({
     success: mongodb,
-    status: mongodb ? 'healthy' : 'unhealthy',
+    status: mongodb ? 'healthy!' : 'unhealthy',
     timestamp: new Date().toISOString(),
     services: {
       mongodb: mongodb ? 'connected' : 'disconnected',

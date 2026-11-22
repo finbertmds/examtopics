@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { LanguageProvider } from '../contexts/LanguageContext';
 import HistoryModal from './HistoryModal';
@@ -18,17 +18,24 @@ it.each([
 ])('shows exam codes and localized names in the statistics options (%s)', async (language, name, tab) => {
   localStorage.setItem('language', language);
   const requests: string[] = [];
+  let completeStats!: (response: Response) => void;
+  const statsResponse = new Promise<Response>(resolve => { completeStats = resolve; });
   vi.stubGlobal('fetch', vi.fn(async (input: string) => {
     requests.push(new URL(input).pathname);
     switch (new URL(input).pathname) {
       case '/progress/history': return Response.json({ success: true, history: [] });
       case '/progress/completed-exam-ids': return Response.json({ success: true, exams: [{ code: 'SAA-C03', name: { en: 'Solutions Architect', vi: 'Kiến trúc sư giải pháp', ja: 'ソリューションアーキテクト' } }, { code: 'missing-exam', name: 'missing-exam' }] });
-      case '/progress/stats/SAA-C03': return Response.json({ success: true, stats: null });
+      case '/progress/stats/SAA-C03': return statsResponse;
       default: throw new Error(`Unexpected request: ${input}`);
     }
   }));
   render(<LanguageProvider><MemoryRouter><HistoryModal isOpen onClose={() => {}} /></MemoryRouter></LanguageProvider>);
   fireEvent.click(screen.getByRole('button', { name: new RegExp(tab) }));
+  // The options can render before the stats effect reaches fetch. Finish the
+  // deferred response before assertions/teardown so requests cannot leak tests.
+  await waitFor(() => expect(requests).toContain('/progress/stats/SAA-C03'));
+  completeStats(Response.json({ success: true, stats: { totalSubmissions: 7 } }));
+  expect(await screen.findByText('7')).toBeInTheDocument();
   expect(await screen.findByRole('option', { name: `SAA-C03 — ${name}` })).toHaveValue('SAA-C03');
   expect(screen.getByRole('option', { name: 'missing-exam' })).toHaveValue('missing-exam');
   expect(requests.sort()).toEqual(['/progress/completed-exam-ids', '/progress/history', '/progress/stats/SAA-C03']);
