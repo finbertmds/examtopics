@@ -11,7 +11,7 @@ import { ThemeToggle } from './ThemeToggle';
 import { LanguageToggle } from './LanguageToggle';
 import ConfirmModal from './ConfirmModal';
 
-const AdminPage: React.FC = () => {
+const ManageExamsPage: React.FC = () => {
   const { token, isAuthenticated } = useAuth();
   const { t } = useLanguage();
   const navigate = useNavigate();
@@ -139,7 +139,7 @@ const AdminPage: React.FC = () => {
       <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex items-center justify-center">
         <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md text-center">
           <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-4">{t('accessDenied')}</h2>
-          <p className="text-gray-600 dark:text-gray-300">{t('mustLoginToAccessAdmin')}</p>
+          <p className="text-gray-600 dark:text-gray-300">{t('mustLoginToManageExams')}</p>
         </div>
       </div>
     );
@@ -552,10 +552,10 @@ const AdminPage: React.FC = () => {
               ← Home
             </button>
             <h1 className="flex-1 min-w-0 truncate text-4xl font-bold text-gray-800 transition-colors dark:text-white">
-              {t('adminPanelTitle')}
+              {t('manageExamsPageTitle')}
             </h1>
             <div className="flex flex-shrink-0 items-center gap-2">
-              <UserMenu isAdminPanel={true} />
+              <UserMenu isExamManagementPage={true} />
               <LanguageToggle />
               <ThemeToggle />
             </div>
@@ -1318,4 +1318,4 @@ const AdminPage: React.FC = () => {
   );
 };
 
-export default AdminPage;
+export default ManageExamsPage;

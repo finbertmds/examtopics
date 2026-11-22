@@ -1,5 +1,5 @@
 import { StrictMode } from 'react';
-import { act, render, screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import App from './App';
 
 beforeEach(() => {
@@ -29,6 +29,8 @@ function start(progressResponse = () => Promise.resolve(Response.json({ success:
       });
       case '/auth/session': return restore;
       case '/api/exams': return Response.json({ exams: [] });
+      case '/api/exams/me/created': return Response.json({ exams: [] });
+      case '/api/exams/metadata/info': return Response.json({ categories: [], tags: [] });
       case '/progress/all': return progressResponse();
       case '/progress/completed-exam-ids': return Response.json({ success: true, exams: [] });
       default: throw new Error(`Unexpected request: ${path}`);
@@ -38,12 +40,29 @@ function start(progressResponse = () => Promise.resolve(Response.json({ success:
   return { requests, finishRestore };
 }
 
-it.each(['/', '/exam/fixture', '/admin'])('waits for session restoration before mounting route %s', async path => {
+it.each(['/', '/exam/fixture'])('waits for session restoration before mounting route %s', async path => {
   window.history.replaceState({}, '', path);
   const { requests } = start();
   await act(async () => {});
   expect(requests.map(request => request.path)).toEqual(['/auth/session']);
   expect(screen.getByRole('status')).toHaveTextContent('Loading');
+});
+
+it('navigates to the exam management page from the user menu', async () => {
+  const { finishRestore } = start();
+  await act(async () => {
+    finishRestore(Response.json({
+      success: true, token: 'restored-app-token',
+      user: { id: 'app-user', email: 'fixture@example.test', name: 'Fixture' },
+      idleExpiresAt: Date.now() + 60_000, absoluteExpiresAt: Date.now() + 120_000,
+    }));
+  });
+
+  fireEvent.click(await screen.findByRole('button', { name: 'User menu' }));
+  fireEvent.click(await screen.findByRole('button', { name: /Manage Exams/ }));
+
+  await waitFor(() => expect(window.location.pathname).toBe('/create-exam'));
+  expect(await screen.findByRole('heading', { name: 'Manage Exams' })).toBeInTheDocument();
 });
 
 it('loads exams and progress with the restored session after auth/session finishes', async () => {
