@@ -2,6 +2,23 @@
 
 Approval mode is **LOCAL MANUAL APPROVAL ONLY**. Each cloud-changing operation requires separate explicit human approval. The Main Orchestrator MUST collect and verify approval. Agents MUST NOT self-approve, fabricate approval, or delegate around this requirement.
 
+## Exception: activated owner-merged staging CI/CD
+
+Enforcement runs from the separately reviewed, protected immutable `aws-staging-controller-v1` reusable-controller tag and recorded commit. OIDC trust must bind that controller identity through the verified customized subject. Candidate HCL/providers or safety-controller changes require a separately approved controller upgrade; the initial automatic Terraform source envelope permits only the bounded CloudFront routing-function file.
+
+The owner-approved staging CI/CD design permits one bounded alternative after its bootstrap and activation have been separately approved. `.github/workflows/deploy-staging.yml` may process a same-repository PR from `develop` merged into `staging` by the repository owner, deploy its exact merge commit after required CI, and perform application rollback within that release. The exact workflow repository ID is `1035462381` (`finbertmds/examtopics`); the target is account `450114866570`, region `ap-southeast-2`. The merge is the owner's release decision; an approving review by the PR author is not required or represented as an independent review.
+
+The workflow's allowed operation set is:
+
+- Scoped identity, Free-plan, credit, cost, state-lock and resource-metadata reads needed by the release.
+- Terraform plan and apply of the same saved plan against the migrated staging state, only after baseline, security, cost and resource gates pass. No new/unpriced resources, deletion, replacement, runtime privilege escalation, bootstrap or production changes are included.
+- Immutable staging ECR image publication, frontend asset/index publication, and the fixed, version-pinned staging SSM document with validated image digests and secret version identifiers.
+- Restoration of the recorded compatible healthy application release after application health failure. No automatic database or Terraform rollback is authorized.
+
+This exception does **not** activate the workflow by itself. Activation requires verified branch protection/environment restrictions, short-lived OIDC roles, secure migrated state with locking, fixed host deployment tooling, frozen baseline/configuration, a recoverable healthy release and approved costs. Bootstrap, baseline changes and state migration each need operation-specific approval. See [activation and operation instructions](../migration/aws-staging-cicd.md).
+
+Direct pushes, fork/unmerged PRs, arbitrary refs, manual agent execution, alternate credentials, automatic Terraform retries after partial failure, failed-gate overrides, control-plane changes, infrastructure cleanup and production operations remain outside the exception. A merge cannot authorize code to edit the workflow's own IAM permissions, baseline or bootstrap state. A blocked automatic change must be reviewed separately; do not weaken the gate to make a release pass. All ordinary manual operations follow the workflow and report below.
+
 ## Operations requiring approval
 
 - Terraform apply, destroy, and import, including remote state changes.

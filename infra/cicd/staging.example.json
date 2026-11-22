@@ -1,0 +1,38 @@
+{
+  "account_id": "450114866570",
+  "region": "ap-southeast-2",
+  "staging_domain": "staging.finbert.ngo",
+  "api_instance_id": "i-00000000000000000",
+  "api_public_ipv4": "16.178.165.197",
+  "frontend_bucket": "examtopics-staging-web-450114866570",
+  "frontend_distribution_id": "E0000000000000",
+  "frontend_distribution_domain": "d0000000000000.cloudfront.net",
+  "api_environment_secret_arn": "arn:aws:secretsmanager:ap-southeast-2:450114866570:secret:/examtopics/staging/api-environment-EXAMPL",
+  "release_repository_url": "450114866570.dkr.ecr.ap-southeast-2.amazonaws.com/examtopics-staging",
+  "frontend_url": "https://app.staging.finbert.ngo",
+  "api_url": "https://api.staging.finbert.ngo",
+  "state_bucket": "examtopics-staging-tfstate-450114866570",
+  "state_key": "staging/terraform.tfstate",
+  "release_bucket": "examtopics-staging-releases-450114866570",
+  "ssm_document": "ExamTopicsStagingDeploy",
+  "ssm_document_version": "1",
+  "secret_version_id": "00000000-0000-0000-0000-000000000000",
+  "proxy_image": "450114866570.dkr.ecr.ap-southeast-2.amazonaws.com/examtopics-staging@sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "max_release_bytes": 134217728,
+  "max_api_image_bytes": 536870912,
+  "max_ecr_repository_bytes": 2000000000,
+  "max_release_storage_bytes": 2000000000,
+  "cost_model": {
+    "monthly_usd": "18",
+    "metering_lag_reserve_usd": "1",
+    "deployment_reserve_usd": "0.50"
+  },
+  "terraform_variables": {
+    "api_ami_id": "ami-09a2f74ce8538e414",
+    "staging_account_id": "450114866570",
+    "staging_domain": "staging.finbert.ngo",
+    "runtime_permissions_boundary_arn": "arn:aws:iam::450114866570:policy/examtopics-staging-runtime-boundary",
+    "frontend_certificate_arn": "arn:aws:acm:us-east-1:450114866570:certificate/01234567-89ab-cdef-0123-456789abcdef"
+  },
+  "controller_sha": "ffffffffffffffffffffffffffffffffffffffff"
+}

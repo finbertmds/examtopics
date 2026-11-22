@@ -51,6 +51,7 @@ Use the `release-readiness` skill (`.claude/skills/release-readiness/`) before a
 - State is **local** (no backend block). `.gitignore` excludes state, plans and tfvars.
 - Offline tests: `terraform test` with `mock_provider` (`tests/staging.tftest.hcl`).
 - Estimated Sydney cost: about $15.46/month before credits and tax, with an $18 planning allowance against the $20 budget (`docs/migration/aws-staging-costs.md`).
+- Prepared automatic staging CI/CD (requires separately approved bootstrap/activation): [controller and operator runbook](migration/aws-staging-cicd.md).
 - Architecture and Console review: [AWS staging Mermaid diagrams](migration/aws-staging-architecture.md).
 - Procedure: `docs/migration/aws-staging-runbook.md`. Approval: the report template in `docs/policies/aws-deployment-approval.md`.
 

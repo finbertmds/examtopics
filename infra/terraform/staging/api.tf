@@ -95,7 +95,8 @@ resource "aws_vpc_security_group_egress_rule" "api_atlas" {
 }
 
 resource "aws_iam_role" "api" {
-  name = "${local.name}-api"
+  permissions_boundary = var.runtime_permissions_boundary_arn
+  name                 = "${local.name}-api"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
