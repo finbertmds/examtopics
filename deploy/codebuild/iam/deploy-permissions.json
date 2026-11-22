@@ -1,0 +1,71 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "ECRLogin",
+      "Effect": "Allow",
+      "Action": "ecr:GetAuthorizationToken",
+      "Resource": "*"
+    },
+    {
+      "Sid": "PublishAPI",
+      "Effect": "Allow",
+      "Action": [
+        "ecr:BatchCheckLayerAvailability", "ecr:InitiateLayerUpload", "ecr:UploadLayerPart",
+        "ecr:CompleteLayerUpload", "ecr:PutImage", "ecr:BatchGetImage", "ecr:DescribeImages"
+      ],
+      "Resource": "arn:aws:ecr:<REGION>:<ACCOUNT_ID>:repository/<ECR_REPOSITORY_NAME>"
+    },
+    {
+      "Sid": "FrontendMetadata",
+      "Effect": "Allow",
+      "Action": ["s3:ListBucket", "s3:ListBucketVersions", "s3:GetBucketVersioning"],
+      "Resource": "arn:aws:s3:::<FRONTEND_BUCKET>"
+    },
+    {
+      "Sid": "PublishFrontend",
+      "Effect": "Allow",
+      "Action": ["s3:GetObject", "s3:PutObject"],
+      "Resource": "arn:aws:s3:::<FRONTEND_BUCKET>/*"
+    },
+    {
+      "Sid": "FindReleaseState",
+      "Effect": "Allow",
+      "Action": "s3:ListBucket",
+      "Resource": "arn:aws:s3:::<RELEASE_BUCKET>",
+      "Condition": {"StringEquals": {"s3:prefix": "state.json"}}
+    },
+    {
+      "Sid": "ReleaseControl",
+      "Effect": "Allow",
+      "Action": ["s3:GetObject", "s3:PutObject"],
+      "Resource": [
+        "arn:aws:s3:::<RELEASE_BUCKET>/state.json",
+        "arn:aws:s3:::<RELEASE_BUCKET>/lock.json",
+        "arn:aws:s3:::<RELEASE_BUCKET>/releases/*"
+      ]
+    },
+    {
+      "Sid": "ReleaseOwnLock",
+      "Effect": "Allow",
+      "Action": "s3:DeleteObject",
+      "Resource": "arn:aws:s3:::<RELEASE_BUCKET>/lock.json"
+    },
+    {
+      "Sid": "ReplaceStagingAPI",
+      "Effect": "Allow",
+      "Action": "ssm:SendCommand",
+      "Resource": [
+        "arn:aws:ssm:<REGION>::document/AWS-RunShellScript",
+        "arn:aws:ec2:<REGION>:<ACCOUNT_ID>:instance/<INSTANCE_ID>"
+      ]
+    },
+    {
+      "Sid": "ReadDeploymentStatus",
+      "Effect": "Allow",
+      "Action": "ssm:GetCommandInvocation",
+      "Resource": "*",
+      "Condition": {"StringEquals": {"aws:RequestedRegion": "<REGION>"}}
+    }
+  ]
+}

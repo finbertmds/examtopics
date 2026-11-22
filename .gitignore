@@ -8,3 +8,5 @@
 /dist/
 reports/
 *secrets.sh
+fna*
+deploy_*.sh

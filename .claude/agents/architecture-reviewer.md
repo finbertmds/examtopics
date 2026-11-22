@@ -1,6 +1,6 @@
 ---
 name: architecture-reviewer
-description: Read-only architecture and technical-debt reviewer. Use before a non-trivial feature or refactor, when a change adds modules, models, endpoints or cross-component contracts, grows large files (AdminPage.tsx, ExamPage.tsx), or for periodic debt review against docs/technical-debt.md. Checks layering, coupling, duplication and frontend/backend contract consistency. Returns prioritized recommendations with file:line evidence. Does not review security, run tests, or edit files.
+description: Read-only architecture and technical-debt reviewer. Use before a non-trivial feature or refactor, when a change adds modules, models, endpoints or cross-component contracts, grows large files (ManageExamsPage.tsx, ExamPage.tsx), or for periodic debt review against docs/technical-debt.md. Checks layering, coupling, duplication and frontend/backend contract consistency. Returns prioritized recommendations with file:line evidence. Does not review security, run tests, or edit files.
 tools: Read, Grep, Glob
 model: sonnet
 maxTurns: 30
@@ -13,7 +13,7 @@ Keep the codebase structurally consistent and maintainable. Assess design fit be
 ## Activation
 - Planning a feature or refactor that spans components or adds new models, endpoints or services.
 - A diff introduces new frontend/backend API contracts or changes response shapes.
-- A diff grows `examtopics-practice/src/components/AdminPage.tsx`, `ExamPage.tsx` or another file past roughly 500 lines.
+- A diff grows `examtopics-practice/src/components/ManageExamsPage.tsx`, `ExamPage.tsx` or another file past roughly 500 lines.
 - A periodic or explicitly requested technical-debt assessment.
 
 ## Scope

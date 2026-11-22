@@ -36,7 +36,10 @@ Secrets (names): `RENDER_API_KEY`, `RENDER_SERVICE_ID`, `RENDER_BACKEND_SERVICE_
 
 Use the `release-readiness` skill (`.claude/skills/release-readiness/`) before any merge to `master`.
 
-## Staging: AWS (planned, not deployed by automation)
+## Staging: AWS (CodeBuild automation prepared locally)
+
+- Source deployment: push `develop` → CodeBuild GitHub webhook/App connection → selective frontend/API build/tests → S3/ECR publication → SSM API replacement/readiness. Setup and recovery: [CodeBuild develop guide](migration/codebuild-develop.md). No IAM OIDC or AWS access keys in GitHub are required.
+- Buildspec/controller and IAM templates: `deploy/codebuild/`. The private release-control bucket serializes publication and records the last successful source commit. Cloud resources/webhook are not provisioned by these files; live settings, Free-plan availability, credits/spend and first deployment remain NOT VERIFIED.
 
 - Terraform in `infra/terraform/staging/`, region `ap-southeast-2` (Sydney), `allowed_account_ids` pinned by variable. CloudFront's ACM certificate remains in `us-east-1`:
   - VPC with a public subnet and no NAT
@@ -50,11 +53,9 @@ Use the `release-readiness` skill (`.claude/skills/release-readiness/`) before a
   - AWS Budget (only when `budget_alert_email` is supplied)
 - State is **local** (no backend block). `.gitignore` excludes state, plans and tfvars.
 - Offline tests: `terraform test` with `mock_provider` (`tests/staging.tftest.hcl`).
-- Estimated Sydney cost: about $15.46/month before credits and tax, with an $18 planning allowance against the $20 budget (`docs/migration/aws-staging-costs.md`).
+- Estimated Sydney base cost: about $15.46/month before credits/tax. The provisional CodeBuild-inclusive model is $18.26 with a $19.50 planning allowance against the $20 budget; selected regional CodeBuild pricing and actual duration must be verified before enabling automation ([cost assumptions](migration/aws-staging-costs.md#codebuild-webhook-addition)).
 - Architecture and Console review: [AWS staging Mermaid diagrams](migration/aws-staging-architecture.md).
 - Procedure: `docs/migration/aws-staging-runbook.md`. Approval: the report template in `docs/policies/aws-deployment-approval.md`.
-
-Note: the "Enforcement gaps" paragraph in `aws-deployment-approval.md` says the repository had no Terraform configuration. That is stale, because `infra/terraform/staging/` now exists.
 
 ## Rollback
 

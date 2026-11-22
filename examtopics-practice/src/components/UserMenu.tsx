@@ -4,8 +4,8 @@ import { useLanguage } from "../contexts/LanguageContext";
 import HistoryModal from "./HistoryModal";
 import { useNavigate } from "react-router-dom";
 
-const UserMenu: React.FC<{ isAdminPanel?: boolean }> = ({
-  isAdminPanel = false,
+const UserMenu: React.FC<{ isExamManagementPage?: boolean }> = ({
+  isExamManagementPage = false,
 }) => {
   const { user, isAuthenticated, isLoading, notice, retryRestore, login, logout } = useAuth();
   const { t } = useLanguage();
@@ -191,7 +191,7 @@ const UserMenu: React.FC<{ isAdminPanel?: boolean }> = ({
           {/* Menu Items */}
           <div className="py-2">
             {/* History Button */}
-            {!isAdminPanel && (
+            {!isExamManagementPage && (
               <>
                 <button
                   onClick={() => {
@@ -218,18 +218,18 @@ const UserMenu: React.FC<{ isAdminPanel?: boolean }> = ({
                 <div className="border-t border-gray-200 dark:border-gray-700 my-1"></div>
               </>
             )}
-            {/* Admin Panel Button */}
-            {!isAdminPanel && (
+            {/* Create Exam Button */}
+            {!isExamManagementPage && (
               <>
                 <button
                   onClick={() => {
                     setIsMenuOpen(false);
-                    navigate("/admin");
+                    navigate("/create-exam");
                   }}
                   className="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-150 flex items-center space-x-2"
                 >
                   <span>🛠</span>
-                  <span>{t("viewAdminPanel")}</span>
+                  <span>{t("manageExams")}</span>
                 </button>
 
                 <div className="border-t border-gray-200 dark:border-gray-700 my-1"></div>

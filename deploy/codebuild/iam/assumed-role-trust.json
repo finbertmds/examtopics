@@ -1,0 +1,8 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [{
+    "Effect": "Allow",
+    "Principal": {"AWS": "arn:aws:iam::<ACCOUNT_ID>:role/examtopics-codebuild-service"},
+    "Action": "sts:AssumeRole"
+  }]
+}
