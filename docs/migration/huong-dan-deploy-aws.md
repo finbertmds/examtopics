@@ -4,13 +4,28 @@ Tài liệu tiếng Việt để triển khai staging lần đầu, cập nhật
 
 Tài liệu chỉ dùng tên biến và domain minh họa `example.com`. Không lưu account ID, địa chỉ IP, resource ID, ARN, digest, secret version, credential hoặc đường dẫn máy cá nhân thật. Các giá trị vận hành được lấy từ môi trường đã duyệt và lưu riêng. Không copy thông tin production vào tài liệu chia sẻ.
 
+Mỗi lần build/publish tạo **hai tag cho mỗi thành phần**, cùng trỏ tới một image digest; không build hai image khác nhau chỉ để có hai tag:
+
+| Thành phần | Tag lưu phiên bản để backup/rollback | Tag để EC2 chọn release mới nhất lúc deploy |
+| --- | --- | --- |
+| API | `api-${RELEASE}` | `api-latest` |
+| Proxy Caddy | `proxy-${RELEASE}` | `proxy-latest` |
+
+API và proxy dùng chung repository `${REPO}`, nên không dùng chung một tag `latest` hoặc `${RELEASE}` cho cả hai: tag sau sẽ ghi đè tag trước. Release tags phải immutable; chỉ hai latest tags được phép di chuyển. EC2 pull latest khi operator deploy, đối chiếu với release đã duyệt rồi chạy bằng digest cố định. Container đang chạy **không tự cập nhật** khi latest đổi; cần pull và tạo lại container như mục 13.
+
+### Điều kiện trước khi dùng latest
+
+Terraform hiện cấu hình ECR `IMMUTABLE`, nên lần push latest tiếp theo sẽ bị từ chối. Trước khi dùng luồng dưới, cần đề xuất riêng, review và phê duyệt thay đổi Terraform/ECR sang **`IMMUTABLE_WITH_EXCLUSION`**, với đúng hai exclusion filters loại `WILDCARD`, giá trị chính xác `api-latest` và `proxy-latest`. Không dùng wildcard rộng như `api-*`, `proxy-*` hoặc bật `MUTABLE` toàn repository. Không xóa tag latest để vượt immutability. Xem [AWS ECR tag mutability](https://docs.aws.amazon.com/AmazonECR/latest/userguide/image-tag-mutability.html).
+
+Đây là hướng dẫn **release thủ công** sau khi điều kiện trên được duyệt và áp dụng. Tài liệu không thay đổi Terraform/ECR hiện tại và không cho phép bỏ qua lỗi push. Nếu dùng workflow tự động theo [deployment policy](../policies/aws-deployment-approval.md), giữ immutable publication và digest được kiểm soát bởi controller; thay đổi baseline/HCL/controller cần controller upgrade được duyệt riêng trước khi áp dụng luồng latest vào automation.
+
 ## 1. Chọn đúng quy trình
 
 | Nhu cầu | Thực hiện |
 | --- | --- |
 | Dựng staging mới hoàn toàn | Mục 2–12 theo thứ tự |
 | Chỉ cập nhật source trên staging đang chạy | Nạp lại biến local ở mục 2, kiểm tra mục 3, lấy lại outputs ở mục 5; build/publish mục 7–8; nạp biến EC2 và pull ở mục 9 rồi làm mục 10–13. Không lặp lại bootstrap host/DNS/Atlas |
-| Chỉ đổi cấu hình backend | Nạp đúng target/profiles và outputs như trên, tạo secret version mới; dùng lại image digest đã review, nạp biến EC2, làm mục 10 và thay API theo mục 13 |
+| Chỉ đổi cấu hình backend | Nạp đúng target/profiles và outputs như trên, tạo secret version mới; dùng lại image digest của release healthy, dùng khối pull digest trực tiếp ở mục 9, làm mục 10 và thay API theo mục 13. Bỏ build/publish images và frontend |
 | Chỉ đổi Terraform | Plan → review → phê duyệt → apply đúng saved plan; không tự publish app |
 | Chuyển production sang AWS | Đọc mục 15 trước; đây là dự án riêng, chưa có production Terraform root sẵn |
 
@@ -231,7 +246,8 @@ Archive chỉ lấy source tracked của commit, không lấy các thay đổi c
   rg --quiet --fixed-strings "${API_URL}" build/assets
 )
 docker build --platform linux/amd64 \
-  -t "${REPO}:api-${RELEASE}" "${RELEASE_DIR}/examtopics-backend"
+  -t "${REPO}:api-${RELEASE}" \
+  -t "${REPO}:api-latest" "${RELEASE_DIR}/examtopics-backend"
 ```
 
 Tạo manifest hashes cho frontend artifact, lưu cùng release directory riêng:
@@ -265,11 +281,12 @@ docker image inspect "${CADDY_TAG}" --format '{{.Os}}/{{.Architecture}}'
 CADDY_SOURCE="$(docker image inspect "${CADDY_TAG}" --format '{{index .RepoDigests 0}}')"
 printf '%s\n' "${CADDY_SOURCE}"
 docker tag "${CADDY_SOURCE}" "${REPO}:proxy-${RELEASE}"
+docker tag "${REPO}:proxy-${RELEASE}" "${REPO}:proxy-latest"
 ```
 
 Kiến trúc mong đợi `linux/amd64`, digest bắt đầu bằng tên repository và `@sha256:`. Pull không có nghĩa đã qua security review; hoàn tất review/scan theo quy trình release.
 
-Chỉ sau phê duyệt publication và kiểm tra publisher identity:
+Chỉ sau phê duyệt publication, điều kiện ECR latest ở đầu tài liệu đã được áp dụng và kiểm tra publisher identity. Publish cả hai release tags trước, rồi mới cập nhật hai latest tags:
 
 ```bash
 (
@@ -281,10 +298,14 @@ Chỉ sau phê duyệt publication và kiểm tra publisher identity:
   trap 'docker logout "${REGISTRY}" >/dev/null 2>&1 || true' EXIT
   docker push "${REPO}:api-${RELEASE}"
   docker push "${REPO}:proxy-${RELEASE}"
+  docker push "${REPO}:api-latest"
+  docker push "${REPO}:proxy-latest"
 )
 ```
 
 Không dùng `get-authorization-token` rồi in token. Login có thời hạn; logout ngay sau push hoặc sau khi xử lý một push lỗi. Với môi trường yêu cầu Docker config tạm, giữ đúng Docker Desktop context/socket và thiết lập cleanup trước login. Không publish nếu scan có Critical/High chưa giải quyết.
+
+Hai lần cập nhật latest không phải giao dịch atomic. Chỉ publish/deploy một release tại một thời điểm. Nếu một push thất bại, dừng và giữ release record; không deploy cặp latest chưa hoàn tất hoặc tự retry thay đổi cloud ngoài phê duyệt. Việc lưu release tags trước bảo toàn tham chiếu tới phiên bản mới dù cập nhật latest bị gián đoạn; nó chưa chứng minh release healthy.
 
 Lấy **digest trong ECR**, không dùng digest Docker Hub cho EC2 URI. Profile đọc metadata cần `ecr:DescribeImages` trên repository này:
 
@@ -304,7 +325,9 @@ PROXY_IMAGE="${REPO}@${PROXY_DIGEST}"
 printf '%s\n' "${API_IMAGE}" "${PROXY_IMAGE}"
 ```
 
-Chỉ tiếp tục nếu mỗi digest là `sha256:` + 64 ký tự hex, không rỗng/`None`/placeholder. ECR giữ immutable tags: nếu push trùng tag, dùng lại digest đã review hoặc tạo release ID mới có review tương ứng; không tắt immutability. Lưu API/proxy digests, commit và release ID trong record riêng.
+Chỉ tiếp tục nếu mỗi digest là `sha256:` + 64 ký tự hex, không rỗng/`None`/placeholder. Release tags `api-${RELEASE}`/`proxy-${RELEASE}` giữ immutable: nếu push trùng release tag, dùng lại digest đã review hoặc tạo release ID mới có review tương ứng. `api-latest`/`proxy-latest` là hai alias mutable duy nhất; không tắt immutability của release tags. Lưu API/proxy digests, commit và release ID trong record riêng để đối chiếu lúc EC2 pull latest. Với proxy không đổi, nhiều release tags có thể cùng trỏ tới một digest.
+
+Release tags phục vụ backup image/rollback, không thay thế backup dữ liệu, secret version hoặc frontend artifacts. Giữ các tagged release đang chạy và rollback; kiểm soát dung lượng/chi phí theo cost guardrails, không tự cleanup backup images.
 
 ## 9. Chuẩn bị EC2 lần đầu qua Session Manager
 
@@ -331,15 +354,40 @@ Nhập lại metadata trong **terminal EC2**, vì biến từ Mac không tồn t
 ```bash
 read -r -p 'AWS account ID được duyệt: ' ACCOUNT_ID
 read -r -p 'API hostname, không có https://: ' API_HOST
-read -r -p 'ECR URI API theo digest: ' API_IMAGE
-read -r -p 'ECR URI proxy theo digest: ' PROXY_IMAGE
+read -r -p 'ECR repository URI, không có tag hoặc digest: ' REPO
+read -r -p 'ECR URI API theo digest của release đã duyệt ở mục 8: ' API_IMAGE
+read -r -p 'ECR URI proxy theo digest của release đã duyệt ở mục 8: ' PROXY_IMAGE
 read -r -p 'Secret ARN đúng môi trường: ' SECRET_ARN
 read -r -p 'Secret Version ID đã chọn: ' SECRET_VERSION_ID
 REGION='ap-southeast-2'
-REGISTRY="${API_IMAGE%%/*}"
+REGISTRY="${REPO%%/*}"
+API_LATEST="${REPO}:api-latest"
+PROXY_LATEST="${REPO}:proxy-latest"
 ```
 
-Đối chiếu account/region/repository trong cả hai image URIs và secret ARN với release đã duyệt. `API_HOST` chỉ là hostname ASCII, không chứa slash, dấu nháy, khoảng trắng hoặc newline. Metadata không phải secrets, nhưng cũng không đưa vào tài liệu public. Không nhập secret payload ở prompt.
+Đối chiếu account/region/repository trong `REPO`, cả hai image URIs và secret ARN với release đã duyệt. `API_IMAGE`/`PROXY_IMAGE` phải là các URI `${REPO}@sha256:...` từ release record, không phải latest tags. `API_HOST` chỉ là hostname ASCII, không chứa slash, dấu nháy, khoảng trắng hoặc newline. Metadata không phải secrets, nhưng cũng không đưa vào tài liệu public. Không nhập secret payload ở prompt.
+
+```bash
+(
+  set -euo pipefail
+  aws sts get-caller-identity --region "${REGION}" --no-cli-pager
+  aws ecr get-login-password --region "${REGION}" |
+    docker login --username AWS --password-stdin "${REGISTRY}"
+  trap 'docker logout "${REGISTRY}" >/dev/null 2>&1 || true' EXIT
+  docker pull "${API_LATEST}"
+  docker pull "${PROXY_LATEST}"
+  PULLED_API_IMAGE="$(docker image inspect "${API_LATEST}" --format '{{index .RepoDigests 0}}')"
+  PULLED_PROXY_IMAGE="$(docker image inspect "${PROXY_LATEST}" --format '{{index .RepoDigests 0}}')"
+  if [[ "${PULLED_API_IMAGE}" != "${API_IMAGE}" || "${PULLED_PROXY_IMAGE}" != "${PROXY_IMAGE}" ]]; then
+    echo 'Latest không khớp cặp digest của release đã duyệt; dừng, không thay containers.'
+    exit 1
+  fi
+)
+```
+
+Kiểm tra identity là instance role đúng account. Khối trên luôn pull latest, không dùng cache cũ để chọn bản mới, và kiểm tra cả hai digest trước khi dừng app. Sau khi khối thành công, các lệnh run ở mục 11 tiếp tục dùng `API_IMAGE`/`PROXY_IMAGE` cố định với `--pull=never`; latest đổi trong lúc deploy không làm container chạy nhầm release. Pull không tạo container. Không chạy `docker inspect` toàn bộ container hoặc `env` để chẩn đoán vì có thể lộ cấu hình nhạy cảm.
+
+**Chỉ đổi cấu hình hoặc rollback:** giữ `API_IMAGE`/`PROXY_IMAGE` theo digest của release healthy đã ghi và được duyệt; bỏ qua toàn bộ khối pull latest ở trên, dùng khối dưới thay thế. Latest có thể vẫn trỏ tới một release khác sau rollback; không thay images chỉ vì cần đổi secret.
 
 ```bash
 (
@@ -352,8 +400,6 @@ REGISTRY="${API_IMAGE%%/*}"
   docker pull "${PROXY_IMAGE}"
 )
 ```
-
-Kiểm tra identity là instance role đúng account. Sau pull thành công mới cấu hình runtime; pull không tạo container. Không chạy `docker inspect` toàn bộ container hoặc `env` để chẩn đoán vì có thể lộ cấu hình nhạy cảm.
 
 ```bash
 docker network inspect examtopics-staging >/dev/null 2>&1 ||
@@ -494,8 +540,8 @@ Checklist nghiệm thu trước khi đánh dấu release thành công:
 Không chạy Terraform lại nếu chỉ đổi source và hạ tầng không đổi. Không dựng lại Atlas/OAuth/DNS cho mỗi release. Khi bắt đầu từ terminal mới: làm mục 2, mục 3 và phần lấy outputs mục 5 trước; trên EC2 nạp lại metadata và pull images ở mục 9 nhưng không chạy lại install/network/Caddyfile bootstrap. Nếu chỉ đổi secret, bỏ qua build/publish mới và dùng lại API/proxy digests đã review trong release record.
 
 1. Xác minh target, Free plan/credits, chi phí; chạy quality gates và build từ commit đã review như mục 7. Tạo release ID mới và giữ artifact frontend.
-2. Review/scan, publish images theo mục 8. Với proxy không đổi, có thể dùng lại digest Caddy đã review thay vì đẩy lại. Với secret không đổi, dùng lại version đã ghi; nếu đổi, tạo version mới và ghi rollback version.
-3. Trên EC2, pull đủ image mới **trước khi dừng app**. Ghi lại old API/proxy digest và secret Version ID từ release record; không dump container env. Xác nhận rollback artifacts còn tồn tại và tương thích dữ liệu.
+2. Review/scan, publish cả `api-${RELEASE}`/`proxy-${RELEASE}` và `api-latest`/`proxy-latest` theo mục 8. Với proxy không đổi, dùng lại digest Caddy đã review để tạo proxy release tag mới và cập nhật proxy latest, không cần build lại Caddy. Với secret không đổi, dùng lại version đã ghi; nếu đổi, tạo version mới và ghi rollback version.
+3. Khi cập nhật source, trên EC2 làm khối pull latest và đối chiếu **cả hai** digest ở mục 9 **trước khi dừng app**. Khi chỉ đổi cấu hình, bỏ build/publish ở bước 1–2 và dùng khối pull digest trực tiếp ở mục 9 với images của release healthy; không yêu cầu chúng khớp latest. Ghi lại old API/proxy digest và secret Version ID từ release record; không dump container env. Xác nhận rollback artifacts còn tồn tại và tương thích dữ liệu. Push latest không tự restart containers.
 4. Chuẩn bị env-file mới từ version đã chọn theo mục 10. Đổi file trên host không làm môi trường container đang chạy thay đổi; cần tạo lại container API. Giữ quyền 600, không log payload.
 5. Sau phê duyệt exact container replacement và cửa sổ bảo trì, thay API. Single-host này có gián đoạn ngắn khi thay container; không coi là zero downtime:
 
@@ -507,7 +553,7 @@ docker rm examtopics-api
 
 6. Tạo lại API bằng **khối API ở mục 11**, dùng `API_IMAGE` mới và env-file đã chuẩn bị. Kiểm tra Up và readiness. Nếu thất bại, dừng quy trình và chuyển sang rollback đã được duyệt riêng; không publish frontend.
 7. Nếu cần đổi proxy image/config, pull và review config trước, duyệt riêng rồi stop/rm chỉ `examtopics-proxy`, tạo lại bằng khối proxy mục 11. Giữ nguyên Caddy volumes và không xóa `/etc/examtopics`. Không cần restart proxy chỉ vì API đổi nếu proxy/config không thay đổi; kiểm tra API qua HTTPS sau replacement.
-8. Sau backend sẵn sàng và tương thích cả frontend cũ/mới, publish frontend theo mục 12; index cuối cùng. Chạy checklist rồi lưu record release mới và theo dõi sau deploy.
+8. Với source release, sau backend sẵn sàng và tương thích cả frontend cũ/mới, publish frontend theo mục 12; index cuối cùng. Khi chỉ đổi cấu hình backend, giữ nguyên frontend đã chạy, không build/upload frontend. Chạy checklist rồi lưu record release mới và theo dõi sau deploy.
 
 Nếu thay schema hoặc ownership data, cần kế hoạch migration, fixture/backup và tương thích riêng. Không chạy `npm run migrate:*`, backend scripts hoặc OAuth test live chỉ vì đang deploy. Không gộp data migration vào một lệnh cập nhật container.
 
@@ -519,7 +565,10 @@ Nếu thay schema hoặc ownership data, cần kế hoạch migration, fixture/b
 | `invalid reference format`, biến còn `<VERSION>` hoặc `\<DIGEST>` | Đã chạy nguyên placeholder | Nhập tag thật, pull rồi lấy digest bằng image inspect; không chỉ sửa dấu nháy. `printf '%s\n' "${CADDY_SOURCE}"` để xem metadata |
 | Biến rỗng khi vào EC2 hoặc mở terminal mới | Biến shell chỉ tồn tại trong session đã đặt | Nhập lại metadata theo mục 9; không chép file credentials hay secret payload từ Mac sang shell |
 | Push bị từ chối auth | Login hết hạn, sai registry/profile/quyền | Review identity và repository; login ECR qua password-stdin đúng region, dừng nếu AccessDenied |
-| ECR báo tag đã tồn tại | Repository immutable | Dùng digest cũ đã review hoặc release mới được duyệt; không disable immutability |
+| ECR báo release tag đã tồn tại | `api-${RELEASE}`/`proxy-${RELEASE}` immutable | Dùng digest cũ đã review hoặc release mới được duyệt; không disable immutability |
+| ECR không cho cập nhật latest | Chưa áp dụng đúng hai mutability exclusions | Dừng; review/phê duyệt thay đổi Terraform/ECR như điều kiện đầu tài liệu, không xóa latest để vượt lỗi |
+| EC2 kéo latest nhưng digest không khớp release | Publish bị gián đoạn, sai repository hoặc một release khác đã cập nhật alias | Không dừng app; đối chiếu release record và cặp API/proxy mới được duyệt, không tự chọn digest lạ |
+| Latest đã đổi nhưng container vẫn chạy code cũ | Docker không tự pull/recreate container | Thực hiện pre-pull, kiểm tra digest và thay container theo mục 13; chỉ restart container cũ không cập nhật image |
 | `No such file .../api.env` | Chưa lấy secret value xuống EC2 | Lưu plaintext secret version, lấy đúng version theo mục 10; không tạo file rỗng để vượt lỗi |
 | Có file nhưng app thiếu biến | Secret lưu JSON, nháy giữ nguyên, key bị comment hoặc sai tên | Review định dạng KEY=value, không `#`, không nháy; không in nội dung để debug |
 | `No such container: examtopics-api`, `docker ps` trống | Chỉ pull image, chưa docker run hoặc dùng tên sai | `docker ps -a`, `docker image ls --digests`, kiểm tra files/network; nếu chưa có container thì tạo theo mục 11 |
@@ -562,6 +611,8 @@ Không có lệnh production apply sẵn trong tài liệu vì production root v
 ## 16. Rollback và record cho lần sau
 
 **Rollback ứng dụng:** xác định previous API/proxy ECR digests, secret Version ID, frontend artifact/manifest và index S3 Version ID. Kiểm tra chúng còn tồn tại, scan/review phù hợp và tương thích schema/data hiện tại. Sau phê duyệt rollback riêng: pull images cũ trước, lấy secret version cũ vào env-file, thay đúng containers như mục 13, health check, bảo đảm old assets còn có rồi khôi phục index cũ **cuối cùng**. Không rollback secret bằng cách đổi AWSCURRENT mù; pin Version ID theo release. Không xóa Caddy volumes. Xác minh OAuth, writes và user isolation sau rollback.
+
+Khi rollback, lấy digest từ `api-${RELEASE_CU}`/`proxy-${RELEASE_CU}` hoặc release record, rồi dùng **khối pull digest trực tiếp ở mục 9** cho `API_IMAGE`/`PROXY_IMAGE`. **Bỏ qua khối pull latest** vì latest đang chỉ tới release mới. Không cập nhật lại latest để rollback nếu thao tác retag đó chưa nằm trong phê duyệt riêng.
 
 **Rollback hạ tầng:** dùng prior reviewed code + current state để tạo plan mới, review/hash và phê duyệt mới. Không dùng saved plan đã apply hay `terraform destroy` làm rollback mặc định. Xóa bucket versions, ECR images, secret, EIP hay các DNS records là các thao tác có scope/phê duyệt riêng.
 

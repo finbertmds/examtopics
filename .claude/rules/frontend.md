@@ -13,4 +13,4 @@ paths:
 - TypeScript is strict. `npm run build` runs `tsc --noEmit` before `vite build`, so it must pass.
 - Tests use Vitest, jsdom and Testing Library, colocated as `*.test.ts(x)`. Add a test with every behaviour change.
 - `public/exams/` and `public/img/` hold large data. Don't rewrite or move them in bulk, and keep exam filenames such as `aws_saa_c03.json`.
-- Avoid growing `AdminPage.tsx` (1,300+ lines) and `ExamPage.tsx` further. Put new logic in hooks or utils.
+- Avoid growing `ManageExamsPage.tsx` (1,300+ lines) and `ExamPage.tsx` further. Put new logic in hooks or utils.
