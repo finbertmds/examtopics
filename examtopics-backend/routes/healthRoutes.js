@@ -8,7 +8,7 @@ router.use((req, res, next) => {
   next();
 });
 
-router.get('/', (req, res) => res.json({ success: true, status: 'healthy.' }));
+router.get('/', (req, res) => res.json({ success: true, status: 'healthy..' }));
 
 router.get('/readiness', async (req, res) => {
   const { mongodb, googleSheets } = await checkReadiness();
