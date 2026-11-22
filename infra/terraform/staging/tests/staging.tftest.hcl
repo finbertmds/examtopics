@@ -111,3 +111,35 @@ run "reject_cross_account_certificate" {
 
   expect_failures = [var.frontend_certificate_arn]
 }
+
+run "finbert_staging_hosts" {
+  command = plan
+
+  variables {
+    staging_domain = "staging.finbert.ngo"
+  }
+
+  assert {
+    condition = (
+      output.frontend_url == "https://app.staging.finbert.ngo" &&
+      output.api_url == "https://api.staging.finbert.ngo" &&
+      toset(aws_cloudfront_distribution.frontend.aliases) == toset(["app.staging.finbert.ngo"]) &&
+      alltrue([
+        for item in aws_cloudfront_response_headers_policy.frontend.custom_headers_config[0].items :
+        strcontains(item.value, "connect-src 'self' https://api.staging.finbert.ngo")
+        if item.header == "Content-Security-Policy-Report-Only"
+      ])
+    )
+    error_message = "The finbert.ngo staging hosts, CloudFront alias and CSP must use the same staging domain."
+  }
+}
+
+run "reject_sydney_frontend_certificate" {
+  command = plan
+
+  variables {
+    frontend_certificate_arn = "arn:aws:acm:ap-southeast-2:123456789012:certificate/11111111-2222-3333-4444-555555555555"
+  }
+
+  expect_failures = [var.frontend_certificate_arn]
+}

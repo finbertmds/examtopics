@@ -1,10 +1,10 @@
 variable "api_ami_id" {
-  description = "Reviewed x86_64 standard Amazon Linux 2023 AMI ID in us-east-1 with SSM Agent installed."
+  description = "Reviewed x86_64 standard Amazon Linux 2023 AMI ID in ap-southeast-2 with SSM Agent installed."
   type        = string
 
   validation {
     condition     = can(regex("^ami-[0-9a-f]{17}$", var.api_ami_id))
-    error_message = "Use a reviewed us-east-1 AMI ID."
+    error_message = "Use a reviewed ap-southeast-2 AMI ID."
   }
 }
 
@@ -40,11 +40,11 @@ variable "staging_account_id" {
 }
 
 variable "staging_domain" {
-  description = "A staging DNS suffix, such as staging.example.com, controlled outside this root."
+  description = "A staging DNS suffix, such as staging.finbert.ngo, controlled outside this root."
   type        = string
 
   validation {
     condition     = can(regex("^staging([.][a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?){2,}$", var.staging_domain))
-    error_message = "Use a lowercase DNS suffix starting with staging, such as staging.example.com."
+    error_message = "Use a lowercase DNS suffix starting with staging, such as staging.finbert.ngo."
   }
 }

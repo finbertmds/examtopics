@@ -33,7 +33,7 @@ Browser ──► Render static site (examtopics-practice)   https://examtopics.
 
 The hosts above are hardcoded defaults in `examtopics-backend/index.js:26`, `services/authService.js:22`, `utils/frontendUrl.js` and `examtopics-practice/src/utils/backendUrl.ts`. Environment variables override them.
 
-The planned AWS staging topology (S3 + CloudFront frontend, a single EC2 t3.micro API) is described in `docs/migration/aws-staging-runbook.md`. It has **not** been deployed by any repository automation.
+The planned AWS staging topology (S3 + CloudFront frontend, a single EC2 t3.micro API) is illustrated in the [AWS staging architecture and Console review guide](migration/aws-staging-architecture.md), with deployment steps in [the staging runbook](migration/aws-staging-runbook.md). It has **not** been deployed by any repository automation.
 
 ## Backend structure
 
