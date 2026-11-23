@@ -6,9 +6,9 @@ For the reusable Vietnamese walkthrough with sanitized examples, troubleshooting
 
 See the [Mermaid architecture and AWS Console review guide](aws-staging-architecture.md) for traffic flows, runtime dependencies and the resource checklist.
 
-`app.staging.finbert.ngo` serves the React build from CloudFront and a private, versioned S3 REST origin. A CloudFront Function rewrites the application's browser routes to `index.html` and preserves origin errors for missing static files and exam data. The viewer uses an ACM certificate in `us-east-1` and redirects HTTP to HTTPS. Regional resources use Sydney (`ap-southeast-2`); CloudFront and IAM are global services. The Terraform provider sets the region explicitly and does not change the operator's AWS CLI profile.
+`staging.examtopics.finbert.ngo` serves the React build from CloudFront and a private, versioned S3 REST origin. A CloudFront Function rewrites the application's browser routes to `index.html` and preserves origin errors for missing static files and exam data. The viewer uses an ACM certificate in `us-east-1` and redirects HTTP to HTTPS. Regional resources use Sydney (`ap-southeast-2`); CloudFront and IAM are global services. The Terraform provider sets the region explicitly and does not change the operator's AWS CLI profile.
 
-`api.staging.finbert.ngo` terminates TLS at Caddy on an Amazon Linux 2023 `t3.micro`. An Elastic IP gives DNS and the staging Atlas allowlist a stable address. Caddy uses public ACME issuance and forwards to Express on a private Docker bridge. The security group exposes TCP 80 and 443 for redirects, ACME and HTTPS. Use Session Manager for administration. The host uses encrypted 12 GiB gp3, IMDSv2 and standard CPU credits. Private ECR holds immutable release images. A Secrets Manager secret stores the Docker environment file. Terraform provisions the secret metadata and the operator supplies its value separately. Terraform does not install Docker, configure Caddy, publish artifacts or start the application.
+`staging.api.examtopics.finbert.ngo` terminates TLS at Caddy on an Amazon Linux 2023 `t3.micro`. An Elastic IP gives DNS and the staging Atlas allowlist a stable address. Caddy uses public ACME issuance and forwards to Express on a private Docker bridge. The security group exposes TCP 80 and 443 for redirects, ACME and HTTPS. Use Session Manager for administration. The host uses encrypted 12 GiB gp3, IMDSv2 and standard CPU credits. Private ECR holds immutable release images. A Secrets Manager secret stores the Docker environment file. Terraform provisions the secret metadata and the operator supplies its value separately. Terraform does not install Docker, configure Caddy, publish artifacts or start the application.
 
 Use a dedicated standalone AWS staging account and the [staging Terraform root](../../infra/terraform/staging). Use a separate Atlas staging project or cluster, a database user restricted to the staging database and synthetic fixtures. Use staging Google OAuth credentials and test users, a staging Sheets fixture and a separate service account. Keep Render serving production throughout staging.
 
@@ -28,10 +28,21 @@ The mock tests cover private S3 access, instance hardening, budget notifications
 Before preparing a live plan, review the [cost guardrails](../policies/aws-cost-guardrails.md), [deployment approval policy](../policies/aws-deployment-approval.md), [cost estimate](aws-staging-costs.md), [security audit](../audit/security-report.md), and QA verdict. Failed relevant tests and unresolved Critical or High findings block deployment. The local SEC-03 and SEC-04 patches still require approved staging verification. Rehearse the [question ownership cutover](../audit/sec-04-question-ownership.md) with verified fixtures before deploying against any database with legacy questions.
 
 1. With authorized reads, verify the distinct staging account, active Free plan, expiration, actual USD credit balance of at least $20 and current reported monthly spend. Confirm exact service features, Free-plan eligibility and how credits apply. Record read timestamps and credit treatment. Preserve the Free plan and stop on a failed check.
-2. Use the dedicated suffix `staging.finbert.ngo` in the existing Cloudflare DNS zone. Request an issued, non-exportable public ACM certificate for `app.staging.finbert.ngo` in **`us-east-1`**, using DNS validation. Obtain separate approvals for ACM issuance, Cloudflare DNS validation, Atlas provisioning or Google changes. Retain DNS certificate validation records for renewal. No Route 53 hosted zone or nameserver change is needed.
-3. Select a Free Tier eligible Amazon-owned standard x86_64 AL2023 AMI in **`ap-southeast-2`** with an SSM Agent version of 3.3.40.0 or later for the narrow `ssmmessages` policy. AMI IDs are region-specific; do not reuse a Virginia AMI ID. An authorized operator prepares a private input file with `staging_domain = "staging.finbert.ngo"`, the verified `staging_account_id`, Sydney `api_ami_id`, and Virginia `frontend_certificate_arn`. Agents must not read or print `*.tfvars`. Fill `budget_alert_email` only when including the $20 AWS Budget and its notifications in the exact approval.
+2. Use the frontend hostname `staging.examtopics.finbert.ngo` in the existing Cloudflare DNS zone. Request an issued, non-exportable public ACM certificate for `staging.examtopics.finbert.ngo` in **`us-east-1`**, using DNS validation. Obtain separate approvals for ACM issuance, Cloudflare DNS validation, Atlas provisioning or Google changes. Retain DNS certificate validation records for renewal. No Route 53 hosted zone or nameserver change is needed.
+3. Select a Free Tier eligible Amazon-owned standard x86_64 AL2023 AMI in **`ap-southeast-2`** with an SSM Agent version of 3.3.40.0 or later for the narrow `ssmmessages` policy. AMI IDs are region-specific; do not reuse a Virginia AMI ID. An authorized operator prepares a private input file with `staging_domain = "staging.examtopics.finbert.ngo"`, the verified `staging_account_id`, Sydney `api_ami_id`, and Virginia `frontend_certificate_arn`. Agents must not read or print `*.tfvars`. Fill `budget_alert_email` only when including the $20 AWS Budget and its notifications in the exact approval.
 4. Keep Terraform's local state, saved plans and backups on restricted encrypted storage with a designated operator. Back up state securely before and after each approved apply. Any move to a remote backend requires its own approval for the backend and state operation.
 5. Separate billing, planning, provisioning, EC2 administration and artifact publication permissions. Bind provisioning to the approved staging resources, including `iam:PassRole` restricted to the staging instance role with `iam:PassedToService=ec2.amazonaws.com`. Restrict `ssm:StartSession` to the staging instance and approved document. Restrict operators to terminating their own sessions. The host role can register with SSM, pull from one ECR repository and read one staging secret. Verify the exact SSM capabilities in the target account before release.
+
+## Domain targets
+
+| Environment | Web | API |
+| --- | --- | --- |
+| Staging | `https://staging.examtopics.finbert.ngo` | `https://staging.api.examtopics.finbert.ngo` |
+| Production | `https://examtopics.finbert.ngo` | `https://api.examtopics.finbert.ngo` |
+
+The staging input now means the full frontend hostname: `staging_domain = "staging.examtopics.finbert.ngo"`. The API inserts `api.` after `staging.`. Operators must update existing private input files separately; agents have not read or changed those files. Production domains require a separately approved production configuration and traffic cutover.
+
+The November 21 inputs and preflight results below are historical and describe the old domains. The recorded certificate established coverage only for `app.staging.finbert.ngo`, not the new frontend hostname. Before a new live plan, obtain separate approval to issue/validate a certificate covering `staging.examtopics.finbert.ngo` in `us-east-1`, then use its verified ARN. Separately approve CloudFront alias/CSP changes, DNS records, Caddy configuration, backend origins/Google OAuth callback and frontend rebuild/release. The old preflight approval cannot be reused.
 
 ## Deployment inputs recorded for this staging account
 
@@ -89,18 +100,18 @@ Create records only after approval for the exact DNS operation. In the existing 
 | When | Type | Name in Cloudflare | Target |
 | --- | --- | --- | --- |
 | Before the Terraform plan, for ACM validation | CNAME | Exact validation name supplied by ACM | Exact validation value supplied by ACM |
-| After the approved apply | CNAME | `app.staging` | Terraform output `frontend_distribution_domain` |
-| After the approved apply | A | `api.staging` | Terraform output `api_public_ipv4` |
+| After the approved apply | CNAME | `staging.examtopics` | Terraform output `frontend_distribution_domain` |
+| After the approved apply | A | `staging.api.examtopics` | Terraform output `api_public_ipv4` |
 
 Do not invent the validation record or deployment targets. Wait for the certificate to be `Issued` before using its ARN in a live plan. Keep its validation CNAME for renewal. Do not create an API AAAA record: this design exposes only IPv4. Keep apex, `www`, email and existing production records unchanged. If CAA records restrict certificate issuance, review their effect on both ACM and Caddy before proposing a separately approved DNS change.
 
 | Setting | Staging value |
 | --- | --- |
-| Release `api_url` / frontend `REACT_APP_BACKEND_URL` | `https://api.staging.finbert.ngo` |
-| Release `frontend_url` / frontend `REACT_APP_FRONTEND_URL` | `https://app.staging.finbert.ngo` |
-| Backend `FRONTEND_URL` | `https://app.staging.finbert.ngo` |
-| Backend `GOOGLE_CALLBACK_URL` | `https://api.staging.finbert.ngo/auth/google/callback` |
-| Caddy site hostname | `api.staging.finbert.ngo` |
+| Release `api_url` / frontend `REACT_APP_BACKEND_URL` | `https://staging.api.examtopics.finbert.ngo` |
+| Release `frontend_url` / frontend `REACT_APP_FRONTEND_URL` | `https://staging.examtopics.finbert.ngo` |
+| Backend `FRONTEND_URL` | `https://staging.examtopics.finbert.ngo` |
+| Backend `GOOGLE_CALLBACK_URL` | `https://staging.api.examtopics.finbert.ngo/auth/google/callback` |
+| Caddy site hostname | `staging.api.examtopics.finbert.ngo` |
 
 Register that exact callback URL in the staging Google OAuth client. Backend secrets remain separate from public frontend build settings. Caddy obtains the API certificate after DNS resolves to the Elastic IP, the proxy is running and ports 80/443 are reachable; the CloudFront ACM certificate does not configure API TLS.
 
@@ -127,14 +138,14 @@ Use Bash for the shell examples. Build from a reviewed commit in a clean checkou
 
 1. After AWS read authorization, collect required account, Free-plan and credit information. Use separately scoped planning access to save a plan for the exact staging account, `ap-southeast-2`, root, state and AMI. Review `terraform show` locally and compute the saved plan's SHA-256. Include the exact actions, digest, security impact, current spend, projected gross cost and rollback in the [approval report](../policies/aws-deployment-approval.md). Stop on an account mismatch, foreign state or projected monthly total over $20. Obtain `APPROVE AWS STAGING APPLY <PLAN_ID> <ACCOUNT_ID>` for the exact report before applying the saved plan; this does not authorize DNS, publication, host configuration or later retries.
 2. Obtain explicit approval for the exact saved plan. Recheck identity, root/state, plan digest, costs, current credits and Free-plan status before applying only that plan with short-lived credentials. Record completion and outputs securely. A changed plan or partial-failure retry requires fresh approval.
-3. Obtain separate staging DNS approval and create the `app.<staging_domain>` CNAME to `frontend_distribution_domain` and `api.<staging_domain>` A record to `api_public_ipv4`. Use DNS-only records and check for stale API AAAA records. Obtain separate Atlas staging allowlist approval for the Elastic IP as a /32. Verify the isolated project, TLS and database privileges.
+3. Obtain separate staging DNS approval and create the `<staging_domain>` CNAME to `frontend_distribution_domain` and `staging.api.<domain without staging.>` A record to `api_public_ipv4`. Use DNS-only records and check for stale API AAAA records. Obtain separate Atlas staging allowlist approval for the Elastic IP as a /32. Verify the isolated project, TLS and database privileges.
 4. Obtain separate approvals for the secret version, image publications and host configuration. Set the SecretString for `api_environment_secret_arn` from a restricted file outside the checkout. Use Docker `--env-file` syntax with one `KEY=value` line per entry. Use escaped newlines for the Google key without surrounding quotes. Keep secret payloads out of Terraform, shell arguments, stdout, logs and session transcripts.
 
 | Settings | Staging value |
 | --- | --- |
 | `PORT`, `NODE_ENV` | `3001`, `production` |
-| `FRONTEND_URL` | `https://app.staging.finbert.ngo` |
-| `GOOGLE_CALLBACK_URL` | `https://api.staging.finbert.ngo/auth/google/callback`, registered with the staging OAuth client |
+| `FRONTEND_URL` | `https://staging.examtopics.finbert.ngo` |
+| `GOOGLE_CALLBACK_URL` | `https://staging.api.examtopics.finbert.ngo/auth/google/callback`, registered with the staging OAuth client |
 | `MONGO_URI` | TLS SRV URI for the staging-only database |
 | `JWT_SECRET`, `SESSION_SECRET` | Independent, strong random staging values |
 | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | Staging OAuth client credentials |
@@ -144,7 +155,7 @@ Use Bash for the shell examples. Build from a reviewed commit in a clean checkou
 6. On the staging host via the approved Session Manager session, install approved AL2023 updates and Docker, and ensure Docker starts on boot. Use the instance role to obtain an ECR login and pull the exact images. Clear cached registry credentials after pulling. Create a Docker bridge named `examtopics-staging` and persistent volumes `examtopics-caddy-data` and `examtopics-caddy-config`. Write this Caddyfile to `/etc/examtopics/Caddyfile` with the exact API hostname and root ownership.
 
 ```caddyfile
-api.staging.finbert.ngo {
+staging.api.examtopics.finbert.ngo {
     header Strict-Transport-Security "max-age=31536000"
     @internalHealth path /health /health/*
     respond @internalHealth 404

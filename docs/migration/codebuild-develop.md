@@ -1,6 +1,6 @@
 # Deploy develop bằng CodeBuild và GitHub webhook
 
-Luồng này thay phương án GitHub Actions OIDC. AWS CodeBuild trực tiếp nhận GitHub webhook, lấy source qua GitHub App/CodeConnections, build/test rồi publish staging. Không cần Identity providers, AWS access keys trong GitHub, CodePipeline, CodeDeploy hoặc runner trên EC2. GitHub Actions CI/Render hiện tại vẫn độc lập.
+Luồng này thay phương án GitHub Actions OIDC. AWS CodeBuild nhận GitHub webhook hoặc lệnh Start build do người vận hành khởi chạy, lấy source develop qua GitHub App/CodeConnections, build/test rồi publish staging. Không cần Identity providers, AWS access keys trong GitHub, CodePipeline, CodeDeploy hoặc runner trên EC2. GitHub Actions CI/Render hiện tại vẫn độc lập.
 
 ```mermaid
 flowchart TD
@@ -195,7 +195,22 @@ Không bật PR, tag, release, workflow-job, batch build hoặc thêm group OR r
 
 CodeBuild có thể queue theo quota tài khoản khi **không đặt project limit**. Đặt project limit 1 có thể trả lỗi cho event đến lúc build đang chạy, không bảo đảm FIFO. Queue có giới hạn và timeout: theo dõi failed/expired builds; không giả định mọi webhook luôn được thực thi. Controller kiểm tra current remote head trước publication và dùng khóa S3 exclusive; stale builds fail trước khi deploy. **Sau khi bắt đầu publication dưới khóa, hoàn tất commit đã pin dù có push mới**, rồi build của head mới cập nhật tiếp; không bỏ dở release chỉ vì branch vừa đổi. Build chờ khóa tối đa 10 phút; chờ vẫn tính build minutes. [Concurrency behavior](https://docs.aws.amazon.com/codebuild/latest/userguide/builds-working.html).
 
-Không cần tự thêm một webhook GitHub thứ hai hoặc thêm GitHub Actions để gọi `StartBuild`. Sau một push `develop` đã được duyệt, xem webhook delivery và CodeBuild history. **Start build thủ công không có webhook metadata bị controller từ chối.** Retry build/webhook redelivery cũng cần review/phê duyệt riêng, chỉ dùng khi current head vẫn khớp; nếu metadata không được giữ, dùng một source push mới đã duyệt thay vì giả lập `CODEBUILD_*`.
+Không cần tự thêm một webhook GitHub thứ hai hoặc thêm GitHub Actions để gọi `StartBuild`. Sau một push `develop` đã được duyệt, xem webhook delivery và CodeBuild history. Webhook vẫn chỉ nhận PUSH develop; PR/tag/metadata thiếu một phần bị từ chối.
+
+### Start build thủ công để dùng config hiện tại và latest develop
+
+1. Đưa phiên bản controller hỗ trợ manual này lên `develop` bằng thao tác push đã được duyệt. Source tải từ GitHub phải có thay đổi đó; sửa local chưa làm CodeBuild thay đổi.
+2. Trong project **Edit → Source**, giữ **Source version = `develop`**, repository đúng và clone depth Full như ảnh cấu hình hiện tại. Buildspec vẫn là `deploy/codebuild/buildspec.yml` từ repository, không inline một bản cũ.
+3. Trong **Edit → Environment**, lưu các project variables/settings mới trước khi chạy. Đây là cấu hình cho build mới; thay đổi settings không cập nhật một build đã khởi chạy.
+4. Về trang **Build project → Start build** để tạo build mới bằng settings hiện tại. Không dùng Retry/Rebuild của một build history cũ làm cách cập nhật config. Nếu dùng Start build with overrides, đặt Source version `develop` và không giữ overrides environment/buildspec cũ. Không đặt commit SHA/tag/PR làm source override.
+5. CodeBuild resolve branch develop từ GitHub trong bước DOWNLOAD_SOURCE. Controller yêu cầu checkout khớp resolved SHA và remote develop head; nếu có push mới trước publication thì dừng stale build, không tự checkout/chạy source mới giữa chừng. Sau khi publication bắt đầu dưới khóa, hoàn tất đúng SHA đã pin như luồng webhook.
+6. Log sẽ có `Build mode: manual; commit: <sha>; applications: {'frontend': True, 'backend': True}`. Build thủ công **luôn test/build/deploy cả hai app**, kể cả `state.json` đã ghi cùng SHA, để áp dụng project variables hiện tại và retry source release có chủ đích. Webhook vẫn chọn app theo Git paths và bỏ qua source không đổi.
+
+Manual mode chỉ được nhận khi cả ba metadata `CODEBUILD_WEBHOOK_EVENT`, `CODEBUILD_WEBHOOK_HEAD_REF`, `CODEBUILD_WEBHOOK_TRIGGER` vắng/rỗng và `CODEBUILD_SOURCE_VERSION` là `develop` hoặc `refs/heads/develop`. Không giả lập/override built-in `CODEBUILD_*` để vượt guard. Giới hạn người có `codebuild:StartBuild`/quyền sửa project vì thao tác này có thể deploy staging. Đây là quyền cho người vận hành dùng luồng manual đã yêu cầu; agent vẫn phải xin phê duyệt exact operation trước khi start/retry build hoặc sửa AWS/GitHub settings.
+
+Start build mới nhận project config hiện tại theo [AWS Console guide](https://docs.aws.amazon.com/codebuild/latest/userguide/run-build-console.html) và [StartBuild API](https://docs.aws.amazon.com/codebuild/latest/APIReference/API_StartBuild.html). RetryBuild khởi động lại build được chỉ định; không dùng làm bảo đảm refresh project settings/source mới. Mọi manual run vẫn kiểm tra Free plan/credits/budget, current head, lock S3, readiness và thứ tự backend trước frontend. **Không tự mở khóa cũ**: nếu còn `lock.json` từ publication lỗi thì xử lý recovery ở mục 9 trước. Thay đổi backend secrets/env-file trên EC2 không nằm trong việc refresh CodeBuild variables; vẫn theo quy trình riêng.
+
+Manual build luôn build cả hai nên tính đầy đủ minutes/requests vào dự toán tháng, kể cả khi Git không đổi.
 
 ## 8. Path selection, release và nghiệm thu
 
@@ -206,7 +221,7 @@ Không cần tự thêm một webhook GitHub thứ hai hoặc thêm GitHub Actio
 | `.nvmrc`, `deploy/codebuild/**` | Cả hai |
 | `infra/**`, docs, batch/downloader, GitHub CI workflows | Không tự publish app; infra cần review/apply riêng; data output cập nhật trong app sẽ trigger theo path app |
 
-State lưu commit của **release thành công**, không chỉ `webhook.prev_commit`. Lấy union paths của các commits kể từ state, kể cả file đã revert sau một lần deploy dở. Không có state hoặc baseline không còn ancestor sau force push thì build cả hai. Docs-only có thể tạo CodeBuild run tính phí nhưng bỏ qua app build/publication.
+Với webhook, state lưu commit của **release thành công**, không chỉ `webhook.prev_commit`. Lấy union paths của các commits kể từ state, kể cả file đã revert sau một lần deploy dở. Không có state hoặc baseline không còn ancestor sau force push thì build cả hai. Webhook docs-only có thể tạo CodeBuild run tính phí nhưng bỏ qua app build/publication; manual Start build luôn chạy cả hai app với cấu hình của build mới.
 
 Controller giữ base service credentials cho Git helper, dùng credentials monitoring/deploy chỉ trong subprocess AWS tương ứng. Không log STS credentials. Sau test/build: kiểm tra plan/credits/budget, acquire lock, kiểm tra current head và monitoring lần nữa sau khi chờ, rồi publish. Build/test fail không assume publication role; preflight fail trước publication mở khóa bình thường.
 

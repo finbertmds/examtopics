@@ -108,9 +108,9 @@ Xem `ResultsByTime[].Total.UnblendedCost.Amount`, currency và cờ `Estimated`.
 
 ## 4. Input, ACM và Terraform cho staging mới
 
-Operator chuẩn bị các input theo schema trong `infra/terraform/staging/variables.tf`: account, suffix như `staging.example.com`, AMI Amazon Linux 2023 x86_64 tại Sydney, ACM certificate ARN, email Budget nếu có duyệt tạo Budget.
+Operator chuẩn bị các input theo schema trong `infra/terraform/staging/variables.tf`: account, frontend hostname `staging_domain` như `staging.example.com` (API tương ứng `staging.api.example.com`), AMI Amazon Linux 2023 x86_64 tại Sydney, ACM certificate ARN, email Budget nếu có duyệt tạo Budget.
 
-ACM frontend phải ở **us-east-1**, covers `app.<suffix>`, public certificate, export disabled, DNS validation và trạng thái `ISSUED`. Thêm đúng CNAME AWS cấp vào Cloudflare, DNS only; giữ record để gia hạn. API dùng TLS do Caddy cấp riêng. AMI phải đúng region, Amazon-owned, standard AL2023 x86_64, Free Tier eligible, và có SSM Agent đáp ứng runbook. Đừng nhầm tên role hợp lệ với việc đã xác minh toàn bộ effective IAM policy.
+ACM frontend phải ở **us-east-1**, covers chính xác hostname `staging_domain`, public certificate, export disabled, DNS validation và trạng thái `ISSUED`. Thêm đúng CNAME AWS cấp vào Cloudflare, DNS only; giữ record để gia hạn. API dùng TLS do Caddy cấp riêng. AMI phải đúng region, Amazon-owned, standard AL2023 x86_64, Free Tier eligible, và có SSM Agent đáp ứng runbook. Đừng nhầm tên role hợp lệ với việc đã xác minh toàn bộ effective IAM policy.
 
 Khởi tạo và kiểm tra local, không dùng deployment credentials:
 
@@ -187,8 +187,8 @@ Mở đúng secret từ `SECRET_ARN` ở region mục tiêu. Terraform chỉ t�
 PORT=3001
 NODE_ENV=production
 TRUST_PROXY=1
-FRONTEND_URL=https://app.staging.example.com
-GOOGLE_CALLBACK_URL=https://api.staging.example.com/auth/google/callback
+FRONTEND_URL=https://staging.example.com
+GOOGLE_CALLBACK_URL=https://staging.api.example.com/auth/google/callback
 MONGO_URI={URI_DATABASE_RIENG}
 JWT_SECRET={SECRET_NGAU_NHIEN_THU_NHAT}
 SESSION_SECRET={SECRET_NGAU_NHIEN_THU_HAI}
@@ -563,7 +563,7 @@ Luồng hiện tại là **GitHub push develop → CodeBuild → S3/ECR → SSM 
 
 Buildspec ở [`deploy/codebuild/buildspec.yml`](../../deploy/codebuild/buildspec.yml). Controller chọn frontend/backend theo toàn bộ path từng đổi từ release thành công gần nhất, kể cả path đã revert. `.nvmrc` và `deploy/codebuild/**` build cả hai; `infra/**` không tự apply, batch/downloader chỉ kích hoạt khi output trong frontend/backend đổi. Cả hai đổi thì backend phải readiness thành công trước khi publish frontend.
 
-Project dùng GitHub App qua CodeConnections và IAM service role; monitoring và publication dùng hai assumed roles riêng. Build/test chạy trước publication; chỉ PUSH cho `refs/heads/develop` được chấp nhận. Khóa conditional S3 giữ publication tuần tự; build lỗi giữa publication giữ khóa để người vận hành kiểm tra trước khi cho lần tiếp theo chạy. Không đặt project concurrency limit bằng 1 vì có thể làm mất webhook khi build đang chạy.
+Project dùng GitHub App qua CodeConnections và IAM service role; monitoring và publication dùng hai assumed roles riêng. Build/test chạy trước publication; webhook chỉ nhận PUSH cho `refs/heads/develop`. Người vận hành cũng có thể tạo **Start build mới** với Source version `develop` để lấy latest commit và project config hiện tại; manual mode build/deploy lại cả hai app dù SHA không đổi, theo hướng dẫn CodeBuild liên kết ở trên. Khóa conditional S3 giữ publication tuần tự; build lỗi giữa publication giữ khóa để người vận hành kiểm tra trước khi cho lần tiếp theo chạy. Không đặt project concurrency limit bằng 1 vì có thể làm mất webhook khi build đang chạy.
 
 Đây là cấu hình local cho automation owner yêu cầu. Tạo/sửa CodeBuild, connection, roles, bucket, log group/KMS, bật webhook và push source cần phê duyệt thao tác riêng. Giữ Free plan; nếu account chặn service/role/connection cần thiết thì dừng, không nâng Paid hoặc bật advanced features để vượt lỗi. Render/master, Atlas và DNS production giữ nguyên.
 

@@ -32,6 +32,82 @@ class ReleaseTests(unittest.TestCase):
         with patch.object(release.subprocess, 'run', return_value=subprocess.CompletedProcess([], 1)):
             self.assertTrue(all(release.select_components({'commit': 'old'}, 'head').values()))
 
+    def test_manual_build_requires_develop_and_matching_checkout(self):
+        sha = 'a' * 40
+        for source in ['develop', 'refs/heads/develop']:
+            env = dict(CODEBUILD_SOURCE_VERSION=source, CODEBUILD_RESOLVED_SOURCE_VERSION=sha,
+                       GITHUB_REPOSITORY_URL='https://github.com/owner/repo')
+            with self.subTest(source=source), patch.dict(os.environ, env, clear=True), \
+                    patch.object(release.subprocess, 'check_output', side_effect=[sha, env['GITHUB_REPOSITORY_URL']]):
+                self.assertTrue(release.is_manual_build())
+                self.assertEqual(release.validate_event(), sha)
+        for source in ['', 'master', 'refs/tags/develop', sha, 'pr/123']:
+            with self.subTest(source=source), patch.dict(os.environ, {'CODEBUILD_SOURCE_VERSION': source}, clear=True):
+                with self.assertRaisesRegex(ValueError, 'source version develop'):
+                    release.validate_event()
+        with patch.dict(os.environ, env, clear=True), \
+                patch.object(release.subprocess, 'check_output', return_value='b' * 40):
+            with self.assertRaisesRegex(ValueError, 'Checkout does not match'):
+                release.validate_event()
+
+    def test_partial_webhook_metadata_cannot_be_treated_as_manual(self):
+        for key in ['CODEBUILD_WEBHOOK_EVENT', 'CODEBUILD_WEBHOOK_HEAD_REF', 'CODEBUILD_WEBHOOK_TRIGGER']:
+            env = {key: 'unexpected', 'CODEBUILD_SOURCE_VERSION': 'develop'}
+            with self.subTest(key=key), patch.dict(os.environ, env, clear=True):
+                self.assertFalse(release.is_manual_build())
+                with self.assertRaisesRegex(ValueError, 'Only PUSH webhooks'):
+                    release.validate_event()
+
+    def test_stale_manual_build_fails_before_build_or_aws_access(self):
+        with patch.object(release, 'validate_event', return_value='a' * 40), \
+                patch.object(release, 'is_manual_build', return_value=True), \
+                patch.object(release, 'require_current_head', side_effect=RuntimeError('Stale develop commit')), \
+                patch.object(release, 'read_record') as read, patch.object(release, 'build') as build:
+            with self.assertRaisesRegex(RuntimeError, 'Stale develop'):
+                release.main()
+            read.assert_not_called()
+            build.assert_not_called()
+
+    def test_manual_build_redeploys_same_commit_using_current_build_environment(self):
+        sha = 'a' * 40
+        env = dict(RELEASE_BUCKET='private-release-bucket', FRONTEND_BUCKET='frontend-bucket',
+                   CODEBUILD_BUILD_ID='project:12345678-1234-1234-1234-123456789abc',
+                   AWS_ACCOUNT_ID='123456789012', REACT_APP_BACKEND_URL='https://new-api.example.invalid')
+        seen_origins = []
+        with patch.dict(os.environ, env), patch.object(release, 'validate_event', return_value=sha), \
+                patch.object(release, 'is_manual_build', return_value=True), \
+                patch.object(release, 'require_current_head'), \
+                patch.object(release, 'read_record', return_value={'commit': sha}), \
+                patch.object(release, 'select_components') as select, \
+                patch.object(release, 'build', side_effect=lambda selected: seen_origins.append(os.environ['REACT_APP_BACKEND_URL'])) as build, \
+                patch.object(release, 'guard'), patch.object(release, 'assume_role', return_value={}), \
+                patch.object(release, 'put_record', return_value={'ETag': 'etag'}) as put, \
+                patch.object(release, 'publish_backend', return_value='new-image') as backend, \
+                patch.object(release, 'publish_frontend', return_value='new-index') as frontend, \
+                patch.object(release, 'aws'):
+            release.main()
+            select.assert_not_called()
+            build.assert_called_once_with({'frontend': True, 'backend': True})
+            backend.assert_called_once()
+            frontend.assert_called_once()
+            self.assertEqual(put.call_args.args[1], 'state.json')
+            self.assertEqual(put.call_args.args[2]['trigger'], 'manual')
+            self.assertEqual(seen_origins, [env['REACT_APP_BACKEND_URL']])
+
+    def test_webhook_same_commit_still_skips_unchanged_applications(self):
+        sha = 'a' * 40
+        env = dict(RELEASE_BUCKET='private-release-bucket', FRONTEND_BUCKET='frontend-bucket')
+        with patch.dict(os.environ, env), patch.object(release, 'validate_event', return_value=sha), \
+                patch.object(release, 'is_manual_build', return_value=False), \
+                patch.object(release, 'require_current_head'), \
+                patch.object(release, 'read_record', return_value={'commit': sha}), \
+                patch.object(release, 'select_components', return_value={'frontend': False, 'backend': False}) as select, \
+                patch.object(release, 'build') as build, patch.object(release, 'assume_role') as assume:
+            release.main()
+            select.assert_called_once_with({'commit': sha}, sha)
+            build.assert_not_called()
+            assume.assert_not_called()
+
     def test_build_failure_prevents_any_publication_or_role_assumption(self):
         env = dict(RELEASE_BUCKET='private-release-bucket', FRONTEND_BUCKET='frontend-bucket')
         with patch.dict(os.environ, env), patch.object(release, 'validate_event', return_value='a' * 40), \

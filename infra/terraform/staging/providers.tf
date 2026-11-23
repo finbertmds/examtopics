@@ -13,6 +13,6 @@ provider "aws" {
 
 locals {
   name          = "examtopics-staging"
-  frontend_host = "app.${var.staging_domain}"
-  api_host      = "api.${var.staging_domain}"
+  frontend_host = var.staging_domain
+  api_host      = "staging.api.${trimprefix(var.staging_domain, "staging.")}"
 }

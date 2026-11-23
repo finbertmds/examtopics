@@ -17,12 +17,12 @@ flowchart TB
 
     subgraph AWS["AWS account 450114866570"]
         subgraph GLOBAL["Global"]
-            CF["CloudFront distribution<br/>app.staging.finbert.ngo"]
+            CF["CloudFront distribution<br/>staging.examtopics.finbert.ngo"]
             FN["CloudFront Function<br/>Rewrite SPA routes"]
             HEADERS["Response headers policy<br/>CSP Report-Only, HSTS, DENY framing"]
         end
         subgraph VIRGINIA["us-east-1 - N. Virginia"]
-            ACM["ACM public certificate<br/>app.staging.finbert.ngo"]
+            ACM["ACM public certificate<br/>staging.examtopics.finbert.ngo"]
         end
         subgraph SYDNEY["ap-southeast-2 - Sydney"]
             S3["S3 private bucket<br/>React build và dữ liệu public"]
@@ -32,7 +32,7 @@ flowchart TB
                 subgraph SUBNET["Public subnet 10.86.0.0/26"]
                     SG["Security group<br/>Inbound TCP 80 và 443"]
                     subgraph HOST["EC2 t3.micro - Docker bridge"]
-                        CADDY["Caddy reverse proxy<br/>api.staging.finbert.ngo<br/>TLS qua ACME"]
+                        CADDY["Caddy reverse proxy<br/>staging.api.examtopics.finbert.ngo<br/>TLS qua ACME"]
                         API["Express API<br/>examtopics-api:3001"]
                     end
                 end
@@ -42,8 +42,8 @@ flowchart TB
     end
 
     USER -. "Tra cứu hostname" .-> DNS
-    DNS -. "app.staging: CNAME" .-> CF
-    DNS -. "api.staging: A record" .-> EIP
+    DNS -. "staging.examtopics: CNAME" .-> CF
+    DNS -. "staging.api.examtopics: A record" .-> EIP
     USER -->|"HTTPS frontend"| CF
     CF -->|"OAC ký SigV4 qua HTTPS"| S3
     ACM -. "Chứng chỉ cho frontend" .-> CF
@@ -63,7 +63,7 @@ flowchart TB
 Đọc luồng theo hai đường riêng:
 
 1. **Mở frontend:** trình duyệt gọi CloudFront; CloudFront lấy file từ S3 private bằng OAC. JavaScript React chạy trong trình duyệt.
-2. **Gọi API:** JavaScript gọi trực tiếp `https://api.staging.finbert.ngo`; request đi tới Elastic IP, qua Internet Gateway và security group, vào Caddy rồi Express. CloudFront không proxy API trong thiết kế này.
+2. **Gọi API:** JavaScript gọi trực tiếp `https://staging.api.examtopics.finbert.ngo`; request đi tới Elastic IP, qua Internet Gateway và security group, vào Caddy rồi Express. CloudFront không proxy API trong thiết kế này.
 
 Cloudflare chỉ trả lời DNS, không nằm trên đường truyền HTTP vì dùng DNS only. Chứng chỉ ACM chỉ phục vụ CloudFront; Caddy tự cấp và gia hạn chứng chỉ API. OAuth còn có redirect giữa trình duyệt, Google và API; mũi tên Google trong sơ đồ trên chỉ tóm tắt phụ thuộc bên ngoài.
 
@@ -128,10 +128,10 @@ CloudWatch alarm hiện **không gắn SNS/email action**, chỉ hiển thị tr
 | ECR | ECR → Private repositories / Sydney | `examtopics-staging`, output `release_repository_url` | Immutable tags, scan on push; giữ 10 API tags, 3 proxy tags; untagged hết hạn sau 7 ngày |
 | Secrets Manager | Secrets Manager / Sydney | `/examtopics/staging/api-environment` | Terraform chỉ tạo metadata; secret value do operator nạp riêng. Review metadata, không chụp/copy giá trị bí mật |
 | S3 | S3, bucket ở Sydney | `examtopics-staging-web-450114866570`, output `frontend_bucket` | Block Public Access bật cả 4; versioning; SSE-S3; chỉ CloudFront distribution đúng được GetObject; bắt buộc TLS |
-| CloudFront | CloudFront → Distributions / Global | Alias `app.staging.finbert.ngo`, output `frontend_distribution_id` | Origin là S3 REST regional endpoint, dùng OAC; redirect HTTP→HTTPS; chứng chỉ đúng ARN |
+| CloudFront | CloudFront → Distributions / Global | Alias `staging.examtopics.finbert.ngo`, output `frontend_distribution_id` | Origin là S3 REST regional endpoint, dùng OAC; redirect HTTP→HTTPS; chứng chỉ đúng ARN |
 | Cache và route frontend | CloudFront → Distribution behaviors / Global | Default và `/assets/*`; function `examtopics-staging-frontend-route` | Default dùng CachingDisabled và viewer-request function; `/assets/*` dùng CachingOptimized và compression; cả hai dùng custom headers policy |
 | Headers frontend | CloudFront → Policies / Global | `examtopics-staging-frontend-headers` | CSP Report-Only cho API staging, HSTS, frame DENY, nosniff; không hiểu nhầm CSP đã được enforce |
-| ACM | Certificate Manager / **us-east-1** | ARN suffix `2f47ff51-c8d0-489d-9814-6082a5fe3fea` | ISSUED, SAN `app.staging.finbert.ngo`, export disabled, DNS validation record được giữ |
+| ACM | Certificate Manager / **us-east-1** | Certificate cho `staging.examtopics.finbert.ngo` | Cần cấp/xác minh riêng trước plan; lịch sử ARN suffix `2f47ff51-c8d0-489d-9814-6082a5fe3fea` chỉ xác minh SAN cũ `app.staging.finbert.ngo`, chưa xác minh coverage domain mới |
 | SSM | Systems Manager → Session Manager / Sydney | Instance từ `api_instance_id` | Instance online sau khi Agent và network sẵn sàng; SSM không yêu cầu inbound SSH |
 | CloudWatch | CloudWatch → Alarms / Sydney | `examtopics-staging-api-instance-status` | `AWS/EC2`, `StatusCheckFailed`, Maximum, 300 giây, 2 periods, threshold ≥1; không có notification action |
 | Budget | Billing and Cost Management → Budgets / Account | `examtopics-staging-monthly`, nếu bật | USD 20/month; exclude credits/refunds; 4 actual alerts + 1 forecast alert |

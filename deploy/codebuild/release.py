@@ -1,4 +1,4 @@
-"""CodeBuild PUSH/develop controller. No AWS calls when imported by offline tests."""
+"""CodeBuild develop webhook/manual controller. No AWS calls on import."""
 import json
 import os
 from pathlib import Path
@@ -15,17 +15,25 @@ def run(*command, **kwargs):
     subprocess.run(command, check=True, **kwargs)
 
 
+def is_manual_build():
+    return not any(os.environ.get(key) for key in (
+        'CODEBUILD_WEBHOOK_EVENT', 'CODEBUILD_WEBHOOK_HEAD_REF', 'CODEBUILD_WEBHOOK_TRIGGER'))
+
+
 def validate_event():
-    if (os.environ.get('CODEBUILD_WEBHOOK_EVENT') != 'PUSH'
-            or os.environ.get('CODEBUILD_WEBHOOK_HEAD_REF') != 'refs/heads/develop'
-            or os.environ.get('CODEBUILD_WEBHOOK_TRIGGER') != 'branch/develop'):
-        raise ValueError('Only PUSH webhooks for develop can publish; manual builds are rejected')
+    if is_manual_build():
+        if os.environ.get('CODEBUILD_SOURCE_VERSION') not in ('develop', 'refs/heads/develop'):
+            raise ValueError('Manual builds must use source version develop; start a new project build')
+    elif (os.environ.get('CODEBUILD_WEBHOOK_EVENT') != 'PUSH'
+          or os.environ.get('CODEBUILD_WEBHOOK_HEAD_REF') != 'refs/heads/develop'
+          or os.environ.get('CODEBUILD_WEBHOOK_TRIGGER') != 'branch/develop'):
+        raise ValueError('Only PUSH webhooks for develop can publish')
     head = os.environ['CODEBUILD_RESOLVED_SOURCE_VERSION']
     if not re.fullmatch(r'[0-9a-f]{40}', head):
         raise ValueError('Expected an immutable source commit')
     actual = subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip()
     if actual != head:
-        raise ValueError('Checkout does not match webhook commit')
+        raise ValueError('Checkout does not match resolved source commit')
     expected = os.environ['GITHUB_REPOSITORY_URL'].removesuffix('.git')
     origin = subprocess.check_output(['git', 'remote', 'get-url', 'origin'], text=True).strip()
     if (not re.fullmatch(r'https://github.com/[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+', expected)
@@ -144,13 +152,18 @@ def publish_frontend(prefix, env):
 
 def main():
     head = validate_event()
+    manual = is_manual_build()
     require_current_head()
     bucket = os.environ['RELEASE_BUCKET']
     for name in [bucket, os.environ['FRONTEND_BUCKET']]:
         if not re.fullmatch(r'[a-z0-9][a-z0-9.-]{1,61}[a-z0-9]', name):
             raise ValueError('Invalid bucket name')
-    selected = select_components(read_record(bucket), head)
-    print(f'Changed applications: {selected}', flush=True)
+    previous = read_record(bucket)
+    # Project variables can change without a Git commit. An operator's fresh
+    # Start build reapplies both applications using that build's configuration.
+    selected = {'frontend': True, 'backend': True} if manual else select_components(previous, head)
+    mode = 'manual' if manual else 'webhook'
+    print(f'Build mode: {mode}; commit: {head}; applications: {selected}', flush=True)
     if not any(selected.values()):
         return
     build(selected)
@@ -165,14 +178,14 @@ def main():
     with ReleaseLock(bucket, {'commit': head, 'build': os.environ['CODEBUILD_BUILD_ID']}, deployment) as lock:
         require_current_head()
         previous = read_record(bucket, deployment)
-        if previous.get('commit') == head:
+        if previous.get('commit') == head and not manual:
             print('This commit was already released')
             return
         # Fresh monitoring credentials never replace base source credentials.
         guard(assume_role('MONITOR_ROLE_ARN'))
         require_current_head()
         lock.publishing = True
-        record = dict(previous, commit=head, build=os.environ['CODEBUILD_BUILD_ID'])
+        record = dict(previous, commit=head, build=os.environ['CODEBUILD_BUILD_ID'], trigger=mode)
         if selected['backend']:
             record['api_image'] = publish_backend(f'api-{head}-{identifier}', deployment)
         if selected['frontend']:

@@ -20,7 +20,7 @@ variable "budget_alert_email" {
 }
 
 variable "frontend_certificate_arn" {
-  description = "ARN of the issued us-east-1 ACM public certificate covering app.<staging_domain> in the staging account."
+  description = "ARN of the issued us-east-1 ACM public certificate covering the staging_domain frontend hostname in the staging account."
   type        = string
 
   validation {
@@ -40,11 +40,11 @@ variable "staging_account_id" {
 }
 
 variable "staging_domain" {
-  description = "A staging DNS suffix, such as staging.finbert.ngo, controlled outside this root."
+  description = "Full staging frontend hostname, such as staging.examtopics.finbert.ngo, controlled outside this root. The API inserts the api label after the staging label."
   type        = string
 
   validation {
     condition     = can(regex("^staging([.][a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?){2,}$", var.staging_domain))
-    error_message = "Use a lowercase DNS suffix starting with staging, such as staging.finbert.ngo."
+    error_message = "Use a lowercase frontend hostname starting with staging., such as staging.examtopics.finbert.ngo."
   }
 }

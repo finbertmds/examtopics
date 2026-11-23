@@ -43,8 +43,8 @@ run "staging_defaults" {
 
   assert {
     condition = (
-      output.frontend_url == "https://app.staging.example.com" &&
-      output.api_url == "https://api.staging.example.com" &&
+      output.frontend_url == "https://staging.example.com" &&
+      output.api_url == "https://staging.api.example.com" &&
       toset(keys(aws_vpc_security_group_ingress_rule.api_web)) == toset(["80", "443"]) &&
       length(aws_budgets_budget.staging) == 0
     )
@@ -58,7 +58,7 @@ run "staging_defaults" {
         if item.header == "Content-Security-Policy-Report-Only" &&
         item.override &&
         strcontains(item.value, "default-src 'self'") &&
-        strcontains(item.value, "connect-src 'self' https://api.staging.example.com")
+        strcontains(item.value, "connect-src 'self' https://staging.api.example.com")
       ]) == 1 &&
       aws_cloudfront_response_headers_policy.frontend.security_headers_config[0].frame_options[0].frame_option == "DENY" &&
       !aws_cloudfront_response_headers_policy.frontend.security_headers_config[0].strict_transport_security[0].include_subdomains
@@ -116,17 +116,17 @@ run "finbert_staging_hosts" {
   command = plan
 
   variables {
-    staging_domain = "staging.finbert.ngo"
+    staging_domain = "staging.examtopics.finbert.ngo"
   }
 
   assert {
     condition = (
-      output.frontend_url == "https://app.staging.finbert.ngo" &&
-      output.api_url == "https://api.staging.finbert.ngo" &&
-      toset(aws_cloudfront_distribution.frontend.aliases) == toset(["app.staging.finbert.ngo"]) &&
+      output.frontend_url == "https://staging.examtopics.finbert.ngo" &&
+      output.api_url == "https://staging.api.examtopics.finbert.ngo" &&
+      toset(aws_cloudfront_distribution.frontend.aliases) == toset(["staging.examtopics.finbert.ngo"]) &&
       alltrue([
         for item in aws_cloudfront_response_headers_policy.frontend.custom_headers_config[0].items :
-        strcontains(item.value, "connect-src 'self' https://api.staging.finbert.ngo")
+        strcontains(item.value, "connect-src 'self' https://staging.api.examtopics.finbert.ngo")
         if item.header == "Content-Security-Policy-Report-Only"
       ])
     )
@@ -142,4 +142,14 @@ run "reject_sydney_frontend_certificate" {
   }
 
   expect_failures = [var.frontend_certificate_arn]
+}
+
+run "reject_production_hostname" {
+  command = plan
+
+  variables {
+    staging_domain = "examtopics.finbert.ngo"
+  }
+
+  expect_failures = [var.staging_domain]
 }
